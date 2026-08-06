@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A practical guide to designing, building, securing, and operating Model Context Protocol servers for GitHub Copilot.">
+  <title>GitHub Copilot MCP Server Guide</title>
+  <style>
+    :root { --navy:#09243c; --blue:#1769aa; --teal:#0f9da8; --coral:#e26d5a; --ink:#17212b; --muted:#5f6f7d; --paper:#f5f1e8; --white:#fffdf8; --line:#d8d0c4; --soft-blue:#eaf6f4; --soft-coral:#fff0eb; --shadow:0 8px 26px rgba(23,33,43,.06); }
+    * { box-sizing:border-box; }
+    html { scroll-behavior:smooth; font-family:'Trebuchet MS','Segoe UI',sans-serif; }
+    body { margin:0; color:var(--ink); background:var(--paper); line-height:1.6; }
+    a { color:var(--blue); font-weight:700; text-decoration:none; }
+    a:hover { color:var(--coral); text-decoration:underline; }
+    code { padding:2px 5px; color:var(--navy); background:#e5eef0; font:.88em Consolas,monospace; }
+    .shell { display:grid; grid-template-columns:260px minmax(0,1fr); min-height:100vh; }
+    .rail { position:sticky; top:0; height:100vh; overflow-y:auto; padding:28px 20px; color:#d9e8f2; background:var(--navy); }
+    .brand { padding-bottom:24px; border-bottom:1px solid rgba(255,255,255,.14); }
+    .brand small { color:#7ed6d1; font-size:11px; font-weight:800; letter-spacing:1.8px; text-transform:uppercase; }
+    .brand h1 { margin:9px 0 0; color:#fffdf8; font:700 24px/1.05 Georgia,'Times New Roman',serif; }
+    .menu-label { margin:25px 0 8px; color:#88a7ba; font-size:10px; font-weight:800; letter-spacing:1.4px; text-transform:uppercase; }
+    .menu { display:grid; gap:4px; }
+    .menu a { display:block; padding:8px 9px; border-left:2px solid transparent; color:#c4d6e0; font-size:12px; font-weight:400; }
+    .menu a:hover, .menu a.active { border-left-color:#7ed6d1; background:rgba(255,255,255,.06); color:#fff; text-decoration:none; }
+    .rail-note { margin-top:28px; padding-top:16px; border-top:1px solid rgba(255,255,255,.14); color:#88a7ba; font-size:11px; }
+    main { min-width:0; padding:42px clamp(22px,5vw,76px) 70px; }
+    .content { width:min(980px,100%); margin:0 auto; }
+    .hero { margin-bottom:36px; padding:clamp(30px,5vw,58px); color:#fffdf8; background:var(--navy); box-shadow:0 18px 45px rgba(23,33,43,.12); position:relative; overflow:hidden; }
+    .hero::after { content:''; position:absolute; width:300px; height:300px; right:-70px; bottom:-125px; border:45px solid rgba(126,214,209,.32); border-radius:50%; }
+    .hero > * { position:relative; z-index:1; }
+    .eyebrow { margin-bottom:12px; color:#7ed6d1; font-size:11px; font-weight:800; letter-spacing:2px; text-transform:uppercase; }
+    h2 { margin:0; color:var(--navy); font:700 clamp(30px,4vw,52px)/1.04 Georgia,'Times New Roman',serif; }
+    .hero h2 { max-width:760px; color:#fffdf8; }
+    .hero p { max-width:760px; color:#d9e8f2; font-size:17px; }
+    .meta { display:flex; flex-wrap:wrap; gap:9px; margin-top:24px; }
+    .meta span { padding:7px 11px; border:1px solid rgba(255,255,255,.22); color:#fffdf8; font-size:11px; font-weight:800; }
+    .section { margin:0 0 38px; }
+    .section-head { margin-bottom:24px; padding-bottom:17px; border-bottom:2px solid var(--line); }
+    .section-head p { max-width:760px; margin:12px 0 0; color:var(--muted); font-size:16px; }
+    h3 { margin:28px 0 10px; color:var(--blue); font-size:20px; }
+    p { max-width:800px; }
+    ul, ol { padding-left:23px; }
+    li { margin:7px 0; }
+    .grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; margin:20px 0; }
+    .card { padding:20px; border:1px solid var(--line); background:var(--white); box-shadow:var(--shadow); }
+    .card h3 { margin-top:0; font-size:17px; }
+    .card p, .card li { color:var(--muted); font-size:14px; }
+    .callout { margin:22px 0; padding:17px 20px; border-left:5px solid var(--teal); background:var(--soft-blue); }
+    .callout.warning { border-left-color:var(--coral); background:var(--soft-coral); }
+    .callout strong { color:var(--navy); }
+    .code { margin:16px 0; padding:18px 20px; overflow-x:auto; color:#d9f8f2; background:#142d41; border-left:4px solid var(--teal); font:12.5px/1.7 Consolas,'Courier New',monospace; white-space:pre-wrap; }
+    .table-wrap { margin:20px 0; overflow-x:auto; border:1px solid var(--line); background:var(--white); }
+    table { width:100%; min-width:680px; border-collapse:collapse; font-size:13px; }
+    th, td { padding:11px 13px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; }
+    th { color:#fffdf8; background:var(--navy); font-size:10px; letter-spacing:1px; text-transform:uppercase; }
+    tr:last-child td { border-bottom:0; }
+    .checklist { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px 18px; padding:0; list-style:none; }
+    .checklist li { margin:0; padding:10px 13px 10px 32px; border-bottom:1px solid var(--line); color:var(--muted); position:relative; }
+    .checklist li::before { content:'□'; position:absolute; left:10px; color:var(--coral); font-weight:800; }
+    .source { margin-top:38px; padding-top:18px; border-top:1px solid var(--line); color:var(--muted); font-size:13px; }
+    #top { position:fixed; right:20px; bottom:20px; display:none; width:38px; height:38px; border:1px solid var(--teal); border-radius:50%; color:#fff; background:var(--navy); cursor:pointer; font-size:17px; }
+    #top.show { display:block; }
+    .progress { position:fixed; top:0; left:0; z-index:10; width:0; height:3px; background:var(--teal); }
+    @media (max-width:900px) { .shell { display:block; } .rail { position:relative; height:auto; } .menu { grid-template-columns:repeat(2,minmax(0,1fr)); } main { padding:28px 20px 50px; } }
+    @media (max-width:600px) { .menu, .grid, .checklist { grid-template-columns:1fr; } .hero { padding:30px 24px; } }
+    @media print { .rail, #top, .progress { display:none !important; } main { padding:12px; } .hero, .card { box-shadow:none; break-inside:avoid; } }
+  </style>
+</head>
+<body>
+  <div class="progress" id="progress"></div>
+  <div class="shell">
+    <aside class="rail">
+      <div class="brand"><small>GitHub Copilot</small><h1>MCP Server Guide</h1></div>
+      <div class="menu-label">Guide path</div>
+      <nav class="menu"><a href="#overview">Overview</a><a href="#architecture">MCP architecture</a><a href="#design">Design the server</a><a href="#tools">Tools and resources</a><a href="#security">Security and permissions</a><a href="#test">Test and operate</a><a href="#checklist">Readiness checklist</a></nav>
+      <p class="rail-note">Give an agent a reliable, narrow capability boundary: discoverable tools, explicit inputs, useful results, and controlled access.</p>
+    </aside>
+    <main><div class="content">
+      <header class="hero" id="overview"><div class="eyebrow">Customization guide</div><h2>Build MCP servers agents can trust.</h2><p>The Model Context Protocol gives GitHub Copilot a consistent way to discover and use external tools, resources, and prompts. A good MCP server makes that boundary clear, useful, and safe.</p><div class="meta"><span>Discover</span><span>Connect</span><span>Control</span><span>Verify</span></div></header>
+
+      <section class="section" id="architecture"><div class="section-head"><div class="eyebrow">01 · Architecture</div><h2>Understand the MCP boundary</h2><p>MCP separates the application that hosts the conversation from the client connection and the server that exposes capabilities.</p></div>
+        <div class="grid"><article class="card"><h3>Host</h3><p>The AI application, such as an editor or agent runtime, coordinates the conversation, permissions, and user experience.</p></article><article class="card"><h3>Client</h3><p>A protocol client maintains a connection to one MCP server and negotiates capabilities, requests, notifications, and lifecycle state.</p></article><article class="card"><h3>Server</h3><p>A focused service exposes tools, resources, and prompts through a standard protocol contract.</p></article><article class="card"><h3>Transport</h3><p>The connection carries protocol messages. Choose a local process or remote transport based on deployment, trust, and operational needs.</p></article></div>
+        <div class="callout"><strong>Design principle:</strong> an MCP server is a capability boundary, not a second general-purpose agent. Expose the smallest set of operations that helps a user complete a defined workflow.</div>
+        <div class="table-wrap"><table><thead><tr><th>Primitive</th><th>Direction</th><th>Use it for</th></tr></thead><tbody><tr><td>Tools</td><td>Model or user invokes the server</td><td>Actions such as querying data, creating a ticket, or validating a deployment.</td></tr><tr><td>Resources</td><td>Client reads server-provided context</td><td>Documents, schemas, records, configuration, or other addressable information.</td></tr><tr><td>Prompts</td><td>User or client selects a reusable template</td><td>Repeatable interaction patterns with clear arguments and expected context.</td></tr></tbody></table></div>
+      </section>
+
+      <section class="section" id="design"><div class="section-head"><div class="eyebrow">02 · Design</div><h2>Shape a useful server contract</h2><p>Before writing code, describe the user workflow, the data boundary, and the failure behavior. The contract should be understandable to both people and agent runtimes.</p></div>
+        <h3>Start with one workflow</h3><ol><li>Name the user outcome, such as “find an eligible policy and explain the decision.”</li><li>List the minimum data and actions needed to achieve it.</li><li>Separate read operations from mutations and high-impact actions.</li><li>Define validation, authorization, timeouts, retries, and error messages.</li><li>Specify what a successful result looks like and what the agent should do next.</li></ol>
+        <div class="code">Tool: search_claims
+Description: Find claims by policy number, status, and date range.
+Input:
+  policyNumber: string, required
+  status: "open" | "closed" | "all", optional
+  fromDate: ISO date, optional
+  toDate: ISO date, optional
+Output:
+  claims: array of { id, status, openedAt, summary }
+Errors:
+  INVALID_INPUT | NOT_AUTHORIZED | RATE_LIMITED | SERVICE_UNAVAILABLE</div>
+        <div class="grid"><article class="card"><h3>Names and descriptions</h3><p>Use action-oriented names and describe when the tool should be used, what it changes, and what it returns.</p></article><article class="card"><h3>Input schemas</h3><p>Require critical values, constrain enums and formats, reject ambiguous input, and validate again on the server.</p></article><article class="card"><h3>Output shape</h3><p>Return compact, structured results with stable fields. Include identifiers and next-step information without dumping irrelevant data.</p></article><article class="card"><h3>Failure behavior</h3><p>Return errors that explain whether the agent should correct input, ask the user, retry, or stop.</p></article></div>
+      </section>
+
+      <section class="section" id="tools"><div class="section-head"><div class="eyebrow">03 · Capabilities</div><h2>Expose tools, resources, and prompts deliberately</h2><p>Each primitive answers a different question. Keeping their responsibilities distinct improves discovery, consent, and testing.</p></div>
+        <div class="table-wrap"><table><thead><tr><th>When the user needs...</th><th>Prefer</th><th>Example</th></tr></thead><tbody><tr><td>An action with a result</td><td>Tool</td><td>Look up an order, create a work item, or run a read-only report.</td></tr><tr><td>Reference information</td><td>Resource</td><td>Expose a schema, policy document, or current service status.</td></tr><tr><td>A repeatable interaction</td><td>Prompt</td><td>Guide a review with named arguments and a known output structure.</td></tr></tbody></table></div>
+        <h3>Make discovery safe</h3><ul><li>Publish only capabilities that the connected host is expected to use.</li><li>Keep descriptions factual. Do not rely on vague instructions such as “always call this first.”</li><li>Mark read-only and mutating behavior clearly in names, descriptions, and confirmations.</li><li>Return pagination, limits, and freshness information when results can be large or stale.</li><li>Keep secrets and internal implementation details out of tool descriptions and returned content.</li></ul>
+        <div class="callout warning"><strong>Prompt injection still matters:</strong> content returned by an MCP server may be untrusted data. Treat records, documents, web pages, and tool results as data to analyze, not as authority to change permissions or bypass instructions.</div>
+      </section>
+
+      <section class="section" id="security"><div class="section-head"><div class="eyebrow">04 · Security</div><h2>Make permissions part of the design</h2><p>An MCP server can turn an agent request into a real-world action. Authentication, authorization, validation, and user consent must be enforced at the server boundary.</p></div>
+        <div class="grid"><article class="card"><h3>Authenticate</h3><p>Identify the caller and protect credentials in transit and at rest. Never ask the model to manage secrets.</p></article><article class="card"><h3>Authorize</h3><p>Check the user, service identity, tenant, resource, and action for every request. Do not trust tool names as permission checks.</p></article><article class="card"><h3>Validate</h3><p>Validate arguments, identifiers, ranges, URLs, paths, and payload sizes on the server before accessing downstream systems.</p></article><article class="card"><h3>Confirm</h3><p>Require explicit approval for destructive, financial, external, or irreversible actions. Prefer preview and dry-run modes.</p></article></div>
+        <h3>Security review questions</h3><ul class="checklist"><li>Does every tool enforce authorization server-side?</li><li>Are mutating actions clearly separated from reads?</li><li>Are secrets excluded from logs and error messages?</li><li>Are external URLs, file paths, and queries constrained?</li><li>Are timeouts, rate limits, and payload limits configured?</li><li>Can a user preview the effect before committing?</li><li>Are dependencies and MCP SDK versions maintained?</li><li>Can the server fail closed when identity or policy is unavailable?</li></ul>
+      </section>
+
+      <section class="section" id="test"><div class="section-head"><div class="eyebrow">05 · Delivery</div><h2>Test the contract, then operate it</h2><p>Test MCP servers like APIs. The most valuable checks exercise discovery, valid and invalid inputs, permissions, failures, and the real host connection.</p></div>
+        <div class="grid"><article class="card"><h3>Unit tests</h3><p>Validate schemas, business rules, authorization decisions, output shapes, and error mapping without network dependencies.</p></article><article class="card"><h3>Contract tests</h3><p>Verify that the server advertises the expected tools, resources, prompts, capabilities, and protocol behavior.</p></article><article class="card"><h3>Integration tests</h3><p>Connect to representative downstream services and exercise timeouts, rate limits, retries, and partial failures.</p></article><article class="card"><h3>Host smoke tests</h3><p>Connect from the intended Copilot host and verify discovery, consent, invocation, result rendering, and disconnect behavior.</p></article></div>
+        <h3>Practical exercise: build a read-only server first</h3><ol><li>Choose a small local dataset or mock API with no sensitive data.</li><li>Expose one search tool with a strict input schema and bounded results.</li><li>Add one resource that describes the dataset fields and freshness.</li><li>Test valid input, missing input, oversized input, unauthorized access, and downstream failure.</li><li>Connect it to Copilot, inspect the tool description, and run a user scenario.</li><li>Record what the agent attempted, what the server allowed, and what the user saw.</li><li>Only then consider adding a mutation, protected by preview and explicit confirmation.</li></ol>
+        <div class="code">Operational events to record:
+server_start | protocol_initialize | capability_discovery
+request_received | authorization_decision | validation_failed
+tool_started | tool_completed | tool_failed | rate_limited
+resource_read | prompt_selected | shutdown
+
+For each event: correlationId, timestamp, operation, status, duration,
+redacted actor/context, and a safe error summary.</div>
+        <div class="callout"><strong>Keep operations observable:</strong> correlate a host run, MCP request, downstream call, and final result without logging raw secrets or unrestricted user content.</div>
+      </section>
+
+      <section class="section" id="checklist"><div class="section-head"><div class="eyebrow">06 · Readiness</div><h2>MCP server readiness checklist</h2><p>Use this checklist before making a server available to a team or production workflow.</p></div>
+        <ul class="checklist"><li>The server has one named workflow and a clear owner</li><li>Tools, resources, and prompts have distinct responsibilities</li><li>Descriptions explain purpose, limits, and side effects</li><li>Inputs and outputs use stable, validated schemas</li><li>Authentication and authorization run at the server boundary</li><li>Mutations require appropriate confirmation or approval</li><li>Timeouts, rate limits, retries, and payload limits are defined</li><li>Secrets and sensitive data are excluded from logs</li><li>Contract, integration, and host smoke tests pass</li><li>Failures return actionable, non-sensitive errors</li><li>Protocol and SDK dependencies are maintained</li><li>Monitoring, incident ownership, and shutdown behavior are documented</li></ul>
+        <div class="callout"><strong>Definition of done:</strong> a user can understand what the server exposes, an agent can discover the right capability, the server can reject unsafe requests, and the team can diagnose failures from safe operational evidence.</div>
+        <p class="source">Related resources: <a href="../../../github-copilot-customization.html">Customization presentation</a> · <a href="../../../InaNutshell/Model%20Context%20Protocol%20-%20In%20a%20Nutshell.html">Model Context Protocol - In a Nutshell</a> · <a href="../posters/GitHub%20Copilot%20MCP%20Server%20-%20Light%20-%20Landscape.png" target="_blank" rel="noreferrer noopener">MCP Server poster</a> · <a href="https://modelcontextprotocol.io/" target="_blank" rel="noreferrer noopener">Model Context Protocol documentation</a>.</p>
+      </section>
+    </div></main>
+  </div>
+  <button id="top" title="Back to top" aria-label="Back to top">↑</button>
+  <script>
+    const progress = document.querySelector('#progress');
+    const topButton = document.querySelector('#top');
+    function updateScroll() {
+      const max = document.documentElement.scrollHeight - window.innerHeight || 1;
+      progress.style.width = `${(window.scrollY / max) * 100}%`;
+      topButton.classList.toggle('show', window.scrollY > 320);
+    }
+    window.addEventListener('scroll', updateScroll, { passive: true });
+    topButton.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+    updateScroll();
+  </script>
+</body>
+</html>

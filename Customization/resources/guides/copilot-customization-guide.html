@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Copilot Customization Workshop | MetLife Learning</title>
+  <style>
+    :root {
+      --navy: #09243c;
+      --navy-deep: #061827;
+      --blue: #1769aa;
+      --cyan: #27b6c9;
+      --coral: #ef6b62;
+      --gold: #e6b84c;
+      --ink: #1a2733;
+      --muted: #61707d;
+      --paper: #f7f5ef;
+      --white: #fff;
+      --line: #d9e0e4;
+      --soft-blue: #eaf4f8;
+      --soft-coral: #fff0ed;
+      --shadow: 0 18px 45px rgba(9, 36, 60, .12);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; color: var(--ink); background: var(--paper); font-family: "Segoe UI", Tahoma, sans-serif; line-height: 1.6; }
+    .shell { min-height: 100vh; display: grid; grid-template-columns: 292px minmax(0, 1fr); }
+    .rail { position: sticky; top: 0; height: 100vh; overflow-y: auto; color: #e8f2f5; background: var(--navy); padding: 28px 18px 24px; }
+    .brand { padding: 0 12px 25px; border-bottom: 1px solid rgba(255,255,255,.18); }
+    .brand-mark { display: inline-flex; align-items: center; justify-content: center; width: 42px; height: 42px; margin-bottom: 15px; color: var(--navy); background: var(--gold); font-weight: 800; letter-spacing: .06em; }
+    .brand small { display: block; color: #9fc6d0; text-transform: uppercase; letter-spacing: .16em; font-size: .68rem; font-weight: 700; }
+    .brand h1 { margin: 8px 0 0; color: var(--white); font: 700 1.35rem/1.15 Georgia, serif; }
+    .menu-label { margin: 25px 12px 10px; color: #7fcbd4; text-transform: uppercase; letter-spacing: .15em; font-size: .68rem; font-weight: 800; }
+    .menu { display: grid; gap: 5px; }
+    .menu button { width: 100%; border: 1px solid transparent; border-radius: 3px; padding: 11px 12px; color: #cfe3e8; background: transparent; text-align: left; cursor: pointer; font: inherit; transition: .2s ease; }
+    .menu button:hover { color: var(--white); background: rgba(39,182,201,.13); border-color: rgba(39,182,201,.25); }
+    .menu button.active { color: var(--navy); background: var(--gold); border-color: var(--gold); font-weight: 700; box-shadow: 0 8px 18px rgba(0,0,0,.16); }
+    .menu-index { display: inline-block; width: 27px; color: var(--cyan); font-size: .75rem; font-weight: 800; }
+    .menu button.active .menu-index { color: var(--navy); }
+    .rail-note { margin: 28px 12px 0; padding: 14px 0 0; border-top: 1px solid rgba(255,255,255,.15); color: #9fc6d0; font-size: .8rem; }
+    .main { min-width: 0; padding: 42px clamp(22px, 5vw, 76px) 70px; }
+    .content { width: min(980px, 100%); margin: 0 auto; }
+    .topline { display: flex; justify-content: space-between; gap: 20px; align-items: center; color: var(--blue); text-transform: uppercase; letter-spacing: .16em; font-size: .7rem; font-weight: 800; }
+    .topline span:last-child { color: var(--muted); letter-spacing: .08em; }
+    .hero { margin: 24px 0 36px; padding: clamp(27px, 5vw, 55px); color: var(--white); background: linear-gradient(120deg, var(--navy-deep), #104b68 68%, #167b87); box-shadow: var(--shadow); position: relative; overflow: hidden; }
+    .hero::after { content: ""; position: absolute; width: 220px; height: 220px; right: -65px; bottom: -105px; border: 36px solid rgba(230,184,76,.72); transform: rotate(22deg); }
+    .hero > * { position: relative; z-index: 1; }
+    .eyebrow { margin: 0 0 12px; color: var(--gold); text-transform: uppercase; letter-spacing: .17em; font-size: .74rem; font-weight: 800; }
+    h2 { margin: 0; color: var(--navy); font: 700 clamp(2rem, 4vw, 3.6rem)/1.04 Georgia, serif; letter-spacing: 0; }
+    .hero h2 { max-width: 720px; color: var(--white); }
+    .hero p { max-width: 710px; margin: 18px 0 0; color: #d7edf0; font-size: 1.08rem; }
+    .hero-meta { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 24px; }
+    .pill { display: inline-block; padding: 5px 10px; color: var(--navy); background: var(--gold); font-size: .75rem; font-weight: 800; }
+    .section-head { margin: 0 0 26px; padding-bottom: 17px; border-bottom: 2px solid var(--line); }
+    .section-head p { max-width: 700px; margin: 12px 0 0; color: var(--muted); font-size: 1.03rem; }
+    .content h3 { margin: 30px 0 10px; color: var(--blue); font-size: 1.2rem; }
+    .content h4 { margin: 22px 0 7px; color: var(--navy); font-size: .98rem; }
+    .content p { max-width: 780px; }
+    .content ul, .content ol { padding-left: 23px; }
+    .content li { margin: 7px 0; }
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin: 22px 0; }
+    .card { padding: 20px; border: 1px solid var(--line); background: var(--white); box-shadow: 0 7px 22px rgba(9,36,60,.06); }
+    .card h3, .card h4 { margin-top: 0; }
+    .card p { margin-bottom: 0; color: var(--muted); font-size: .94rem; }
+    .callout { margin: 24px 0; padding: 18px 20px; border-left: 5px solid var(--coral); background: var(--soft-coral); }
+    .callout strong { color: var(--navy); }
+    .tip { border-left-color: var(--cyan); background: var(--soft-blue); }
+    .exercise { margin: 30px 0; padding: 23px; background: var(--navy); color: #e4f1f3; }
+    .exercise h3 { margin-top: 0; color: var(--gold); }
+    .exercise ol { margin-bottom: 0; }
+    .exercise li { color: #e4f1f3; }
+    .code { margin: 18px 0; padding: 18px; overflow-x: auto; color: #d8f1f3; background: #102c3f; border-left: 4px solid var(--cyan); font: .84rem/1.65 Consolas, "Cascadia Code", monospace; white-space: pre-wrap; }
+    code { padding: 2px 5px; color: var(--navy); background: #e5eef0; font: .88em Consolas, monospace; }
+    .table-wrap { overflow-x: auto; margin: 22px 0; border: 1px solid var(--line); background: var(--white); }
+    table { width: 100%; border-collapse: collapse; min-width: 620px; font-size: .9rem; }
+    th, td { padding: 12px 14px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    th { color: var(--white); background: var(--navy); font-size: .75rem; text-transform: uppercase; letter-spacing: .08em; }
+    tr:last-child td { border-bottom: 0; }
+    .checklist { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 18px; padding: 0; list-style: none; }
+    .checklist li { margin: 0; padding: 11px 13px 11px 36px; border: 1px solid var(--line); background: var(--white); position: relative; }
+    .checklist li::before { content: "✓"; position: absolute; left: 13px; color: var(--coral); font-weight: 800; }
+    .source { margin-top: 38px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--muted); font-size: .84rem; }
+    a { color: var(--blue); font-weight: 700; }
+    a:hover { color: var(--coral); }
+    .fade { animation: fade .3s ease both; }
+    @keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+    @media (max-width: 760px) {
+      .shell { display: block; }
+      .rail { position: relative; height: auto; padding: 20px 16px 16px; }
+      .brand { padding-bottom: 16px; }
+      .brand h1 { font-size: 1.15rem; }
+      .menu-label { margin-top: 17px; }
+      .menu { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .rail-note { display: none; }
+      .main { padding: 25px 16px 46px; }
+      .topline { align-items: flex-start; flex-direction: column; gap: 5px; }
+      .hero { margin-top: 18px; }
+      .grid, .checklist { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 430px) { .menu { grid-template-columns: 1fr; } .hero { padding: 25px 21px; } }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <aside class="rail" aria-label="Workshop navigation">
+      <div class="brand">
+        <div class="brand-mark">ML</div>
+        <small>MetLife learning lab</small>
+        <h1>Copilot Customization Workshop</h1>
+      </div>
+      <div class="menu-label">Workshop path</div>
+      <nav class="menu" id="workshop-menu"></nav>
+      <p class="rail-note">Move through the path in order, or jump directly to the customization layer you want to practice.</p>
+    </aside>
+    <main class="main">
+      <div class="content" id="workshop-content" aria-live="polite"></div>
+    </main>
+  </div>
+  <script>
+    const workshopSections = [
+      {
+        id: 'overview', label: 'Start here', title: 'From Copilot user to Copilot designer', eyebrow: 'Workshop orientation', summary: 'A practical path for shaping the context, tools, and workflows that make GitHub Copilot more useful in a real repository.', content: `
+          <div class="hero"><p class="eyebrow">Copilot customization workshop</p><h2>Design the working environment around your team.</h2><p>Customization turns Copilot from a general-purpose assistant into a collaborator that understands your standards, knows when to use specialized capabilities, and follows deliberate operating boundaries.</p><div class="hero-meta"><span class="pill">8 modules</span><span class="pill">Hands-on exercises</span><span class="pill">Repository-first</span></div></div>
+          <div class="section-head"><p class="eyebrow">Start here</p><h2>What you will build</h2><p>By the end of the workshop, you will have a clear customization strategy and a small set of artifacts you can version, review, and improve with your team.</p></div>
+          <div class="grid"><article class="card"><h3>Context</h3><p>Give Copilot the project conventions and architecture facts it needs through concise, targeted instructions.</p></article><article class="card"><h3>Capabilities</h3><p>Package repeatable expertise as prompt files, skills, custom agents, and MCP-connected tools.</p></article><article class="card"><h3>Guardrails</h3><p>Use tool restrictions, hooks, permissions, sandboxing, and review points to keep automation deliberate.</p></article><article class="card"><h3>Workflow</h3><p>Compose the layers into a usable path from discovery and planning through implementation and review.</p></article></div>
+          <div class="callout tip"><strong>Workshop principle:</strong> start with the smallest customization that addresses a repeated failure. Add complexity only when the simpler layer cannot solve the problem.</div>
+          <h3>Prerequisites</h3><ul class="checklist"><li>Visual Studio Code with the GitHub Copilot extension</li><li>A GitHub account with Copilot access</li><li>Basic VS Code and Git familiarity</li><li>The <code>dotnet-react-starter-demo</code> repository for hands-on modules</li></ul>
+          <h3>How to use this guide</h3><ol><li>Use the left navigation to move between modules. The right panel updates without leaving the page.</li><li>Complete the exercise in your repository before moving to the next layer.</li><li>Keep artifacts small, reviewable, and committed to version control where they are intended to be shared.</li></ol>
+          <p class="source">Workshop source: <a href="https://copilot-academy.github.io/workshops/copilot-customization" target="_blank" rel="noreferrer noopener">Copilot Customization Workshop</a>.</p>`
+      },
+      {
+        id: 'architecture', label: '01 · Architecture', title: 'Understand the customization architecture', eyebrow: 'Module 1 · Architecture', summary: 'Choose the right layer for context, capability, role, safety, and application integration.', content: `
+          <div class="section-head"><p class="eyebrow">Module 1 · Architecture</p><h2>Understand the customization architecture</h2><p>GitHub Copilot customization works as a layered system. Each component has a different trigger, responsibility, and token cost. Use the narrowest layer that solves the problem.</p></div>
+          <h3><a href="https://gist.github.com/LawrenceHwang/6194421c3bb4208fff84452b403e191a#chapter-1-architecture-overview" target="_blank" rel="noreferrer noopener">Architecture Overview</a></h3><p>GitHub Copilot's customization system comprises five core components, each serving a distinct purpose within a layered, cooperative architecture. Understanding their relationships is a prerequisite for effective usage.</p><div class="table-wrap"><table><thead><tr><th>Component</th><th>Analogy</th><th>Loading behavior</th><th>Scope</th><th>Origin</th></tr></thead><tbody><tr><td>Instructions</td><td>Company bylaws / employee handbook</td><td>Always-on or pattern-matched</td><td>Conventions, preferences, standards</td><td>GitHub + OpenAI + Anthropic</td></tr><tr><td>Agent Skills</td><td>Specialist training manuals</td><td>On-demand (description match or /invoke)</td><td>Complete workflows + scripts + examples</td><td>Anthropic (open standard)</td></tr><tr><td>Custom Agents</td><td>Dedicated roles (frontend engineer, security auditor)</td><td>User-selected / delegated by a parent agent</td><td>Persona + tool restrictions + handoffs + sub-agents</td><td>GitHub / VS Code</td></tr><tr><td>Hooks</td><td>Security checkpoints / automation triggers</td><td>Lifecycle event triggers</td><td>Permission checks, linting, notifications</td><td>GitHub / Claude Code</td></tr><tr><td>Copilot SDK</td><td>Programmatic remote control</td><td>Application invocation</td><td>Assembles all of the above into your own app</td><td>GitHub SDK</td></tr></tbody></table></div><div class="callout tip"><strong>Architectural Principle:</strong> The foundation layer (Instructions) establishes <em>“who you are”</em>; the capability layer (Skills) provides <em>“how to do it”</em>; the role layer (Agents) defines <em>“who does it”</em>; and the safety layer (Hooks) ensures <em>“it is done safely.”</em></div>
+          <h3>Five core components and their relationships</h3><div class="table-wrap"><table><thead><tr><th>Component</th><th>Architectural role</th><th>Trigger</th><th>Use it for</th></tr></thead><tbody><tr><td>Instructions</td><td>Foundation: establish standards and preferences.</td><td>Always-on or file-pattern matched</td><td>Conventions, stack choices, coding rules.</td></tr><tr><td>Agent Skills</td><td>Capability: package specialist knowledge and resources.</td><td>On-demand description match or explicit invocation</td><td>Detailed workflows, scripts, examples.</td></tr><tr><td>Custom Agents</td><td>Role: define persona, tools, model, and collaboration.</td><td>User-selected or delegated</td><td>Planning, implementation, review, and orchestration roles.</td></tr><tr><td>Hooks</td><td>Safety: run deterministic code at lifecycle events.</td><td>Event-triggered</td><td>Permission checks, validation, logging, and notifications.</td></tr><tr><td>Copilot SDK</td><td>Application layer: compose Copilot capabilities programmatically.</td><td>Application invocation</td><td>Embed sessions, agents, skills, MCP, and permission handlers in software.</td></tr></tbody></table></div>
+          <div class="callout tip"><strong>Architectural principle:</strong> Instructions establish “who you are”; Skills provide “how to do it”; Agents define “who does it”; Hooks ensure “it is done safely”; and the SDK assembles these capabilities into an application.</div>
+          <h3>Instruction precedence and composition</h3><p>Applicable instructions are composed into the context rather than replacing one another. Keep the layers consistent and avoid contradictory rules.</p><div class="table-wrap"><table><thead><tr><th>Priority</th><th>Layer</th><th>Typical source</th><th>Loading behavior</th></tr></thead><tbody><tr><td>Highest</td><td>Personal instructions</td><td>VS Code user settings</td><td>Always-on for the user.</td></tr><tr><td></td><td>Repository-wide instructions</td><td><code>.github/copilot-instructions.md</code></td><td>Always-on for the repository.</td></tr><tr><td></td><td>Path-specific instructions</td><td><code>.github/instructions/*.instructions.md</code></td><td>Loaded when <code>applyTo</code> matches.</td></tr><tr><td></td><td>Agent instructions</td><td><code>AGENTS.md</code></td><td>Loaded during coding-agent operation.</td></tr><tr><td></td><td>Skills</td><td><code>.github/skills/&lt;name&gt;/SKILL.md</code></td><td>Loaded when the task matches the description.</td></tr><tr><td>Lowest</td><td>Selected custom agent prompt</td><td><code>.github/agents/*.agent.md</code></td><td>Active after a specific agent is selected.</td></tr></tbody></table></div>
+          <div class="grid"><article class="card"><h3>Repository-wide versus path-specific</h3><p><code>copilot-instructions.md</code> is unconditional and can apply to chat, agents, and reviews. A file with <code>applyTo: "*"</code> is conditional on file context and can use <code>excludeAgent</code> to avoid affecting a specific agent. Use the repository-wide file for rules that must apply across platforms and scenarios.</p></article><article class="card"><h3>SDK composition</h3><p>The Copilot SDK can assemble session instructions, discovered <code>AGENTS.md</code> and Skills, custom agents, MCP servers, and a permission handler. Keep the SDK permission handler default-deny and explicitly approve shell, file, and network operations.</p></article></div>
+          <h3>Where the workflow belongs</h3><div class="table-wrap"><table><thead><tr><th>Need</th><th>Place it in</th><th>Reason</th></tr></thead><tbody><tr><td>Global coding standards</td><td><code>copilot-instructions.md</code></td><td>Only content that should be broadly always-on.</td></tr><tr><td>Simple build, test, or deploy procedure</td><td><code>AGENTS.md</code></td><td>Operational guidance for autonomous coding agents.</td></tr><tr><td>Detailed task procedure with resources</td><td><code>SKILL.md</code></td><td>Loaded on demand instead of consuming unrelated context.</td></tr><tr><td>User-triggered repeatable task</td><td><code>.prompt.md</code></td><td>Explicit invocation through a prompt command.</td></tr><tr><td>Multi-stage workflow with human review</td><td><code>.agent.md</code> with handoffs</td><td>Handoffs make each transition visible and user-controlled.</td></tr><tr><td>Automated delegation or parallel work</td><td><code>.agent.md</code> with sub-agents</td><td>A parent agent delegates isolated tasks without manual switching.</td></tr></tbody></table></div>
+          <h3>Token-cost strategy</h3><ul><li>Keep repository-wide instructions to roughly 5–15 core rules and move detailed procedures into Skills.</li><li>Use path-specific instructions for language or framework rules instead of expanding global context.</li><li>Prefer Hooks for deterministic checks that do not need model reasoning; code-level hooks consume no model tokens.</li><li>Write precise Skill descriptions because metadata is broadly available and controls matching accuracy.</li><li>Keep custom agent prompts focused; use isolated sub-agents for research or independent review tasks.</li></ul>
+          <div class="code">const session = await client.createSession({
+  instructions: 'You are a read-only code analysis specialist.',
+  skillDirectories: ['./.github/skills/pr-analyzer'],
+  customAgents: [{ name: 'reviewer', description: 'Review code for defects' }],
+  mcpServers: { github: { type: 'http', url: 'https://api.githubcopilot.com/mcp/' } },
+  onPermissionRequest: readOnlyPermissionHandler
+});</div>
+          <div class="exercise"><h3>Exercise · Place a workflow correctly</h3><ol><li>Take one repeated workflow from your backlog.</li><li>Identify whether it is a standard, a detailed procedure, a user-triggered task, a role transition, or deterministic enforcement.</li><li>Place it in the corresponding customization layer.</li><li>List the data, tools, permissions, and review points that layer should expose.</li></ol></div>
+          <div class="callout"><strong>Anti-pattern:</strong> do not put workflow orchestration such as “when X happens, call agent Y” in <code>copilot-instructions.md</code>. It is always-on, expensive context and an unreliable place for procedural dispatch.</div>
+          <p class="source">Architecture reference: <a href="https://gist.github.com/LawrenceHwang/6194421c3bb4208fff84452b403e191a" target="_blank" rel="noreferrer noopener">GitHub Copilot Customization Architecture</a>.</p>`
+      },
+      {
+        id: 'preparation', label: '02 · Preparation', title: 'Prepare your repository for AI', eyebrow: 'Module 2 · Preparation', summary: 'Make the repository legible before asking Copilot to do more work.', content: `
+          <div class="section-head"><p class="eyebrow">Module 1 · Preparation</p><h2>Prepare your repository for AI</h2><p>Copilot can only use context that is discoverable, relevant, and trustworthy. Repository preparation is the foundation for every later customization.</p></div>
+          <h3>Learning goals</h3><ul><li>Identify the sources of truth Copilot should consult.</li><li>Separate durable project context from task-specific instructions.</li><li>Build a small repository map that makes important boundaries visible.</li></ul>
+          <h3>Repository readiness scan</h3><div class="grid"><article class="card"><h3>Structure</h3><p>Can a new contributor find the application entry point, services, tests, and deployment files quickly?</p></article><article class="card"><h3>Conventions</h3><p>Are naming, testing, error handling, and dependency rules written down where the team maintains them?</p></article><article class="card"><h3>References</h3><p>Can instructions link to architecture, contributing, and design-system documents instead of duplicating them?</p></article><article class="card"><h3>Feedback</h3><p>Do tests, linters, and review checks provide a reliable signal when generated work is wrong?</p></article></div>
+          <h3>Choose the right context file</h3><div class="table-wrap"><table><thead><tr><th>Need</th><th>Use</th><th>Example</th></tr></thead><tbody><tr><td>Standards for every chat request</td><td>Project-wide instructions</td><td><code>.github/copilot-instructions.md</code></td></tr><tr><td>Rules for a file type or path</td><td>File-targeted instructions</td><td><code>.github/instructions/react.instructions.md</code></td></tr><tr><td>Reference material</td><td>Linked repository documentation</td><td><code>docs/architecture.md</code></td></tr></tbody></table></div>
+          <div class="code">---\napplyTo: "**/*.tsx"\n---\n# React component standards\n- Use the shared design-system components.\n- Keep tests beside the component.\n- Prefer named exports.</div>
+          <div class="exercise"><h3>Exercise · Create a repository map</h3><ol><li>Ask Copilot to summarize the repository structure and identify the application entry point.</li><li>Verify the summary against the actual folders and build files.</li><li>Write a short map covering architecture, commands, tests, and protected areas.</li><li>Save stable rules in instructions; leave changing details in linked documentation.</li></ol></div>
+          <div class="callout"><strong>Quality check:</strong> instructions should be specific and actionable. “Write clean code” is weak; “Use the repository service for all data access and add a unit test for each public method” is testable.</div>
+          <p class="source">Reference: <a href="https://copilot-academy.github.io/workshops/copilot-customization/prepare_your_repository" target="_blank" rel="noreferrer noopener">Prepare Your Repository</a>.</p>`
+      },
+      {
+        id: 'discovery', label: '03 · Discovery', title: 'Identify the use cases worth customizing', eyebrow: 'Module 3 · Discovery', summary: 'Find repeated friction first, then match each problem to the lightest useful customization.', content: `
+          <div class="section-head"><p class="eyebrow">Module 2 · Discovery</p><h2>Identify the use cases worth customizing</h2><p>The goal is not to create every possible Copilot artifact. It is to remove recurring ambiguity from the work your team already does.</p></div>
+          <h3>Look for four signals</h3><div class="grid"><article class="card"><h3>Repeated</h3><p>The same request appears across pull requests, tickets, or chat sessions.</p></article><article class="card"><h3>Procedural</h3><p>The task follows a known sequence with predictable inputs, checks, and outputs.</p></article><article class="card"><h3>Specialized</h3><p>The task needs domain knowledge, scripts, templates, or reference material.</p></article><article class="card"><h3>Orchestrated</h3><p>The task moves through distinct phases such as plan, implement, test, and review.</p></article></div>
+          <h3>Map the problem to a layer</h3><div class="table-wrap"><table><thead><tr><th>Observed friction</th><th>First choice</th><th>Why</th></tr></thead><tbody><tr><td>Copilot forgets a team convention</td><td>Instructions</td><td>Always-on context creates a consistent baseline.</td></tr><tr><td>Developers repeat a long request</td><td>Prompt file</td><td>On-demand template makes the workflow reusable.</td></tr><tr><td>A task needs scripts and examples</td><td>Agent Skill</td><td>A skill can package resources using progressive disclosure.</td></tr><tr><td>Different phases need different boundaries</td><td>Custom agent</td><td>Agents define session tools, rules, and handoffs.</td></tr><tr><td>Copilot must query an external system</td><td>MCP server</td><td>MCP exposes controlled tools and resources.</td></tr></tbody></table></div>
+          <div class="exercise"><h3>Exercise · Build a use-case backlog</h3><ol><li>Collect five examples of Copilot output that needed correction.</li><li>Describe the missing context, capability, or guardrail for each.</li><li>Score each use case by frequency, impact, and implementation effort.</li><li>Select one high-frequency, low-risk use case for your first artifact.</li></ol></div>
+          <div class="callout tip"><strong>Keep the boundary visible:</strong> a prompt can describe a workflow, but it should not silently become a policy file. A skill can include scripts, but an external system connection belongs in an MCP server.</div>
+          <p class="source">Reference: <a href="https://copilot-academy.github.io/workshops/copilot-customization" target="_blank" rel="noreferrer noopener">Copilot Customization Workshop overview</a>.</p>`
+      },
+      {
+        id: 'skills', label: '04 · Agent Skills', title: 'Build prompts and skills', eyebrow: 'Module 4 · Agent Skills', summary: 'Turn specialized expertise into reusable, discoverable capabilities without loading every detail into every request.', content: `
+          <div class="section-head"><p class="eyebrow">Module 3 · Agent Skills</p><h2>Build prompts and skills</h2><p>Prompt files are explicit recipes. Agent Skills are portable capabilities that Copilot can match to a relevant task and load progressively.</p></div>
+          <h3>Prompt files versus skills</h3><div class="table-wrap"><table><thead><tr><th></th><th>Prompt file</th><th>Agent Skill</th></tr></thead><tbody><tr><td>Activation</td><td>Explicit, usually through a slash command</td><td>Automatically matched to intent</td></tr><tr><td>Scope</td><td>One repeatable workflow</td><td>A specialized capability</td></tr><tr><td>Resources</td><td>Markdown prompt</td><td>Markdown plus scripts, templates, and examples</td></tr><tr><td>Best fit</td><td>Code review, scaffolding, migrations</td><td>Testing, domain procedures, operational playbooks</td></tr></tbody></table></div>
+          <h3>Skill anatomy</h3><div class="code">.github/skills/webapp-testing/\n├── SKILL.md\n├── test-template.js\n└── examples/\n    └── login-test.spec.ts</div><div class="code">---\nname: webapp-testing\ndescription: Guide for creating and running browser-based tests.\n---\n# Web application testing\n1. Use the Page Object Model.\n2. Start with the test template.\n3. Verify the critical user flow in a real browser.</div>
+          <h3>Progressive disclosure</h3><ol><li><strong>Level one:</strong> name and description help Copilot decide whether the skill is relevant.</li><li><strong>Level two:</strong> the main <code>SKILL.md</code> body provides the procedure.</li><li><strong>Level three:</strong> supporting scripts, examples, and reference files load only when needed.</li></ol>
+          <div class="exercise"><h3>Exercise · Package one capability</h3><ol><li>Choose a specialized task from your use-case backlog.</li><li>Write a keyword-rich description that says when the skill should activate.</li><li>Add a short procedure, one example input, and one expected output.</li><li>Test it with three prompts: one that should activate, one that should not, and one ambiguous prompt.</li></ol></div>
+          <div class="callout"><strong>Design test:</strong> if the skill requires a reader to know the hidden history of the project, the description and first-level instructions are not yet doing enough work.</div>
+          <p class="source">Reference: <a href="https://copilot-academy.github.io/workshops/copilot-customization/copilot_customization_handbook" target="_blank" rel="noreferrer noopener">Copilot Customization Handbook · Agent Skills</a>.</p>`
+      },
+      {
+        id: 'agents', label: '05 · Custom Agents', title: 'Create custom agents with clear boundaries', eyebrow: 'Module 5 · Custom Agents', summary: 'Define named operating modes for planning, building, reviewing, or coordinating work.', content: `
+          <div class="section-head"><p class="eyebrow">Module 4 · Custom Agents</p><h2>Create custom agents with clear boundaries</h2><p>A custom agent is the outer operating context for a session: it can define tools, model preferences, instructions, and handoffs.</p></div>
+          <h3>Good agent roles</h3><div class="grid"><article class="card"><h3>Planner</h3><p>Reads the repository, clarifies scope, and produces an implementation plan without editing.</p></article><article class="card"><h3>Builder</h3><p>Implements an approved plan with the project’s tools, conventions, and validation commands.</p></article><article class="card"><h3>Reviewer</h3><p>Prioritizes defects, regressions, security risks, and test gaps over stylistic commentary.</p></article><article class="card"><h3>Coordinator</h3><p>Routes work between specialized agents and keeps the workflow state visible.</p></article></div>
+          <h3>Agent definition pattern</h3><div class="code">---\ndescription: Generate an implementation plan for new features\nname: Planner\ntools: ['search', 'usages', 'fetch']\nmodel: ['Claude Sonnet 4', 'GPT-5.2']\nhandoffs:\n  - label: Implement Plan\n    agent: agent\n    prompt: Implement the plan outlined above.\n    send: false\n---\nYou are in planning mode. Do not make code edits.\nInclude files, risks, validation, and open questions.</div>
+          <h3>Handoffs are workflow contracts</h3><p>A handoff should state what the next agent receives, what it is expected to produce, and whether the user reviews the generated prompt before it runs. Use <code>send: false</code> when the transition needs human review.</p>
+          <div class="exercise"><h3>Exercise · Design a plan → build → review path</h3><ol><li>Create three role cards: Planner, Builder, and Reviewer.</li><li>Give each role only the tools it needs.</li><li>Define the handoff payload and the validation evidence that travels with it.</li><li>Run the path on a small change and record where the agent needed stronger instructions.</li></ol></div>
+          <div class="callout tip"><strong>Boundary rule:</strong> combine agents with instructions and skills, but do not make one agent responsible for every phase. Narrow roles make tool access and review expectations easier to reason about.</div>
+          <p class="source">Reference: <a href="https://copilot-academy.github.io/workshops/copilot-customization/copilot_customization_handbook" target="_blank" rel="noreferrer noopener">Copilot Customization Handbook · Custom Agents</a>.</p>`
+      },
+      {
+        id: 'mcp', label: '06 · Integrations / MCP', title: 'Connect Copilot to other tools with MCP', eyebrow: 'Module 6 · Integrations', summary: 'Extend Copilot beyond the workspace with deliberately configured tools, resources, and prompts.', content: `
+          <div class="section-head"><p class="eyebrow">Module 5 · Integrations</p><h2>Connect Copilot to other tools with MCP</h2><p>Model Context Protocol gives Copilot a standard way to discover and use capabilities exposed by external servers.</p></div>
+          <h3>What an MCP server provides</h3><div class="grid"><article class="card"><h3>Tools</h3><p>Executable functions such as querying a database, calling an API, or creating an issue.</p></article><article class="card"><h3>Resources</h3><p>Read-only context such as file contents, schemas, or API responses.</p></article><article class="card"><h3>Prompts</h3><p>Reusable server-specific templates invoked through a command.</p></article><article class="card"><h3>Transport</h3><p>Local servers commonly use stdio; hosted servers can use HTTP.</p></article></div>
+          <h3>Workspace configuration</h3><div class="code">{\n  "servers": {\n    "github": {\n      "type": "http",\n      "url": "https://api.githubcopilot.com/mcp"\n    },\n    "playwright": {\n      "command": "npx",\n      "args": ["-y", "@microsoft/mcp-server-playwright"]\n    }\n  }\n}</div>
+          <h3>Configuration choices</h3><div class="table-wrap"><table><thead><tr><th>Scope</th><th>Location</th><th>Use when</th></tr></thead><tbody><tr><td>Workspace</td><td><code>.vscode/mcp.json</code></td><td>The team needs a shared project integration.</td></tr><tr><td>User profile</td><td>User-level MCP configuration</td><td>The integration is personal and should not be committed.</td></tr><tr><td>Dev container</td><td><code>devcontainer.json</code></td><td>The environment should be reproducible in a container.</td></tr></tbody></table></div>
+          <div class="callout"><strong>Security checkpoint:</strong> local MCP servers run arbitrary code. Review their source, restrict tools, use sandboxing where available, and confirm organizational policy before connecting sensitive systems.</div>
+          <div class="exercise"><h3>Exercise · Add one trusted integration</h3><ol><li>Choose a read-only use case such as repository search, browser testing, or schema lookup.</li><li>Install from a trusted registry or use an approved hosted server.</li><li>Configure the smallest useful tool set and test discovery.</li><li>Document what data the server can read, what actions it can take, and how access is revoked.</li></ol></div>
+          <p class="source">Reference: <a href="https://copilot-academy.github.io/workshops/copilot-customization/copilot_customization_handbook" target="_blank" rel="noreferrer noopener">Copilot Customization Handbook · MCP Servers</a>.</p>`
+      },
+      {
+        id: 'workflows', label: '07 · Agentic Workflows', title: 'Build AI-powered workflows with guardrails', eyebrow: 'Module 7 · Agentic Workflows', summary: 'Use AI for context-sensitive decisions while keeping permissions, outputs, and deployment behavior controlled.', content: `
+          <div class="section-head"><p class="eyebrow">Module 6 · Agentic Workflows</p><h2>Build AI-powered workflows with guardrails</h2><p>Agentic workflows combine GitHub Actions infrastructure with natural-language instructions so an agent can interpret context and choose a response within defined limits.</p></div>
+          <h3>Traditional versus agentic automation</h3><div class="table-wrap"><table><thead><tr><th>Traditional workflow</th><th>Agentic workflow</th></tr></thead><tbody><tr><td>Fixed logic decides every branch.</td><td>The agent interprets issues, pull requests, or repository context.</td></tr><tr><td>Actions directly perform configured writes.</td><td>Safe outputs buffer and validate writes before they are externalized.</td></tr><tr><td>Behavior changes through code edits.</td><td>Behavior can be refined through reviewed Markdown instructions and policy.</td></tr></tbody></table></div>
+          <h3>Defense in depth</h3><ul><li><strong>Compilation time:</strong> validate schemas, allow expressions, pin actions, and scan workflow definitions.</li><li><strong>Runtime isolation:</strong> run the agent in a sandbox with controlled network egress.</li><li><strong>Permission separation:</strong> keep the agent job read-only and defer writes to a separate safe-output job.</li><li><strong>Threat detection:</strong> inspect outputs for secret leaks, malicious patches, and policy violations.</li><li><strong>Content sanitization:</strong> neutralize untrusted mentions, markup, links, and oversized input.</li></ul>
+          <div class="code">---\non:\n  issues:\n    types: [opened]\npermissions: read-all\nsafe-outputs:\n  add-comment: true\n---\n# Issue clarifier\nAnalyze the issue. If important details are missing, ask concise questions.\nDo not modify repository files or expose secrets.</div>
+          <h3>Observe the workflow</h3><p>Preserve prompts, patches, logs, and decisions as downloadable artifacts. Monitor cost, failures, health, and the exact safe outputs that were released.</p>
+          <div class="exercise"><h3>Exercise · Automate a read-first workflow</h3><ol><li>Choose an issue or pull-request triage scenario.</li><li>Define the trigger, read-only permissions, tools, and safe output.</li><li>Write the agent instructions in plain language with explicit stop conditions.</li><li>Test benign, ambiguous, and adversarial inputs before enabling writes.</li></ol></div>
+          <div class="callout"><strong>Operating principle:</strong> treat AI output as a proposal until deterministic checks and a clearly owned release step approve it.</div>
+          <p class="source">Reference: <a href="https://github.github.com/gh-aw/" target="_blank" rel="noreferrer noopener">GitHub Agentic Workflows documentation</a>.</p>`
+      },
+      {
+        id: 'wrapup', label: '08 · Apply & Share', title: 'Assemble, review, and share your customization system', eyebrow: 'Module 8 · Apply & Share', summary: 'Bring the layers together, verify what Copilot actually loads, and create a sustainable path for team adoption.', content: `
+          <div class="section-head"><p class="eyebrow">Module 7 · Apply & Share</p><h2>Assemble, review, and share your customization system</h2><p>Customization becomes valuable when it is discoverable, versioned, tested, and maintained as part of the team’s engineering practice.</p></div>
+          <h3>The layered model</h3><div class="grid"><article class="card"><h3>1 · Instructions</h3><p>Set project-wide and file-targeted standards that establish the baseline.</p></article><article class="card"><h3>2 · Prompt files</h3><p>Capture repeatable workflows that people invoke on demand.</p></article><article class="card"><h3>3 · Custom agents</h3><p>Define operating modes and transitions for multi-phase work.</p></article><article class="card"><h3>4 · Skills</h3><p>Package specialized capabilities with scripts, templates, and examples.</p></article><article class="card"><h3>5 · MCP</h3><p>Connect trusted external tools and live systems with explicit access boundaries.</p></article><article class="card"><h3>6 · Hooks and workflows</h3><p>Add deterministic lifecycle controls and repository automation where needed.</p></article></div>
+          <h3>Final review checklist</h3><ul class="checklist"><li>Every artifact has a clear owner and purpose</li><li>Instructions are concise and do not duplicate reference documents</li><li>Skills have activation descriptions and a tested example</li><li>Agents expose only the tools needed for their role</li><li>MCP servers are trusted, documented, and scoped</li><li>Hooks and workflows have explicit stop conditions</li><li>Generated changes run the repository’s normal tests and checks</li><li>The team knows how to inspect loaded customizations in diagnostics</li></ul>
+          <h3>Decision framework</h3><div class="table-wrap"><table><thead><tr><th>Question</th><th>Choose</th></tr></thead><tbody><tr><td>Should this apply to every interaction?</td><td>Instructions</td></tr><tr><td>Should a person invoke this repeatable request?</td><td>Prompt file</td></tr><tr><td>Does this need a named session role or handoff?</td><td>Custom agent</td></tr><tr><td>Does this need scripts, templates, or specialized expertise?</td><td>Agent Skill</td></tr><tr><td>Does Copilot need an external system?</td><td>MCP server</td></tr><tr><td>Does this require deterministic lifecycle enforcement?</td><td>Hook or workflow</td></tr></tbody></table></div>
+          <div class="exercise"><h3>Capstone · Publish a team-ready customization set</h3><ol><li>Select one artifact from each layer that your use case genuinely needs.</li><li>Commit the files with a short README describing activation, ownership, and security boundaries.</li><li>Ask a teammate to use the customization without verbal context.</li><li>Review the result, refine the smallest failing layer, and record the change.</li></ol></div>
+          <div class="callout tip"><strong>Keep iterating:</strong> review Copilot’s output as evidence. When the same correction appears twice, decide whether the missing fix belongs in context, capability, or guardrails.</div>
+          <p class="source">Further reading: <a href="https://docs.github.com/en/copilot" target="_blank" rel="noreferrer noopener">GitHub Copilot documentation</a> and <a href="https://code.visualstudio.com/docs/copilot/overview" target="_blank" rel="noreferrer noopener">VS Code Copilot documentation</a>.</p>`
+      }
+    ];
+
+    const menu = document.getElementById('workshop-menu');
+    const content = document.getElementById('workshop-content');
+
+    workshopSections.forEach((section, index) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.dataset.section = section.id;
+      button.innerHTML = `<span class="menu-index">${String(index).padStart(2, '0')}</span>${section.label}`;
+      button.addEventListener('click', () => showSection(section.id, true));
+      menu.appendChild(button);
+    });
+
+    function showSection(id, updateHash) {
+      const section = workshopSections.find(item => item.id === id) || workshopSections[0];
+      content.innerHTML = `<div class="fade">${section.content}</div>`;
+      document.querySelectorAll('#workshop-menu button').forEach(button => {
+        button.classList.toggle('active', button.dataset.section === section.id);
+        button.setAttribute('aria-current', button.dataset.section === section.id ? 'page' : 'false');
+      });
+      document.title = `${section.title} | Copilot Customization Workshop`;
+      if (updateHash) history.replaceState(null, '', `#${section.id}`);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    const initialId = window.location.hash.slice(1);
+    showSection(initialId || 'overview', false);
+    window.addEventListener('hashchange', () => showSection(window.location.hash.slice(1), false));
+  </script>
+</body>
+</html>

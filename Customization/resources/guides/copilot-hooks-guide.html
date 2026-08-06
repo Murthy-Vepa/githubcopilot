@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A practical guide to designing, implementing, testing, and governing GitHub Copilot hooks.">
+  <title>GitHub Copilot Hooks Guide</title>
+  <style>
+    :root { --navy:#09243c; --blue:#1769aa; --teal:#0f9da8; --coral:#e26d5a; --gold:#d9a441; --ink:#17212b; --muted:#5f6f7d; --paper:#f5f1e8; --white:#fffdf8; --line:#d8d0c4; --soft-blue:#eaf6f4; --soft-coral:#fff0eb; --shadow:0 8px 26px rgba(23,33,43,.06); }
+    * { box-sizing:border-box; }
+    html { scroll-behavior:smooth; font-family:'Trebuchet MS','Segoe UI',sans-serif; }
+    body { margin:0; color:var(--ink); background:var(--paper); line-height:1.6; }
+    a { color:var(--blue); font-weight:700; text-decoration:none; }
+    a:hover { color:var(--coral); text-decoration:underline; }
+    code { padding:2px 5px; color:var(--navy); background:#e5eef0; font:.88em Consolas,monospace; }
+    .shell { display:grid; grid-template-columns:260px minmax(0,1fr); min-height:100vh; }
+    .rail { position:sticky; top:0; height:100vh; overflow-y:auto; padding:28px 20px; color:#d9e8f2; background:var(--navy); }
+    .brand { padding-bottom:24px; border-bottom:1px solid rgba(255,255,255,.14); }
+    .brand small { color:#7ed6d1; font-size:11px; font-weight:800; letter-spacing:1.8px; text-transform:uppercase; }
+    .brand h1 { margin:9px 0 0; color:#fffdf8; font:700 24px/1.05 Georgia,'Times New Roman',serif; }
+    .menu-label { margin:25px 0 8px; color:#88a7ba; font-size:10px; font-weight:800; letter-spacing:1.4px; text-transform:uppercase; }
+    .menu { display:grid; gap:4px; }
+    .menu a { display:block; padding:8px 9px; border-left:2px solid transparent; color:#c4d6e0; font-size:12px; font-weight:400; }
+    .menu a:hover, .menu a.active { border-left-color:#7ed6d1; background:rgba(255,255,255,.06); color:#fff; text-decoration:none; }
+    .rail-note { margin-top:28px; padding-top:16px; border-top:1px solid rgba(255,255,255,.14); color:#88a7ba; font-size:11px; }
+    main { min-width:0; padding:42px clamp(22px,5vw,76px) 70px; }
+    .content { width:min(980px,100%); margin:0 auto; }
+    .hero { margin-bottom:36px; padding:clamp(30px,5vw,58px); color:#fffdf8; background:var(--navy); box-shadow:0 18px 45px rgba(23,33,43,.12); position:relative; overflow:hidden; }
+    .hero::after { content:''; position:absolute; width:300px; height:300px; right:-70px; bottom:-125px; border:45px solid rgba(126,214,209,.32); border-radius:50%; }
+    .hero > * { position:relative; z-index:1; }
+    .eyebrow { margin-bottom:12px; color:#7ed6d1; font-size:11px; font-weight:800; letter-spacing:2px; text-transform:uppercase; }
+    h2 { margin:0; color:var(--navy); font:700 clamp(30px,4vw,52px)/1.04 Georgia,'Times New Roman',serif; }
+    .hero h2 { max-width:760px; color:#fffdf8; }
+    .hero p { max-width:760px; color:#d9e8f2; font-size:17px; }
+    .meta { display:flex; flex-wrap:wrap; gap:9px; margin-top:24px; }
+    .meta span { padding:7px 11px; border:1px solid rgba(255,255,255,.22); color:#fffdf8; font-size:11px; font-weight:800; }
+    .section { margin:0 0 40px; }
+    .section-head { margin-bottom:24px; padding-bottom:17px; border-bottom:2px solid var(--line); }
+    .section-head p { max-width:760px; margin:12px 0 0; color:var(--muted); font-size:16px; }
+    h3 { margin:28px 0 10px; color:var(--blue); font-size:20px; }
+    p { max-width:800px; }
+    ul, ol { padding-left:23px; }
+    li { margin:7px 0; }
+    .grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; margin:20px 0; }
+    .card { padding:20px; border:1px solid var(--line); background:var(--white); box-shadow:var(--shadow); }
+    .card h3 { margin-top:0; font-size:17px; }
+    .card p, .card li { color:var(--muted); font-size:14px; }
+    .callout { margin:22px 0; padding:17px 20px; border-left:5px solid var(--teal); background:var(--soft-blue); }
+    .callout.warning { border-left-color:var(--coral); background:var(--soft-coral); }
+    .callout strong { color:var(--navy); }
+    .code { margin:16px 0; padding:18px 20px; overflow-x:auto; color:#d9f8f2; background:#142d41; border-left:4px solid var(--teal); font:12.5px/1.7 Consolas,'Courier New',monospace; white-space:pre-wrap; }
+    .table-wrap { margin:20px 0; overflow-x:auto; border:1px solid var(--line); background:var(--white); }
+    table { width:100%; min-width:680px; border-collapse:collapse; font-size:13px; }
+    th, td { padding:11px 13px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; }
+    th { color:#fffdf8; background:var(--navy); font-size:10px; letter-spacing:1px; text-transform:uppercase; }
+    tr:last-child td { border-bottom:0; }
+    .checklist { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px 18px; padding:0; list-style:none; }
+    .checklist li { margin:0; padding:10px 13px 10px 32px; border-bottom:1px solid var(--line); color:var(--muted); position:relative; }
+    .checklist li::before { content:'□'; position:absolute; left:10px; color:var(--coral); font-weight:800; }
+    .source { margin-top:38px; padding-top:18px; border-top:1px solid var(--line); color:var(--muted); font-size:13px; }
+    #top { position:fixed; right:20px; bottom:20px; display:none; width:38px; height:38px; border:1px solid var(--teal); border-radius:50%; color:#fff; background:var(--navy); cursor:pointer; font-size:17px; }
+    #top.show { display:block; }
+    .progress { position:fixed; top:0; left:0; z-index:10; width:0; height:3px; background:var(--teal); }
+    @media (max-width:900px) { .shell { display:block; } .rail { position:relative; height:auto; } .menu { grid-template-columns:repeat(2,minmax(0,1fr)); } main { padding:28px 20px 50px; } }
+    @media (max-width:600px) { .menu, .grid, .checklist { grid-template-columns:1fr; } .hero { padding:30px 24px; } }
+    @media print { .rail, #top, .progress { display:none !important; } main { padding:12px; } .hero, .card { box-shadow:none; break-inside:avoid; } }
+  </style>
+</head>
+<body>
+  <div class="progress" id="progress"></div>
+  <div class="shell">
+    <aside class="rail">
+      <div class="brand"><small>GitHub Copilot</small><h1>Hooks Guide</h1></div>
+      <div class="menu-label">Guide path</div>
+      <nav class="menu" aria-label="Guide sections"><a class="active" href="#overview">Overview</a><a href="#model">Hook model</a><a href="#design">Design the boundary</a><a href="#implement">Implement a hook</a><a href="#test">Test and debug</a><a href="#govern">Governance</a><a href="#checklist">Readiness checklist</a></nav>
+      <p class="rail-note">Use hooks for deterministic lifecycle behavior that should not depend on whether an agent remembers an instruction.</p>
+    </aside>
+    <main><div class="content">
+      <header class="hero" id="overview"><div class="eyebrow">Customization guide</div><h2>Put deterministic guardrails around agent work.</h2><p>GitHub Copilot hooks let you observe, validate, or block workflow events at defined lifecycle points. Use them when a control must run consistently, regardless of model wording.</p><div class="meta"><span>Lifecycle control</span><span>Deterministic checks</span><span>Human approval</span><span>Audit evidence</span></div></header>
+
+      <section class="section" id="model"><div class="section-head"><div class="eyebrow">01 · Hook model</div><h2>What a hook is responsible for</h2><p>A hook is a boundary around an event in an agent workflow. It receives structured event data, applies deterministic logic, and returns an outcome that allows, denies, records, or changes the next step.</p></div>
+        <div class="grid"><article class="card"><h3>Event</h3><p>Choose a lifecycle point that matters: before a tool runs, after a result returns, when a session starts, or when a workflow completes.</p></article><article class="card"><h3>Handler</h3><p>Use a script or program that performs one clear check. Keep it predictable, bounded, and independent of model persuasion.</p></article><article class="card"><h3>Decision</h3><p>Return an explicit allow, deny, warn, or failure outcome. Make the reason understandable to the user and traceable in logs.</p></article><article class="card"><h3>Evidence</h3><p>Record the event, decision, relevant identifiers, and validation result without capturing secrets or unnecessary source content.</p></article></div>
+        <div class="callout"><strong>Use the right layer:</strong> instructions explain desired behavior, Skills package repeatable expertise, and hooks enforce or observe behavior at runtime. A hook should not be a second prompt file.</div>
+      </section>
+
+      <section class="section" id="design"><div class="section-head"><div class="eyebrow">02 · Design</div><h2>Choose a narrow, meaningful boundary</h2><p>The best hook controls a specific risk or creates useful evidence at a point where the input and decision are well defined.</p></div>
+        <div class="table-wrap"><table><thead><tr><th>Need</th><th>Good hook boundary</th><th>Example decision</th></tr></thead><tbody><tr><td>Protect sensitive files</td><td>Before a file-write or command operation</td><td>Deny changes to protected paths and explain the approval route.</td></tr><tr><td>Prevent unsafe commands</td><td>Before shell execution</td><td>Block destructive or network-sensitive commands unless explicitly approved.</td></tr><tr><td>Validate generated changes</td><td>After edits, before completion</td><td>Run a focused test or policy check and report the result.</td></tr><tr><td>Improve traceability</td><td>At session, tool, and completion events</td><td>Write a redacted structured event with status and duration.</td></tr><tr><td>Require a human decision</td><td>At a high-impact action boundary</td><td>Pause and request approval before external side effects.</td></tr></tbody></table></div>
+        <div class="grid"><article class="card"><h3>One decision per hook</h3><p>Keep each handler easy to reason about. Compose several focused checks instead of hiding a policy engine in one opaque script.</p></article><article class="card"><h3>Fail closed for risk</h3><p>When a security or permission check cannot determine a safe outcome, stop and surface the missing evidence.</p></article><article class="card"><h3>Keep latency bounded</h3><p>A hook is part of the user workflow. Avoid unbounded network calls and expensive scans on every low-risk event.</p></article><article class="card"><h3>Make denial useful</h3><p>Explain what was blocked, why it was blocked, and what evidence or approval would allow the work to continue.</p></article></div>
+        <div class="callout warning"><strong>Do not over-hook:</strong> adding checks to every event can slow the workflow, create noisy failures, and teach users to approve prompts without reading them.</div>
+      </section>
+
+      <section class="section" id="implement"><div class="section-head"><div class="eyebrow">03 · Implement</div><h2>Make the contract explicit</h2><p>Keep configuration and handlers close to version control. Treat the event payload and return behavior as an interface that deserves tests and change review.</p></div>
+        <h3>Typical repository shape</h3>
+        <div class="code">.github/
+  hooks/
+    before-tool.ps1
+    after-edit.ps1
+    README.md
+  copilot-instructions.md</div>
+        <h3>Handler responsibilities</h3>
+        <ol><li><strong>Validate input.</strong> Reject missing, malformed, or unexpected event data before making a decision.</li><li><strong>Classify the operation.</strong> Identify the command, path, tool, target system, or data category involved.</li><li><strong>Apply policy.</strong> Use deterministic rules and configured allowlists or denylists where appropriate.</li><li><strong>Return a clear outcome.</strong> Distinguish allow, deny, warning, and handler failure.</li><li><strong>Record minimal evidence.</strong> Log identifiers and summaries, not credentials, tokens, or unrestricted payloads.</li></ol>
+        <div class="code">param([Parameter(ValueFromPipeline = $true)] $Event)
+
+$operation = $Event.toolInput.command
+if ($operation -match 'Remove-Item|git reset --hard|DROP TABLE') {
+  Write-Output '{"decision":"deny","reason":"Destructive operation requires approval."}'
+  exit 0
+}
+
+Write-Output '{"decision":"allow"}'</div>
+        <div class="callout warning"><strong>Security boundary:</strong> a hook script runs with the permissions of its host environment. Review shell parsing, path handling, environment variables, dependency loading, and network behavior as carefully as application code.</div>
+      </section>
+
+      <section class="section" id="test"><div class="section-head"><div class="eyebrow">04 · Test</div><h2>Test the decision, not just the script</h2><p>Hooks fail in configuration, event matching, handler logic, permissions, and user experience. Test the whole boundary with representative and adversarial inputs.</p></div>
+        <div class="table-wrap"><table><thead><tr><th>Test case</th><th>What to observe</th><th>Pass condition</th></tr></thead><tbody><tr><td>Allowed operation</td><td>A normal read or bounded edit reaches the handler.</td><td>The hook allows it without unnecessary delay or output.</td></tr><tr><td>Denied operation</td><td>A protected path or destructive command is presented.</td><td>The action does not execute and the reason is actionable.</td></tr><tr><td>Malformed event</td><td>Required fields are missing or have the wrong type.</td><td>The hook fails safely and reports the invalid contract.</td></tr><tr><td>Handler failure</td><td>The script times out, lacks permission, or returns invalid output.</td><td>The workflow does not silently treat the failure as approval.</td></tr><tr><td>Bypass attempt</td><td>Case, spacing, encoding, or shell syntax changes the input.</td><td>Policy behavior remains intentional and documented.</td></tr><tr><td>Regression replay</td><td>A previously fixed incident is repeated.</td><td>The control still works and nearby valid work remains usable.</td></tr></tbody></table></div>
+        <h3>Useful evidence</h3><ul class="checklist"><li>Hook matched the intended lifecycle event</li><li>Input was parsed and classified correctly</li><li>Allow and deny decisions were both tested</li><li>Failure and timeout behavior was verified</li><li>Logs contain a redacted reason and correlation identifier</li><li>Latency and user-facing output are acceptable</li></ul>
+      </section>
+
+      <section class="section" id="govern"><div class="section-head"><div class="eyebrow">05 · Governance</div><h2>Keep runtime controls reviewable</h2><p>Hooks can block work or trigger side effects, so they need ownership, change control, and a recovery path when policy or dependencies change.</p></div>
+        <div class="grid"><article class="card"><h3>Version control</h3><p>Store configuration, scripts, test fixtures, and policy documentation together. Review changes like production code.</p></article><article class="card"><h3>Least privilege</h3><p>Give a handler only the file, command, network, and identity access it needs. Separate read-only checks from mutation.</p></article><article class="card"><h3>Safe rollout</h3><p>Start in observe-only or warning mode where possible, measure false positives, then enforce after the rule is trusted.</p></article><article class="card"><h3>Recovery</h3><p>Document how to disable or replace a broken hook without bypassing every other control or leaving users blocked indefinitely.</p></article></div>
+        <ul><li>Assign an owner and review date for every enforcement hook.</li><li>Scan scripts and dependencies for secrets and unsafe execution patterns.</li><li>Keep user approval explicit for high-impact external actions.</li><li>Record denials as useful operational signals, not only as errors.</li><li>Review false positives and bypass requests as policy feedback.</li></ul>
+      </section>
+
+      <section class="section" id="checklist"><div class="section-head"><div class="eyebrow">06 · Readiness</div><h2>Hooks readiness checklist</h2><p>Use this before making a hook part of a shared repository or team workflow.</p></div>
+        <ul class="checklist"><li>Hook event and lifecycle placement are documented</li><li>Input and output contract are explicit and validated</li><li>Allow, deny, warning, and failure outcomes are distinct</li><li>Handler has bounded latency and least-privilege access</li><li>Protected operations and approval requirements are clear</li><li>Secrets and sensitive payloads are excluded from logs</li><li>Positive, negative, malformed, and bypass cases were tested</li><li>Failure does not silently become approval</li><li>Owner, rollout mode, and recovery path are documented</li><li>Changes are versioned and regression-tested</li></ul>
+        <div class="callout"><strong>Definition of done:</strong> another engineer can explain when the hook runs, what it can decide, what happens when it fails, and how to verify or safely change it.</div>
+        <p class="source">Related resources: <a href="../exercises/github-copilot-customization-hooks-lab-exercises.html">Copilot Hooks lab exercises</a> · <a href="../posters/GitHub%20Copilot%20Hooks%20-%20Light%20-%20Landscape.png" target="_blank" rel="noreferrer noopener">Copilot Hooks poster</a> · <a href="https://docs.github.com/en/copilot" target="_blank" rel="noreferrer noopener">GitHub Copilot documentation</a>.</p>
+      </section>
+    </div></main>
+  </div>
+  <button id="top" title="Back to top" aria-label="Back to top">^</button>
+  <script>
+    const progress = document.querySelector('#progress');
+    const topButton = document.querySelector('#top');
+    function updateScroll() {
+      const max = document.documentElement.scrollHeight - window.innerHeight || 1;
+      progress.style.width = `${(window.scrollY / max) * 100}%`;
+      topButton.classList.toggle('show', window.scrollY > 320);
+    }
+    window.addEventListener('scroll', updateScroll, { passive: true });
+    topButton.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+    updateScroll();
+  </script>
+</body>
+</html>

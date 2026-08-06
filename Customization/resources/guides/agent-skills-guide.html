@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A practical guide to designing, authoring, testing, and governing GitHub Copilot Agent Skills.">
+  <title>GitHub Copilot Agent Skills Guide</title>
+  <style>
+    :root { --navy:#09243c; --blue:#1769aa; --teal:#0f9da8; --coral:#e26d5a; --gold:#d9a441; --ink:#17212b; --muted:#5f6f7d; --paper:#f5f1e8; --white:#fffdf8; --line:#d8d0c4; --soft-blue:#eaf6f4; --soft-coral:#fff0eb; --shadow:0 8px 26px rgba(23,33,43,.06); }
+    * { box-sizing:border-box; }
+    html { scroll-behavior:smooth; font-family:'Trebuchet MS','Segoe UI',sans-serif; }
+    body { margin:0; color:var(--ink); background:var(--paper); line-height:1.6; }
+    a { color:var(--blue); font-weight:700; text-decoration:none; }
+    a:hover { color:var(--coral); text-decoration:underline; }
+    code { padding:2px 5px; color:var(--navy); background:#e5eef0; font:.88em Consolas,monospace; }
+    .shell { display:grid; grid-template-columns:260px minmax(0,1fr); min-height:100vh; }
+    .rail { position:sticky; top:0; height:100vh; overflow-y:auto; padding:28px 20px; color:#d9e8f2; background:var(--navy); }
+    .brand { padding-bottom:24px; border-bottom:1px solid rgba(255,255,255,.14); }
+    .brand small { color:#7ed6d1; font-size:11px; font-weight:800; letter-spacing:1.8px; text-transform:uppercase; }
+    .brand h1 { margin:9px 0 0; color:#fffdf8; font:700 24px/1.05 Georgia,'Times New Roman',serif; }
+    .menu-label { margin:25px 0 8px; color:#88a7ba; font-size:10px; font-weight:800; letter-spacing:1.4px; text-transform:uppercase; }
+    .menu { display:grid; gap:4px; }
+    .menu a { display:block; padding:8px 9px; border-left:2px solid transparent; color:#c4d6e0; font-size:12px; font-weight:400; }
+    .menu a:hover, .menu a.active { border-left-color:#7ed6d1; background:rgba(255,255,255,.06); color:#fff; text-decoration:none; }
+    .rail-note { margin-top:28px; padding-top:16px; border-top:1px solid rgba(255,255,255,.14); color:#88a7ba; font-size:11px; }
+    main { min-width:0; padding:42px clamp(22px,5vw,76px) 70px; }
+    .content { width:min(980px,100%); margin:0 auto; }
+    .hero { margin-bottom:36px; padding:clamp(30px,5vw,58px); color:#fffdf8; background:var(--navy); box-shadow:0 18px 45px rgba(23,33,43,.12); position:relative; overflow:hidden; }
+    .hero::after { content:''; position:absolute; width:300px; height:300px; right:-70px; bottom:-125px; border:45px solid rgba(126,214,209,.32); border-radius:50%; }
+    .hero > * { position:relative; z-index:1; }
+    .eyebrow { margin-bottom:12px; color:#7ed6d1; font-size:11px; font-weight:800; letter-spacing:2px; text-transform:uppercase; }
+    h2 { margin:0; color:var(--navy); font:700 clamp(30px,4vw,52px)/1.04 Georgia,'Times New Roman',serif; }
+    .hero h2 { max-width:760px; color:#fffdf8; }
+    .hero p { max-width:760px; color:#d9e8f2; font-size:17px; }
+    .meta { display:flex; flex-wrap:wrap; gap:9px; margin-top:24px; }
+    .meta span { padding:7px 11px; border:1px solid rgba(255,255,255,.22); color:#fffdf8; font-size:11px; font-weight:800; }
+    .section { margin:0 0 40px; }
+    .section-head { margin-bottom:24px; padding-bottom:17px; border-bottom:2px solid var(--line); }
+    .section-head p { max-width:760px; margin:12px 0 0; color:var(--muted); font-size:16px; }
+    h3 { margin:28px 0 10px; color:var(--blue); font-size:20px; }
+    h4 { margin:20px 0 7px; color:var(--navy); font-size:15px; }
+    p { max-width:800px; }
+    ul, ol { padding-left:23px; }
+    li { margin:7px 0; }
+    .grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; margin:20px 0; }
+    .card { padding:20px; border:1px solid var(--line); background:var(--white); box-shadow:var(--shadow); }
+    .card h3 { margin-top:0; font-size:17px; }
+    .card p, .card li { color:var(--muted); font-size:14px; }
+    .callout { margin:22px 0; padding:17px 20px; border-left:5px solid var(--teal); background:var(--soft-blue); }
+    .callout.warning { border-left-color:var(--coral); background:var(--soft-coral); }
+    .callout strong { color:var(--navy); }
+    .code { margin:16px 0; padding:18px 20px; overflow-x:auto; color:#d9f8f2; background:#142d41; border-left:4px solid var(--teal); font:12.5px/1.7 Consolas,'Courier New',monospace; white-space:pre-wrap; }
+    .table-wrap { margin:20px 0; overflow-x:auto; border:1px solid var(--line); background:var(--white); }
+    table { width:100%; min-width:680px; border-collapse:collapse; font-size:13px; }
+    th, td { padding:11px 13px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; }
+    th { color:#fffdf8; background:var(--navy); font-size:10px; letter-spacing:1px; text-transform:uppercase; }
+    tr:last-child td { border-bottom:0; }
+    .checklist { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px 18px; padding:0; list-style:none; }
+    .checklist li { margin:0; padding:10px 13px 10px 32px; border-bottom:1px solid var(--line); color:var(--muted); position:relative; }
+    .checklist li::before { content:'□'; position:absolute; left:10px; color:var(--coral); font-weight:800; }
+    .source { margin-top:38px; padding-top:18px; border-top:1px solid var(--line); color:var(--muted); font-size:13px; }
+    #top { position:fixed; right:20px; bottom:20px; display:none; width:38px; height:38px; border:1px solid var(--teal); border-radius:50%; color:#fff; background:var(--navy); cursor:pointer; font-size:17px; }
+    #top.show { display:block; }
+    .progress { position:fixed; top:0; left:0; z-index:10; width:0; height:3px; background:var(--teal); }
+    @media (max-width:900px) { .shell { display:block; } .rail { position:relative; height:auto; } .menu { grid-template-columns:repeat(2,minmax(0,1fr)); } main { padding:28px 20px 50px; } }
+    @media (max-width:600px) { .menu, .grid, .checklist { grid-template-columns:1fr; } .hero { padding:30px 24px; } }
+    @media print { .rail, #top, .progress { display:none !important; } main { padding:12px; } .hero, .card { box-shadow:none; break-inside:avoid; } }
+  </style>
+</head>
+<body>
+  <div class="progress" id="progress"></div>
+  <div class="shell">
+    <aside class="rail">
+      <div class="brand"><small>GitHub Copilot</small><h1>Agent Skills Guide</h1></div>
+      <div class="menu-label">Guide path</div>
+      <nav class="menu" aria-label="Guide sections"><a class="active" href="#overview">Overview</a><a href="#model">Skill model</a><a href="#author">Author a Skill</a><a href="#activate">Discovery and activation</a><a href="#test">Test and improve</a><a href="#govern">Governance</a><a href="#checklist">Readiness checklist</a></nav>
+      <p class="rail-note">A Skill is a reusable capability package: clear metadata for discovery, focused instructions for execution, and references loaded only when needed.</p>
+    </aside>
+    <main><div class="content">
+      <header class="hero" id="overview"><div class="eyebrow">Customization guide</div><h2>Turn repeatable work into Agent Skills.</h2><p>Agent Skills give GitHub Copilot a reusable method for a task. Package the workflow, constraints, tools, and evidence once so an agent can discover and apply it consistently.</p><div class="meta"><span>Package expertise</span><span>Progressive disclosure</span><span>Evidence first</span><span>Govern deliberately</span></div></header>
+
+      <section class="section" id="model"><div class="section-head"><div class="eyebrow">01 · Skill model</div><h2>What an Agent Skill contains</h2><p>A strong Skill separates discovery from execution. The metadata helps Copilot decide whether the Skill is relevant; the body explains how to do the work after activation.</p></div>
+        <div class="grid"><article class="card"><h3>Metadata</h3><p>The name and description are the activation contract. State what the Skill does, when it applies, and the artifacts or outcome it produces.</p></article><article class="card"><h3>Instructions</h3><p>The <code>SKILL.md</code> body gives the workflow, constraints, decision points, and validation steps an agent needs after selection.</p></article><article class="card"><h3>References</h3><p>Keep detailed schemas, examples, and long procedures in nearby files. Link to them from the Skill instead of loading everything up front.</p></article><article class="card"><h3>Boundaries</h3><p>Document what the Skill does not do, what requires approval, and which claims or changes must be verified independently.</p></article></div>
+        <div class="callout"><strong>Think in contracts:</strong> the description answers "Should I use this?" The instructions answer "How should I use it?" The checklist answers "How do I know it worked?"</div>
+      </section>
+
+      <section class="section" id="author"><div class="section-head"><div class="eyebrow">02 · Author</div><h2>Build a Skill around a real workflow</h2><p>Start with a repeated task that has a recognizable input, a bounded process, and observable evidence. Avoid turning a broad topic into a vague instruction dump.</p></div>
+        <h3>Recommended structure</h3>
+        <div class="code">skill-name/
+  SKILL.md
+  references/
+    schema.md
+    examples.md
+  scripts/
+    validate.ps1</div>
+        <h3>Minimal metadata pattern</h3>
+        <div class="code">---
+name: api-contract-review
+description: Review an API contract for breaking changes, security gaps,
+  and missing validation. Use when reviewing OpenAPI changes or endpoint
+  proposals before implementation.
+---</div>
+        <ol><li><strong>Define the outcome.</strong> Name the decision, artifact, or evidence the Skill should produce.</li><li><strong>List the inputs.</strong> Identify the files, context, tools, and permissions actually needed.</li><li><strong>Write the smallest reliable procedure.</strong> Use ordered steps and explicit decision points.</li><li><strong>Add validation.</strong> Include checks that can disconfirm the agent's first answer.</li><li><strong>Move detail out of the core.</strong> Put large examples and reference material in linked files.</li></ol>
+        <div class="callout warning"><strong>Avoid hidden policy:</strong> never rely on a Skill to silently grant permissions, protect secrets, or enforce a control that should be deterministic. Pair Skills with repository rules, tool permissions, hooks, and human approval where appropriate.</div>
+      </section>
+
+      <section class="section" id="activate"><div class="section-head"><div class="eyebrow">03 · Discovery</div><h2>Make activation predictable</h2><p>Copilot can only select a Skill from the signal you provide. Descriptions should use the vocabulary people use when requesting the work, without becoming a list of unrelated keywords.</p></div>
+        <div class="table-wrap"><table><thead><tr><th>Weak signal</th><th>Stronger signal</th><th>Why it works</th></tr></thead><tbody><tr><td>Helps with APIs</td><td>Review OpenAPI or endpoint changes for breaking changes before implementation.</td><td>Names the input, action, and timing.</td></tr><tr><td>Security helper</td><td>Threat-model a new external integration and produce risks, controls, and verification evidence.</td><td>Defines a concrete output.</td></tr><tr><td>Database stuff</td><td>Review Cosmos DB data models for partition-key, query, and throughput risks.</td><td>Uses recognizable task vocabulary and scope.</td></tr></tbody></table></div>
+        <div class="grid"><article class="card"><h3>Use positive triggers</h3><p>Describe tasks, file types, commands, and decisions that indicate the Skill is relevant.</p></article><article class="card"><h3>State exclusions</h3><p>Say when not to use the Skill if nearby tasks could cause an incorrect match.</p></article><article class="card"><h3>Keep names stable</h3><p>Use a short, descriptive name that remains understandable when shown in a tool or agent trace.</p></article><article class="card"><h3>Test neighboring requests</h3><p>Check both intended prompts and plausible near-misses so activation does not become noisy.</p></article></div>
+      </section>
+
+      <section class="section" id="test"><div class="section-head"><div class="eyebrow">04 · Test</div><h2>Evaluate the Skill as a behavior</h2><p>Reading the instructions is not enough. Replay representative tasks and inspect whether the Skill produces the right evidence without unnecessary context or authority.</p></div>
+        <div class="table-wrap"><table><thead><tr><th>Test case</th><th>What to observe</th><th>Pass condition</th></tr></thead><tbody><tr><td>Positive match</td><td>The intended request activates the Skill.</td><td>The agent follows the workflow and produces the specified evidence.</td></tr><tr><td>Near miss</td><td>A similar request does not need this Skill.</td><td>The Skill is not selected, or the agent explains the boundary.</td></tr><tr><td>Missing input</td><td>A required file, tool, or permission is unavailable.</td><td>The agent stops or asks for the missing prerequisite instead of guessing.</td></tr><tr><td>Adversarial input</td><td>Untrusted content attempts to override the workflow.</td><td>Instructions and permissions remain in control; secrets and side effects are protected.</td></tr><tr><td>Regression replay</td><td>A previously fixed failure is repeated after edits.</td><td>The correction remains effective and nearby workflows still work.</td></tr></tbody></table></div>
+        <h3>Useful evidence</h3><ul class="checklist"><li>Skill was selected for the intended task</li><li>Relevant references were loaded only when needed</li><li>Claims were grounded in the requested sources</li><li>Tool calls stayed within the documented scope</li><li>Missing prerequisites produced a clear stop or question</li><li>Validation commands and results were captured</li></ul>
+      </section>
+
+      <section class="section" id="govern"><div class="section-head"><div class="eyebrow">05 · Governance</div><h2>Keep Skills safe to reuse</h2><p>A Skill is executable guidance. Treat it as a reviewed software artifact with an owner, version history, and explicit boundaries.</p></div>
+        <div class="grid"><article class="card"><h3>Least privilege</h3><p>Request only the tools and permissions needed for the task. Separate planning, read-only analysis, and changes that require approval.</p></article><article class="card"><h3>Untrusted content</h3><p>Source files, issues, documents, and tool results can contain prompt injection. Treat them as data, not as authority to rewrite the Skill.</p></article><article class="card"><h3>Secrets and privacy</h3><p>Never ask users to paste credentials. Redact sensitive inputs and define which files or systems must not be exposed.</p></article><article class="card"><h3>Ownership</h3><p>Assign an owner, review dependencies, scan scripts, and retire Skills that no longer match the product or tool behavior.</p></article></div>
+        <div class="callout warning"><strong>Review before enabling third-party Skills:</strong> inspect instructions, scripts, references, network access, file writes, and data handling. A useful description does not make an implementation trustworthy.</div>
+      </section>
+
+      <section class="section" id="checklist"><div class="section-head"><div class="eyebrow">06 · Readiness</div><h2>Agent Skill readiness checklist</h2><p>Use this before sharing a Skill with a team or making it part of a standard agent workflow.</p></div>
+        <ul class="checklist"><li>Name and description clearly identify the capability and trigger conditions</li><li>Workflow has a bounded input, outcome, and scope</li><li>Instructions distinguish facts, assumptions, and decisions</li><li>References support progressive disclosure</li><li>Required tools and permissions are explicit</li><li>Validation can disconfirm an incorrect result</li><li>Positive, near-miss, missing-input, and adversarial cases were tested</li><li>Secrets, privacy, and untrusted content boundaries are documented</li><li>Owner, review date, and dependencies are known</li><li>Changes are versioned and regression-tested</li></ul>
+        <div class="callout"><strong>Definition of done:</strong> another engineer can understand when the Skill activates, what it will do, what it is allowed to touch, and what evidence proves the result is ready.</div>
+        <p class="source">Related resources: <a href="../exercises/github-copilot-customization-skills-lab-exercises.html">Agent Skills lab exercises</a> · <a href="../posters/GitHub%20Copilot%20Skills%20-%20Light%20-%20Landscape.png" target="_blank" rel="noreferrer noopener">Agent Skills poster</a> · <a href="https://agentskills.io/" target="_blank" rel="noreferrer noopener">Agent Skills specification</a> · <a href="https://docs.github.com/en/copilot" target="_blank" rel="noreferrer noopener">GitHub Copilot documentation</a>.</p>
+      </section>
+    </div></main>
+  </div>
+  <button id="top" title="Back to top" aria-label="Back to top">^</button>
+  <script>
+    const progress = document.querySelector('#progress');
+    const topButton = document.querySelector('#top');
+    function updateScroll() {
+      const max = document.documentElement.scrollHeight - window.innerHeight || 1;
+      progress.style.width = `${(window.scrollY / max) * 100}%`;
+      topButton.classList.toggle('show', window.scrollY > 320);
+    }
+    window.addEventListener('scroll', updateScroll, { passive: true });
+    topButton.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+    updateScroll();
+  </script>
+</body>
+</html>

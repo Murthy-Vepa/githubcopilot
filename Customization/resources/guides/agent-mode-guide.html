@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🤖</text></svg>">
+  <title>GitHub Copilot Agent Mode — Agents Guide</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --blue-900: #0a1628; --blue-800: #102042; --blue-700: #163466; --blue-600: #1e4d9b;
+      --teal: #0ea5e9; --teal-light: #38bdf8;
+      --gold: #f59e0b; --green: #10b981; --purple: #8b5cf6; --orange: #f97316;
+      --indigo: #6366f1; --pink: #ec4899; --cyan: #06b6d4;
+      --bg: #f0f4f8; --card: #ffffff; --text: #1e293b; --text-muted: #64748b; --border: #e2e8f0;
+      --radius: 12px; --shadow: 0 4px 24px rgba(10,22,40,0.10);
+    }
+    html { scroll-behavior: smooth; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
+    body { background: var(--bg); color: var(--text); min-height: 100vh; }
+    a { text-decoration: none; color: inherit; }
+    .presentation { display: flex; min-height: 100vh; }
+    .sidebar { width: 260px; min-width: 260px; background: var(--blue-900); color: #cbd5e1; display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; overflow: hidden; z-index: 100; }
+    .sidebar-logo { padding: 24px 20px 16px; border-bottom: 1px solid rgba(255,255,255,0.08); background: var(--blue-800); }
+    .sidebar-logo .product { font-size: 14px; color: var(--teal-light); font-weight: 700; }
+    .sidebar-logo h2 { font-size: 15px; color: #fff; margin-top: 4px; font-weight: 700; line-height: 1.3; }
+    .sidebar nav { padding: 12px 0; flex: 1; overflow-y: auto; }
+    .nav-group { padding: 8px 0; }
+    .nav-group-label { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: #475569; padding: 0 20px 6px; font-weight: 700; }
+    .nav-item { display: flex; align-items: center; gap: 10px; padding: 8px 20px; font-size: 13px; color: #94a3b8; border-left: 3px solid transparent; transition: all 0.15s; }
+    .nav-item:hover, .nav-item.active { background: rgba(255,255,255,0.05); color: #e2e8f0; border-left-color: var(--teal); }
+    .sidebar-footer { padding: 16px 20px; border-top: 1px solid rgba(255,255,255,0.08); font-size: 12px; color: #93c5fd; }
+    .sidebar nav::-webkit-scrollbar { width: 6px; }
+    .sidebar nav::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
+    .main { flex: 1; overflow-y: auto; }
+    .slide { min-height: 100vh; padding: 48px 56px; display: flex; flex-direction: column; border-bottom: 1px solid var(--border); }
+    .slide:last-child { border-bottom: none; }
+    .slide-hero { background: linear-gradient(135deg, var(--blue-900) 0%, var(--blue-700) 60%, var(--blue-600) 100%); color: #fff; justify-content: center; position: relative; overflow: hidden; }
+    .slide-hero::before { content: ''; position: absolute; width: 600px; height: 600px; border-radius: 50%; background: radial-gradient(circle, rgba(14,165,233,0.15) 0%, transparent 70%); top: -200px; right: -200px; pointer-events: none; }
+    .slide-hero::after { content: ''; position: absolute; width: 220px; height: 220px; border: 28px solid rgba(99,102,241,.22); border-radius: 50%; right: 12%; bottom: -90px; }
+    .hero-tag { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: rgba(255,255,255,0.6); font-weight: 700; margin-bottom: 16px; position: relative; z-index: 1; }
+    .hero-title { font-size: clamp(36px, 5vw, 60px); font-weight: 800; line-height: 1.1; color: #fff; margin-bottom: 20px; position: relative; z-index: 1; }
+    .hero-title span { color: var(--teal-light); }
+    .hero-subtitle { font-size: 17px; color: rgba(255,255,255,0.70); max-width: 720px; line-height: 1.6; margin-bottom: 40px; position: relative; z-index: 1; }
+    .hero-meta { display: flex; gap: 32px; flex-wrap: wrap; margin-bottom: 36px; position: relative; z-index: 1; }
+    .hero-meta-item { font-size: 13px; color: rgba(255,255,255,0.55); }
+    .hero-meta-item strong { color: rgba(255,255,255,0.90); display: block; font-size: 22px; font-weight: 800; margin-bottom: 2px; }
+    .badge { display: inline-flex; padding: 6px 14px; border-radius: 100px; font-size: 12px; font-weight: 600; border: 1px solid; margin: 4px 4px 4px 0; position: relative; z-index: 1; }
+    .badge-teal { background: rgba(14,165,233,0.15); color: var(--teal-light); border-color: rgba(14,165,233,0.3); }
+    .badge-purple { background: rgba(139,92,246,0.15); color: #c4b5fd; border-color: rgba(139,92,246,0.3); }
+    .badge-gold { background: rgba(245,158,11,0.15); color: #fcd34d; border-color: rgba(245,158,11,0.3); }
+    .badge-green { background: rgba(16,185,129,0.15); color: #6ee7b7; border-color: rgba(16,185,129,0.3); }
+    .slide-label { font-size: 11px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--teal); font-weight: 700; margin-bottom: 8px; }
+    .slide-title { font-size: clamp(22px, 2.8vw, 34px); font-weight: 800; color: var(--blue-800); margin-bottom: 8px; line-height: 1.2; }
+    .slide-desc { font-size: 15px; color: var(--text-muted); max-width: 800px; line-height: 1.65; margin-bottom: 36px; }
+    .divider { height: 3px; width: 48px; background: var(--teal); border-radius: 2px; margin-bottom: 32px; }
+    .breadcrumb { display: inline-flex; align-items: center; font-size: 13px; color: var(--text-muted); background: #f1f5f9; padding: 5px 14px; border-radius: 100px; margin-bottom: 24px; }
+    .stat-row { display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 40px; }
+    .stat-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 28px; flex: 1; min-width: 130px; box-shadow: var(--shadow); text-align: center; }
+    .stat-value { font-size: 34px; font-weight: 800; color: var(--blue-700); line-height: 1; margin-bottom: 6px; }
+    .stat-label { font-size: 12px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: .5px; }
+    .module-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 16px; }
+    .scard { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); transition: transform .2s, box-shadow .2s; }
+    .scard:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(10,22,40,0.15); }
+    .scard-top { padding: 22px 24px 18px; border-bottom: 1px solid var(--border); }
+    .scard-num { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+    .scard-title { font-size: 18px; font-weight: 800; margin-bottom: 6px; }
+    .scard-desc { font-size: 13px; color: var(--text-muted); line-height: 1.55; }
+    .scard-body { padding: 18px 24px; }
+    .scard-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+    .pill { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 100px; border: 1px solid; }
+    .m1 .scard-top { background: linear-gradient(135deg,#eff6ff,#dbeafe); } .m1 .scard-num { color: #1d4ed8; } .m1 .scard-title { color: var(--blue-700); } .m1 .pill { background: #dbeafe; color: #1d4ed8; border-color: #bfdbfe; }
+    .m2 .scard-top { background: linear-gradient(135deg,#f5f3ff,#ede9fe); } .m2 .scard-num { color: #7c3aed; } .m2 .scard-title { color: #6d28d9; } .m2 .pill { background: #ede9fe; color: #7c3aed; border-color: #ddd6fe; }
+    .m3 .scard-top { background: linear-gradient(135deg,#ecfeff,#cffafe); } .m3 .scard-num { color: #0891b2; } .m3 .scard-title { color: #0e7490; } .m3 .pill { background: #cffafe; color: #0891b2; border-color: #a5f3fc; }
+    .m4 .scard-top { background: linear-gradient(135deg,#f0fdf4,#dcfce7); } .m4 .scard-num { color: #059669; } .m4 .scard-title { color: #047857; } .m4 .pill { background: #dcfce7; color: #059669; border-color: #bbf7d0; }
+    .m5 .scard-top { background: linear-gradient(135deg,#fff7ed,#ffedd5); } .m5 .scard-num { color: #c2410c; } .m5 .scard-title { color: #9a3412; } .m5 .pill { background: #ffedd5; color: #c2410c; border-color: #fed7aa; }
+    .m6 .scard-top { background: linear-gradient(135deg,#eef2ff,#e0e7ff); } .m6 .scard-num { color: #4f46e5; } .m6 .scard-title { color: #4338ca; } .m6 .pill { background: #e0e7ff; color: #4f46e5; border-color: #c7d2fe; }
+    .lesson-link, .source-link { color: var(--blue-600); font-size: 12px; font-weight: 700; }
+    .lesson-link:hover, .source-link:hover { color: var(--teal); text-decoration: underline; }
+    .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; }
+    .info-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); }
+    .info-card h3 { font-size: 15px; color: var(--blue-800); margin-bottom: 8px; }
+    .info-card p, .info-card li { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+    .info-card ul { padding-left: 18px; }
+    .callout { border-radius: var(--radius); padding: 18px 20px; margin: 16px 0; display: flex; gap: 14px; align-items: flex-start; font-size: 13.5px; line-height: 1.6; }
+    .callout-icon { font-size: 20px; flex-shrink: 0; }
+    .callout-blue { background: #eff6ff; border-left: 4px solid #3b82f6; color: #1e40af; }
+    .callout-green { background: #f0fdf4; border-left: 4px solid #10b981; color: #065f46; }
+    .callout-orange { background: #fff7ed; border-left: 4px solid #f97316; color: #9a3412; }
+    .callout-purple { background: #f5f3ff; border-left: 4px solid #8b5cf6; color: #5b21b6; }
+    .timeline { display: flex; flex-direction: column; max-width: 900px; }
+    .timeline-item { display: flex; }
+    .timeline-left { display: flex; flex-direction: column; align-items: center; width: 52px; flex-shrink: 0; }
+    .timeline-dot { width: 34px; height: 34px; border-radius: 50%; background: var(--blue-700); color: #fff; font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; z-index: 1; }
+    .timeline-line { width: 2px; background: var(--border); flex: 1; min-height: 24px; }
+    .timeline-item:last-child .timeline-line { display: none; }
+    .timeline-content { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 20px; margin-bottom: 12px; flex: 1; box-shadow: 0 2px 8px rgba(10,22,40,0.06); }
+    .timeline-title { font-size: 14px; font-weight: 700; color: var(--blue-800); margin-bottom: 4px; }
+    .timeline-desc { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+    .code-block { background: #0f172a; color: #cbd5e1; border-radius: 8px; padding: 18px 20px; margin: 14px 0; font: 12.5px/1.7 Consolas, 'Courier New', monospace; white-space: pre-wrap; overflow-x: auto; }
+    .code-label { color: var(--teal-light); font: 700 10px 'Segoe UI', sans-serif; letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 8px; }
+    .checklist { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 24px; padding: 0; list-style: none; max-width: 900px; }
+    .checklist li { padding: 10px 12px 10px 32px; background: var(--card); border: 1px solid var(--border); border-radius: 8px; color: var(--text-muted); font-size: 13px; position: relative; }
+    .checklist li::before { content: '✓'; position: absolute; left: 12px; color: var(--green); font-weight: 800; }
+    .unit-links { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 24px; }
+    .unit-links a { padding: 7px 11px; border: 1px solid var(--border); border-radius: 8px; color: var(--blue-600); background: var(--card); font-size: 12px; transition: all .2s; }
+    .unit-links a:hover { border-color: var(--teal); background: #f0f9ff; }
+    .reference-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 24px; max-width: 900px; }
+    .reference-list a { color: var(--blue-600); font-size: 13px; }
+    .reference-list a:hover { color: var(--teal); text-decoration: underline; }
+    .progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: var(--teal); z-index: 999; transition: width .1s; }
+    #scrollTopBtn { position: fixed; bottom: 20px; right: 20px; width: 38px; height: 38px; border-radius: 50%; background: var(--blue-900); color: #fff; border: 1px solid var(--teal); cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 14px rgba(0,0,0,.25); opacity: 0; visibility: hidden; transition: opacity .25s, visibility .25s, transform .2s; z-index: 9999; }
+    #scrollTopBtn.visible { opacity: 1; visibility: visible; }
+    #scrollTopBtn:hover { transform: translateY(-3px); background: var(--teal); }
+    @media (max-width: 900px) { .sidebar { display: none; } .slide { padding: 32px 24px; } .module-grid { grid-template-columns: 1fr; } }
+    .reference-heading { margin: 28px 0 12px; color: var(--blue-800); }
+    .summary-note { margin-top: 16px; color: var(--text-muted); font-size: 12px; }
+    /* Match the Vibe Coding field-guide visual system. */
+    :root {
+      --blue-900: #102a43; --blue-800: #102a43; --blue-700: #1769aa; --blue-600: #1769aa;
+      --teal: #0f9da8; --teal-light: #7ed6d1; --gold: #d9a441; --orange: #e26d5a;
+      --bg: #f5f1e8; --card: #fffdf8; --text: #17212b; --text-muted: #5f6f7d; --border: #d8d0c4;
+      --shadow: 0 8px 26px rgba(23,33,43,.05); --display: Georgia, 'Times New Roman', serif;
+    }
+    body { background: var(--bg); color: var(--text); font-family: 'Trebuchet MS', 'Segoe UI', sans-serif; line-height: 1.6; }
+    .presentation { display: grid; grid-template-columns: 260px minmax(0, 1fr); }
+    .sidebar { position: sticky; width: auto; min-width: 0; padding: 28px 20px; background: var(--blue-900); color: #d9e8f2; }
+    .sidebar-logo { padding: 0; border: 0; background: transparent; }
+    .sidebar-logo .product { color: var(--teal-light); font-size: 11px; letter-spacing: 1.8px; text-transform: uppercase; }
+    .sidebar-logo h2 { margin: 8px 0 24px; color: #fffdf8; font: 700 24px/1.05 var(--display); }
+    .nav-group { padding: 0; margin-top: 25px; }
+    .nav-group-label { margin: 0 0 8px; padding: 0; color: #88a7ba; font-size: 10px; letter-spacing: 1.4px; }
+    .nav-item { display: block; padding: 7px 9px; border-left: 2px solid transparent; color: #c4d6e0; font-size: 12px; }
+    .nav-item:hover, .nav-item.active { border-left-color: var(--teal-light); background: rgba(255,255,255,.06); color: #fff; }
+    .sidebar-footer { margin-top: 30px; padding: 16px 0 0; border-top: 1px solid rgba(255,255,255,.14); color: #88a7ba; font-size: 11px; }
+    .main { overflow: visible; }
+    .slide { width: min(1120px, calc(100% - 64px)); min-height: 0; margin: 34px auto 0; padding: 32px 36px; background: var(--card); border: 1px solid var(--border); box-shadow: var(--shadow); }
+    .slide-hero { width: min(1120px, calc(100% - 64px)); min-height: 390px; margin: 48px auto 0; padding: 54px 58px; background: var(--blue-900); color: #fffdf8; box-shadow: 0 18px 45px rgba(23,33,43,.10); }
+    .slide-hero::before { width: 125px; height: 125px; right: 190px; top: -45px; border: 20px solid rgba(226,109,90,.6); border-radius: 0; background: transparent; transform: rotate(27deg); }
+    .slide-hero::after { width: 300px; height: 300px; right: -70px; bottom: -125px; border: 45px solid rgba(126,214,209,.32); border-radius: 50%; }
+    .hero-tag, .slide-label { color: var(--teal-light); font-size: 11px; font-weight: 800; letter-spacing: 2px; }
+    .hero-title { max-width: 740px; margin: 18px 0; font: 700 clamp(44px, 7vw, 82px)/.95 var(--display); letter-spacing: -2px; }
+    .hero-title span { color: #fffdf8; }
+    .hero-subtitle { max-width: 660px; margin: 0 0 30px; color: #d9e8f2; font-size: 17px; }
+    .hero-meta { gap: 10px; margin-top: 30px; margin-bottom: 0; }
+    .hero-meta-item { padding: 7px 11px; border: 1px solid rgba(255,255,255,.22); color: #fffdf8; font-size: 11px; }
+    .hero-meta-item strong { display: inline; margin-right: 5px; color: #fff; font-size: 11px; }
+    .badge { border-radius: 0; padding: 7px 11px; border-color: rgba(255,255,255,.22); color: #fffdf8; font-size: 11px; }
+    .badge-teal, .badge-purple, .badge-gold, .badge-green { background: transparent; color: #fffdf8; border-color: rgba(255,255,255,.22); }
+    .slide-title { color: var(--blue-800); font: 700 30px/1.08 var(--display); }
+    .slide-desc { color: var(--text-muted); font-size: 16px; }
+    .divider { width: auto; height: 0; margin: 0; }
+    .breadcrumb { background: transparent; padding: 0; border-radius: 0; color: var(--text-muted); }
+    .stat-card, .scard, .info-card, .timeline-content { border-radius: 0; box-shadow: none; }
+    .stat-card { background: #faf7f0; border-color: var(--border); }
+    .stat-value, .scard-title, .info-card h3, .timeline-title { color: var(--blue-800); }
+    .scard:hover { transform: none; box-shadow: none; }
+    .scard-top, .m1 .scard-top, .m2 .scard-top, .m3 .scard-top, .m4 .scard-top, .m5 .scard-top, .m6 .scard-top { background: #faf7f0; }
+    .scard-num { color: var(--orange) !important; }
+    .pill { border-radius: 0; background: transparent !important; color: var(--blue-600) !important; border-color: var(--border) !important; }
+    .callout { border-radius: 0; background: #eaf6f4; border-left-color: var(--teal); color: var(--text); }
+    .callout-green, .callout-blue { background: #eaf6f4; border-left-color: var(--teal); color: var(--text); }
+    .callout-orange, .callout-purple { background: #fff0eb; border-left-color: var(--orange); color: var(--text); }
+    .timeline-dot { background: var(--blue-900); border-radius: 0; }
+    .code-block { border-radius: 0; background: #142d41; }
+    .checklist li { background: transparent; border: 0; border-bottom: 1px solid var(--border); border-radius: 0; padding-left: 28px; }
+    .checklist li::before { content: '□'; color: var(--orange); }
+    .reference-heading { color: var(--blue-800); font-family: var(--display); }
+    .unit-button { display: inline-block; padding: 7px 10px; border: 1px solid var(--border); background: transparent; color: var(--blue-600); font: 700 12px 'Trebuchet MS', 'Segoe UI', sans-serif; cursor: pointer; }
+    .unit-button:hover, .unit-button:focus { border-color: var(--blue-600); background: #edf6fb; }
+    .unit-modal { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; padding: 24px; background: rgba(16,42,67,.72); z-index: 2000; }
+    .unit-modal.is-open { display: flex; }
+    .unit-dialog { position: relative; width: min(820px, 100%); max-height: min(760px, 90vh); overflow-y: auto; padding: 34px 38px; background: var(--card); border: 1px solid var(--border); box-shadow: 0 20px 60px rgba(16,42,67,.28); }
+    .unit-dialog h2 { margin: 0 42px 8px 0; color: var(--blue-800); font: 700 30px/1.08 var(--display); }
+    .unit-dialog h3 { margin: 24px 0 8px; color: var(--blue-800); font-size: 18px; }
+    .unit-dialog p, .unit-dialog li { color: var(--text-muted); font-size: 14px; line-height: 1.65; }
+    .unit-dialog ul, .unit-dialog ol { padding-left: 22px; }
+    .unit-close { position: absolute; top: 16px; right: 18px; width: 34px; height: 34px; border: 1px solid var(--border); background: transparent; color: var(--blue-800); font-size: 22px; line-height: 1; cursor: pointer; }
+    .unit-close:hover, .unit-close:focus { background: #fff0eb; border-color: var(--orange); color: var(--orange); }
+    body.modal-open { overflow: hidden; }
+    @media (max-width: 900px) { .presentation { display: block; } .sidebar { position: relative; height: auto; } .sidebar nav { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2px 12px; } .nav-group-label { grid-column: 1 / -1; } .main { overflow: visible; } .slide, .slide-hero { width: min(100% - 28px, 720px); } }
+    @media (max-width: 620px) { .slide, .slide-hero { width: calc(100% - 28px); padding: 26px 22px; } .slide-hero { min-height: 0; } }
+    @media (max-width: 620px) { .hero-meta { gap: 20px; } .checklist, .reference-list { grid-template-columns: 1fr; } .slide { padding: 40px 20px; } }
+  </style>
+</head>
+<body>
+<div class="progress-bar" id="progressBar"></div>
+<div class="presentation">
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="product">GitHub Copilot</div>
+      <h2>Agents Module Guide</h2>
+    </div>
+    <nav aria-label="Guide sections">
+      <div class="nav-group"><div class="nav-group-label">Overview</div><a class="nav-item active" href="#slide-hero">🏠 Home</a><a class="nav-item" href="#slide-objectives">🎯 Objectives</a></div>
+      <div class="nav-group"><div class="nav-group-label">Module Units</div><a class="nav-item" href="#slide-map">📘 Course Map</a><a class="nav-item" href="#slide-agent">🤖 Agent Mode</a><a class="nav-item" href="#slide-autonomous">⚙️ Autonomous Development</a><a class="nav-item" href="#slide-exercise">🧪 OctoFit Exercise</a><a class="nav-item" href="#slide-assessment">✅ Assessment</a></div>
+      <div class="nav-group"><div class="nav-group-label">Apply It</div><a class="nav-item" href="#slide-workflow">🔁 Agent Workflow</a><a class="nav-item" href="#slide-guardrails">🛡️ Guardrails</a><a class="nav-item" href="#slide-summary">🚀 Summary</a></div>
+    </nav>
+    <div class="sidebar-footer">© 2026 MetLife · Investments Technology</div>
+  </aside>
+
+  <main class="main" id="mainScroll">
+    <section class="slide slide-hero" id="slide-hero">
+      <div class="hero-tag">MetLife Investments Technology · Agents Module</div>
+      <h1 class="hero-title">Build with <span>GitHub Copilot</span><br>Agent Mode</h1>
+      <p class="hero-subtitle">A practical companion to the Microsoft Learn module for building applications with an autonomous coding partner inside Visual Studio Code and GitHub Codespaces.</p>
+      <div class="hero-meta"><div class="hero-meta-item"><strong>6</strong>Units</div><div class="hero-meta-item"><strong>28m</strong>Hands-on exercise</div><div class="hero-meta-item"><strong>VS Code</strong>Development environment</div></div>
+      <div><span class="badge badge-teal">🤖 Agent Mode</span><span class="badge badge-purple">☁️ GitHub Codespaces</span><span class="badge badge-gold">🧠 Autonomous workflows</span><span class="badge badge-green">🧪 Test and iterate</span></div>
+    </section>
+
+    <section class="slide" id="slide-objectives">
+      <div class="breadcrumb">Agents → Building Applications with Agent Mode</div><div class="slide-label">Module orientation</div><h2 class="slide-title">What you will learn</h2><div class="divider"></div>
+      <p class="slide-desc">Agent Mode moves beyond inline completion and single-response chat. It analyzes a project, chooses actions, changes multiple files, uses the terminal, and iterates on the result while keeping the developer in control.</p>
+      <div class="stat-row"><div class="stat-card"><div class="stat-value">6</div><div class="stat-label">Learning units</div></div><div class="stat-card"><div class="stat-value">5</div><div class="stat-label">Assessment questions</div></div><div class="stat-card"><div class="stat-value">28m</div><div class="stat-label">Skills exercise</div></div><div class="stat-card"><div class="stat-value">1</div><div class="stat-label">Autonomous loop</div></div></div>
+      <div class="card-grid"><div class="info-card"><h3>Develop in Codespaces</h3><p>Use a cloud development environment with VS Code, a repository, dependencies, and a repeatable setup.</p></div><div class="info-card"><h3>Prompt Agent Mode</h3><p>Describe an outcome and allow the agent to identify relevant files, dependencies, commands, and changes.</p></div><div class="info-card"><h3>Guide with documentation</h3><p>Use README files and project documentation to communicate intended behavior, conventions, and constraints.</p></div><div class="info-card"><h3>Iterate across the codebase</h3><p>Ask Agent Mode to fix errors, refactor code, add features, run tests, and validate the result.</p></div></div>
+      <div class="callout callout-blue"><span class="callout-icon">ℹ️</span><div><strong>Prerequisites:</strong> a GitHub account and a fundamental understanding of GitHub Copilot. The official module uses GitHub Codespaces and a GitHub Skills exercise.</div></div>
+      <p><button class="unit-button" type="button" data-unit="unit-1">Read Unit 01 in this guide →</button></p>
+    </section>
+
+    <section class="slide" id="slide-map">
+      <div class="breadcrumb">Course Map → 6 Units</div><div class="slide-label">Microsoft Learn pathway</div><h2 class="slide-title">Follow the module</h2><div class="divider"></div>
+      <p class="slide-desc">Use this guide as a visual companion, then open the source unit for the complete Microsoft Learn experience and current platform details.</p>
+      <div class="module-grid">
+        <article class="scard m1"><div class="scard-top"><div class="scard-num">Unit 01 · Introduction</div><div class="scard-title">Set the stage</div><div class="scard-desc">Learn the outcomes, prerequisites, and the role of Agent Mode in a Codespace.</div></div><div class="scard-body"><div class="scard-pills"><span class="pill">Codespaces</span><span class="pill">VS Code</span><span class="pill">Objectives</span></div><button class="unit-button" type="button" data-unit="unit-1">Read Unit 01 →</button></div></article>
+        <article class="scard m2"><div class="scard-top"><div class="scard-num">Unit 02 · Foundations</div><div class="scard-title">What is Agent Mode?</div><div class="scard-desc">Compare inline suggestions, Chat, Edits, and Agent Mode as levels of development assistance.</div></div><div class="scard-body"><div class="scard-pills"><span class="pill">Workspace context</span><span class="pill">Tools</span><span class="pill">Iteration</span></div><button class="unit-button" type="button" data-unit="unit-2">Read Unit 02 →</button></div></article>
+        <article class="scard m3"><div class="scard-top"><div class="scard-num">Unit 03 · Capabilities</div><div class="scard-title">Explore autonomous development</div><div class="scard-desc">See how Agent Mode orchestrates multi-step tasks, uses context, self-heals, and remains reviewable.</div></div><div class="scard-body"><div class="scard-pills"><span class="pill">Orchestration</span><span class="pill">Self-healing</span><span class="pill">PRUs</span></div><button class="unit-button" type="button" data-unit="unit-3">Read Unit 03 →</button></div></article>
+        <article class="scard m4"><div class="scard-top"><div class="scard-num">Unit 04 · Practice</div><div class="scard-title">GitHub Skills exercise</div><div class="scard-desc">Build OctoFit Tracker in a Codespace with Agent Mode, then test and optimize the generated app.</div></div><div class="scard-body"><div class="scard-pills"><span class="pill">OctoFit Tracker</span><span class="pill">Prompting</span><span class="pill">Testing</span></div><button class="unit-button" type="button" data-unit="unit-4">Read Unit 04 →</button></div></article>
+        <article class="scard m5"><div class="scard-top"><div class="scard-num">Unit 05 · Knowledge check</div><div class="scard-title">Test your understanding</div><div class="scard-desc">Check whether you understand autonomous analysis, iteration, documentation, and limitations.</div></div><div class="scard-body"><div class="scard-pills"><span class="pill">5 questions</span><span class="pill">Concepts</span><span class="pill">Review</span></div><button class="unit-button" type="button" data-unit="unit-5">Read Unit 05 →</button></div></article>
+        <article class="scard m6"><div class="scard-top"><div class="scard-num">Unit 06 · Summary</div><div class="scard-title">Carry it forward</div><div class="scard-desc">Consolidate how Codespaces, documentation, context, and iterative Agent Mode workflows work together.</div></div><div class="scard-body"><div class="scard-pills"><span class="pill">References</span><span class="pill">Next steps</span><span class="pill">Feedback</span></div><button class="unit-button" type="button" data-unit="unit-6">Read Unit 06 →</button></div></article>
+      </div>
+    </section>
+
+    <section class="slide" id="slide-agent">
+      <div class="breadcrumb">Unit 02 → What is Agent Mode?</div><div class="slide-label">The core concept</div><h2 class="slide-title">From suggestion to collaborator</h2><div class="divider"></div>
+      <p class="slide-desc">Traditional coding assistance usually responds to the immediate context. Agent Mode takes a project-wide view and dynamically works through a task until it reaches a useful, testable result.</p>
+      <div class="card-grid"><div class="info-card"><h3>Inline Suggestions</h3><p>Real-time completions as you type. Useful for focused implementation and boilerplate.</p></div><div class="info-card"><h3>Copilot Chat</h3><p>Ask questions and receive project-aware explanations, recommendations, and code guidance.</p></div><div class="info-card"><h3>Copilot Edits</h3><p>Coordinate broader changes across selected files around a specific goal.</p></div><div class="info-card"><h3>Agent Mode</h3><p>Analyze, plan, edit, run commands, test, inspect failures, and iterate across the workspace.</p></div></div>
+      <div class="callout callout-purple"><span class="callout-icon">🧭</span><div><strong>The key shift:</strong> describe the outcome rather than prescribing every implementation step. Agent Mode determines relevant files and dependencies, proposes changes, executes approved actions, and refines its work.</div></div>
+      <div class="code-block"><div class="code-label">Outcome-oriented prompt</div>Build a responsive activity dashboard for the existing application.
+Use the current design system and data models. Include loading, empty, and error states.
+First inspect the project structure and tell me which files you plan to change.
+After implementation, run the relevant tests and summarize any remaining risks.</div>
+      <p><button class="unit-button" type="button" data-unit="unit-2">Read Unit 02 in this guide →</button></p>
+    </section>
+
+    <section class="slide" id="slide-autonomous">
+      <div class="breadcrumb">Unit 03 → Explore the power</div><div class="slide-label">Autonomous development assistance</div><h2 class="slide-title">How Agent Mode works through complexity</h2><div class="divider"></div>
+      <p class="slide-desc">Agent Mode is valuable when a request spans multiple files, commands, dependencies, tests, or design decisions. Its autonomy is useful because the work is orchestrated, but its actions remain visible and reviewable.</p>
+      <div class="timeline">
+        <div class="timeline-item"><div class="timeline-left"><div class="timeline-dot">01</div><div class="timeline-line"></div></div><div class="timeline-content"><div class="timeline-title">Analyze the project</div><div class="timeline-desc">Inspect files, dependencies, scripts, conventions, and prior context to identify the relevant change surface.</div></div></div>
+        <div class="timeline-item"><div class="timeline-left"><div class="timeline-dot">02</div><div class="timeline-line"></div></div><div class="timeline-content"><div class="timeline-title">Plan the multi-step task</div><div class="timeline-desc">Break a request such as a new API or database integration into dependencies, source files, configuration, and tests.</div></div></div>
+        <div class="timeline-item"><div class="timeline-left"><div class="timeline-dot">03</div><div class="timeline-line"></div></div><div class="timeline-content"><div class="timeline-title">Use tools and execute</div><div class="timeline-desc">Create or edit files, install dependencies when appropriate, run builds and tests, and use the existing project workflow.</div></div></div>
+        <div class="timeline-item"><div class="timeline-left"><div class="timeline-dot">04</div><div class="timeline-line"></div></div><div class="timeline-content"><div class="timeline-title">Detect and self-heal</div><div class="timeline-desc">When a test or command fails, identify the cause, apply a correction, and rerun validation rather than stopping at the first draft.</div></div></div>
+        <div class="timeline-item"><div class="timeline-left"><div class="timeline-dot">05</div><div class="timeline-line"></div></div><div class="timeline-content"><div class="timeline-title">Return control to the developer</div><div class="timeline-desc">Review the summary and diff, request changes, revert unwanted work, and decide whether the result is ready to keep.</div></div></div>
+      </div>
+      <div class="callout callout-orange"><span class="callout-icon">⚠️</span><div><strong>Practical limit:</strong> missing documentation, specialized domain rules, or ambiguous business logic can produce incomplete or inaccurate changes. Give Agent Mode context, then verify the result yourself.</div></div>
+      <p><button class="unit-button" type="button" data-unit="unit-3">Read Unit 03 in this guide →</button></p>
+    </section>
+
+    <section class="slide" id="slide-workflow">
+      <div class="breadcrumb">Apply it → A repeatable agent workflow</div><div class="slide-label">Prompt, inspect, verify</div><h2 class="slide-title">The draft → review → accept loop</h2><div class="divider"></div>
+      <p class="slide-desc">Use Agent Mode to carry the mechanical work, while you define the acceptance bar. A strong task includes its scope, constraints, context, and verification command.</p>
+      <div class="card-grid"><div class="info-card"><h3>1. State the outcome</h3><p>“Add an endpoint,” “refactor the parser,” or “migrate this feature” is a useful start. Name the user-visible result.</p></div><div class="info-card"><h3>2. Add constraints</h3><p>Preserve public APIs, follow existing patterns, avoid specific files, maintain compatibility, or limit the scope.</p></div><div class="info-card"><h3>3. Ask for a plan</h3><p>For cross-cutting work, ask Agent Mode to inspect the repository and list intended changes before execution.</p></div><div class="info-card"><h3>4. Require verification</h3><p>Include the build, test, lint, or smoke command and ask the agent to fix failures before reporting completion.</p></div></div>
+      <div class="code-block"><div class="code-label">Agent task template</div>Task: [describe the outcome]
+Context: [files, feature, architecture, or business rule]
+Constraints: [what must remain unchanged]
+Acceptance criteria:
+- [observable behavior]
+- [edge case]
+- [test or quality requirement]
+Verification: Run [command]. Fix failures and report the result.
+Before editing: summarize the plan and assumptions.</div>
+      <div class="callout callout-green"><span class="callout-icon">✅</span><div><strong>Accept only after review:</strong> read the changed files, inspect the diff, check security and error handling, run the verification command, and confirm the implementation matches the request.</div></div>
+    </section>
+
+    <section class="slide" id="slide-guardrails">
+      <div class="breadcrumb">Apply it → Documentation and oversight</div><div class="slide-label">Make context durable</div><h2 class="slide-title">Documentation is part of the prompt</h2><div class="divider"></div>
+      <p class="slide-desc">README files and project documentation are not only for people. They give Agent Mode the intended behavior, setup instructions, architecture clues, and conventions it needs to make better autonomous decisions.</p>
+      <div class="card-grid"><div class="info-card"><h3>README.md</h3><p>Explain what the project does, how to run it, important workflows, and where the major pieces live.</p></div><div class="info-card"><h3>Architecture notes</h3><p>Record boundaries, dependencies, data flow, integration contracts, and decisions that are not obvious from the code.</p></div><div class="info-card"><h3>Development scripts</h3><p>Make build, test, lint, and validation commands discoverable and reliable in local or Codespaces environments.</p></div><div class="info-card"><h3>Guardrails</h3><p>State security rules, sensitive areas, generated-file boundaries, review expectations, and commands that should not be changed.</p></div></div>
+      <div class="code-block"><div class="code-label">Useful project guidance</div># Development guidance
+- Use the existing project structure and naming conventions.
+- Do not change workflow files unless the task explicitly requires it.
+- Keep secrets in environment variables and never commit credentials.
+- Add tests for changed behavior and run the relevant validation command.
+- Explain any assumptions about undocumented business rules before editing.</div>
+      <div class="callout callout-blue"><span class="callout-icon">🔍</span><div><strong>Control remains human:</strong> Agent Mode can propose extensive changes, but you can review, revise, undo, or narrow them at every stage.</div></div>
+    </section>
+
+    <section class="slide" id="slide-exercise">
+      <div class="breadcrumb">Unit 04 → GitHub Skills exercise</div><div class="slide-label">Hands-on practice</div><h2 class="slide-title">Build OctoFit Tracker</h2><div class="divider"></div>
+      <p class="slide-desc">The exercise places you in a GitHub Codespace and asks you to build a social fitness application for students with GitHub Copilot Agent Mode.</p>
+      <div class="card-grid"><div class="info-card"><h3>Application features</h3><ul><li>User profiles for students and gym teachers.</li><li>Activity tracking and progress.</li><li>Team creation and management.</li><li>Leaderboards for student performance.</li><li>Personalized workout suggestions.</li></ul></div><div class="info-card"><h3>Workshop sequence</h3><ol><li>Set up a Codespace.</li><li>Install and configure Copilot.</li><li>Generate and refine app components.</li><li>Implement profiles, tracking, teams, and leaderboards.</li><li>Test and optimize the generated code.</li></ol></div></div>
+      <div class="callout callout-orange"><span class="callout-icon">🛑</span><div><strong>Exercise integrity:</strong> follow the repository README and do not modify workflow files. Changing validation workflows can break exercise grading and feedback.</div></div>
+      <p><button class="unit-button" type="button" data-unit="unit-4">Read Unit 04 in this guide →</button></p>
+    </section>
+
+    <section class="slide" id="slide-assessment">
+      <div class="breadcrumb">Unit 05 → Module assessment</div><div class="slide-label">Check your understanding</div><h2 class="slide-title">Can you explain the agent?</h2><div class="divider"></div>
+      <p class="slide-desc">Before moving on, use this checklist to test the concepts covered by the official assessment.</p>
+      <ul class="checklist"><li>Explain how Agent Mode differs from inline suggestions and single-file assistance.</li><li>Describe how Agent Mode analyzes a project and identifies dependencies.</li><li>Explain how it autonomously performs multi-step changes and runs tools.</li><li>Describe how testing can reveal issues that Agent Mode then corrects.</li><li>Explain how README and project documentation influence its behavior.</li><li>Identify when domain-specific knowledge requires more human guidance.</li><li>Describe how to review, modify, or undo proposed changes.</li><li>Recognize that autonomy does not remove developer accountability.</li></ul>
+      <div class="callout callout-purple"><span class="callout-icon">🧠</span><div><strong>Assessment lens:</strong> the correct answer is usually the one that combines autonomous project-wide action with iterative verification and continued developer oversight.</div></div>
+      <p><button class="unit-button" type="button" data-unit="unit-5">Review Unit 05 in this guide →</button></p>
+    </section>
+
+    <section class="slide" id="slide-summary">
+      <div class="breadcrumb">Unit 06 → Summary and references</div><div class="slide-label">Carry it into your workflow</div><h2 class="slide-title">Autonomous does not mean unaccountable</h2><div class="divider"></div>
+      <p class="slide-desc">GitHub Copilot Agent Mode combines project awareness, tool use, multi-step execution, and iterative correction. Used well, it lets developers spend more time on product decisions and less time on repetitive implementation.</p>
+      <div class="card-grid"><div class="info-card"><h3>Build</h3><p>Prompt Agent Mode to create an application or feature from a clear outcome.</p></div><div class="info-card"><h3>Guide</h3><p>Use documentation, repository conventions, and explicit constraints to improve the quality of autonomous work.</p></div><div class="info-card"><h3>Improve</h3><p>Let Agent Mode find errors, refactor code, develop features, and re-run validation across the project.</p></div><div class="info-card"><h3>Own</h3><p>Review every meaningful change and remain accountable for security, correctness, maintainability, and fit.</p></div></div>
+      <h3 class="reference-heading">Further reading</h3>
+      <div class="reference-list"><a href="https://github.com/features/copilot" target="_blank" rel="noopener">GitHub Copilot features ↗</a><a href="https://github.blog/news-insights/product-news/github-copilot-the-agent-awakens" target="_blank" rel="noopener">GitHub Copilot: The Agent Awakens ↗</a><a href="https://code.visualstudio.com/blogs/2025/02/24/introducing-copilot-agent-mode" target="_blank" rel="noopener">Introducing Copilot Agent Mode ↗</a><a href="https://code.visualstudio.com/docs" target="_blank" rel="noopener">Developing in Visual Studio Code ↗</a><a href="https://docs.github.com/en/copilot/concepts/billing/copilot-requests" target="_blank" rel="noopener">Premium Request Units ↗</a><button class="unit-button" type="button" data-unit="unit-6">Read Unit 06 in this guide →</button></div>
+      <div class="callout callout-green"><span class="callout-icon">🚀</span><div><strong>Next step:</strong> choose a small, reversible task in a repository, describe the outcome and acceptance criteria, ask Agent Mode to plan first, then review the diff and run the project’s real verification command.</div></div>
+      <p class="summary-note">This guide summarizes the public Microsoft Learn module <em>Building Applications with GitHub Copilot Agent Mode</em>. Use the source links for the complete course, exercise, assessment, and current product guidance.</p>
+    </section>
+  </main>
+</div>
+<div class="unit-modal" id="unitModal" role="dialog" aria-modal="true" aria-labelledby="unitModalTitle" aria-hidden="true">
+  <div class="unit-dialog">
+    <button class="unit-close" type="button" id="unitClose" aria-label="Close unit reader">×</button>
+    <div id="unitModalContent"></div>
+  </div>
+</div>
+<button id="scrollTopBtn" aria-label="Scroll to top">↑</button>
+<script>
+  const progressBar = document.getElementById('progressBar');
+  const scrollTopBtn = document.getElementById('scrollTopBtn');
+  const navItems = document.querySelectorAll('.nav-item');
+  const sections = document.querySelectorAll('.slide');
+  const unitModal = document.getElementById('unitModal');
+  const unitModalContent = document.getElementById('unitModalContent');
+  const unitClose = document.getElementById('unitClose');
+
+  const unitContent = {
+    'unit-1': '<div class="slide-label">Unit 01 · Introduction</div><h2 id="unitModalTitle">Build an application with Agent Mode</h2><p>In this module, you learn how to build an application using GitHub Copilot Agent Mode within a GitHub Codespace and the VS Code IDE.</p><h3>Learning objectives</h3><ul><li>Develop with VS Code in a GitHub Codespace.</li><li>Prompt Agent Mode to create an application.</li><li>Use documentation files to guide Agent Mode.</li><li>Understand how Agent Mode iterates over a codebase to fix errors, refactor code, and develop new features.</li></ul><h3>Prerequisites</h3><p>You need a GitHub account and a fundamental understanding of GitHub Copilot.</p>',
+    'unit-2': '<div class="slide-label">Unit 02 · Foundations</div><h2 id="unitModalTitle">What is GitHub Copilot Agent Mode?</h2><p>Agent Mode is an autonomous AI coding assistant that understands a project beyond the immediate context of one file. It can create applications, refactor across files, write and run tests, migrate code, generate documentation, and integrate libraries.</p><h3>How it works</h3><ul><li>Determines relevant files and dependencies before editing.</li><li>Suggests and executes changes aligned with the project structure.</li><li>Runs terminal commands such as builds, dependency installation, and tests.</li><li>Monitors results and iterates to remediate issues and improve accuracy.</li></ul><h3>Ways to interact with Copilot</h3><p>Inline Suggestions provide completions, Chat answers project-aware questions, Copilot Edits coordinates broader selected-file changes, and Agent Mode orchestrates complex workflows.</p>',
+    'unit-3': '<div class="slide-label">Unit 03 · Capabilities</div><h2 id="unitModalTitle">Explore autonomous development assistance</h2><p>Agent Mode independently analyzes coding requests, identifies relevant files, determines terminal commands, and implements comprehensive solutions without requiring step-by-step instructions.</p><h3>What it can orchestrate</h3><ul><li>Build REST endpoints, update application wiring, install dependencies, and generate tests.</li><li>Integrate databases by updating dependencies, configuration, models, and tests.</li><li>Draft, review, and refine features such as authentication.</li><li>Recognize project context, run suitable scripts, and prepare deployment workflows.</li></ul><h3>Iteration and oversight</h3><p>When an error occurs, Agent Mode can detect the cause, apply a correction, and rerun tests. Developers can review, adjust, or undo proposed changes. Missing documentation and specialized business logic remain important limitations.</p><p><strong>Cost note:</strong> multi-step handoffs consume Premium Request Units, and premium reasoning can use more units than standard reasoning.</p>',
+    'unit-4': '<div class="slide-label">Unit 04 · Practice</div><h2 id="unitModalTitle">GitHub Skills exercise</h2><p>In the hands-on exercise, you take the role of a gym teacher developing OctoFit Tracker, a social fitness app for students, in a GitHub Codespace.</p><h3>Workshop objectives</h3><ul><li>Set up a development environment with GitHub Codespaces.</li><li>Use GitHub Copilot to accelerate application development.</li><li>Implement core OctoFit Tracker features with Agent Mode.</li><li>Apply prompting and refinement practices to AI-generated code.</li></ul><h3>Application features</h3><ul><li>User profiles for students and gym teachers.</li><li>Activity tracking and fitness progress.</li><li>Team creation and collaborative goals.</li><li>Leaderboards for student performance.</li><li>Personalized workout suggestions.</li></ul><h3>Start the exercise</h3><p>Use the repository template and follow its README instructions. Do not modify workflow files because changing them can break validation, feedback, or grading.</p>',
+    'unit-5': '<div class="slide-label">Unit 05 · Knowledge check</div><h2 id="unitModalTitle">Check your knowledge</h2><p>The assessment checks whether you understand the difference between traditional AI-assisted development and Agent Mode.</p><h3>Questions cover</h3><ul><li>How Agent Mode dynamically analyzes projects and performs multi-step work.</li><li>How it identifies issues through testing, corrects errors, and repeats the cycle.</li><li>How it can identify files, update dependencies, refactor code, and verify a framework migration.</li><li>How documentation files influence Agent Mode’s understanding of intended behavior.</li><li>Why specialized domain knowledge and nuanced business logic can require additional human guidance.</li></ul><p><strong>Self-check:</strong> choose explanations that combine autonomous project-wide action, iterative verification, documentation-aware context, and developer oversight.</p>',
+    'unit-6': '<div class="slide-label">Unit 06 · Summary</div><h2 id="unitModalTitle">Carry Agent Mode into your workflow</h2><p>Agent Mode enhances software development by autonomously creating applications, refactoring code, iterating on solutions, fixing issues, and developing new features.</p><h3>By the end of the module, you should be able to</h3><ul><li>Develop applications with VS Code inside GitHub Codespaces.</li><li>Prompt Agent Mode to build new applications autonomously.</li><li>Use documentation files to guide Agent Mode effectively.</li><li>Understand how Agent Mode fixes errors, refactors code, and develops features across a project.</li></ul><h3>Core takeaway</h3><p>Codespaces provide the environment, documentation provides durable context, Agent Mode provides autonomous execution, and the developer provides judgment, review, and accountability.</p>'
+  };
+
+  function openUnit(unitId) {
+    unitModalContent.innerHTML = unitContent[unitId];
+    unitModal.classList.add('is-open');
+    unitModal.setAttribute('aria-hidden', 'false');
+    unitClose.focus();
+    document.body.classList.add('modal-open');
+  }
+
+  function closeUnit() {
+    unitModal.classList.remove('is-open');
+    unitModal.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('modal-open');
+  }
+
+  document.querySelectorAll('[data-unit]').forEach(button => button.addEventListener('click', () => openUnit(button.dataset.unit)));
+  unitClose.addEventListener('click', closeUnit);
+  unitModal.addEventListener('click', event => { if (event.target === unitModal) closeUnit(); });
+  document.addEventListener('keydown', event => { if (event.key === 'Escape' && unitModal.classList.contains('is-open')) closeUnit(); });
+
+  function updateProgress() {
+    const scrollTop = window.scrollY;
+    const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = scrollable > 0 ? (scrollTop / scrollable) * 100 : 0;
+    progressBar.style.width = progress + '%';
+    scrollTopBtn.classList.toggle('visible', scrollTop > 300);
+    let current = sections[0].id;
+    sections.forEach(section => {
+      if (scrollTop >= section.offsetTop - 140) current = section.id;
+    });
+    navItems.forEach(item => item.classList.toggle('active', item.getAttribute('href') === '#' + current));
+  }
+
+  window.addEventListener('scroll', updateProgress, { passive: true });
+  scrollTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+  updateProgress();
+</script>
+</body>
+</html>

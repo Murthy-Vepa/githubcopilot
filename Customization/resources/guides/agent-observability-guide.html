@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A practical guide to observing, debugging, and improving GitHub Copilot agent workflows.">
+  <title>GitHub Copilot Agent Observability Guide</title>
+  <style>
+    :root { --navy:#09243c; --navy-deep:#061827; --blue:#1769aa; --teal:#0f9da8; --coral:#e26d5a; --gold:#d9a441; --ink:#17212b; --muted:#5f6f7d; --paper:#f5f1e8; --white:#fffdf8; --line:#d8d0c4; --soft-blue:#eaf6f4; --soft-coral:#fff0eb; --shadow:0 8px 26px rgba(23,33,43,.06); }
+    * { box-sizing:border-box; }
+    html { scroll-behavior:smooth; font-family:'Trebuchet MS','Segoe UI',sans-serif; }
+    body { margin:0; color:var(--ink); background:var(--paper); line-height:1.6; }
+    a { color:var(--blue); font-weight:700; text-decoration:none; }
+    a:hover { color:var(--coral); text-decoration:underline; }
+    code { padding:2px 5px; color:var(--navy); background:#e5eef0; font: .88em Consolas,monospace; }
+    .shell { display:grid; grid-template-columns:260px minmax(0,1fr); min-height:100vh; }
+    .rail { position:sticky; top:0; height:100vh; overflow-y:auto; padding:28px 20px; color:#d9e8f2; background:var(--navy); }
+    .brand { padding-bottom:24px; border-bottom:1px solid rgba(255,255,255,.14); }
+    .brand small { color:#7ed6d1; font-size:11px; font-weight:800; letter-spacing:1.8px; text-transform:uppercase; }
+    .brand h1 { margin:9px 0 0; color:#fffdf8; font:700 24px/1.05 Georgia,'Times New Roman',serif; }
+    .menu-label { margin:25px 0 8px; color:#88a7ba; font-size:10px; font-weight:800; letter-spacing:1.4px; text-transform:uppercase; }
+    .menu { display:grid; gap:4px; }
+    .menu a { display:block; padding:8px 9px; border-left:2px solid transparent; color:#c4d6e0; font-size:12px; font-weight:400; }
+    .menu a:hover, .menu a.active { border-left-color:#7ed6d1; background:rgba(255,255,255,.06); color:#fff; text-decoration:none; }
+    .rail-note { margin-top:28px; padding-top:16px; border-top:1px solid rgba(255,255,255,.14); color:#88a7ba; font-size:11px; }
+    main { min-width:0; padding:42px clamp(22px,5vw,76px) 70px; }
+    .content { width:min(980px,100%); margin:0 auto; }
+    .hero { margin-bottom:36px; padding:clamp(30px,5vw,58px); color:#fffdf8; background:var(--navy); box-shadow:0 18px 45px rgba(23,33,43,.12); position:relative; overflow:hidden; }
+    .hero::after { content:''; position:absolute; width:300px; height:300px; right:-70px; bottom:-125px; border:45px solid rgba(126,214,209,.32); border-radius:50%; }
+    .hero > * { position:relative; z-index:1; }
+    .eyebrow { margin-bottom:12px; color:#7ed6d1; font-size:11px; font-weight:800; letter-spacing:2px; text-transform:uppercase; }
+    h2 { margin:0; color:var(--navy); font:700 clamp(30px,4vw,52px)/1.04 Georgia,'Times New Roman',serif; }
+    .hero h2 { max-width:760px; color:#fffdf8; }
+    .hero p { max-width:760px; color:#d9e8f2; font-size:17px; }
+    .meta { display:flex; flex-wrap:wrap; gap:9px; margin-top:24px; }
+    .meta span { padding:7px 11px; border:1px solid rgba(255,255,255,.22); color:#fffdf8; font-size:11px; font-weight:800; }
+    .section { margin:0 0 38px; }
+    .section-head { margin-bottom:24px; padding-bottom:17px; border-bottom:2px solid var(--line); }
+    .section-head p { max-width:760px; margin:12px 0 0; color:var(--muted); font-size:16px; }
+    h3 { margin:28px 0 10px; color:var(--blue); font-size:20px; }
+    h4 { margin:20px 0 7px; color:var(--navy); font-size:15px; }
+    p { max-width:800px; }
+    ul, ol { padding-left:23px; }
+    li { margin:7px 0; }
+    .grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; margin:20px 0; }
+    .card { padding:20px; border:1px solid var(--line); background:var(--white); box-shadow:var(--shadow); }
+    .card h3 { margin-top:0; font-size:17px; }
+    .card p, .card li { color:var(--muted); font-size:14px; }
+    .callout { margin:22px 0; padding:17px 20px; border-left:5px solid var(--teal); background:var(--soft-blue); }
+    .callout.warning { border-left-color:var(--coral); background:var(--soft-coral); }
+    .callout strong { color:var(--navy); }
+    .code { margin:16px 0; padding:18px 20px; overflow-x:auto; color:#d9f8f2; background:#142d41; border-left:4px solid var(--teal); font:12.5px/1.7 Consolas,'Courier New',monospace; white-space:pre-wrap; }
+    .table-wrap { margin:20px 0; overflow-x:auto; border:1px solid var(--line); background:var(--white); }
+    table { width:100%; min-width:680px; border-collapse:collapse; font-size:13px; }
+    th, td { padding:11px 13px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; }
+    th { color:#fffdf8; background:var(--navy); font-size:10px; letter-spacing:1px; text-transform:uppercase; }
+    tr:last-child td { border-bottom:0; }
+    .checklist { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px 18px; padding:0; list-style:none; }
+    .checklist li { margin:0; padding:10px 13px 10px 32px; border-bottom:1px solid var(--line); color:var(--muted); position:relative; }
+    .checklist li::before { content:'□'; position:absolute; left:10px; color:var(--coral); font-weight:800; }
+    .source { margin-top:38px; padding-top:18px; border-top:1px solid var(--line); color:var(--muted); font-size:13px; }
+    #top { position:fixed; right:20px; bottom:20px; display:none; width:38px; height:38px; border:1px solid var(--teal); border-radius:50%; color:#fff; background:var(--navy); cursor:pointer; font-size:17px; }
+    #top.show { display:block; }
+    .progress { position:fixed; top:0; left:0; z-index:10; width:0; height:3px; background:var(--teal); }
+    @media (max-width:900px) { .shell { display:block; } .rail { position:relative; height:auto; } .menu { grid-template-columns:repeat(2,minmax(0,1fr)); } main { padding:28px 20px 50px; } }
+    @media (max-width:600px) { .menu, .grid, .checklist { grid-template-columns:1fr; } .hero { padding:30px 24px; } }
+    @media print { .rail, #top, .progress { display:none !important; } main { padding:12px; } .hero, .card { box-shadow:none; break-inside:avoid; } }
+  </style>
+</head>
+<body>
+  <div class="progress" id="progress"></div>
+  <div class="shell">
+    <aside class="rail">
+      <div class="brand"><small>GitHub Copilot</small><h1>Agent Observability Guide</h1></div>
+      <div class="menu-label">Guide path</div>
+      <nav class="menu"><a href="#overview">Overview</a><a href="#signals">Observability signals</a><a href="#trace">Trace a run</a><a href="#diagnose">Diagnose failures</a><a href="#improve">Improve the system</a><a href="#governance">Privacy and governance</a><a href="#checklist">Readiness checklist</a></nav>
+      <p class="rail-note">Observe the workflow as a system: context in, decisions and tools in the middle, evidence and outcomes out.</p>
+    </aside>
+    <main><div class="content">
+      <header class="hero" id="overview"><div class="eyebrow">Customization guide</div><h2>Make agent behavior inspectable.</h2><p>Agent observability turns an opaque Copilot run into evidence you can use to understand context, tool use, permissions, failures, cost, and outcomes.</p><div class="meta"><span>Trace</span><span>Diagnose</span><span>Improve</span><span>Govern</span></div></header>
+
+      <section class="section" id="signals"><div class="section-head"><div class="eyebrow">01 · Signals</div><h2>Observe the whole agent loop</h2><p>A useful record connects the user’s request to the final result. Capture enough detail to reproduce the decision without collecting unnecessary sensitive content.</p></div>
+        <div class="grid"><article class="card"><h3>Context</h3><p>What instructions, prompt files, Skills, agents, repository files, and prior messages were available?</p></article><article class="card"><h3>Decisions</h3><p>What plan did the agent form, what assumptions did it make, and where did it change direction?</p></article><article class="card"><h3>Tool calls</h3><p>Which tools, MCP servers, commands, files, and APIs were called, with what inputs and results?</p></article><article class="card"><h3>Outcome</h3><p>What changed, what checks ran, what was approved, and what evidence supports the result?</p></article></div>
+        <div class="table-wrap"><table><thead><tr><th>Signal</th><th>Useful questions</th><th>Example evidence</th></tr></thead><tbody><tr><td>Trace identity</td><td>Which session, task, repository, branch, and user produced this run?</td><td>Run ID, timestamp, working directory, commit SHA.</td></tr><tr><td>Context loading</td><td>Which customization files were applied or skipped?</td><td>Instruction paths, Skill matches, selected agent, MCP tool descriptions.</td></tr><tr><td>Tool execution</td><td>What did the agent ask a tool to do, and what came back?</td><td>Tool name, redacted arguments, result summary, duration, status.</td></tr><tr><td>Quality outcome</td><td>Did the result meet the acceptance criteria?</td><td>Tests, lint, review findings, changed files, human approval.</td></tr></tbody></table></div>
+      </section>
+
+      <section class="section" id="trace"><div class="section-head"><div class="eyebrow">02 · Trace</div><h2>Trace a run from request to outcome</h2><p>Start with a timeline. The goal is not to log every character forever; it is to preserve the causal chain needed to explain what happened.</p></div>
+        <div class="code">Run: 2026-08-05T14:32Z / task-1842
+Request: Add validation to the claims endpoint
+Context: repo instructions + api.instructions.md + Builder agent
+Plan: inspect controller -> find existing validator -> add tests
+Tool: search_codebase("claims endpoint") -> 12 matches / 420 ms
+Tool: read_file(ClaimsController.cs) -> success
+Permission: edit_file -> approved by user
+Change: ClaimsController.cs, ClaimsControllerTests.cs
+Validation: dotnet test -> 48 passed
+Outcome: ready for review</div>
+        <h3>Minimum trace fields</h3><ul class="checklist"><li>Stable run or correlation identifier</li><li>Timestamp and duration for major steps</li><li>Task, repository, branch, and commit context</li><li>Selected agent, Skills, and instruction sources</li><li>Tool name, redacted arguments, result status, and error</li><li>Permission decisions and human approvals</li><li>Changed files and validation commands</li><li>Final outcome and unresolved limitations</li></ul>
+        <div class="callout"><strong>Keep traces useful:</strong> record structured events where possible. A compact event with a tool name, status, duration, and redacted summary is easier to query than an unbounded transcript.</div>
+      </section>
+
+      <section class="section" id="diagnose"><div class="section-head"><div class="eyebrow">03 · Diagnose</div><h2>Use evidence to locate the failure</h2><p>Most agent failures fall into a small set of categories. Classify the failure before changing prompts or adding more context.</p></div>
+        <div class="table-wrap"><table><thead><tr><th>Failure pattern</th><th>Evidence to inspect</th><th>Likely correction</th></tr></thead><tbody><tr><td>Wrong or incomplete answer</td><td>Context sources, file selection, prompt constraints, assumptions.</td><td>Improve the relevant instruction, Skill description, or acceptance criteria.</td></tr><tr><td>Skill did not activate</td><td>Skill metadata, task wording, available Skills, activation decision.</td><td>Make the description precise about capability and trigger conditions.</td></tr><tr><td>Tool was not used</td><td>Tool discovery, permissions, MCP connection status, agent tool list.</td><td>Expose only the needed tool and state when it should be used.</td></tr><tr><td>Tool failed</td><td>Arguments, exit code, timeout, server logs, returned error.</td><td>Fix the contract, input validation, timeout, or server behavior.</td></tr><tr><td>Unsafe action proposed</td><td>Permission event, tool arguments, hook result, untrusted input.</td><td>Default-deny, narrow permissions, add deterministic checks, require approval.</td></tr><tr><td>Run is slow or expensive</td><td>Token use, context size, tool latency, retries, repeated searches.</td><td>Reduce always-on context, use progressive disclosure, cache stable results.</td></tr></tbody></table></div>
+        <div class="callout warning"><strong>Do not tune blindly:</strong> adding more instructions can hide the real issue, increase context cost, and introduce contradictions. Change one layer, rerun the same scenario, and compare evidence.</div>
+      </section>
+
+      <section class="section" id="improve"><div class="section-head"><div class="eyebrow">04 · Improve</div><h2>Turn recurring failures into system changes</h2><p>Observability is valuable when it closes the loop between an observed failure and a small, testable improvement.</p></div>
+        <div class="grid"><article class="card"><h3>1. Capture</h3><p>Save the run identifier, prompt, relevant context, tool events, errors, and result.</p></article><article class="card"><h3>2. Classify</h3><p>Decide whether the gap is context, capability, role, tool contract, permission, or validation.</p></article><article class="card"><h3>3. Change</h3><p>Update the narrowest responsible artifact and keep the change reviewable.</p></article><article class="card"><h3>4. Replay</h3><p>Run the original scenario plus a nearby negative case to check for regressions.</p></article></div>
+        <h3>Useful operational metrics</h3><div class="table-wrap"><table><thead><tr><th>Metric</th><th>What it tells you</th><th>Use carefully</th></tr></thead><tbody><tr><td>Task success rate</td><td>How often the workflow meets its acceptance criteria.</td><td>Define success independently from “the model returned an answer.”</td></tr><tr><td>Human correction rate</td><td>How often people revise, reject, or rerun the result.</td><td>Track correction themes, not just a single percentage.</td></tr><tr><td>Tool success and latency</td><td>Whether external capabilities are reliable and responsive.</td><td>Separate model delay from server or network delay.</td></tr><tr><td>Context and token cost</td><td>How much always-on and on-demand material each run consumes.</td><td>Redact content and aggregate by workflow rather than exposing prompts.</td></tr><tr><td>Permission denials</td><td>Where the workflow reaches a boundary or asks for too much access.</td><td>A denial can be a healthy guardrail, not necessarily a failure.</td></tr></tbody></table></div>
+      </section>
+
+      <section class="section" id="governance"><div class="section-head"><div class="eyebrow">05 · Governance</div><h2>Protect the evidence while making it useful</h2><p>Agent traces can contain source code, prompts, identifiers, secrets, and business data. Observability must have its own access and retention design.</p></div>
+        <div class="grid"><article class="card"><h3>Minimize</h3><p>Collect the smallest fields needed to debug the workflow. Prefer summaries and hashes where raw content is unnecessary.</p></article><article class="card"><h3>Redact</h3><p>Remove secrets, tokens, personal data, credentials, and sensitive payloads before storage or export.</p></article><article class="card"><h3>Restrict</h3><p>Limit who can view traces and separate operational metadata from sensitive request content.</p></article><article class="card"><h3>Retain deliberately</h3><p>Set retention, deletion, and export rules that match the risk and value of the evidence.</p></article></div>
+        <h3>Guardrail design</h3><ul><li>Use permission handlers or approval prompts for shell, file-write, network, and external-system operations.</li><li>Use hooks for deterministic logging, validation, or blocking logic that should run independently of model wording.</li><li>Keep reviewers read-only where possible; planners should not need write or shell access.</li><li>Audit third-party Skills, MCP servers, scripts, and hook implementations before enabling them.</li><li>Store observability configuration and schemas in version control with a named owner.</li></ul>
+        <div class="callout warning"><strong>Security boundary:</strong> logs are another data store. Apply the same classification, access control, secret scanning, and retention expectations to traces that you apply to application logs.</div>
+      </section>
+
+      <section class="section" id="checklist"><div class="section-head"><div class="eyebrow">06 · Readiness</div><h2>Agent observability readiness checklist</h2><p>Use this checklist before a customized agent workflow becomes a team dependency.</p></div>
+        <ul class="checklist"><li>Runs have stable identifiers and timestamps</li><li>Loaded instructions, Skills, agents, and tools are discoverable</li><li>Tool inputs and results are structured and redacted</li><li>Permission requests and approvals are recorded</li><li>Failures include actionable error context</li><li>Validation evidence is linked to the run outcome</li><li>Trace access and retention are documented</li><li>Owners review recurring failure patterns</li><li>Replay scenarios cover success and failure cases</li><li>Changes to observability behavior are tested</li></ul>
+        <div class="callout"><strong>Definition of done:</strong> another engineer can use the trace to explain what the agent knew, what it attempted, what was allowed, what changed, and why the result was accepted.</div>
+        <p class="source">Related resources: <a href="github-copilot-customization.html">Customization presentation</a> · <a href="Customization/resources/posters/GitHub%20Copilot%20Agent%20Observability%20-%20Light%20-%20Landscape.png" target="_blank" rel="noreferrer noopener">Agent Observability poster</a> · <a href="https://docs.github.com/en/copilot" target="_blank" rel="noreferrer noopener">GitHub Copilot documentation</a>.</p>
+      </section>
+    </div></main>
+  </div>
+  <button id="top" title="Back to top" aria-label="Back to top">↑</button>
+  <script>
+    const progress = document.querySelector('#progress');
+    const topButton = document.querySelector('#top');
+    function updateScroll() {
+      const max = document.documentElement.scrollHeight - window.innerHeight || 1;
+      progress.style.width = `${(window.scrollY / max) * 100}%`;
+      topButton.classList.toggle('show', window.scrollY > 320);
+    }
+    window.addEventListener('scroll', updateScroll, { passive: true });
+    topButton.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+    updateScroll();
+  </script>
+</body>
+</html>

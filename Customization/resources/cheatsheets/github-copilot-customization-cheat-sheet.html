@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="GitHub Copilot customization quick reference for instructions, prompts, agents, skills, hooks, and MCP servers.">
+  <title>GitHub Copilot Customization - Quick Reference</title>
+  <style>
+    :root {
+      --ink: #102042; --muted: #64748b; --paper: #f0f4f8; --card: #fff;
+      --line: #dbe3ec; --navy: #0a1628; --blue: #1d4ed8; --sky: #0ea5e9;
+      --green: #059669; --orange: #c2410c; --purple: #7c3aed; --red: #dc2626;
+      --shadow: 0 4px 20px rgba(10,22,40,.08);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; font-family: Georgia, 'Times New Roman', serif; overflow-x: hidden; }
+    body { margin: 0; background: var(--paper); color: var(--ink); overflow-x: hidden; }
+    a { color: inherit; text-decoration: none; }
+    code { background: #e0f2fe; border-radius: 4px; color: #0c4a6e; font: 11px 'Cascadia Code', Consolas, monospace; padding: 2px 5px; }
+    .progress { position: fixed; inset: 0 0 auto; height: 3px; background: var(--sky); z-index: 5; transform-origin: left; transform: scaleX(0); }
+    .layout { display: flex; min-height: 100vh; min-width: 0; }
+    aside { width: 235px; min-width: 235px; background: var(--navy); color: #cbd5e1; position: sticky; top: 0; height: 100vh; padding-bottom: 18px; }
+    .brand { padding: 25px 19px 20px; border-bottom: 1px solid rgba(255,255,255,.1); }
+    .brand small { color: #38bdf8; font: 700 10px/1.2 'Segoe UI', sans-serif; letter-spacing: 1.4px; text-transform: uppercase; }
+    .brand h2 { color: white; font: 700 18px/1.2 Georgia, serif; margin: 7px 0 0; }
+    nav { padding: 16px 10px; font-family: 'Segoe UI', sans-serif; }
+    nav a { display: block; border-left: 3px solid transparent; color: #94a3b8; font-size: 12px; padding: 9px 12px; }
+    nav a:hover, nav a.active { color: white; background: rgba(14,165,233,.12); border-left-color: var(--sky); }
+    .aside-note { border-top: 1px solid rgba(255,255,255,.1); color: #64748b; font: 11px/1.5 'Segoe UI', sans-serif; margin: 8px 18px 0; padding-top: 16px; }
+    main { flex: 1; min-width: 0; }
+    .wrap { max-width: 1100px; width: 100%; margin: auto; padding: 42px 48px 58px; }
+    .hero { background: linear-gradient(135deg, #dbeafe, #e0f2fe 55%, #ede9fe); border: 1px solid #c7d8ed; border-radius: 18px; padding: 40px 38px 34px; box-shadow: var(--shadow); }
+    .eyebrow { color: var(--blue); font: 700 11px/1 'Segoe UI', sans-serif; letter-spacing: 1.5px; text-transform: uppercase; }
+    h1 { font: 900 clamp(30px, 4vw, 46px)/1.05 Georgia, serif; letter-spacing: -.8px; margin: 13px 0 12px; }
+    .hero p { color: #475569; font: 15px/1.6 'Segoe UI', sans-serif; margin: 0; max-width: 760px; }
+    .meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+    .meta span { background: rgba(255,255,255,.72); border: 1px solid rgba(15,23,42,.1); border-radius: 7px; color: #475569; font: 600 11px 'Segoe UI', sans-serif; padding: 5px 11px; }
+    .section-title { align-items: center; display: flex; gap: 12px; margin: 34px 0 16px; }
+    .section-title h2 { font: 800 18px Georgia, serif; margin: 0; white-space: nowrap; }
+    .section-title i { background: linear-gradient(90deg, var(--line), transparent); height: 2px; flex: 1; }
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .grid.two { grid-template-columns: repeat(2, 1fr); }
+    .card { background: var(--card); border: 1px solid var(--line); border-radius: 11px; box-shadow: var(--shadow); padding: 19px; }
+    .card h3 { font: 700 14px 'Segoe UI', sans-serif; margin: 0 0 13px; }
+    .card p { color: var(--muted); font: 13px/1.55 'Segoe UI', sans-serif; margin: 0; }
+    .blue h3 { color: var(--blue); } .green h3 { color: var(--green); } .orange h3 { color: var(--orange); }
+    .purple h3 { color: var(--purple); } .red h3 { color: var(--red); } .sky h3 { color: #0891b2; }
+    table { border-collapse: collapse; font: 12px/1.4 'Segoe UI', sans-serif; table-layout: fixed; width: 100%; }
+    th { background: #f8fafc; color: var(--ink); font-size: 11px; text-align: left; }
+    th, td { border-bottom: 1px solid #edf1f5; overflow-wrap: anywhere; padding: 8px 6px; vertical-align: top; }
+    tr:last-child td { border-bottom: 0; }
+    td:first-child { color: var(--blue); font-family: 'Cascadia Code', Consolas, monospace; font-size: 11px; width: 28%; }
+    td:last-child { color: var(--muted); }
+    .wide td:first-child { width: 21%; }
+    .wide td:nth-child(2) { width: 30%; }
+    pre { background: #0f1d31; border-radius: 8px; color: #dbeafe; font: 12px/1.65 'Cascadia Code', Consolas, monospace; margin: 10px 0 0; overflow: auto; padding: 13px 14px; }
+    .callout { border-left: 4px solid var(--sky); background: #eff6ff; border-radius: 8px; color: #1e40af; font: 13px/1.55 'Segoe UI', sans-serif; margin-top: 16px; padding: 13px 16px; }
+    .callout strong { color: #102042; }
+    footer { border-top: 1px solid var(--line); color: var(--muted); font: 11px 'Segoe UI', sans-serif; margin-top: 38px; padding-top: 20px; text-align: center; }
+    #top { background: var(--navy); border: 1px solid var(--sky); border-radius: 50%; bottom: 20px; color: white; cursor: pointer; display: none; font-size: 16px; height: 38px; position: fixed; right: 20px; width: 38px; }
+    #top.show { display: block; }
+    @media (max-width: 900px) { aside { display: none; } .wrap { padding: 28px 20px 48px; } .grid, .grid.two { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 600px) { .grid, .grid.two { grid-template-columns: 1fr; } .hero { padding: 30px 24px; } .section-title h2 { white-space: normal; } }
+    @media print { aside, #top, .progress { display: none !important; } .wrap { padding: 12px; } .card, .hero { box-shadow: none; break-inside: avoid; } }
+  </style>
+</head>
+<body>
+  <div class="progress" id="progress"></div>
+  <div class="layout">
+    <main>
+      <div class="wrap">
+        <header class="hero" id="overview">
+          <div class="eyebrow">Customization reference</div>
+          <h1>GitHub Copilot Customization</h1>
+          <p>Compare instructions, prompt files, agents, skills, hooks, and MCP servers. Use the tables to choose the right boundary, location, trigger, and approval model for your workflow.</p>
+          <div class="meta"><span>Context and behavior</span><span>Repository and personal scope</span><span>Review every capability</span></div>
+        </header>
+
+        <div class="section-title" id="locations"><h2>Feature overview and locations</h2><i></i></div>
+        <section class="card"><table class="wide"><thead><tr><th>Feature</th><th>What it is</th><th>Filename and location</th></tr></thead><tbody>
+          <tr><td>Custom instructions</td><td>Always-on context that applies within a defined scope.</td><td><code>.github/copilot-instructions.md</code><br><code>.github/instructions/*.instructions.md</code><br><code>AGENTS.md</code> or personal/org settings</td></tr>
+          <tr><td>Prompt files</td><td>Reusable, standalone prompt templates with input variables.</td><td><code>.github/prompts/*.prompt.md</code></td></tr>
+          <tr><td>Custom agents</td><td>Specialist personas with instructions, tools, restrictions, and context.</td><td><code>.github/agents/AGENT-NAME.md</code><br>Organization or user agent locations may also apply.</td></tr>
+          <tr><td>Subagents</td><td>Separate runtime agents that handle delegated work in an isolated context.</td><td>No user-configured file; created and invoked at runtime.</td></tr>
+          <tr><td>Agent skills</td><td>Folders of instructions, scripts, and resources loaded when relevant.</td><td><code>.github/skills/&lt;skill-name&gt;/SKILL.md</code><br><code>.claude/skills/</code> or <code>.agents/skills/</code> project locations</td></tr>
+          <tr><td>Hooks</td><td>Custom commands that execute deterministically at workflow lifecycle points.</td><td><code>.github/hooks/*.json</code></td></tr>
+          <tr><td>MCP servers</td><td>Connections to external systems, APIs, databases, and tools.</td><td><code>mcp.json</code> in the supported IDE path, repository MCP settings, or an agent <code>mcp-servers</code> property</td></tr>
+        </tbody></table></section>
+        <div class="callout"><strong>Scope first:</strong> keep repository guidance with the repository, personal preferences in personal settings, and executable capabilities behind explicit permissions and ownership.</div>
+
+        <div class="section-title" id="choose"><h2>Choose the right feature</h2><i></i></div>
+        <section class="card"><table class="wide"><thead><tr><th>Feature</th><th>How to trigger</th><th>Best for</th><th>Example use cases</th></tr></thead><tbody>
+          <tr><td>Custom instructions</td><td>Automatic</td><td>Standards, guidelines, and expectations that apply broadly.</td><td>Coding standards, accessibility rules, review checklists.</td></tr>
+          <tr><td>Prompt files</td><td>Manual: reference in chat or choose from a prompt picker.</td><td>Focused tasks run repeatedly with different inputs.</td><td>Generate tests, run a review checklist, draft release notes.</td></tr>
+          <tr><td>Custom agents</td><td>Manual: select from an agent dropdown or invoke in a supported surface.</td><td>Projects or processes with distinct stages and strict handoffs.</td><td>Read-only auditor, security reviewer, framework specialist.</td></tr>
+          <tr><td>Subagents</td><td>Automatic or direct delegation from the main agent.</td><td>Complex subtasks that should run in isolation.</td><td>Codebase research, test execution, dependency investigation.</td></tr>
+          <tr><td>Agent skills</td><td>Automatic: Copilot selects the skill when relevant.</td><td>Multi-step workflows with bundled assets loaded as needed.</td><td>Deployment procedures, CI failure diagnosis, report drafting.</td></tr>
+          <tr><td>Hooks</td><td>Automatic at configured lifecycle events.</td><td>Deterministic checks or actions at a specific workflow point.</td><td>Format files, approve or deny tool use, scan for secrets.</td></tr>
+          <tr><td>MCP servers</td><td>Automatic or by asking for a specific tool by name.</td><td>Access to external tools, systems, and real-time data.</td><td>Manage issues, query services, automate browser testing.</td></tr>
+        </tbody></table></section>
+
+        <div class="section-title" id="support"><h2>IDE and surface support</h2><i></i></div>
+        <section class="card"><table><thead><tr><th>Feature</th><th>VS Code</th><th>Visual Studio</th><th>JetBrains</th><th>Eclipse</th><th>Xcode</th><th>GitHub.com</th><th>CLI</th></tr></thead><tbody>
+          <tr><td>Custom instructions</td><td>Yes</td><td>Yes</td><td>Preview</td><td>Preview</td><td>Preview</td><td>Yes</td><td>Yes</td></tr>
+          <tr><td>Prompt files</td><td>Yes</td><td>Yes</td><td>Preview</td><td>No</td><td>Preview</td><td>No</td><td>No</td></tr>
+          <tr><td>Custom agents</td><td>Yes</td><td>Yes</td><td>Preview</td><td>Preview</td><td>Preview</td><td>Yes</td><td>Yes</td></tr>
+          <tr><td>Subagents</td><td>Yes</td><td>No</td><td>Preview</td><td>Preview</td><td>Preview</td><td>No</td><td>Yes</td></tr>
+          <tr><td>Agent skills</td><td>Yes</td><td>Yes</td><td>Preview</td><td>No</td><td>No</td><td>Yes</td><td>Yes</td></tr>
+          <tr><td>Hooks</td><td>Preview</td><td>No</td><td>No</td><td>No</td><td>No</td><td>Yes</td><td>Yes</td></tr>
+          <tr><td>MCP servers</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+        </tbody></table><div class="callout"><strong>Support changes:</strong> use the latest stable IDE, Copilot extension, and Copilot CLI. Preview support and feature availability can vary by version and account.</div></section>
+
+        <section class="card sky"><h3>JetBrains Agent Customizations editor</h3><p>In JetBrains IDEs, use the Agent Customizations editor to create and manage custom agents, skills, and reusable prompt files from the IDE. Keep repository-shared files in the project so teammates can review and version them with the codebase.</p></section>
+
+        <div class="section-title" id="patterns"><h2>Starter patterns</h2><i></i></div>
+        <div class="grid two">
+          <section class="card blue"><h3>Repository instructions</h3><pre># .github/copilot-instructions.md
+- Follow the existing repository patterns.
+- Add focused tests for changed behavior.
+- Keep secrets out of source and logs.</pre></section>
+          <section class="card green"><h3>Prompt file</h3><pre>---
+name: review-change
+description: Review a focused code change
+---
+Review ${file} for correctness, security,
+compatibility, and missing tests.</pre></section>
+          <section class="card purple"><h3>Agent skill</h3><pre>.github/skills/release-notes/
+  SKILL.md
+  examples/
+  scripts/
+  templates/</pre></section>
+          <section class="card orange"><h3>Hook boundary</h3><pre>{
+  "hooks": {
+    "onToolCall": [{
+      "command": "node .github/hooks/check.js",
+      "timeout": 5000
+    }]
+  }
+}</pre></section>
+        </div>
+
+        <div class="section-title" id="safety"><h2>Safety and maintenance checks</h2><i></i></div>
+        <div class="grid">
+          <section class="card red"><h3>Before enabling</h3><table><tr><td>Scope</td><td>Confirm where the customization applies.</td></tr><tr><td>Access</td><td>Review files, commands, network, and secrets.</td></tr><tr><td>Owner</td><td>Identify the maintainer and source repository.</td></tr></table></section>
+          <section class="card orange"><h3>Before changing</h3><table><tr><td>Test</td><td>Run representative and failure-case checks.</td></tr><tr><td>Review</td><td>Inspect permissions, logs, and generated changes.</td></tr><tr><td>Rollback</td><td>Document disable, removal, and version rollback steps.</td></tr></table></section>
+          <section class="card green"><h3>Remember</h3><table><tr><td>Rule</td><td>Use the smallest effective customization.</td></tr><tr><td>Rule</td><td>Prefer explicit contracts over hidden behavior.</td></tr><tr><td>Rule</td><td>Keep context current and easy to discover.</td></tr></table></section>
+        </div>
+        <footer>GitHub Copilot Customization Quick Reference · Based on the <a href="https://docs.github.com/en/copilot/reference/customization-cheat-sheet" target="_blank" rel="noopener">GitHub Docs customization cheat sheet</a>.</footer>
+      </div>
+    </main>
+  </div>
+  <button id="top" title="Back to top" aria-label="Back to top">↑</button>
+  <script>
+    const progress = document.getElementById('progress');
+    const topButton = document.getElementById('top');
+    function updateScroll() {
+      const max = document.documentElement.scrollHeight - window.innerHeight || 1;
+      progress.style.transform = `scaleX(${window.scrollY / max})`;
+      topButton.classList.toggle('show', window.scrollY > 320);
+    }
+    window.addEventListener('scroll', updateScroll, { passive: true });
+    topButton.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+    updateScroll();
+  </script>
+</body>
+</html>

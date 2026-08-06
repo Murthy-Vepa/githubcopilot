@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Copilot Scenario-Based Decision Guides | MetLife Learning</title>
+  <style>
+    :root {
+      --navy: #09243c;
+      --navy-deep: #061827;
+      --blue: #1769aa;
+      --cyan: #27b6c9;
+      --coral: #ef6b62;
+      --gold: #e6b84c;
+      --ink: #1a2733;
+      --muted: #61707d;
+      --paper: #f7f5ef;
+      --white: #fff;
+      --line: #d9e0e4;
+      --soft-blue: #eaf4f8;
+      --soft-coral: #fff0ed;
+      --shadow: 0 18px 45px rgba(9, 36, 60, .12);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; color: var(--ink); background: var(--paper); font-family: "Segoe UI", Tahoma, sans-serif; line-height: 1.6; }
+    .main { min-height: 100vh; padding: 42px clamp(22px, 5vw, 76px) 70px; }
+    .content { width: min(1040px, 100%); margin: 0 auto; }
+    .topline { display: flex; justify-content: space-between; gap: 20px; align-items: center; color: var(--blue); text-transform: uppercase; letter-spacing: .16em; font-size: .7rem; font-weight: 800; }
+    .topline span:last-child { color: var(--muted); letter-spacing: .08em; }
+    .hero { margin: 24px 0 36px; padding: clamp(27px, 5vw, 55px); color: var(--white); background: linear-gradient(120deg, var(--navy-deep), #104b68 68%, #167b87); box-shadow: var(--shadow); position: relative; overflow: hidden; }
+    .hero::after { content: ""; position: absolute; width: 220px; height: 220px; right: -65px; bottom: -105px; border: 36px solid rgba(230,184,76,.72); transform: rotate(22deg); }
+    .hero > * { position: relative; z-index: 1; }
+    .eyebrow { margin: 0 0 12px; color: var(--gold); text-transform: uppercase; letter-spacing: .17em; font-size: .74rem; font-weight: 800; }
+    h1, h2 { margin: 0; color: var(--navy); font: 700 clamp(2rem, 4vw, 3.6rem)/1.04 Georgia, serif; letter-spacing: 0; }
+    .hero h1 { max-width: 760px; color: var(--white); }
+    .hero p { max-width: 760px; margin: 18px 0 0; color: #d7edf0; font-size: 1.08rem; }
+    .hero-meta { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 24px; }
+    .pill { display: inline-block; padding: 5px 10px; color: var(--navy); background: var(--gold); font-size: .75rem; font-weight: 800; }
+    .section-head { margin: 0 0 26px; padding-bottom: 17px; border-bottom: 2px solid var(--line); }
+    .section-head p { max-width: 780px; margin: 12px 0 0; color: var(--muted); font-size: 1.03rem; }
+    h2 { font-size: clamp(1.65rem, 3vw, 2.45rem); }
+    h3 { margin: 30px 0 10px; color: var(--blue); font-size: 1.2rem; }
+    h4 { margin: 22px 0 7px; color: var(--navy); font-size: .98rem; }
+    p { max-width: 820px; }
+    ul, ol { padding-left: 23px; }
+    li { margin: 7px 0; }
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin: 22px 0; }
+    .card { padding: 20px; border: 1px solid var(--line); background: var(--white); box-shadow: 0 7px 22px rgba(9,36,60,.06); }
+    .card h3, .card h4 { margin-top: 0; }
+    .card p { margin-bottom: 0; color: var(--muted); font-size: .94rem; }
+    .scenario { margin: 30px 0; padding: 24px; border-top: 5px solid var(--cyan); background: var(--white); box-shadow: 0 7px 22px rgba(9,36,60,.06); }
+    .scenario:nth-of-type(2n) { border-top-color: var(--coral); }
+    .scenario h3 { margin-top: 0; color: var(--navy); }
+    .answer { margin: 18px 0 0; padding: 16px 18px; border-left: 5px solid var(--gold); background: #fff8df; }
+    .answer strong { color: var(--navy); }
+    .callout { margin: 24px 0; padding: 18px 20px; border-left: 5px solid var(--coral); background: var(--soft-coral); }
+    .callout strong { color: var(--navy); }
+    .tip { border-left-color: var(--cyan); background: var(--soft-blue); }
+    .table-wrap { overflow-x: auto; margin: 22px 0; border: 1px solid var(--line); background: var(--white); }
+    table { width: 100%; border-collapse: collapse; min-width: 720px; font-size: .9rem; }
+    th, td { padding: 12px 14px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    th { color: var(--white); background: var(--navy); font-size: .75rem; text-transform: uppercase; letter-spacing: .08em; }
+    tr:last-child td { border-bottom: 0; }
+    .checklist { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 18px; padding: 0; list-style: none; }
+    .checklist li { margin: 0; padding: 11px 13px 11px 36px; border: 1px solid var(--line); background: var(--white); position: relative; }
+    .checklist li::before { content: "✓"; position: absolute; left: 13px; color: var(--coral); font-weight: 800; }
+    .source { margin-top: 38px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--muted); font-size: .84rem; }
+    a { color: var(--blue); font-weight: 700; }
+    a:hover { color: var(--coral); }
+    @media (max-width: 760px) {
+      .main { padding: 25px 16px 46px; }
+      .topline { align-items: flex-start; flex-direction: column; gap: 5px; }
+      .hero { margin-top: 18px; }
+      .grid, .checklist { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="main">
+    <div class="content">
+      <div class="topline"><span>Customization decision guides</span><span>MetLife learning lab</span></div>
+      <header class="hero">
+        <p class="eyebrow">Scenario-based guide</p>
+        <h1>Choose the right Copilot customization for the job.</h1>
+        <p>Start with the situation you are facing, identify the behavior you need, and select the smallest customization layer that can solve it. These guides are designed for real repository decisions, not feature memorization.</p>
+        <div class="hero-meta"><span class="pill">8 scenarios</span><span class="pill">Decision-first</span><span class="pill">Repository-ready</span></div>
+      </header>
+
+      <section class="section-head">
+        <p class="eyebrow">The fast route</p>
+        <h2>Ask these three questions first</h2>
+        <p>Most customization choices become clear when you separate context, capability, role, and enforcement.</p>
+      </section>
+      <div class="grid">
+        <article class="card"><h3>Who should activate it?</h3><p>Everyone, a person on demand, a selected agent, or an external application?</p></article>
+        <article class="card"><h3>What does it need?</h3><p>Short rules, a repeatable procedure, specialist files and scripts, tools, or lifecycle events?</p></article>
+        <article class="card"><h3>What can it change?</h3><p>Context only, files, external systems, permissions, or released workflow outputs?</p></article>
+        <article class="card"><h3>What is the smallest useful layer?</h3><p>Start small. Move detail into a richer layer only when the current layer cannot carry the requirement.</p></article>
+      </div>
+
+      <div class="callout tip"><strong>Default rule:</strong> use instructions for durable context, prompt files for explicit requests, Skills for reusable expertise, custom agents for roles and handoffs, MCP for external capabilities, and hooks for deterministic controls.</div>
+
+      <section class="section-head">
+        <p class="eyebrow">Decision matrix</p>
+        <h2>Match the situation to the layer</h2>
+        <p>Use this matrix before creating a new artifact. The “first choice” is the narrowest reasonable starting point, not necessarily the final architecture.</p>
+      </section>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Situation</th><th>First choice</th><th>Why it fits</th><th>Escalate when</th></tr></thead>
+          <tbody>
+            <tr><td>Copilot repeatedly violates a coding convention.</td><td>Repository or path-specific instructions</td><td>The rule should apply automatically in the relevant context.</td><td>The rule needs a deterministic check or auto-fix.</td></tr>
+            <tr><td>A developer repeats the same request every week.</td><td>Prompt file</td><td>The user can invoke a focused, reviewable recipe.</td><td>The recipe needs bundled files, scripts, or examples.</td></tr>
+            <tr><td>A procedure requires domain expertise and several resources.</td><td>Agent Skill</td><td>Skills support progressive disclosure and reusable resources.</td><td>The procedure needs a distinct role, tools, or approval boundary.</td></tr>
+            <tr><td>Planning, implementation, and review need different permissions.</td><td>Custom agents and handoffs</td><td>Roles make tools, outputs, and transitions explicit.</td><td>The workflow must run unattended or on lifecycle events.</td></tr>
+            <tr><td>Copilot needs live data or an external action.</td><td>MCP server</td><td>MCP provides a controlled tool and resource boundary.</td><td>The integration is a product feature that should be embedded in software.</td></tr>
+            <tr><td>A command must run before or after an agent action.</td><td>Hook</td><td>Hooks provide deterministic lifecycle enforcement.</td><td>The workflow needs triggers, hosted execution, or safe outputs.</td></tr>
+            <tr><td>A team wants a reusable Copilot-powered application.</td><td>Copilot SDK</td><td>The SDK composes sessions, agents, Skills, MCP, and permission handling.</td><td>The requirement is only repository-local customization.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <section class="section-head">
+        <p class="eyebrow">Real situations</p>
+        <h2>Scenario-based decisions</h2>
+      </section>
+
+      <article class="scenario">
+        <h3>Scenario 1 · “Copilot does not follow our React conventions.”</h3>
+        <p>Your team uses a shared component library, colocated tests, and named exports. Generated components often ignore one or more of these rules.</p>
+        <div class="answer"><strong>Choose:</strong> a path-specific instruction file such as <code>.github/instructions/react.instructions.md</code>.</div>
+        <h4>Starter action</h4><ol><li>Write three to five testable rules.</li><li>Use <code>applyTo</code> to target the relevant files.</li><li>Ask Copilot to create a component and verify the result against the rules.</li></ol>
+        <p><strong>Do not start with:</strong> a custom agent. The issue is missing context, not a missing role.</p>
+      </article>
+
+      <article class="scenario">
+        <h3>Scenario 2 · “We need a standard pull request summary.”</h3>
+        <p>Every pull request should include a summary, test evidence, risk notes, and a rollout statement. The author should choose when to run it.</p>
+        <div class="answer"><strong>Choose:</strong> a prompt file such as <code>.github/prompts/pr-summary.prompt.md</code>.</div>
+        <h4>Starter action</h4><ol><li>Define the inputs the prompt should inspect.</li><li>Specify the exact output headings.</li><li>Add a stop condition for missing tests or unresolved risk.</li></ol>
+        <p><strong>Escalate to a Skill when:</strong> the process also needs scripts, templates, or repository-specific reference files.</p>
+      </article>
+
+      <article class="scenario">
+        <h3>Scenario 3 · “Our incident review needs logs, examples, and a known procedure.”</h3>
+        <p>The workflow uses a diagnostic checklist, log-query examples, redaction guidance, and a report template. It should activate when an incident investigation is requested.</p>
+        <div class="answer"><strong>Choose:</strong> an Agent Skill with <code>SKILL.md</code>, examples, scripts, and templates.</div>
+        <h4>Starter action</h4><ol><li>Put the activation signals in the Skill description.</li><li>Keep the main procedure short and link to supporting resources.</li><li>Test one matching, one non-matching, and one ambiguous request.</li></ol>
+        <p><strong>Do not put everything in:</strong> repository-wide instructions. Large procedures consume context when they are not relevant.</p>
+      </article>
+
+      <article class="scenario">
+        <h3>Scenario 4 · “Planning must be read-only, but implementation can edit.”</h3>
+        <p>Your team wants a visible plan, an approval point, implementation, and an independent review. Each phase needs different tools and expectations.</p>
+        <div class="answer"><strong>Choose:</strong> custom agents with explicit handoffs: Planner, Builder, and Reviewer.</div>
+        <h4>Starter action</h4><ol><li>Give the Planner search and inspection tools only.</li><li>Require approval before handing the plan to the Builder.</li><li>Make the Reviewer report defects and test gaps without changing files.</li></ol>
+        <p><strong>Guardrail:</strong> use human-reviewed handoffs when the next phase can make consequential changes.</p>
+      </article>
+
+      <article class="scenario">
+        <h3>Scenario 5 · “Copilot needs to look up service ownership.”</h3>
+        <p>Ownership data lives in an internal catalog. Copilot should retrieve the owning team and escalation contact but should not modify the catalog.</p>
+        <div class="answer"><strong>Choose:</strong> a read-only MCP server exposing a narrowly scoped lookup tool.</div>
+        <h4>Starter action</h4><ol><li>Expose only the lookup operation and required parameters.</li><li>Document data classification, authentication, and revocation.</li><li>Test malformed requests and unauthorized access.</li></ol>
+        <p><strong>Do not use:</strong> a pasted static table when ownership changes frequently or access must be controlled.</p>
+      </article>
+
+      <article class="scenario">
+        <h3>Scenario 6 · “Every generated change must pass a policy check.”</h3>
+        <p>A repository must run a deterministic secret scan and policy validation before a change is accepted. The check must not depend on model interpretation.</p>
+        <div class="answer"><strong>Choose:</strong> a hook or standard CI workflow, depending on when and where the check must run.</div>
+        <h4>Starter action</h4><ol><li>Define the event, command, failure behavior, and owner.</li><li>Keep the check independent of the agent’s claim that it succeeded.</li><li>Record actionable failure output for the developer.</li></ol>
+        <p><strong>Principle:</strong> deterministic enforcement belongs in code or automation, not in prose instructions.</p>
+      </article>
+
+      <article class="scenario">
+        <h3>Scenario 7 · “We want an internal assistant for deployment readiness.”</h3>
+        <p>The assistant needs session management, repository context, approved MCP tools, custom roles, and a default-deny permission handler inside an application.</p>
+        <div class="answer"><strong>Choose:</strong> the Copilot SDK, with the repository customizations composed into the application.</div>
+        <h4>Starter action</h4><ol><li>Define the assistant’s user journeys and permission boundaries.</li><li>Start with read-only tools and explicit approval for writes.</li><li>Capture session events, tool calls, and validation evidence.</li></ol>
+        <p><strong>Do not build an SDK application when:</strong> a repository-local prompt, Skill, or agent already solves the problem.</p>
+      </article>
+
+      <article class="scenario">
+        <h3>Scenario 8 · “We are unsure whether this needs customization at all.”</h3>
+        <p>The issue happened once, the requirement is unclear, and no stable behavior has been agreed by the team.</p>
+        <div class="answer"><strong>Choose:</strong> no artifact yet. Capture the example, clarify the desired behavior, and test a normal prompt first.</div>
+        <h4>Starter action</h4><ol><li>Collect two or three examples of the failure.</li><li>Separate missing context from an incorrect expectation.</li><li>Choose the smallest artifact only after the pattern repeats.</li></ol>
+        <p><strong>Principle:</strong> customization should encode a known improvement, not preserve an unexamined preference.</p>
+      </article>
+
+      <section class="section-head">
+        <p class="eyebrow">Before you commit</p>
+        <h2>Decision quality checklist</h2>
+      </section>
+      <ul class="checklist">
+        <li>The problem has happened more than once or has clear business impact</li>
+        <li>The expected behavior can be described and tested</li>
+        <li>The chosen layer is the smallest one that fits the requirement</li>
+        <li>Activation behavior is explicit and discoverable</li>
+        <li>Tool and data access are limited to what the scenario needs</li>
+        <li>Write actions have approval, validation, or rollback controls</li>
+        <li>An owner is responsible for maintenance and review</li>
+        <li>A realistic matching and non-matching test has been recorded</li>
+      </ul>
+      <div class="callout"><strong>Next step:</strong> choose one repeated scenario from your repository, create the smallest artifact, and test it with a teammate who has not seen the implementation.</div>
+      <p class="source">Related resources: <a href="../cheatsheets/github-copilot-customization-cheat-sheet.html">Customization Cheat Sheet</a>, <a href="../cheatsheets/github-copilot-prompts-instructions-skills-cheat-sheet.html">Prompts vs Instructions vs Skills Cheat Sheet</a>, <a href="../cheatsheets/github-copilot-agents-cheat-sheet.html">Agents Cheat Sheet</a>, <a href="../cheatsheets/github-copilot-mcp-servers-cheat-sheet.html">MCP Servers Cheat Sheet</a>.</p>
+    </div>
+  </main>
+</body>
+</html>
