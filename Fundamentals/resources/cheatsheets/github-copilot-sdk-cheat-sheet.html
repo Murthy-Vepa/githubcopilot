@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GitHub Copilot SDK - Quick Reference</title>
+  <style>
+    :root{--ink:#102042;--muted:#64748b;--paper:#f0f4f8;--card:#fff;--line:#dbe3ec;--navy:#0a1628;--blue:#1d4ed8;--sky:#0ea5e9;--green:#059669;--orange:#c2410c;--purple:#7c3aed;--red:#dc2626;--shadow:0 4px 20px rgba(10,22,40,.08)}
+    *{box-sizing:border-box} html{scroll-behavior:smooth;font-family:Georgia,'Times New Roman',serif;overflow-x:hidden} body{margin:0;background:var(--paper);color:var(--ink);overflow-x:hidden}
+    a{color:inherit;text-decoration:none}.progress{position:fixed;inset:0 0 auto;height:3px;background:var(--sky);z-index:5;transform-origin:left;transform:scaleX(0)}
+    .layout{display:flex;min-height:100vh;min-width:0} aside{width:235px;min-width:235px;background:var(--navy);color:#cbd5e1;position:sticky;top:0;height:100vh;padding-bottom:18px}
+    .brand{padding:25px 19px 20px;border-bottom:1px solid rgba(255,255,255,.1)}.brand small{color:#38bdf8;font:700 10px/1.2 'Segoe UI',sans-serif;letter-spacing:1.4px;text-transform:uppercase}.brand h2{color:#fff;font:700 18px/1.2 Georgia,serif;margin:7px 0 0}
+    nav{padding:16px 10px;font-family:'Segoe UI',sans-serif}nav a{display:block;border-left:3px solid transparent;color:#94a3b8;font-size:12px;padding:9px 12px}nav a:hover,nav a.active{color:#fff;background:rgba(14,165,233,.12);border-left-color:var(--sky)}
+    .aside-note{border-top:1px solid rgba(255,255,255,.1);color:#64748b;font:11px/1.5 'Segoe UI',sans-serif;margin:8px 18px 0;padding-top:16px}.main{flex:1;min-width:0}.wrap{max-width:1100px;margin:auto;padding:42px 48px 58px}
+    .hero{background:linear-gradient(135deg,#dbeafe,#e0f2fe 55%,#dcfce7);border:1px solid #c7d8ed;border-radius:18px;padding:40px 38px 34px;box-shadow:var(--shadow)}.eyebrow{color:var(--blue);font:700 11px/1 'Segoe UI',sans-serif;letter-spacing:1.5px;text-transform:uppercase}h1{font:900 clamp(30px,4vw,46px)/1.05 Georgia,serif;letter-spacing:-.8px;margin:13px 0 12px}.hero p{color:#475569;font:15px/1.6 'Segoe UI',sans-serif;margin:0;max-width:760px}.meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}.meta span{background:rgba(255,255,255,.72);border:1px solid rgba(15,23,42,.1);border-radius:7px;color:#475569;font:600 11px 'Segoe UI',sans-serif;padding:5px 11px}
+    .section-title{align-items:center;display:flex;gap:12px;margin:34px 0 16px}.section-title h2{font:800 18px Georgia,serif;margin:0;white-space:nowrap}.section-title i{background:linear-gradient(90deg,var(--line),transparent);height:2px;flex:1}
+    .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;min-width:0}.grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}.card{background:var(--card);border:1px solid var(--line);border-radius:11px;box-shadow:var(--shadow);min-width:0;padding:19px}.card h3{font:700 14px 'Segoe UI',sans-serif;margin:0 0 13px}.blue h3{color:var(--blue)}.green h3{color:var(--green)}.orange h3{color:var(--orange)}.purple h3{color:var(--purple)}.red h3{color:var(--red)}.sky h3{color:#0891b2}
+    table{border-collapse:collapse;font:12px/1.4 'Segoe UI',sans-serif;table-layout:fixed;width:100%}td{border-bottom:1px solid #edf1f5;overflow-wrap:anywhere;padding:7px 3px;vertical-align:top}tr:last-child td{border-bottom:0}td:first-child{color:var(--blue);font-family:'Cascadia Code',Consolas,monospace;font-size:11px;width:46%}td:last-child{color:var(--muted)}
+    pre{background:#0f1d31;border-radius:8px;color:#dbeafe;font:11.5px/1.65 'Cascadia Code',Consolas,monospace;margin:10px 0 0;max-width:100%;overflow:auto;padding:13px 14px}.flow{align-items:center;display:flex;flex-wrap:wrap;gap:6px}.flow span{background:#f8fafc;border:1px solid var(--line);border-radius:6px;color:var(--blue);font:700 11px 'Segoe UI',sans-serif;padding:7px 9px}.arrow{background:none!important;border:0!important;color:var(--muted)!important;font-size:16px!important;padding:0!important}
+    .prompt{border-left:3px solid;background:#f8fafc;border-radius:7px;font:11.5px/1.55 'Cascadia Code',Consolas,monospace;margin:8px 0;padding:9px 11px}.prompt.blue{border-color:var(--blue)}.prompt.green{border-color:var(--green)}.prompt.orange{border-color:#f97316}.prompt.purple{border-color:var(--purple)}.label{color:var(--muted);display:block;font:700 10px 'Segoe UI',sans-serif;letter-spacing:.6px;margin-bottom:3px;text-transform:uppercase}
+    .callout{border-left:4px solid var(--sky);background:#eff6ff;border-radius:8px;color:#1e40af;font:13px/1.55 'Segoe UI',sans-serif;margin-top:16px;padding:13px 16px}.callout strong{color:var(--ink)}code{background:#eaf3fb;border-radius:4px;color:var(--blue);font-family:'Cascadia Code',Consolas,monospace;font-size:.9em;padding:2px 5px}
+    footer{border-top:1px solid var(--line);color:var(--muted);font:11px 'Segoe UI',sans-serif;margin-top:38px;padding-top:20px;text-align:center}#top{background:var(--navy);border:1px solid var(--sky);border-radius:50%;bottom:20px;color:#fff;cursor:pointer;display:none;font-size:16px;height:38px;position:fixed;right:20px;width:38px}#top.show{display:block}
+    @media(max-width:900px){aside{display:none}.wrap{padding:28px 20px 48px}.grid,.grid.two{grid-template-columns:1fr 1fr}}@media(max-width:600px){.grid,.grid.two{grid-template-columns:1fr}.hero{padding:30px 24px}}@media print{aside,#top,.progress{display:none!important}.wrap{padding:12px}.card,.hero{box-shadow:none;break-inside:avoid}}
+  </style>
+</head>
+<body>
+  <div class="progress" id="progress"></div>
+  <div class="layout">
+    <main class="main">
+      <div class="wrap">
+        <header class="hero" id="start"><div class="eyebrow">Build agents into your application</div><h1>GitHub Copilot SDK</h1><p>Embed Copilot's agent runtime in Node.js, Python, Go, Rust, .NET, or Java applications. The SDK handles sessions, planning, tool invocation, streaming, and the CLI runtime connection.</p><div class="meta"><span>Client + session API</span><span>JSON-RPC runtime</span><span>Custom tools and MCP</span><span>Current API: createSession</span></div></header>
+
+        <div class="section-title" id="install"><h2>Install and verify</h2><i></i></div>
+        <div class="grid">
+          <section class="card blue"><h3>Supported SDK packages</h3><table><tr><td>Node.js / TS</td><td><code>npm install @github/copilot-sdk</code></td></tr><tr><td>Python</td><td><code>pip install github-copilot-sdk</code></td></tr><tr><td>Go</td><td><code>go get github.com/github/copilot-sdk/go</code></td></tr><tr><td>Rust</td><td><code>cargo add github-copilot-sdk</code></td></tr><tr><td>.NET</td><td><code>dotnet add package GitHub.Copilot.SDK</code></td></tr><tr><td>Java</td><td><code>com.github:copilot-sdk-java</code></td></tr></table></section>
+          <section class="card green"><h3>Runtime prerequisites</h3><table><tr><td>Node.js</td><td>20+</td></tr><tr><td>Python</td><td>3.11+</td></tr><tr><td>Go</td><td>1.24+</td></tr><tr><td>Rust</td><td>1.94+</td></tr><tr><td>.NET</td><td>8.0+</td></tr><tr><td>Java</td><td>17+</td></tr></table><div class="callout"><strong>CLI note:</strong> Node.js, Python, and .NET bundle the CLI. Go, Rust, and Java usually require <code>copilot</code> in PATH unless application-level bundling is used.</div></section>
+          <section class="card orange"><h3>Check authentication</h3><pre># Verify runtime
+copilot --version
+
+# Sign in when needed
+gh auth login
+
+# Run a TypeScript sample
+npx tsx index.ts</pre></section>
+        </div>
+
+        <div class="section-title" id="lifecycle"><h2>The core lifecycle</h2><i></i></div>
+        <div class="card"><div class="flow"><span>CopilotClient</span><span class="arrow">-&gt;</span><span>createSession</span><span class="arrow">-&gt;</span><span>sendAndWait</span><span class="arrow">-&gt;</span><span>assistant response</span><span class="arrow">-&gt;</span><span>stop</span></div><pre>import { CopilotClient } from "@github/copilot-sdk";
+
+const client = new CopilotClient();
+const session = await client.createSession({ model: "auto" });
+const response = await session.sendAndWait({ prompt: "What is 2 + 2?" });
+console.log(response?.data.content);
+await client.stop();</pre></div>
+
+        <div class="section-title" id="streaming"><h2>Sessions and streaming</h2><i></i></div>
+        <div class="grid two">
+          <section class="card sky"><h3>Session operations</h3><table><tr><td>createSession</td><td>Start a new conversation.</td></tr><tr><td>send</td><td>Queue a message and return immediately.</td></tr><tr><td>sendAndWait</td><td>Send a message and wait until idle.</td></tr><tr><td>on</td><td>Subscribe to all or specific events.</td></tr><tr><td>abort</td><td>Stop the current message.</td></tr><tr><td>disconnect</td><td>Release the session; data can remain resumable.</td></tr><tr><td>resumeSession</td><td>Continue an existing session by ID.</td></tr></table></section>
+          <section class="card purple"><h3>Stream response deltas</h3><pre>const session = await client.createSession({
+  model: "auto",
+  streaming: true,
+});
+
+session.on("assistant.message_delta", event =&gt; {
+  process.stdout.write(event.data.deltaContent);
+});
+session.on("session.idle", () =&gt; console.log());
+
+await session.sendAndWait({ prompt: "Tell me a joke" });</pre></section>
+        </div>
+
+        <div class="section-title" id="tools"><h2>Custom tools and permissions</h2><i></i></div>
+        <div class="grid two">
+          <section class="card blue"><h3>Define a tool</h3><pre>import { defineTool } from "@github/copilot-sdk";
+
+const getWeather = defineTool("get_weather", {
+  description: "Get weather for a city",
+  parameters: {
+    type: "object",
+    properties: { city: { type: "string" } },
+    required: ["city"],
+  },
+  handler: async ({ city }) =&gt; ({
+    city, condition: "sunny", temperature: "72F",
+  }),
+});
+
+const session = await client.createSession({
+  model: "auto", tools: [getWeather],
+});</pre></section>
+          <section class="card red"><h3>Permission decisions</h3><table><tr><td>approve-once</td><td>Allow one request.</td></tr><tr><td>approve-for-session</td><td>Remember approval for this session.</td></tr><tr><td>approve-for-location</td><td>Persist approval for a project location.</td></tr><tr><td>reject</td><td>Deny and optionally return feedback.</td></tr><tr><td>no-result</td><td>Leave a pending request for another client.</td></tr></table><pre>const session = await client.createSession({
+  onPermissionRequest: async request =&gt; {
+    if (request.kind === "shell")
+      return { kind: "reject", feedback: "Shell denied" };
+    return { kind: "approve-once" };
+  },
+});</pre></section>
+        </div>
+
+        <div class="section-title" id="extend"><h2>Extend the agent</h2><i></i></div>
+        <div class="grid">
+          <section class="card green"><h3>MCP servers</h3><pre>const session = await client.createSession({
+  mcpServers: {
+    github: {
+      type: "http",
+      url: "https://api.githubcopilot.com/mcp/",
+    },
+  },
+});</pre></section>
+          <section class="card purple"><h3>Custom agents</h3><pre>customAgents: [{
+  name: "pr-reviewer",
+  displayName: "PR Reviewer",
+  description: "Reviews pull requests",
+  prompt: "Focus on security and maintainability.",
+}]
+
+// Select at session creation:
+agent: "pr-reviewer"</pre></section>
+          <section class="card orange"><h3>System message</h3><pre>systemMessage: {
+  content: "Be concise. Cite assumptions.",
+}
+
+// Fine-grained sections:
+// mode: "customize"
+// tone, guidelines, safety, ...</pre></section>
+        </div>
+
+        <div class="section-title" id="safety"><h2>Production checklist</h2><i></i></div>
+        <div class="grid">
+          <section class="card red"><h3>Secure the boundary</h3><table><tr><td>Approve</td><td>Use a custom permission handler for shell, write, MCP, and custom tools.</td></tr><tr><td>Secrets</td><td>Use environment variables; never put tokens in prompts or source.</td></tr><tr><td>Runtime</td><td>Use loopback for local servers; protect remote headless servers.</td></tr></table></section>
+          <section class="card sky"><h3>Observe the runtime</h3><pre>const client = new CopilotClient({
+  telemetry: {
+    otlpEndpoint: "http://localhost:4318",
+  },
+});
+
+// Or export JSONL traces:
+// filePath: "./traces.jsonl"
+// exporterType: "file"</pre></section>
+          <section class="card blue"><h3>Keep the app healthy</h3><table><tr><td>Lifecycle</td><td>Stop the client and disconnect sessions during cleanup.</td></tr><tr><td>Streaming</td><td>Handle deltas and wait for <code>session.idle</code>.</td></tr><tr><td>Errors</td><td>Catch SDK errors and define retry, skip, or abort behavior.</td></tr></table></section>
+        </div>
+        <footer>GitHub Copilot SDK Quick Reference · Based on github/copilot-sdk/docs/getting-started.md</footer>
+      </div>
+    </main>
+  </div>
+  <button id="top" title="Back to top" aria-label="Back to top">^</button>
+  <script>
+    const progress = document.getElementById('progress');
+    const topButton = document.getElementById('top');
+    function updateScroll() {
+      const max = document.documentElement.scrollHeight - window.innerHeight || 1;
+      progress.style.transform = `scaleX(${window.scrollY / max})`;
+      topButton.classList.toggle('show', window.scrollY > 320);
+    }
+    window.addEventListener('scroll', updateScroll, { passive: true });
+    topButton.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+    updateScroll();
+  </script>
+</body>
+</html>

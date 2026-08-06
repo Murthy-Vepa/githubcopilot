@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🤖</text></svg>">
+  <title>GitHub Copilot Mastery — Course Hub</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --blue-900: #0a1628; --blue-800: #102042; --blue-700: #163466; --blue-600: #1e4d9b;
+      --teal: #0ea5e9; --teal-light: #38bdf8;
+      --gold: #f59e0b; --green: #10b981; --purple: #8b5cf6; --orange: #f97316;
+      --indigo: #6366f1; --pink: #ec4899; --cyan: #06b6d4;
+      --bg: #f0f4f8; --card: #ffffff; --text: #1e293b; --text-muted: #64748b; --border: #e2e8f0;
+      --radius: 12px; --shadow: 0 4px 24px rgba(10,22,40,0.10);
+    }
+    html { scroll-behavior: smooth; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
+    body { background: var(--bg); color: var(--text); min-height: 100vh; }
+    a { text-decoration: none; color: inherit; }
+    .presentation { display: flex; min-height: 100vh; }
+    /* Sidebar */
+    .sidebar { width: 260px; min-width: 260px; background: var(--blue-900); color: #cbd5e1; display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; overflow: hidden; z-index: 100; }
+    .sidebar-logo { padding: 24px 20px 16px; border-bottom: 1px solid rgba(255,255,255,0.08); background: var(--blue-800); }
+    .sidebar-logo .product { font-size: 14px; color: var(--teal-light); font-weight: 700; }
+    .sidebar-logo h2 { font-size: 15px; color: #fff; margin-top: 4px; font-weight: 700; line-height: 1.3; }
+    .sidebar nav { padding: 12px 0; flex: 1; overflow-y: auto; }
+    .nav-group { padding: 8px 0; }
+    .nav-group-label { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: #475569; padding: 0 20px 6px; font-weight: 700; }
+    .nav-item { display: flex; align-items: center; gap: 10px; padding: 8px 20px; font-size: 13px; color: #94a3b8; border-left: 3px solid transparent; transition: all 0.15s; text-decoration: none; }
+    .nav-item:hover { background: rgba(255,255,255,0.05); color: #e2e8f0; border-left-color: var(--teal); }
+    .nav-item.active { color: #fff; border-left-color: var(--teal); background: rgba(14,165,233,0.10); }
+    .sidebar-footer { padding: 16px 20px; border-top: 1px solid rgba(255,255,255,0.08); font-size: 12px; color: #93c5fd; }
+    .sidebar nav::-webkit-scrollbar { width: 6px; }
+    .sidebar nav::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
+    /* Main */
+    .main { flex: 1; overflow-y: auto; }
+    .slide { min-height: 100vh; padding: 48px 56px; display: flex; flex-direction: column; border-bottom: 1px solid var(--border); }
+    .slide:last-child { border-bottom: none; }
+    /* Hero */
+    .slide-hero { background: linear-gradient(135deg, var(--blue-900) 0%, var(--blue-700) 60%, var(--blue-600) 100%); color: #fff; justify-content: center; position: relative; overflow: hidden; }
+    .slide-hero::before { content: ''; position: absolute; width: 600px; height: 600px; border-radius: 50%; background: radial-gradient(circle, rgba(14,165,233,0.15) 0%, transparent 70%); top: -200px; right: -200px; pointer-events: none; }
+    .hero-tag { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: rgba(255,255,255,0.6); font-weight: 700; margin-bottom: 16px; }
+    .hero-title { font-size: clamp(36px, 5vw, 60px); font-weight: 800; line-height: 1.1; color: #fff; margin-bottom: 20px; }
+    .hero-title span { color: var(--teal-light); }
+    .hero-subtitle { font-size: 17px; color: rgba(255,255,255,0.70); max-width: 640px; line-height: 1.6; margin-bottom: 40px; }
+    .hero-meta { display: flex; gap: 32px; flex-wrap: wrap; margin-bottom: 36px; }
+    .hero-meta-item { font-size: 13px; color: rgba(255,255,255,0.55); }
+    .hero-meta-item strong { color: rgba(255,255,255,0.90); display: block; font-size: 22px; font-weight: 800; margin-bottom: 2px; }
+    .badge { display: inline-flex; padding: 6px 14px; border-radius: 100px; font-size: 12px; font-weight: 600; border: 1px solid; margin: 4px 4px 4px 0; }
+    .badge-teal   { background: rgba(14,165,233,0.15); color: var(--teal-light); border-color: rgba(14,165,233,0.3); }
+    .badge-green  { background: rgba(16,185,129,0.15); color: #6ee7b7; border-color: rgba(16,185,129,0.3); }
+    .badge-purple { background: rgba(139,92,246,0.15); color: #c4b5fd; border-color: rgba(139,92,246,0.3); }
+    .badge-gold   { background: rgba(245,158,11,0.15); color: #fcd34d; border-color: rgba(245,158,11,0.3); }
+    .badge-indigo { background: rgba(99,102,241,0.15); color: #a5b4fc; border-color: rgba(99,102,241,0.3); }
+    .badge-orange { background: rgba(249,115,22,0.15); color: #fdba74; border-color: rgba(249,115,22,0.3); }
+    .badge-dark   { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.70); border-color: rgba(255,255,255,0.15); }
+    /* Section */
+    .slide-label { font-size: 11px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--teal); font-weight: 700; margin-bottom: 8px; }
+    .slide-title { font-size: clamp(22px, 2.8vw, 34px); font-weight: 800; color: var(--blue-800); margin-bottom: 8px; line-height: 1.2; }
+    .slide-desc { font-size: 15px; color: var(--text-muted); max-width: 760px; line-height: 1.65; margin-bottom: 36px; }
+    .divider { height: 3px; width: 48px; background: var(--teal); border-radius: 2px; margin-bottom: 32px; }
+    .breadcrumb { display: inline-flex; align-items: center; font-size: 13px; color: var(--text-muted); background: #f1f5f9; padding: 5px 14px; border-radius: 100px; margin-bottom: 24px; }
+    /* Stats */
+    .stat-row { display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 40px; }
+    .stat-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 28px; flex: 1; min-width: 130px; box-shadow: var(--shadow); text-align: center; }
+    .stat-value { font-size: 34px; font-weight: 800; color: var(--blue-700); line-height: 1; margin-bottom: 6px; }
+    .stat-label { font-size: 12px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+    /* Module cards */
+    .module-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; margin-bottom: 16px; }
+    .scard { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); overflow: visible; box-shadow: var(--shadow); transition: transform 0.2s, box-shadow 0.2s; }
+    .scard:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(10,22,40,0.15); }
+    .scard-top { padding: 24px 24px 18px; border-bottom: 1px solid var(--border); border-radius: var(--radius) var(--radius) 0 0; overflow: hidden; }
+    .scard-num { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+    .scard-title { font-size: 19px; font-weight: 800; margin-bottom: 6px; }
+    .scard-desc { font-size: 13px; color: var(--text-muted); line-height: 1.55; }
+    .scard-body { padding: 20px 24px; }
+    .scard-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+    .pill { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 100px; border: 1px solid; }
+    .scard-assets { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .asset-link { display: flex; align-items: center; gap: 8px; padding: 9px 12px; background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; font-size: 12px; color: var(--text-muted); transition: all 0.2s; }
+    .asset-link:hover { border-color: var(--teal); color: var(--blue-800); background: #f0f9ff; }
+    .asset-link .ico { font-size: 15px; flex-shrink: 0; }
+    .coming-soon { font-size: 12px; color: var(--text-muted); background: #f8fafc; border: 1px dashed var(--border); border-radius: 8px; padding: 10px 14px; text-align: center; grid-column: 1 / -1; }
+    /* Dropdown panel */
+    .podcast-panel { grid-column: 1 / -1; position: relative; }
+    .podcast-header { width: 100%; display: flex; align-items: center; gap: 8px; padding: 9px 12px; background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; font-size: 12px; color: var(--text-muted); font-family: inherit; transition: all 0.2s; text-align: left; }
+    .podcast-header:hover { background: #f0f9ff; color: var(--blue-800); border-color: var(--teal); }
+    .podcast-header.open { background: #f0f9ff; color: var(--blue-800); border-color: var(--teal); border-radius: 8px 8px 0 0; }
+    .pod-chevron { margin-left: auto; transition: transform 0.2s; font-size: 13px; }
+    .podcast-header.open .pod-chevron { transform: rotate(180deg); }
+    .podcast-ep-list { display: none; position: absolute; top: 100%; left: 0; right: 0; z-index: 200; padding: 4px 8px 8px; background: #fff; border: 1px solid var(--teal); border-top: none; border-radius: 0 0 8px 8px; flex-direction: column; gap: 2px; box-shadow: 0 8px 24px rgba(10,22,40,0.14); max-height: 256px; overflow-y: auto; }
+    .podcast-ep-list.open { display: flex; }
+    .ep-link { display: flex; align-items: center; gap: 8px; padding: 5px 8px; border-radius: 6px; font-size: 11.5px; color: var(--text-muted); text-decoration: none; transition: all 0.15s; }
+    .ep-link:hover { background: #f0f9ff; color: var(--blue-800); }
+    .ep-num { font-weight: 700; font-size: 10px; color: var(--teal); min-width: 30px; letter-spacing: 0.3px; flex-shrink: 0; }
+    /* Module colour themes */
+    .m1 .scard-top { background: linear-gradient(135deg,#eff6ff,#dbeafe); }
+    .m1 .scard-num { color: #1d4ed8; } .m1 .scard-title { color: var(--blue-700); }
+    .m1 .pill { background: #dbeafe; color: #1d4ed8; border-color: #bfdbfe; }
+    .m2 .scard-top { background: linear-gradient(135deg,#f5f3ff,#ede9fe); }
+    .m2 .scard-num { color: #7c3aed; } .m2 .scard-title { color: #6d28d9; }
+    .m2 .pill { background: #ede9fe; color: #7c3aed; border-color: #ddd6fe; }
+    .m3 .scard-top { background: linear-gradient(135deg,#ecfeff,#cffafe); }
+    .m3 .scard-num { color: #0891b2; } .m3 .scard-title { color: #0e7490; }
+    .m3 .pill { background: #cffafe; color: #0891b2; border-color: #a5f3fc; }
+    .m4 .scard-top { background: linear-gradient(135deg,#eef2ff,#e0e7ff); }
+    .m4 .scard-num { color: #4f46e5; } .m4 .scard-title { color: #4338ca; }
+    .m4 .pill { background: #e0e7ff; color: #4f46e5; border-color: #c7d2fe; }
+    .m5 .scard-top { background: linear-gradient(135deg,#f0fdf4,#dcfce7); }
+    .m5 .scard-num { color: #059669; } .m5 .scard-title { color: #047857; }
+    .m5 .pill { background: #dcfce7; color: #059669; border-color: #bbf7d0; }
+    .m6 .scard-top { background: linear-gradient(135deg,#fff7ed,#ffedd5); }
+    .m6 .scard-num { color: #c2410c; } .m6 .scard-title { color: #9a3412; }
+    .m6 .pill { background: #ffedd5; color: #c2410c; border-color: #fed7aa; }
+    /* Formats */
+    .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
+    .fcard { display: flex; flex-direction: column; align-items: center; text-align: center; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px 16px; box-shadow: var(--shadow); transition: transform 0.2s, border-color 0.2s; color: var(--text); }
+    .fcard:hover { transform: translateY(-3px); border-color: var(--teal); }
+    .fcard .fi { font-size: 32px; margin-bottom: 12px; display: block; }
+    .fcard .fn { font-size: 13px; font-weight: 700; color: var(--blue-800); margin-bottom: 4px; }
+    .fcard .fd { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+    /* Nutshell */
+    .nutshell-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .ncard { display: flex; align-items: flex-start; gap: 16px; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); transition: transform 0.2s, border-color 0.2s; text-decoration: none; color: var(--text); }
+    .ncard:hover { transform: translateY(-3px); border-color: var(--teal); }
+    .ncard-icon { width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+    .ncard-title { font-size: 14px; font-weight: 700; color: var(--blue-800); margin-bottom: 4px; }
+    .ncard-desc { font-size: 12.5px; color: var(--text-muted); line-height: 1.5; }
+    .ncard-arrow { margin-left: auto; color: var(--teal); font-size: 14px; align-self: center; flex-shrink: 0; }
+    /* Timeline */
+    .timeline { display: flex; flex-direction: column; }
+    .timeline-item { display: flex; }
+    .timeline-left { display: flex; flex-direction: column; align-items: center; width: 52px; flex-shrink: 0; }
+    .timeline-dot { width: 34px; height: 34px; border-radius: 50%; background: var(--blue-700); color: #fff; font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; z-index: 1; }
+    .timeline-line { width: 2px; background: var(--border); flex: 1; min-height: 24px; }
+    .timeline-item:last-child .timeline-line { display: none; }
+    .timeline-content { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 20px; margin-bottom: 12px; flex: 1; box-shadow: 0 2px 8px rgba(10,22,40,0.06); }
+    .timeline-week { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--teal); font-weight: 700; margin-bottom: 4px; }
+    .timeline-title { font-size: 14px; font-weight: 700; color: var(--blue-800); margin-bottom: 4px; }
+    .timeline-desc { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+    /* Info box */
+    .info-box { border-radius: var(--radius); padding: 16px 20px; margin-bottom: 16px; display: flex; gap: 14px; align-items: flex-start; font-size: 13.5px; line-height: 1.6; }
+    .info-box .info-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+    .info-blue  { background: #eff6ff; border-left: 4px solid #3b82f6; color: #1e40af; }
+    .info-green { background: #f0fdf4; border-left: 4px solid #10b981; color: #065f46; }
+    .schedule-callout { margin-bottom: 24px; }
+    .roadmap-link { color: var(--blue-700); text-decoration: underline; }
+    /* Colour helpers */
+    .bg-blue { background: #dbeafe; } .bg-teal { background: #ccfbf1; } .bg-green { background: #dcfce7; }
+    .bg-purple { background: #ede9fe; } .bg-gold { background: #fef3c7; } .bg-indigo { background: #e0e7ff; }
+    .bg-cyan { background: #cffafe; } .bg-orange { background: #ffedd5; }
+    /* Progress / scroll-top */
+    .progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: var(--teal); z-index: 999; transition: width 0.1s; }
+    #scrollTopBtn { position: fixed; bottom: 20px; right: 20px; width: 38px; height: 38px; border-radius: 50%; background: var(--blue-900); color: #fff; border: 1px solid var(--teal); cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 14px rgba(0,0,0,0.25); opacity: 0; visibility: hidden; transition: opacity 0.25s, visibility 0.25s, transform 0.2s; z-index: 9999; }
+    #scrollTopBtn.visible { opacity: 1; visibility: visible; }
+    #scrollTopBtn:hover { transform: translateY(-3px); background: var(--teal); }
+    @media (max-width: 900px) { .sidebar { display: none; } .slide { padding: 32px 24px; } .module-grid { grid-template-columns: 1fr; } .nutshell-grid { grid-template-columns: repeat(2,1fr); } }
+  </style>
+</head>
+<body>
+<div class="progress-bar" id="progressBar"></div>
+<div class="presentation">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="product">GitHub Copilot</div>
+      <h2>Mastery Course Hub</h2>
+    </div>
+    <nav>
+      <div class="nav-group">
+        <div class="nav-group-label">Overview</div>
+        <a class="nav-item active" href="#slide-hero">🏠 Home</a>
+      </div>
+      <div class="nav-group">
+        <div class="nav-group-label">Modules</div>
+        <a class="nav-item" href="#slide-modules">📘 1 — Fundamentals</a>
+        <a class="nav-item" href="#slide-modules">✍️ 2 — Prompt Engineering</a>
+        <a class="nav-item" href="#slide-modules">🌊 3 — AI-Assisted Development &amp; Spec Dev</a>
+        <a class="nav-item" href="#slide-modules">🧩 4 — Agents</a>
+        <a class="nav-item" href="#slide-modules">📐 5 — SDD - GitHub Spec Kit</a>
+        <a class="nav-item" href="#slide-modules">🤖 6 — SDD - Agent Squad</a>
+      </div>
+      <div class="nav-group">
+        <div class="nav-group-label">Content</div>
+        <a class="nav-item" href="#slide-formats">📦 Delivery Formats</a>
+        <a class="nav-item" href="#slide-schedule">🗓️ Schedule</a>
+        <a class="nav-item" href="#slide-nutshell">⚡ In a Nutshell</a>
+      </div>
+    </nav>
+    <div class="sidebar-footer"></div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main" id="mainScroll">
+
+    <!-- HERO -->
+    <section class="slide slide-hero" id="slide-hero">
+      <div class="hero-tag">AI Driven Software Development & Automation</div>
+      <h1 class="hero-title">GitHub Copilot <span>Mastery</span><br>Course Hub</h1>
+      <p class="hero-subtitle">Six progressive modules — from basic completions to autonomous SDD - Agent Squads. Go from zero to production-grade AI-assisted workflows at your own pace.</p>
+      <div class="hero-meta">
+        <div class="hero-meta-item"><strong>6</strong>Modules</div>
+        <div class="hero-meta-item"><strong>6+</strong>Asset Types</div>
+      </div>
+      <div>
+        <span class="badge badge-teal">📘 Fundamentals</span>
+        <span class="badge badge-purple">✍️ Prompt Engineering</span>
+        <span class="badge badge-dark">🌊 AI-Assisted Development</span>
+        <span class="badge badge-indigo">🧩 Agents</span>
+        <span class="badge badge-green">📐 SDD - GitHub Spec Kit</span>
+        <span class="badge badge-orange">🤖 SDD - Agent Squad</span>
+      </div>
+    </section>
+
+    <!-- MODULES -->
+    <section class="slide" id="slide-modules">
+      <div class="breadcrumb">Course Hub → Modules</div>
+      <div class="slide-label">Curriculum</div>
+      <h2 class="slide-title">6-Modules</h2>
+      <div class="divider"></div>
+      <p class="slide-desc">Each module is ~60 minutes of live instruction followed by a self-paced lab. All assets are published the same day as the module. Modules are designed to be taken in order but are also self-contained.</p>
+      <div class="info-box info-blue"><span class="info-icon">ℹ️</span><div><strong>Terminology.</strong> We use <strong>AI-Assisted Development</strong> for the formal course language. “Vibe Coding” is an industry buzzword for an exploratory, conversational style of AI-assisted development.</div></div>
+      <div class="stat-row">
+        <div class="stat-card"><div class="stat-value">6</div><div class="stat-label">Modules</div></div>
+        <div class="stat-card"><div class="stat-value">~60m</div><div class="stat-label">Per Module</div></div>
+        <div class="stat-card"><div class="stat-value">6+</div><div class="stat-label">Asset Types</div></div>
+        <div class="stat-card"><div class="stat-value">2</div><div class="stat-label">Regions (US &amp; India)</div></div>
+      </div>
+      <div class="module-grid">
+
+        <!-- M1 -->
+        <div class="scard m1">
+          <div class="scard-top">
+            <div class="scard-num">Module 01 · Foundation</div>
+            <div class="scard-title">Fundamentals</div>
+            <div class="scard-desc">Completions, Chat, CLI, MCP and model selection — everything to go productive on day one.</div>
+          </div>
+          <div class="scard-body">
+            <div class="scard-pills">
+              <span class="pill">Completions</span><span class="pill">Chat</span><span class="pill">CLI</span><span class="pill">MCP</span><span class="pill">Models</span>
+            </div>
+            <div class="scard-assets">
+              <a class="asset-link" href="Fundamentals/resources/onepagers/one-pager.html" target="_blank" rel="noopener"><span class="ico">📄</span>One-Pager</a>
+              <a class="asset-link" href="Fundamentals/resources/cheatsheets/cheat-sheet.html" target="_blank" rel="noopener"><span class="ico">📊</span>Cheat Sheet</a>
+              <a class="asset-link" href="Fundamentals/resources/guides/responsible-ai-guide.html" target="_blank" rel="noopener"><span class="ico">🛡️</span>Responsible AI Guide</a>
+              <a class="asset-link" href="Fundamentals/resources/exercises/lab-exercises.html" target="_blank" rel="noopener"><span class="ico">🧪</span>Lab Exercises</a>
+              <div class="podcast-panel">
+                <button class="podcast-header" onclick="togglePodcast(this)"><span>🎬</span><span>Video Series &middot; 7 scripts</span><span class="pod-chevron">▾</span></button>
+                <div class="podcast-ep-list">
+                  <a class="ep-link" href="Fundamentals/resources/videos/vs01-what-is-copilot.md" target="_blank" rel="noopener"><span class="ep-num">Vs 1</span>What is GitHub Copilot?</a>
+                  <a class="ep-link" href="Fundamentals/resources/videos/vs02-inline-completions.md" target="_blank" rel="noopener"><span class="ep-num">Vs 2</span>Inline Completions &amp; Ghost Text</a>
+                  <a class="ep-link" href="Fundamentals/resources/videos/vs03-chat-modes.md" target="_blank" rel="noopener"><span class="ep-num">Vs 3</span>Chat Modes &amp; Slash Commands</a>
+                  <a class="ep-link" href="Fundamentals/resources/videos/vs04-model-selection.md" target="_blank" rel="noopener"><span class="ep-num">Vs 4</span>Model Selection</a>
+                  <a class="ep-link" href="Fundamentals/resources/videos/vs05-copilot-cli.md" target="_blank" rel="noopener"><span class="ep-num">Vs 5</span>Copilot CLI</a>
+                  <a class="ep-link" href="Fundamentals/resources/videos/vs06-mcp-and-tools.md" target="_blank" rel="noopener"><span class="ep-num">Vs 6</span>MCP &amp; Tools</a>
+                  <a class="ep-link" href="Fundamentals/resources/videos/vs07-prompting-best-practices.md" target="_blank" rel="noopener"><span class="ep-num">Vs 7</span>Prompting Best Practices</a>
+                </div>
+              </div>
+              <div class="podcast-panel">
+                <button class="podcast-header" onclick="togglePodcast(this)"><span>🎙️</span><span>Podcast Series &middot; 7 episodes</span><span class="pod-chevron">▾</span></button>
+                <div class="podcast-ep-list">
+                  <a class="ep-link" href="Fundamentals/resources/podcasts/ep01-introduction.md" target="_blank" rel="noopener"><span class="ep-num">Ep 1</span>Introduction to GitHub Copilot</a>
+                  <a class="ep-link" href="Fundamentals/resources/podcasts/ep02-inline-completions.md" target="_blank" rel="noopener"><span class="ep-num">Ep 2</span>Inline Completions &amp; Ghost Text</a>
+                  <a class="ep-link" href="Fundamentals/resources/podcasts/ep03-chat-modes.md" target="_blank" rel="noopener"><span class="ep-num">Ep 3</span>Chat Modes &amp; Slash Commands</a>
+                  <a class="ep-link" href="Fundamentals/resources/podcasts/ep04-model-selection.md" target="_blank" rel="noopener"><span class="ep-num">Ep 4</span>Model Selection</a>
+                  <a class="ep-link" href="Fundamentals/resources/podcasts/ep05-copilot-cli.md" target="_blank" rel="noopener"><span class="ep-num">Ep 5</span>Copilot CLI</a>
+                  <a class="ep-link" href="Fundamentals/resources/podcasts/ep06-mcp-and-tools.md" target="_blank" rel="noopener"><span class="ep-num">Ep 6</span>MCP &amp; Tools</a>
+                  <a class="ep-link" href="Fundamentals/resources/podcasts/ep07-prompting-best-practices.md" target="_blank" rel="noopener"><span class="ep-num">Ep 7</span>Prompting Best Practices</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- M2 -->
+        <div class="scard m2">
+          <div class="scard-top">
+            <div class="scard-num">Module 02 · Customisation</div>
+            <div class="scard-title">Prompt Engineering</div>
+            <div class="scard-desc">Master the art of prompting. Reusable prompts, instructions files, SKILL.md packages and the Copilot SDK.</div>
+          </div>
+          <div class="scard-body">
+            <div class="scard-pills">
+              <span class="pill">Instructions</span><span class="pill">Prompts</span><span class="pill">Skills</span><span class="pill">Extensions</span><span class="pill">SDK</span>
+            </div>
+            <div class="scard-assets">
+              <a class="asset-link" href="Customization/resources/onepagers/prompt-engineering/one-pager.html" target="_blank" rel="noopener"><span class="ico">📄</span>One-Pager</a>
+              <a class="asset-link" href="Customization/resources/exercises/prompt-engineering/lab-exercises.html" target="_blank" rel="noopener"><span class="ico">🧪</span>Lab Exercises</a>
+              <div class="podcast-panel">
+                <button class="podcast-header" onclick="togglePodcast(this)"><span>🎬</span><span>Video Series &middot; 7 scripts</span><span class="pod-chevron">▾</span></button>
+                <div class="podcast-ep-list">
+                  <a class="ep-link" href="Customization/resources/videos/prompt-engineering/vs01-introduction-to-prompt-engineering.md" target="_blank" rel="noopener"><span class="ep-num">Vs 1</span>Introduction to Prompt Engineering</a>
+                </div>
+              </div>
+              <div class="podcast-panel">
+                <button class="podcast-header" onclick="togglePodcast(this)"><span>🎙️</span><span>Podcast Series &middot; 7 episodes</span><span class="pod-chevron">▾</span></button>
+                <div class="podcast-ep-list">
+                  <a class="ep-link" href="Customization/resources/podcasts/prompt-engineering/ep01-introduction.md" target="_blank" rel="noopener"><span class="ep-num">Ep 1</span>Introduction to Prompt Engineering</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- M3 -->
+        <div class="scard m3">
+          <div class="scard-top">
+            <div class="scard-num">Module 03 · Methodology</div>
+            <div class="scard-title">AI-Assisted Development &amp; Spec Driven Development</div>
+            <div class="scard-desc">Shift from ad-hoc AI assistance to structured, intentional development. Learn when to vibe and when to spec.</div>
+          </div>
+          <div class="scard-body">
+            <div class="scard-pills">
+              <span class="pill">AI-Assisted Development</span><span class="pill">Spec-Driven</span><span class="pill">PRD</span><span class="pill">Quality Gates</span>
+            </div>
+            <div class="scard-assets">
+              <a class="asset-link" href="AI-Assisted Development/resources/onepagers/one-pager.html" target="_blank" rel="noopener"><span class="ico">📄</span>One-Pager</a>
+              <a class="asset-link" href="AI-Assisted Development/resources/guides/vibe-coding-guide.md" target="_blank" rel="noopener"><span class="ico">🌊</span>AI-Assisted Development Guide</a>
+              <a class="asset-link" href="AI-Assisted Development/resources/guides/vibe-coding-guide.html" target="_blank" rel="noopener"><span class="ico">🌊</span>AI-Assisted Development Guide (HTML)</a>
+              <a class="asset-link" href="AI-Assisted Development/resources/exercises/lab-exercises.html" target="_blank" rel="noopener"><span class="ico">🧪</span>Lab Exercises</a>
+              <div class="podcast-panel">
+                <button class="podcast-header" onclick="togglePodcast(this)"><span>🎬</span><span>Video Series &middot; 6 scripts</span><span class="pod-chevron">▾</span></button>
+                <div class="podcast-ep-list">
+                  <a class="ep-link" href="AI-Assisted Development/resources/videos/vs01-the-vibe-to-spec-spectrum.md" target="_blank" rel="noopener"><span class="ep-num">Vs 1</span>The Vibe to Spec Spectrum</a>
+                  <a class="ep-link" href="AI-Assisted Development/resources/videos/vs02-vibe-coding-in-practice.md" target="_blank" rel="noopener"><span class="ep-num">Vs 2</span>AI-Assisted Development in Practice</a>
+                  <a class="ep-link" href="AI-Assisted Development/resources/videos/vs03-spec-driven-development.md" target="_blank" rel="noopener"><span class="ep-num">Vs 3</span>Spec-Driven Development</a>
+                  <a class="ep-link" href="AI-Assisted Development/resources/videos/vs04-plans-tasks-and-quality-gates.md" target="_blank" rel="noopener"><span class="ep-num">Vs 4</span>Plans, Tasks, and Quality Gates</a>
+                  <a class="ep-link" href="AI-Assisted Development/resources/videos/vs05-vibe-vs-spec-choosing-your-mode.md" target="_blank" rel="noopener"><span class="ep-num">Vs 5</span>Vibe vs Spec: Choosing Your Mode</a>
+                  <a class="ep-link" href="AI-Assisted Development/resources/videos/vs06-github-spec-kit.md" target="_blank" rel="noopener"><span class="ep-num">Vs 6</span>GitHub Spec Kit</a>
+                </div>
+              </div>
+              <div class="podcast-panel">
+                <button class="podcast-header" onclick="togglePodcast(this)"><span>🎙️</span><span>Podcast Series &middot; 6 episodes</span><span class="pod-chevron">▾</span></button>
+                <div class="podcast-ep-list">
+                  <a class="ep-link" href="AI-Assisted Development/resources/podcasts/ep01-introduction.md" target="_blank" rel="noopener"><span class="ep-num">Ep 1</span>Introduction: The AI-Assisted Development-to-Spec Spectrum</a>
+                  <a class="ep-link" href="AI-Assisted Development/resources/podcasts/ep02-vibe-coding.md" target="_blank" rel="noopener"><span class="ep-num">Ep 2</span>AI-Assisted Development: Exploring at Speed</a>
+                  <a class="ep-link" href="AI-Assisted Development/resources/podcasts/ep03-spec-driven-development.md" target="_blank" rel="noopener"><span class="ep-num">Ep 3</span>Spec-Driven Development</a>
+                  <a class="ep-link" href="AI-Assisted Development/resources/podcasts/ep04-plans-and-quality-gates.md" target="_blank" rel="noopener"><span class="ep-num">Ep 4</span>Plans, Tasks &amp; Quality Gates</a>
+                  <a class="ep-link" href="AI-Assisted Development/resources/podcasts/ep05-vibe-vs-spec.md" target="_blank" rel="noopener"><span class="ep-num">Ep 5</span>Vibe vs Spec: Decision Framework</a>
+                  <a class="ep-link" href="AI-Assisted Development/resources/podcasts/ep06-github-spec-kit.md" target="_blank" rel="noopener"><span class="ep-num">Ep 6</span>GitHub Spec Kit</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- M4 -->
+        <div class="scard m4">
+          <div class="scard-top">
+            <div class="scard-num">Module 04 · Autonomy</div>
+            <div class="scard-title">Agents</div>
+            <div class="scard-desc">Copilot agent mode, tool use, MCP integrations, and running autonomous multi-step coding tasks.</div>
+          </div>
+          <div class="scard-body">
+            <div class="scard-pills">
+              <span class="pill">Agent Mode</span><span class="pill">Tools</span><span class="pill">MCP</span><span class="pill">Automation</span>
+            </div>
+            <div class="scard-assets">
+              <a class="asset-link" href="Customization/resources/onepagers/agents/one-pager.html" target="_blank" rel="noopener"><span class="ico">📄</span>One-Pager</a>
+              <a class="asset-link" href="Customization/resources/guides/agents/agent-mode-guide.html" target="_blank" rel="noopener"><span class="ico">⚙️</span>Agent Mode Guide</a>
+              <a class="asset-link" href="Customization/resources/exercises/agents/lab-exercises.html" target="_blank" rel="noopener"><span class="ico">🧪</span>Lab Exercises</a>
+              <div class="podcast-panel">
+                <button class="podcast-header" onclick="togglePodcast(this)"><span>🎬</span><span>Video Series &middot; 6 scripts</span><span class="pod-chevron">▾</span></button>
+                <div class="podcast-ep-list">
+                  <a class="ep-link" href="Customization/resources/videos/agents/vs01-what-are-copilot-agents.md" target="_blank" rel="noopener"><span class="ep-num">Vs 1</span>What Are Copilot Agents?</a>
+                </div>
+              </div>
+              <div class="podcast-panel">
+                <button class="podcast-header" onclick="togglePodcast(this)"><span>🎙️</span><span>Podcast Series &middot; 6 episodes</span><span class="pod-chevron">▾</span></button>
+                <div class="podcast-ep-list">
+                  <a class="ep-link" href="Customization/resources/podcasts/agents/ep01-what-are-copilot-agents.md" target="_blank" rel="noopener"><span class="ep-num">Ep 1</span>What Are Copilot Agents?</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- M5 -->
+        <div class="scard m5">
+          <div class="scard-top">
+            <div class="scard-num">Module 05 · Tooling</div>
+            <div class="scard-title">SDD - GitHub Spec Kit</div>
+            <div class="scard-desc">spec.md → plan.md → tasks.json. Full traceability, quality gates, and turning requirements into production code.</div>
+          </div>
+          <div class="scard-body">
+            <div class="scard-pills">
+              <span class="pill">SpecKit</span><span class="pill">Planner Agent</span><span class="pill">Traceability</span><span class="pill">PRD</span>
+            </div>
+            <div class="scard-assets">
+              <a class="asset-link" href="Spec-Driven Development/resources/onepagers/github-spec-kit/one-pager.html" target="_blank" rel="noopener"><span class="ico">📄</span>One-Pager</a>
+              <a class="asset-link" href="Spec-Driven Development/resources/guides/github-spec-kit/speckit-guide.md" target="_blank" rel="noopener"><span class="ico">📐</span>SpecKit Guide</a>
+              <a class="asset-link" href="Spec-Driven Development/resources/exercises/github-spec-kit/lab-exercises.html" target="_blank" rel="noopener"><span class="ico">🧪</span>Lab Exercises</a>
+              <a class="asset-link" href="Spec-Driven Development/resources/podcasts/github-spec-kit/podcast-script.md" target="_blank" rel="noopener"><span class="ico">🎙️</span>Podcast Script</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- M6 -->
+        <div class="scard m6">
+          <div class="scard-top">
+            <div class="scard-num">Module 06 · Capstone</div>
+            <div class="scard-title">SDD - Agent Squad</div>
+            <div class="scard-desc">Orchestrate a full pipeline: Planner → Designer → Coder → Tester → Reviewer → Security → SRE → Docs.</div>
+          </div>
+          <div class="scard-body">
+            <div class="scard-pills">
+              <span class="pill">Orchestrator</span><span class="pill">Coder</span><span class="pill">Tester</span><span class="pill">Security</span><span class="pill">SRE</span>
+            </div>
+            <div class="scard-assets">
+              <a class="asset-link" href="Spec-Driven Development/resources/onepagers/agent-squad/one-pager.html" target="_blank" rel="noopener"><span class="ico">📄</span>One-Pager</a>
+              <a class="asset-link" href="Spec-Driven Development/resources/guides/agent-squad/agent-roles-guide.md" target="_blank" rel="noopener"><span class="ico">🤖</span>Agent Roles Guide</a>
+              <a class="asset-link" href="Spec-Driven Development/resources/exercises/agent-squad/lab-capstone.html" target="_blank" rel="noopener"><span class="ico">🧪</span>Capstone Lab</a>
+              <a class="asset-link" href="Spec-Driven Development/resources/podcasts/agent-squad/podcast-script.md" target="_blank" rel="noopener"><span class="ico">🎙️</span>Podcast Script</a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <div class="info-box info-blue" style="margin-top:8px;">
+        <span class="info-icon">ℹ️</span>
+        <div><strong>Progressive mastery.</strong> M1 → M2 → M3 builds the mindset. M4 → M5 → M6 applies it at scale — from individual agents to a full autonomous SDLC squad with quality gates.</div>
+      </div>
+    </section>
+
+    <!-- DELIVERY FORMATS -->
+    <section class="slide" id="slide-formats">
+      <div class="breadcrumb">Course Hub → Delivery Formats</div>
+      <div class="slide-label">Learning Assets</div>
+      <h2 class="slide-title">Delivery Formats</h2>
+      <div class="divider"></div>
+      <p class="slide-desc">Every module ships with multiple asset types so learners can engage in their preferred format — video, reading, hands-on practice, or audio while commuting.</p>
+      <div class="card-grid">
+        <div class="fcard"><span class="fi">🎬</span><div class="fn">Short Videos</div><div class="fd">3–8 min micro-videos. One concept per video.</div></div>
+        <div class="fcard"><span class="fi">📄</span><div class="fn">One-Pager HTMLs</div><div class="fd">Self-contained. Share as link or email.</div></div>
+        <div class="fcard"><span class="fi">🎙️</span><div class="fn">Podcast Episodes</div><div class="fd">15–20 min conversation. Async-friendly.</div></div>
+        <div class="fcard"><span class="fi">🧪</span><div class="fn">Hands-on Labs</div><div class="fd">GitHub Codespaces. Auto-graded.</div></div>
+        <div class="fcard"><span class="fi">📊</span><div class="fn">Cheat Sheets</div><div class="fd">Print-ready. Top commands &amp; patterns.</div></div>
+        <div class="fcard"><span class="fi">📚</span><div class="fn">Prompt Library</div><div class="fd">20+ reusable .prompt.md templates.</div></div>
+        <div class="fcard"><span class="fi">🗺️</span><div class="fn">Guides</div><div class="fd">SpecKit, Agent Roles &amp; deep-dive refs.</div></div>
+        <div class="fcard"><span class="fi">🏆</span><div class="fn">Digital Badges</div><div class="fd">GitHub profile badges per module.</div></div>
+      </div>
+    </section>
+
+    <!-- SCHEDULE -->
+    <section class="slide" id="slide-schedule">
+      <div class="breadcrumb">Course Hub → Schedule</div>
+      <div class="slide-label">Rollout Plan</div>
+      <h2 class="slide-title">6-Week Schedule</h2>
+      <div class="divider"></div>
+      <p class="slide-desc">Live modules run simultaneously across US and India time zones. All labs and assets are published the same day.</p>
+      <div class="info-box info-blue schedule-callout">
+        <span class="info-icon">🗺️</span>
+        <div><strong>Organization rollout roadmap.</strong> <a class="roadmap-link" href="GitHub Copilot and Spec-Driven Development/Spec-Driven Development Rollout Roadmap.html" target="_blank" rel="noopener">Open the four-week adoption plan</a> for standards, enablement, developer adoption, and operationalization.</div>
+      </div>
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-left"><div class="timeline-dot">W1</div><div class="timeline-line"></div></div>
+          <div class="timeline-content">
+            <div class="timeline-week">Week 1 · Foundation</div>
+            <div class="timeline-title">📘 Module 1 — Fundamentals</div>
+            <div class="timeline-desc">US: 11 AM ET · India: 8:30 PM IST · Lab 1 + micro-videos released same day</div>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-left"><div class="timeline-dot">W2</div><div class="timeline-line"></div></div>
+          <div class="timeline-content">
+            <div class="timeline-week">Week 2 · Customisation</div>
+            <div class="timeline-title">✍️ Module 2 — Prompt Engineering</div>
+            <div class="timeline-desc">US: 11 AM ET · India: 8:30 PM IST · Prompt library + SKILL templates published</div>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-left"><div class="timeline-dot">W3</div><div class="timeline-line"></div></div>
+          <div class="timeline-content">
+            <div class="timeline-week">Week 3 · Methodology</div>
+            <div class="timeline-title">🌊 Module 3 — AI-Assisted Development &amp; Spec Driven Development</div>
+            <div class="timeline-desc">US: 11 AM ET · India: 8:30 PM IST · Concept guide + Lab 3 released</div>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-left"><div class="timeline-dot">W4</div><div class="timeline-line"></div></div>
+          <div class="timeline-content">
+            <div class="timeline-week">Week 4 · Autonomy</div>
+            <div class="timeline-title">🧩 Module 4 — Agents</div>
+            <div class="timeline-desc">US: 11 AM ET · India: 8:30 PM IST · Agent mode labs + MCP guide released</div>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-left"><div class="timeline-dot">W5</div><div class="timeline-line"></div></div>
+          <div class="timeline-content">
+            <div class="timeline-week">Week 5 · Tooling</div>
+            <div class="timeline-title">📐 Module 5 — GitHub Spec Kit</div>
+            <div class="timeline-desc">US: 11 AM ET · India: 8:30 PM IST · SpecKit guide + Lab 5 released</div>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-left"><div class="timeline-dot">W6</div><div class="timeline-line"></div></div>
+          <div class="timeline-content">
+            <div class="timeline-week">Week 6 · Capstone</div>
+            <div class="timeline-title">🤖 Module 6 — SDD - Agent Squad</div>
+            <div class="timeline-desc">US: 11 AM ET · India: 8:30 PM IST · Capstone lab · Completion badges issued</div>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-left"><div class="timeline-dot" style="background:var(--green);">W7+</div><div class="timeline-line"></div></div>
+          <div class="timeline-content">
+            <div class="timeline-week" style="color:var(--green);">Ongoing · Community</div>
+            <div class="timeline-title">🎓 Community of Practice</div>
+            <div class="timeline-desc">Monthly Copilot Office Hours · Shared prompt library · Peer tip-of-the-week</div>
+          </div>
+        </div>
+      </div>
+      <div class="info-box info-green" style="margin-top:32px;">
+        <span class="info-icon">✅</span>
+        <div><strong>Fully async-friendly.</strong> Can't attend live? Every module is recorded and all assets are self-contained HTML files you can open without a server or internet connection.</div>
+      </div>
+    </section>
+
+    <!-- IN A NUTSHELL -->
+    <section class="slide" id="slide-nutshell">
+      <div class="breadcrumb">Course Hub → In a Nutshell</div>
+      <div class="slide-label">Quick Reference</div>
+      <h2 class="slide-title">In a Nutshell</h2>
+      <div class="divider"></div>
+      <p class="slide-desc">Nine standalone deep-dive references — one per major topic. Open directly in your browser, share as a link, or print. Each covers concepts, diagrams, and usage patterns at a glance.</p>
+      <div class="nutshell-grid">
+        <a class="ncard" href="inanutshell/GitHub Copilot - In a Nutshell.html" target="_blank" rel="noopener">
+          <div class="ncard-icon bg-blue">🤖</div>
+          <div><div class="ncard-title">GitHub Copilot</div><div class="ncard-desc">Core concepts, completions, chat, and model selection at a glance.</div></div>
+          <div class="ncard-arrow">↗</div>
+        </a>
+        <a class="ncard" href="inanutshell/GitHub Copilot CLI - In a Nutshell.html" target="_blank" rel="noopener">
+          <div class="ncard-icon bg-teal">💻</div>
+          <div><div class="ncard-title">GitHub Copilot CLI</div><div class="ncard-desc">Terminal superpowers — gh copilot suggest &amp; explain commands.</div></div>
+          <div class="ncard-arrow">↗</div>
+        </a>
+        <a class="ncard" href="inanutshell/GitHub Copilot SDK - In a Nutshell.html" target="_blank" rel="noopener">
+          <div class="ncard-icon bg-purple">🔧</div>
+          <div><div class="ncard-title">GitHub Copilot SDK</div><div class="ncard-desc">Extend Copilot with custom skills, tools, and your own SDK integrations.</div></div>
+          <div class="ncard-arrow">↗</div>
+        </a>
+        <a class="ncard" href="inanutshell/GitHub Copilot Agents - In a Nutshell.html" target="_blank" rel="noopener">
+          <div class="ncard-icon bg-indigo">🧩</div>
+          <div><div class="ncard-title">GitHub Copilot Agents</div><div class="ncard-desc">Agent mode, tools, MCP integrations, and autonomous multi-step tasks.</div></div>
+          <div class="ncard-arrow">↗</div>
+        </a> 
+        <a class="ncard" href="inanutshell/GitHub Spec Kit - In a Nutshell.html" target="_blank" rel="noopener">
+          <div class="ncard-icon bg-green">📐</div>
+          <div><div class="ncard-title">GitHub Spec Kit</div><div class="ncard-desc">Spec-first workflows, quality gates, and traceability from PRD to code.</div></div>
+          <div class="ncard-arrow">↗</div>
+        </a>       
+        <a class="ncard" href="inanutshell/SDD - Agent Squad - In a Nutshell.html" target="_blank" rel="noopener">
+          <div class="ncard-icon bg-gold">🏗️</div>
+          <div><div class="ncard-title">SDD - Agent Squad</div><div class="ncard-desc">Full-lifecycle multi-agent orchestration — Planner to Docs, end-to-end.</div></div>
+          <div class="ncard-arrow">↗</div>
+        </a>        
+        <a class="ncard" href="inanutshell/Context Engineering - In a Nutshell.html" target="_blank" rel="noopener">
+          <div class="ncard-icon bg-cyan">🧠</div>
+          <div><div class="ncard-title">Context Engineering</div><div class="ncard-desc">Context window strategy, retrieval patterns, and maximising AI response quality.</div></div>
+          <div class="ncard-arrow">↗</div>
+        </a>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<button id="scrollTopBtn" title="Back to top" onclick="document.getElementById('mainScroll').scrollTo({top:0,behavior:'smooth'})">
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>
+</button>
+<script>
+  const main = document.getElementById('mainScroll');
+  const bar  = document.getElementById('progressBar');
+  const btn  = document.getElementById('scrollTopBtn');
+  const navItems = document.querySelectorAll('.nav-item');
+  main.addEventListener('scroll', () => {
+    const pct = (main.scrollTop / (main.scrollHeight - main.clientHeight)) * 100;
+    bar.style.width = pct + '%';
+    btn.classList.toggle('visible', main.scrollTop > 300);
+    const sections = document.querySelectorAll('section[id]');
+    let current = '';
+    sections.forEach(s => { if (main.scrollTop + 80 >= s.offsetTop) current = s.id; });
+    navItems.forEach(n => { n.classList.toggle('active', n.getAttribute('href') === '#' + current); });
+  });
+  function togglePodcast(btn) {
+    const list = btn.nextElementSibling;
+    const isOpen = btn.classList.contains('open');
+    document.querySelectorAll('.podcast-header.open').forEach(h => {
+      if (h !== btn) { h.classList.remove('open'); h.nextElementSibling.classList.remove('open'); }
+    });
+    btn.classList.toggle('open', !isOpen);
+    list.classList.toggle('open', !isOpen);
+  }
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.podcast-panel')) {
+      document.querySelectorAll('.podcast-header.open').forEach(h => {
+        h.classList.remove('open'); h.nextElementSibling.classList.remove('open');
+      });
+    }
+  });
+</script>
+</body>
+</html>
+
+

@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Model Comparison | MetLife Learning</title>
+<style>
+  :root {
+    --ink: #17212b; --muted: #5f6f7d; --paper: #f5f1e8; --paper-deep: #e9e1d3;
+    --white: #fffdf8; --navy: #102a43; --blue: #1769aa; --cyan: #0f9da8;
+    --coral: #e26d5a; --gold: #d9a441; --line: #d8d0c4;
+    --shadow: 0 18px 45px rgba(23,33,43,.10);
+    --display: Georgia, 'Times New Roman', serif;
+    --body: 'Trebuchet MS', 'Segoe UI', sans-serif;
+    --mono: 'Cascadia Code', Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--body); line-height: 1.6; }
+  a { color: var(--blue); }
+  .shell { display: grid; grid-template-columns: 260px minmax(0, 1fr); min-height: 100vh; }
+  .rail { position: sticky; top: 0; height: 100vh; overflow-y: auto; padding: 28px 20px; background: var(--navy); color: #d9e8f2; }
+  .rail-mark { color: #7ed6d1; font-size: 11px; font-weight: 800; letter-spacing: 1.8px; text-transform: uppercase; }
+  .rail h2 { margin: 8px 0 24px; color: #fffdf8; font: 700 24px/1.05 var(--display); }
+  .rail-label { margin: 25px 0 8px; color: #88a7ba; font-size: 10px; font-weight: 800; letter-spacing: 1.4px; text-transform: uppercase; }
+  .rail a { display: block; padding: 7px 9px; border-left: 2px solid transparent; color: #c4d6e0; font-size: 12px; text-decoration: none; }
+  .rail a:hover, .rail a:focus { border-left-color: #7ed6d1; background: rgba(255,255,255,.06); color: #fff; }
+  .rail-footer { margin-top: 30px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,.14); color: #88a7ba; font-size: 11px; }
+  main { min-width: 0; }
+  .content { width: min(1160px, calc(100% - 64px)); margin: 0 auto; padding: 48px 0 80px; }
+  .hero { position: relative; overflow: hidden; min-height: 390px; padding: 54px 58px; background: var(--navy); color: #fffdf8; box-shadow: var(--shadow); }
+  .hero::after { content: ''; position: absolute; width: 300px; height: 300px; right: -70px; bottom: -125px; border: 45px solid rgba(126,214,209,.32); border-radius: 50%; }
+  .hero::before { content: ''; position: absolute; width: 125px; height: 125px; right: 190px; top: -45px; border: 20px solid rgba(226,109,90,.6); transform: rotate(27deg); }
+  .eyebrow { position: relative; z-index: 1; color: #7ed6d1; font-size: 11px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; }
+  h1 { position: relative; z-index: 1; max-width: 820px; margin: 18px 0; color: #fffdf8; font: 700 clamp(44px, 7vw, 82px)/.95 var(--display); letter-spacing: -2px; }
+  .hero p { position: relative; z-index: 1; max-width: 720px; margin: 0; color: #d9e8f2; font-size: 17px; }
+  .hero-meta { position: relative; z-index: 1; display: flex; flex-wrap: wrap; gap: 10px; margin-top: 30px; }
+  .tag { display: inline-flex; padding: 7px 11px; border: 1px solid rgba(255,255,255,.22); color: #fffdf8; font-size: 11px; }
+  .section { margin-top: 34px; padding: 32px 36px; background: var(--white); border: 1px solid var(--line); box-shadow: 0 8px 26px rgba(23,33,43,.05); }
+  .section-head { display: flex; align-items: flex-start; gap: 18px; margin-bottom: 22px; }
+  .section-number { flex: 0 0 auto; color: var(--coral); font: 700 28px/1 var(--display); }
+  h2 { margin: 0; color: var(--navy); font: 700 30px/1.08 var(--display); }
+  h3 { margin: 25px 0 8px; color: var(--navy); font-size: 18px; }
+  p { margin: 10px 0; }
+  .lede { color: var(--muted); font-size: 16px; }
+  .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+  .card { padding: 20px; background: #faf7f0; border: 1px solid var(--line); }
+  .card strong { display: block; margin-bottom: 5px; color: var(--navy); }
+  .card p, .card li { margin: 0; color: var(--muted); font-size: 14px; }
+  .card ul { margin: 0; padding-left: 18px; }
+  .callout { margin: 20px 0; padding: 17px 19px; border-left: 4px solid var(--cyan); background: #eaf6f4; }
+  .callout.warn { border-left-color: var(--coral); background: #fff0eb; }
+  .callout.gold { border-left-color: var(--gold); background: #fff8df; }
+  .callout strong { color: var(--navy); }
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { padding: 11px 12px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+  th { background: var(--navy); color: #fffdf8; font-size: 11px; letter-spacing: .5px; text-transform: uppercase; }
+  td { color: var(--muted); }
+  td:first-child { color: var(--navy); font-weight: 700; white-space: nowrap; }
+  .task-label { display: inline-block; padding: 4px 7px; color: var(--navy); background: #dff3f0; font-size: 10px; font-weight: 800; line-height: 1.2; }
+  .filter-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin: 20px 0; }
+  .filter-row input, .filter-row select { min-height: 42px; padding: 9px 12px; border: 1px solid var(--line); background: #fff; color: var(--ink); font: inherit; }
+  .filter-row input { flex: 1 1 280px; }
+  .filter-row select { flex: 0 1 260px; }
+  .result-count { color: var(--muted); font-size: 12px; }
+  .model-row.is-hidden { display: none; }
+  .model-card { min-height: 160px; padding: 20px; border-top: 5px solid var(--blue); background: #faf7f0; }
+  .model-card:nth-child(2n) { border-top-color: var(--coral); }
+  .model-card:nth-child(3n) { border-top-color: var(--cyan); }
+  .model-card h3 { margin: 0 0 8px; font-size: 20px; }
+  .model-card p { color: var(--muted); font-size: 14px; }
+  .model-card .fit { color: var(--navy); font-size: 11px; font-weight: 800; letter-spacing: .6px; text-transform: uppercase; }
+  .source { margin-top: 34px; padding: 22px 26px; background: var(--paper-deep); color: var(--muted); font-size: 13px; }
+  .reveal { animation: rise .65s ease both; }
+  @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+  @media (max-width: 850px) {
+    .shell { display: block; }
+    .rail { position: relative; height: auto; }
+    .rail nav { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2px 12px; }
+    .rail-label { grid-column: 1 / -1; }
+    .content { width: min(100% - 28px, 720px); padding-top: 20px; }
+    .hero { padding: 38px 28px; }
+    .section { padding: 26px 22px; }
+    .grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 560px) {
+    h1 { letter-spacing: -1px; }
+    .grid { grid-template-columns: 1fr; }
+    .hero { min-height: 0; }
+    th, td { min-width: 150px; }
+  }
+  /* Fundamentals visual language */
+  body { background: #f0f4f8; color: #1e293b; font-family: 'Segoe UI', system-ui, sans-serif; }
+  .content { width: min(1100px, calc(100% - 64px)); padding: 42px 0 58px; }
+  .hero { min-height: 0; padding: 40px 38px 34px; background: linear-gradient(135deg, #dbeafe, #e0f2fe 55%, #dcfce7); color: #102042; border: 1px solid #c7d8ed; border-radius: 18px; box-shadow: 0 4px 24px rgba(10,22,40,.10); }
+  .hero::after { border-color: rgba(14,165,233,.20); }
+  .hero::before { border-color: rgba(245,158,11,.30); }
+  .eyebrow { color: #1d4ed8; }
+  h1 { color: #0a1628; font-family: Georgia, serif; letter-spacing: -.8px; }
+  .hero p { color: #475569; }
+  .hero-meta { margin-top: 20px; }
+  .tag { padding: 5px 11px; border: 1px solid rgba(15,23,42,.1); border-radius: 7px; background: rgba(255,255,255,.72); color: #475569; }
+  .section { margin-top: 28px; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px; background: #fff; box-shadow: 0 4px 16px rgba(10,22,40,.06); }
+  .section-number { color: #1d4ed8; }
+  h2, h3 { color: #102042; }
+  .card, .model-card { background: #f8fafc; border-color: #e2e8f0; }
+  .callout { background: #eff6ff; border-left-color: #0ea5e9; }
+  .callout.warn { background: #fff7ed; border-left-color: #f97316; }
+  .callout.gold { background: #fffbeb; border-left-color: #f59e0b; }
+  .source { background: #f1f5f9; }
+  th { background: #102042; }
+  @media (max-width: 850px) { .content { width: min(100% - 28px, 720px); } }
+</style>
+</head>
+<body id="top">
+<div class="shell">
+  <aside class="rail">
+    <div class="rail-mark">MetLife Learning</div>
+    <h2>AI Model<br>Comparison</h2>
+    <nav aria-label="Guide sections">
+      <div class="rail-label">Start here</div>
+      <a href="#orientation">Orientation</a>
+      <a href="#selector">Quick selector</a>
+      <div class="rail-label">Compare</div>
+      <a href="#matrix">Model matrix</a>
+      <a href="#general">General coding</a>
+      <a href="#fast">Fast tasks</a>
+      <a href="#reasoning">Deep reasoning</a>
+      <a href="#visuals">Visual work</a>
+      <div class="rail-label">Apply it</div>
+      <a href="#workflow">Selection workflow</a>
+      <a href="#next">Next steps</a>
+    </nav>
+    <div class="rail-footer">Based on the GitHub Copilot AI model comparison<br><strong>Fundamentals</strong></div>
+  </aside>
+
+  <main>
+    <div class="content">
+      <header class="hero reveal">
+        <div class="eyebrow">GitHub Copilot Fundamentals</div>
+        <h1>Choose the model<br>for the work.</h1>
+        <p>Different models trade speed, reasoning depth, multimodal capability, and cost. Use the task as your starting point, then choose the model that gives you the right balance for the moment.</p>
+        <div class="hero-meta">
+          <span class="tag">Task-first guidance</span>
+          <span class="tag">Copilot Chat and inline suggestions</span>
+          <span class="tag">Source: GitHub Docs</span>
+        </div>
+      </header>
+
+      <section class="section" id="orientation">
+        <div class="section-head"><div class="section-number">01</div><div><h2>Model choice is a task decision</h2><p class="lede">There is no single best model for every prompt. The useful question is what kind of work you are asking Copilot to do.</p></div></div>
+        <div class="callout gold"><strong>Start with Auto when you are unsure.</strong> Copilot can select an appropriate model based on availability and task complexity. Model usage can consume AI credits at different rates, so check your plan's pricing and limits.</div>
+        <div class="grid">
+          <div class="card"><strong>Speed</strong><p>For syntax questions, small edits, and repetitive changes, latency may matter more than maximum reasoning depth.</p></div>
+          <div class="card"><strong>Reasoning</strong><p>For architecture, multi-file refactors, debugging, and trade-offs, a deeper reasoning model may save time overall.</p></div>
+          <div class="card"><strong>Context</strong><p>For large codebases or long investigations, choose a model suited to sustained context and tool-driven work.</p></div>
+          <div class="card"><strong>Input type</strong><p>For screenshots, diagrams, and UI components, use a model that supports visual input in the surface you are using.</p></div>
+        </div>
+      </section>
+
+      <section class="section" id="selector">
+        <div class="section-head"><div class="section-number">02</div><div><h2>Quick selector</h2><p class="lede">Use the shortest path to a reasonable first choice.</p></div></div>
+        <div class="grid">
+          <div class="card"><strong>I need a small, fast answer</strong><p>Try Claude Haiku 4.5, MAI-Code-1-Flash, or another fast model available in your Copilot surface.</p></div>
+          <div class="card"><strong>I am writing or reviewing everyday code</strong><p>Try GPT-5 mini, GPT-5.3-Codex, MAI-Code-1-Flash, Raptor mini, or Claude Sonnet 4.6.</p></div>
+          <div class="card"><strong>I am debugging or changing architecture</strong><p>Try GPT-5.5, Claude Opus 4.7, Claude Sonnet 4.6, Gemini 3.1 Pro, or another deep-reasoning option.</p></div>
+          <div class="card"><strong>I need to understand a screenshot or diagram</strong><p>Choose a model with visual input support, such as GPT-5 mini, Claude Sonnet 4.6, or Gemini 3.1 Pro, where available.</p></div>
+        </div>
+      </section>
+
+      <section class="section" id="matrix">
+        <div class="section-head"><div class="section-number">03</div><div><h2>Model matrix</h2><p class="lede">Search the models listed in the GitHub comparison and filter them by task area.</p></div></div>
+        <div class="filter-row">
+          <label class="sr-only" for="model-search">Search models</label>
+          <input id="model-search" type="search" placeholder="Search by model or capability...">
+          <label class="sr-only" for="task-filter">Filter by task</label>
+          <select id="task-filter">
+            <option value="all">All task areas</option>
+            <option value="general">General-purpose coding and writing</option>
+            <option value="fast">Fast help with simple or repetitive tasks</option>
+            <option value="reasoning">Deep reasoning and debugging</option>
+            <option value="agentic">Agentic software development</option>
+            <option value="visual">Working with visuals</option>
+          </select>
+          <span class="result-count" id="result-count">24 models</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Model</th><th>Best-fit task</th><th>Primary strength</th><th>Model card</th></tr></thead>
+            <tbody id="model-table">
+              <tr class="model-row" data-task="general agentic" data-search="gpt-5 mini general coding writing fast accurate completions explanations"><td>GPT-5 mini</td><td><span class="task-label">General coding</span></td><td>Fast, accurate code completions and explanations.</td><td><a href="https://cdn.openai.com/gpt-5-system-card.pdf" target="_blank" rel="noopener">Read card</a></td></tr>
+              <tr class="model-row" data-task="agentic general" data-search="gpt-5.3-codex agentic software development features tests debugging refactors reviews"><td>GPT-5.3-Codex</td><td><span class="task-label">Agentic development</span></td><td>Higher-quality work on features, tests, debugging, refactors, and reviews.</td><td><a href="https://deploymentsafety.openai.com/gpt-5-3-codex" target="_blank" rel="noopener">Read card</a></td></tr>
+              <tr class="model-row" data-task="reasoning" data-search="gpt-5.4 deep reasoning debugging architecture multi-step problem solving"><td>GPT-5.4</td><td><span class="task-label">Deep reasoning</span></td><td>Multi-step problem solving and architecture-level code analysis.</td><td><a href="https://deploymentsafety.openai.com/gpt-5-4-thinking/introduction" target="_blank" rel="noopener">Read card</a></td></tr>
+              <tr class="model-row" data-task="agentic reasoning" data-search="gpt-5.4 mini codebase exploration grep tools agentic"><td>GPT-5.4 mini</td><td><span class="task-label">Agentic development</span></td><td>Codebase exploration, especially with grep-style tools.</td><td><a href="https://deploymentsafety.openai.com/gpt-5-4-thinking/gpt-5-4-thinking.pdf" target="_blank" rel="noopener">Read card</a></td></tr>
+              <tr class="model-row" data-task="reasoning" data-search="gpt-5.5 deep reasoning debugging architecture technical decision making"><td>GPT-5.5</td><td><span class="task-label">Deep reasoning</span></td><td>Complex reasoning, code analysis, and technical decision-making.</td><td><a href="https://deploymentsafety.openai.com/gpt-5-5/gpt-5-5.pdf" target="_blank" rel="noopener">Read card</a></td></tr>
+              <tr class="model-row" data-task="fast" data-search="gpt-5.6 luna fast simple repetitive cost efficient"><td>GPT-5.6 Luna</td><td><span class="task-label">Fast tasks</span></td><td>Quick, cost-efficient responses for smaller coding tasks.</td><td>Not available</td></tr>
+              <tr class="model-row" data-task="reasoning agentic" data-search="gpt-5.6 sol complex reasoning large codebases long running agentic"><td>GPT-5.6 Sol</td><td><span class="task-label">Deep reasoning</span></td><td>Complex reasoning over large codebases and long-running agentic work.</td><td>Not available</td></tr>
+              <tr class="model-row" data-task="general agentic" data-search="gpt-5.6 terra balanced everyday interactive agent coding"><td>GPT-5.6 Terra</td><td><span class="task-label">General coding</span></td><td>Balanced everyday interactive and agentic coding.</td><td>Not available</td></tr>
+              <tr class="model-row" data-task="agentic reasoning" data-search="claude fable 5 autonomous coding knowledge work reasoning parallel tools verification"><td>Claude Fable 5</td><td><span class="task-label">Long-horizon work</span></td><td>Upfront reasoning, parallel tool batching, and proactive verification.</td><td><a href="https://anthropic.com/claude-fable-5-mythos-5-system-card" target="_blank" rel="noopener">Read card</a></td></tr>
+              <tr class="model-row" data-task="fast" data-search="claude haiku 4.5 fast simple repetitive lightweight coding questions"><td>Claude Haiku 4.5</td><td><span class="task-label">Fast tasks</span></td><td>Fast, reliable answers to lightweight coding questions.</td><td><a href="https://assets.anthropic.com/m/99128ddd009bdcb/Claude-Haiku-4-5-System-Card.pdf" target="_blank" rel="noopener">Read card</a></td></tr>
+              <tr class="model-row" data-task="reasoning" data-search="claude opus 4.7 deep reasoning sophisticated problem solving"><td>Claude Opus 4.7</td><td><span class="task-label">Deep reasoning</span></td><td>Complex problem-solving challenges and sophisticated reasoning.</td><td><a href="https://cdn.sanity.io/files/4zrzovbb/website/037f06850df7fbe871e206dad004c3db5fd50340.pdf" target="_blank" rel="noopener">Read card</a></td></tr>
+              <tr class="model-row" data-task="reasoning" data-search="claude opus 4.8 deep reasoning sophisticated problem solving"><td>Claude Opus 4.8</td><td><span class="task-label">Deep reasoning</span></td><td>Complex problem-solving challenges and sophisticated reasoning.</td><td><a href="https://www-cdn.anthropic.com/0b4915911bb0d19eca5b5ee635c80fef830a37ea.pdf" target="_blank" rel="noopener">Read card</a></td></tr>
+              <tr class="model-row" data-task="reasoning" data-search="claude opus 5 deep reasoning sophisticated problem solving"><td>Claude Opus 5</td><td><span class="task-label">Deep reasoning</span></td><td>Complex problem-solving challenges and sophisticated reasoning.</td><td><a href="https://www-cdn.anthropic.com/c5fbac3f0b1280a933ebd26d3cb8bb9f5bdeaf48/Claude%20Opus%205%20System%20Card.pdf" target="_blank" rel="noopener">Read card</a></td></tr>
+              <tr class="model-row" data-task="general agentic" data-search="claude sonnet 4.5 general coding agent tasks problem solving reasoning"><td>Claude Sonnet 4.5</td><td><span class="task-label">General coding</span></td><td>Complex problem-solving and sophisticated reasoning.</td><td><a href="https://assets.anthropic.com/m/12f214efcc2f457a/original/Claude-Sonnet-4-5-System-Card.pdf" target="_blank" rel="noopener">Read card</a></td></tr>
+              <tr class="model-row" data-task="general agentic visual reasoning" data-search="claude sonnet 4.6 general coding agent visual reasoning problem solving"><td>Claude Sonnet 4.6</td><td><span class="task-label">General coding</span></td><td>Reliable completions and stronger reasoning under pressure; supports visual work where available.</td><td><a href="https://www-cdn.anthropic.com/78073f739564e986ff3e28522761a7a0b4484f84.pdf" target="_blank" rel="noopener">Read card</a></td></tr>
+              <tr class="model-row" data-task="general agentic" data-search="claude sonnet 5 general coding agent tasks problem solving reasoning"><td>Claude Sonnet 5</td><td><span class="task-label">General coding</span></td><td>General-purpose coding and agent tasks with strong reasoning.</td><td><a href="https://www-cdn.anthropic.com/9e6a1044980d8c4ed85669faf9c2a8342e2e9f1e/Claude%20Sonnet%205%20System%20Card.pdf" target="_blank" rel="noopener">Read card</a></td></tr>
+              <tr class="model-row" data-task="reasoning visual" data-search="gemini 2.5 pro deep reasoning code generation debugging research visual"><td>Gemini 2.5 Pro</td><td><span class="task-label">Deep reasoning</span></td><td>Complex code generation, debugging, research, and visual workflows.</td><td><a href="https://storage.googleapis.com/model-cards/documents/gemini-2.5-pro.pdf" target="_blank" rel="noopener">Read card</a></td></tr>
+              <tr class="model-row" data-task="fast" data-search="gemini 3 flash fast simple repetitive lightweight coding"><td>Gemini 3 Flash</td><td><span class="task-label">Fast tasks</span></td><td>Fast, reliable answers to lightweight coding questions.</td><td><a href="https://storage.googleapis.com/deepmind-media/Model-Cards/Gemini-3-Flash-Model-Card.pdf" target="_blank" rel="noopener">Read card</a></td></tr>
+              <tr class="model-row" data-task="reasoning visual" data-search="gemini 3.1 pro deep reasoning edit test loops tool precision visual"><td>Gemini 3.1 Pro</td><td><span class="task-label">Deep reasoning</span></td><td>Efficient edit-then-test loops with high tool precision.</td><td>Not available</td></tr>
+              <tr class="model-row" data-task="fast" data-search="gemini 3.5 flash fast simple repetitive lightweight coding"><td>Gemini 3.5 Flash</td><td><span class="task-label">Fast tasks</span></td><td>Fast, reliable answers to lightweight coding questions.</td><td><a href="https://storage.googleapis.com/deepmind-media/Model-Cards/Gemini-3-5-Flash-Model-Card.pdf" target="_blank" rel="noopener">Read card</a></td></tr>
+              <tr class="model-row" data-task="general" data-search="mai-code-1-flash general coding writing instruction following adaptive reasoning"><td>MAI-Code-1-Flash</td><td><span class="task-label">General coding</span></td><td>Strong instruction-following and adaptive reasoning for everyday work.</td><td><a href="https://aka.ms/mai-code-1-flash-modelcard" target="_blank" rel="noopener">Read card</a></td></tr>
+              <tr class="model-row" data-task="general" data-search="qwen2.5 coding reasoning code repair debugging"><td>Qwen2.5</td><td><span class="task-label">General coding</span></td><td>Code generation, reasoning, and code repair or debugging.</td><td><a href="https://arxiv.org/pdf/2409.12186" target="_blank" rel="noopener">Read card</a></td></tr>
+              <tr class="model-row" data-task="general" data-search="raptor mini fast accurate inline suggestions explanations"><td>Raptor mini</td><td><span class="task-label">General coding</span></td><td>Fast, accurate inline suggestions and explanations.</td><td>Coming soon</td></tr>
+              <tr class="model-row" data-task="general agentic" data-search="kimi k2.7 code general coding agent lightweight reliable answers"><td>Kimi K2.7 Code</td><td><span class="task-label">General coding</span></td><td>Fast, reliable answers for coding and agent tasks.</td><td><a href="https://huggingface.co/moonshotai/Kimi-K2.7-Code" target="_blank" rel="noopener">Read card</a></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p id="no-results" hidden>No matching models. Try a broader search or reset the task filter.</p>
+      </section>
+
+      <section class="section" id="general">
+        <div class="section-head"><div class="section-number">04</div><div><h2>General-purpose coding and writing</h2><p class="lede">Use this lane for everyday development work that needs a balance of quality, speed, and cost.</p></div></div>
+        <div class="grid">
+          <div class="model-card"><div class="fit">Good for</div><h3>GPT-5 mini</h3><p>Functions, short files, diffs, documentation, comments, summaries, and quick error explanations.</p></div>
+          <div class="model-card"><div class="fit">Good for</div><h3>GPT-5.3-Codex</h3><p>Features, tests, debugging, refactors, and reviews when you want more capable engineering work.</p></div>
+          <div class="model-card"><div class="fit">Good for</div><h3>MAI-Code-1-Flash</h3><p>Everyday coding, writing, and multi-turn development with concise, adaptive responses.</p></div>
+          <div class="model-card"><div class="fit">Good for</div><h3>Raptor mini</h3><p>Fast inline suggestions and explanations when available in your Copilot experience.</p></div>
+        </div>
+        <div class="callout"><strong>Switch up when:</strong> the task becomes a multi-file refactor, an architecture decision, or a debugging investigation that needs sustained context.</div>
+      </section>
+
+      <section class="section" id="fast">
+        <div class="section-head"><div class="section-number">05</div><div><h2>Fast help with simple or repetitive tasks</h2><p class="lede">Optimize for responsiveness when the work is small, familiar, and easy to verify.</p></div></div>
+        <ul>
+          <li>Write or edit a small function or utility.</li>
+          <li>Ask a syntax or language question.</li>
+          <li>Prototype an idea with minimal setup.</li>
+          <li>Get quick feedback on a simple edit.</li>
+        </ul>
+        <div class="grid">
+          <div class="card"><strong>Claude Haiku 4.5</strong><p>Balances fast responses with useful quality for lightweight coding questions.</p></div>
+          <div class="card"><strong>MAI-Code-1-Flash</strong><p>Handles quick coding tasks with adaptive efficiency and concise output.</p></div>
+        </div>
+        <div class="callout warn"><strong>Do not optimize only for speed:</strong> if the cost of a wrong answer is high, use a stronger model or ask for a verification step.</div>
+      </section>
+
+      <section class="section" id="reasoning">
+        <div class="section-head"><div class="section-number">06</div><div><h2>Deep reasoning and debugging</h2><p class="lede">Use this lane when the answer depends on multiple files, competing trade-offs, or a careful chain of reasoning.</p></div></div>
+        <ul>
+          <li>Debug complex issues with context across multiple files.</li>
+          <li>Refactor large or interconnected codebases.</li>
+          <li>Plan features or architecture across layers.</li>
+          <li>Analyze logs, performance data, or system behavior.</li>
+        </ul>
+        <div class="grid">
+          <div class="card"><strong>GPT-5.5</strong><p>Complex reasoning, code analysis, and technical decision-making.</p></div>
+          <div class="card"><strong>Claude Opus 4.7</strong><p>Sophisticated reasoning for difficult problem-solving challenges.</p></div>
+          <div class="card"><strong>Claude Sonnet 4.6</strong><p>Strong general reasoning and reliable completions under pressure.</p></div>
+          <div class="card"><strong>Gemini 3.1 Pro</strong><p>Effective edit-then-test loops with high tool precision.</p></div>
+        </div>
+      </section>
+
+      <section class="section" id="visuals">
+        <div class="section-head"><div class="section-number">07</div><div><h2>Working with visuals</h2><p class="lede">Choose a multimodal model when the input is a screenshot, diagram, or UI component rather than text alone.</p></div></div>
+        <div class="grid">
+          <div class="card"><strong>Ask about screenshots</strong><p>Use visual input to identify layout issues, visible errors, states, and interaction problems.</p></div>
+          <div class="card"><strong>Review diagrams</strong><p>Ask Copilot to explain relationships, find inconsistencies, or turn a visual into implementation tasks.</p></div>
+          <div class="card"><strong>Inspect UI components</strong><p>Use a screenshot as context for accessibility, responsive behavior, and visual debugging.</p></div>
+          <div class="card"><strong>Check the surface</strong><p>Visual reasoning only helps when the editor, chat surface, and selected model support image input.</p></div>
+        </div>
+      </section>
+
+      <section class="section" id="workflow">
+        <div class="section-head"><div class="section-number">08</div><div><h2>A practical selection workflow</h2><p class="lede">Make model choice part of the engineering loop, not a separate ceremony.</p></div></div>
+        <div class="grid">
+          <div class="card"><strong>1. Classify the task</strong><p>Fast edit, everyday coding, deep reasoning, agentic work, or visual analysis?</p></div>
+          <div class="card"><strong>2. Choose a first model</strong><p>Use the task lane above or start with Auto when availability and complexity are uncertain.</p></div>
+          <div class="card"><strong>3. Add the right context</strong><p>Give Copilot the relevant files, error output, requirements, tests, and constraints.</p></div>
+          <div class="card"><strong>4. Verify the result</strong><p>Run tests, inspect the diff, check security implications, and confirm the output matches the requirement.</p></div>
+        </div>
+        <div class="callout gold"><strong>Model choice does not replace judgment.</strong> A stronger model can produce a more useful first attempt, but the developer still owns the review, test evidence, security decision, and final change.</div>
+      </section>
+
+      <section class="section" id="next">
+        <div class="section-head"><div class="section-number">09</div><div><h2>Next steps</h2><p class="lede">Keep the official references close because model availability, names, capabilities, and pricing change.</p></div></div>
+        <div class="grid">
+          <div class="card"><strong>Supported models</strong><p><a href="https://docs.github.com/en/copilot/reference/ai-models/supported-models" target="_blank" rel="noopener">See supported AI models in GitHub Copilot</a> for current availability.</p></div>
+          <div class="card"><strong>Pricing and credits</strong><p><a href="https://docs.github.com/en/copilot/reference/copilot-billing/models-and-pricing" target="_blank" rel="noopener">Review models and pricing</a> before standardizing a team workflow.</p></div>
+          <div class="card"><strong>Compare with tasks</strong><p><a href="https://docs.github.com/en/copilot/tutorials/compare-ai-models" target="_blank" rel="noopener">Compare AI models using different tasks</a> for hands-on evaluation.</p></div>
+          <div class="card"><strong>Change your model</strong><p>Use the Copilot model selector in Chat or inline suggestions, following the current GitHub instructions for your IDE.</p></div>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+<script>
+  const searchInput = document.getElementById('model-search');
+  const taskFilter = document.getElementById('task-filter');
+  const rows = Array.from(document.querySelectorAll('.model-row'));
+  const resultCount = document.getElementById('result-count');
+  const noResults = document.getElementById('no-results');
+
+  function updateModels() {
+    const query = searchInput.value.trim().toLowerCase();
+    const task = taskFilter.value;
+    let visible = 0;
+    rows.forEach((row) => {
+      const matchesText = !query || row.dataset.search.includes(query);
+      const matchesTask = task === 'all' || row.dataset.task.split(' ').includes(task);
+      const show = matchesText && matchesTask;
+      row.classList.toggle('is-hidden', !show);
+      if (show) visible += 1;
+    });
+    resultCount.textContent = visible + (visible === 1 ? ' model' : ' models');
+    noResults.hidden = visible !== 0;
+  }
+
+  searchInput.addEventListener('input', updateModels);
+  taskFilter.addEventListener('change', updateModels);
+</script>
+</body>
+</html>

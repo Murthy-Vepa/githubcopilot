@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Spec-Driven Development presentation covering AI-driven SDD, GitHub Spec Kit, Agent Squad, and related tools.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='80' font-size='80'>🤖</text></svg>" />
+  <title>Spec-Driven Development</title>
+  <style>
+    :root { --ink:#17253d; --navy:#071a38; --blue:#1359b5; --cyan:#0d9db2; --teal:#118b83; --orange:#c66b1b; --paper:#f4f7fa; --white:#fff; --muted:#617086; --line:#d8e1eb; --display:"Segoe UI", Georgia, "Times New Roman", serif; --body:"Segoe UI Semibold", "Trebuchet MS", "Segoe UI", sans-serif; }
+    * { box-sizing:border-box; } html,body { min-height:100%; } body { margin:0; overflow:hidden; background:var(--paper); color:var(--ink); font-family:var(--body); } button { font:inherit; }
+    .deck { min-height:100vh; position:relative; isolation:isolate; background:radial-gradient(circle at 10% 12%, rgba(13,157,178,.12), transparent 23rem), radial-gradient(circle at 92% 88%, rgba(198,107,27,.09), transparent 22rem), var(--paper); }
+    .deck::before { content:""; position:fixed; inset:0; z-index:-1; pointer-events:none; opacity:.34; background-image:linear-gradient(rgba(23,37,61,.025) 1px, transparent 1px),linear-gradient(90deg, rgba(23,37,61,.025) 1px, transparent 1px); background-size:36px 36px; -webkit-mask-image:linear-gradient(to bottom, black, transparent 85%); mask-image:linear-gradient(to bottom, black, transparent 85%); }
+    .topbar { position:fixed; inset:0 0 auto; z-index:5; display:flex; justify-content:space-between; padding:18px clamp(20px,4vw,60px); color:var(--muted); font-size:11px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; } .brand { color:var(--navy); } .counter { font-variant-numeric:tabular-nums; }
+    .slides { min-height:100vh; position:relative; } .slide { display:none; width:min(1240px,100%); min-height:100vh; max-height:100vh; margin:0 auto; padding:clamp(74px,8vh,104px) clamp(24px,7vw,104px) 92px; overflow:hidden; animation:enter .45s ease both; } .slide.active,.slides:last-child { background:rgba(255,255,255,.58); display:flex; flex-direction:column; justify-content:center; }
+    @keyframes enter { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:none; } }
+    .eyebrow { color:var(--accent,var(--cyan)); font-size:12px; font-weight:900; letter-spacing:.17em; text-transform:uppercase; } .accent-blue { --accent:var(--blue); } .accent-cyan { --accent:var(--cyan); } .accent-teal { --accent:var(--teal); } .accent-orange { --accent:var(--orange); }
+    h1,h2,h3,p { margin-top:0; } h1,h2 { font-family:var(--display); font-weight:700; letter-spacing:-.025em; } h1 { max-width:950px; margin:14px 0 18px; color:var(--navy); font-size:clamp(42px,6.2vw,78px); line-height:.98; } h2 { max-width:900px; margin:11px 0 24px; color:var(--navy); font-size:clamp(32px,4.2vw,56px); line-height:1.02; } h3 { margin-bottom:8px; color:var(--navy); font-size:16px; line-height:1.15; } .lede { max-width:760px; color:#53677d; font-size:clamp(16px,1.7vw,21px); line-height:1.48; }
+    .date-line { margin-top:24px; color:var(--muted); font-size:13px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; } .title-mark { display:flex; gap:8px; margin-top:34px; } .title-mark span { width:58px; height:8px; border-radius:99px; } .title-mark span:nth-child(1){background:var(--blue)} .title-mark span:nth-child(2){background:var(--cyan)} .title-mark span:nth-child(3){background:var(--teal)} .title-mark span:nth-child(4){background:var(--orange)}
+    .welcome-slide { position:relative; justify-content:center; } .welcome-slide::after { content:""; position:absolute; width:min(42vw,520px); height:min(42vw,520px); right:-8%; bottom:-24%; border:1px solid rgba(19,89,181,.16); border-radius:50%; box-shadow:0 0 0 34px rgba(13,157,178,.04),0 0 0 68px rgba(198,107,27,.035); pointer-events:none; } .logo-lockup { display:block; width:min(220px,62vw); margin-bottom:15px; } .logo-lockup img { display:block; width:100%; height:auto; } .welcome-slide h1 { max-width:820px; margin-bottom:22px; font-size:clamp(46px,7vw,88px); } .welcome-slide .lede { max-width:700px; color:var(--blue); font-size:clamp(20px,2.2vw,29px); font-weight:700; letter-spacing:-.02em; } .welcome-meta { display:flex; flex-wrap:wrap; gap:10px; margin-top:30px; color:var(--muted); font-size:12px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; } .welcome-meta span { padding:9px 12px; border:1px solid var(--line); border-radius:99px; background:rgba(255,255,255,.7); }
+    .grid { display:grid; gap:12px; } .grid.two { grid-template-columns:repeat(2,1fr); } .grid.three { grid-template-columns:repeat(3,1fr); } .card { position:relative; padding:18px; border:1px solid var(--line); border-radius:12px; background:rgba(255,255,255,.84); box-shadow:0 7px 18px rgba(22,55,87,.05); } .card::before { content:""; display:block; width:30px; height:4px; margin-bottom:14px; border-radius:99px; background:var(--accent,var(--cyan)); } .card p,.card li { color:var(--muted); font-size:13px; line-height:1.42; } .card p { margin-bottom:0; } ul { margin:0; padding-left:17px; } li+li { margin-top:6px; }
+    .callout { margin-top:14px; padding:17px 20px; border-left:5px solid var(--accent,var(--cyan)); background:rgba(255,255,255,.72); color:var(--navy); font-size:16px; line-height:1.38; } .callout small { display:block; margin-top:9px; color:var(--muted); font-size:12px; }
+    .flow { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-top:6px; } .flow-item { min-height:150px; padding:15px; border-top:5px solid var(--accent); background:rgba(255,255,255,.84); box-shadow:0 9px 22px rgba(7,26,56,.08); } .flow-item h3 { margin-top:14px; } .flow-item p { color:var(--muted); font-size:12px; line-height:1.4; } .flow-number { color:var(--accent); font-family:var(--display); font-size:30px; line-height:1; }
+    .layers { display:grid; gap:8px; margin-top:4px; } .layer { display:grid; grid-template-columns:170px 1fr; gap:14px; align-items:center; padding:14px 16px; border-left:5px solid var(--accent); background:rgba(255,255,255,.84); } .layer strong { color:var(--accent); font-size:12px; letter-spacing:.08em; text-transform:uppercase; } .layer span { color:var(--muted); font-size:13px; line-height:1.35; }
+    .tool-table { display:grid; gap:8px; margin-top:4px; } .tool-row { display:grid; grid-template-columns:1.1fr 1.65fr .85fr; gap:14px; align-items:center; padding:13px 16px; border-left:4px solid var(--accent); background:rgba(255,255,255,.84); } .tool-row strong { color:var(--navy); font-size:14px; } .tool-row span { color:var(--muted); font-size:12px; line-height:1.35; } .tool-row em { color:var(--accent); font-size:11px; font-style:normal; font-weight:900; letter-spacing:.08em; text-transform:uppercase; }
+    .code { margin-top:4px; padding:17px 20px; border:1px solid #29445f; border-radius:10px; background:#0b2038; color:#d9f8f2; box-shadow:0 12px 24px rgba(7,26,56,.14); font-family:Consolas,"Courier New",monospace; font-size:13px; line-height:1.65; } .code .key { color:#5ed8ca; } .code .value { color:#f4c67e; } .code .comment { color:#8fa8bc; }
+    .resource-link { display:inline-block; margin-top:14px; color:var(--blue); font-size:12px; font-weight:900; text-decoration:none; } .resource-link:hover,.resource-link:focus-visible { color:var(--orange); text-decoration:underline; }
+    .controls { position:fixed; right:clamp(18px,4vw,60px); bottom:24px; z-index:6; display:flex; gap:8px; } .control,.overview-toggle { display:grid; place-items:center; min-width:38px; height:38px; padding:0 11px; border:1px solid #bfd0dd; border-radius:8px; background:rgba(255,255,255,.9); color:var(--navy); cursor:pointer; box-shadow:0 5px 18px rgba(22,55,87,.08); font-weight:900; } .control:hover,.control:focus-visible,.overview-toggle:hover,.overview-toggle:focus-visible { border-color:var(--cyan); color:var(--cyan); outline:none; } .control:disabled { cursor:not-allowed; opacity:.4; }
+    .progress { position:fixed; right:0; bottom:0; left:0; z-index:5; height:4px; background:#dfe8ef; } .progress span { display:block; height:100%; width:0; background:linear-gradient(90deg,var(--blue),var(--cyan),var(--teal),var(--orange)); transition:width .35s ease; }
+    .overview { position:fixed; inset:0; z-index:10; display:none; padding:8vh 7vw; overflow:auto; background:rgba(245,248,251,.96); -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); } .overview.open { display:block; animation:enter .25s ease both; } .overview-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:26px; } .overview h2 { margin:0; font-size:38px; } .thumbs { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px; } .thumb { min-height:120px; padding:16px; border:1px solid var(--line); border-top:5px solid var(--accent); background:var(--white); color:var(--navy); text-align:left; cursor:pointer; } .thumb:hover,.thumb:focus-visible { transform:translateY(-3px); box-shadow:0 12px 28px rgba(7,26,56,.09); outline:none; } .thumb small { display:block; margin-bottom:18px; color:var(--accent); font-weight:900; } .thumb strong { font-family:var(--display); font-size:18px; }
+    @media (max-width:800px) { .grid.two,.grid.three,.flow { grid-template-columns:1fr; } .flow-item { min-height:0; } h1 { font-size:clamp(40px,11vw,62px); } h2 { font-size:clamp(30px,8vw,46px); } .layer,.tool-row { grid-template-columns:1fr; gap:4px; } }
+    @media (max-height:800px) and (min-width:801px) { .slide { padding-top:68px; padding-bottom:82px; } h1 { font-size:clamp(40px,5.6vw,68px); } h2 { font-size:clamp(30px,3.8vw,48px); margin-bottom:18px; } .card { padding:15px; } .card::before { margin-bottom:10px; } .card p,.card li,.layer span,.tool-row span { font-size:12px; } .callout { padding:13px 16px; font-size:14px; } .flow-item { min-height:132px; } }
+    @media (max-width: 520px) { .topbar { padding: 14px 18px; } .slide { min-height: 100dvh; height: 100dvh; max-height: none; padding: 72px 19px 94px; overflow-y: auto; } .card { padding: 16px; } .controls { right: 18px; bottom: 17px; } .lede { font-size: 16px; } .terminal { font-size: 11px; padding: 14px; } }
+    @media print { body { overflow:visible; background:white; } .deck { background:white; } .slide { display:flex !important; min-height:100vh; page-break-after:always; } .topbar,.controls,.progress,.overview { display:none !important; } }
+  </style>
+</head>
+<body>
+  <div class="deck">
+    <div class="topbar"><span class="brand">Spec-Driven Development</span><span class="counter" id="counter">01 / 15</span></div>
+    <main class="slides">
+      <section class="slide active welcome-slide accent-blue" data-title="Welcome">
+        <div class="logo-lockup"><img src="assets/images/GitHub_Copilot_Logo.png" alt="GitHub Copilot"></div>
+        <div class="eyebrow">Module 04 / Spec-Driven Development</div>
+        <h1>Spec-Driven Development</h1>
+        <p class="lede">Turn intent into shared understanding, executable plans, and evidence-backed delivery.</p>
+        <div class="title-mark"><span></span><span></span><span></span><span></span></div>
+        <div class="welcome-meta"><span>Intent</span><span>Specification</span><span>Plan</span><span>Proof</span></div>
+      </section>
+
+      <section class="slide accent-cyan" data-title="Introduction">
+        <div class="eyebrow">01 / Introduction</div>
+        <h2>SDD makes the thing being built understandable before it becomes expensive to change.</h2>
+        <p class="lede">A specification gives people and AI a shared reference for behavior, constraints, scenarios, and success. It turns a conversation into an artifact the team can inspect and improve.</p>
+        <div class="grid three">
+          <article class="card"><h3>Align</h3><p>Make the problem, users, scope, and desired outcomes visible to the people doing the work.</p></article>
+          <article class="card"><h3>De-risk</h3><p>Expose assumptions, edge cases, dependencies, and non-functional needs early.</p></article>
+          <article class="card"><h3>Accelerate</h3><p>Give developers and AI a stable target so implementation starts with less ambiguity.</p></article>
+        </div>
+        <div class="callout"><strong>SDD is a way of working:</strong><small>the specification is a living collaboration surface, not paperwork produced after the important decisions are already made.</small></div>
+      </section>
+
+      <section class="slide accent-blue" data-title="Concepts">
+        <div class="eyebrow">02 / Concepts</div>
+        <h2>SDD connects four artifacts into one delivery loop.</h2>
+        <div class="flow">
+          <article class="flow-item accent-cyan"><div class="flow-number">01</div><h3>Spec</h3><p>What should the system do, for whom, and under what constraints?</p></article>
+          <article class="flow-item accent-blue"><div class="flow-number">02</div><h3>Plan</h3><p>How will the team change the system, in what order, and with what dependencies?</p></article>
+          <article class="flow-item accent-teal"><div class="flow-number">03</div><h3>Tasks</h3><p>What bounded work can be implemented, reviewed, and tested independently?</p></article>
+          <article class="flow-item accent-orange"><div class="flow-number">04</div><h3>Evidence</h3><p>What checks demonstrate that the delivered behavior matches the intent?</p></article>
+        </div>
+        <div class="callout"><strong>Traceability is the connective tissue:</strong><small>every implementation decision should be explainable against a requirement, scenario, constraint, or quality gate.</small></div>
+      </section>
+
+      <section class="slide accent-orange" data-title="Vibe Coding vs SDD">
+        <div class="eyebrow">03 / Two working modes</div>
+        <h2>Vibe Coding explores quickly; SDD makes the path repeatable.</h2>
+        <div class="grid two">
+          <article class="card accent-orange"><h3>Vibe Coding</h3><ul><li>Conversational and exploratory.</li><li>Useful for sketches, learning, and rapid discovery.</li><li>Risk: assumptions can remain implicit.</li></ul></article>
+          <article class="card accent-blue"><h3>Spec-Driven Development</h3><ul><li>Explicit and collaborative.</li><li>Useful when work has consequence, dependencies, or multiple contributors.</li><li>Strength: decisions and acceptance criteria remain visible.</li></ul></article>
+        </div>
+        <div class="callout"><strong>They are complementary:</strong><small>use exploration to discover the shape of a problem, then use a specification when the team needs a shared contract for delivery.</small></div>
+        <a class="resource-link" href="GitHub Copilot and Spec-Driven Development/Fundamentals & Enablement/vibe-coding-vs-spec-driven-development.html">Open: AI-Assisted Development vs Spec-Driven Development &rarr;</a>
+      </section>
+
+      <section class="slide accent-cyan" data-title="AI-Driven SDD">
+        <div class="eyebrow">04 / AI-driven SDD</div>
+        <h2>AI can help move a team through the SDD loop without owning the decisions.</h2>
+        <div class="layers">
+          <div class="layer accent-cyan"><strong>Discover</strong><span>Ask AI to identify unknowns, users, scenarios, risks, and questions worth resolving.</span></div>
+          <div class="layer accent-blue"><strong>Specify</strong><span>Draft requirements and acceptance criteria, then refine them with the people who own the outcome.</span></div>
+          <div class="layer accent-teal"><strong>Plan</strong><span>Translate the agreed behavior into architecture notes, dependencies, tasks, and quality gates.</span></div>
+          <div class="layer accent-orange"><strong>Implement and prove</strong><span>Generate bounded changes, run checks, and trace evidence back to the specification.</span></div>
+        </div>
+        <div class="callout"><strong>AI is a force multiplier for clarity:</strong><small>it can surface gaps and produce drafts, but the team remains accountable for priorities, tradeoffs, and acceptance.</small></div>
+      </section>
+
+      <section class="slide accent-teal" data-title="Tools landscape">
+        <div class="eyebrow">05 / Tools landscape</div>
+        <h2>Different tools emphasize different parts of the SDD operating model.</h2>
+        <div class="tool-table">
+          <div class="tool-row accent-blue"><strong>GitHub Spec Kit</strong><span>Open workflow for turning specifications into plans, tasks, and implementation guidance.</span><em>Specification-first</em></div>
+          <div class="tool-row accent-orange"><strong>BMAD</strong><span>Agentic method centered on structured roles, planning, artifacts, and disciplined delivery.</span><em>Role-driven</em></div>
+          <div class="tool-row accent-cyan"><strong>AWS Kiro</strong><span>Specification-driven development experience connecting requirements, design, tasks, and coding.</span><em>IDE workflow</em></div>
+          <div class="tool-row accent-teal"><strong>Agent Squad</strong><span>Specialized agents coordinated around defined responsibilities, handoffs, and quality gates.</span><em>Multi-agent</em></div>
+        </div>
+        <div class="callout"><strong>Choose by operating need:</strong><small>the important question is which artifacts, roles, integrations, and review points your team can actually maintain.</small></div>
+      </section>
+
+      <section class="slide accent-blue" data-title="GitHub Spec Kit">
+        <div class="eyebrow">06 / GitHub Spec Kit</div>
+        <h2>GitHub Spec Kit makes specification a first-class development artifact.</h2>
+        <div class="grid two">
+          <article class="card"><h3>Core flow</h3><ul><li>Establish project principles and constraints.</li><li>Describe the feature and user scenarios.</li><li>Clarify ambiguities before planning.</li><li>Generate a plan and actionable tasks.</li></ul></article>
+          <article class="card"><h3>Why it helps</h3><ul><li>Creates a shared vocabulary for intent.</li><li>Supports traceability from requirements to implementation.</li><li>Gives AI a stable, structured context.</li><li>Encourages quality gates before delivery.</li></ul></article>
+        </div>
+        <div class="callout"><strong>Spec Kit is a workflow, not a magic prompt:</strong><small>its value comes from the discipline of refining artifacts and keeping the team aligned as the implementation evolves.</small></div>
+        <a class="resource-link" href="InaNutshell/GitHub Spec Kit - In a Nutshell.html">Open: GitHub Spec Kit - In a Nutshell &rarr;</a>
+      </section>
+
+      <section class="slide accent-orange" data-title="Spec Kit flow">
+        <div class="eyebrow">07 / Spec Kit flow</div>
+        <h2>Move from a vague idea to an executable change.</h2>
+        <div class="code"><div><span class="key">constitution</span> <span class="comment"># principles and non-negotiables</span></div><div><span class="key">specify</span> <span class="comment"># requirements, scenarios, acceptance</span></div><div><span class="key">clarify</span> <span class="comment"># resolve ambiguity before planning</span></div><div><span class="key">plan</span> <span class="comment"># architecture, dependencies, implementation strategy</span></div><div><span class="key">tasks</span> <span class="comment"># bounded work with traceability</span></div><div><span class="key">implement</span> <span class="comment"># execute, verify, and update evidence</span></div></div>
+        <div class="callout"><strong>The command names are less important than the behavior:</strong><small>each stage should reduce uncertainty and leave an artifact that makes the next stage easier to review.</small></div>
+        <a class="resource-link" href="Spec-Driven Development/resources/guides/github-spec-kit/speckit-guide.md">Open: GitHub Spec Kit Guide &rarr;</a>
+      </section>
+
+      <section class="slide accent-cyan" data-title="Agent Squad">
+        <div class="eyebrow">08 / Agent Squad</div>
+        <h2>Agent Squad turns a complex delivery workflow into coordinated responsibilities.</h2>
+        <div class="grid three">
+          <article class="card"><h3>Specialists</h3><p>Assign focused roles such as analyst, architect, developer, tester, or reviewer.</p></article>
+          <article class="card"><h3>Artifacts</h3><p>Make handoffs explicit through specifications, plans, task lists, findings, and evidence.</p></article>
+          <article class="card"><h3>Gates</h3><p>Require quality checks at the boundaries where an incorrect assumption becomes expensive.</p></article>
+        </div>
+        <div class="callout"><strong>Squads need orchestration:</strong><small>define ownership, dependencies, communication format, escalation paths, and when a human must approve the next step.</small></div>
+        <a class="resource-link" href="InaNutshell/SDD - Agent Squad - In a Nutshell.html">Open: SDD - Agent Squad - In a Nutshell &rarr;</a>
+      </section>
+
+      <section class="slide accent-teal" data-title="Agent Squad workflow">
+        <div class="eyebrow">09 / Coordinated delivery</div>
+        <h2>Agent collaboration works when each handoff preserves intent.</h2>
+        <div class="flow">
+          <article class="flow-item accent-cyan"><div class="flow-number">01</div><h3>Frame</h3><p>Establish the problem, scope, principles, and success criteria.</p></article>
+          <article class="flow-item accent-blue"><div class="flow-number">02</div><h3>Design</h3><p>Resolve architecture, dependencies, risks, and implementation choices.</p></article>
+          <article class="flow-item accent-teal"><div class="flow-number">03</div><h3>Build</h3><p>Implement bounded tasks against the agreed specification and plan.</p></article>
+          <article class="flow-item accent-orange"><div class="flow-number">04</div><h3>Verify</h3><p>Review behavior, run checks, and report evidence back to the shared record.</p></article>
+        </div>
+        <div class="callout"><strong>Coordination is not parallelism for its own sake:</strong><small>use multiple agents when distinct responsibilities reduce risk or increase useful throughput.</small></div>
+      </section>
+
+      <section class="slide accent-blue" data-title="Quality gates">
+        <div class="eyebrow">10 / Quality gates</div>
+        <h2>Gates keep the SDD artifacts honest.</h2>
+        <div class="grid two">
+          <article class="card"><h3>Before implementation</h3><ul><li>Are the scenarios and acceptance criteria testable?</li><li>Are non-goals, dependencies, and risks explicit?</li><li>Does the plan cover the specification?</li></ul></article>
+          <article class="card"><h3>Before completion</h3><ul><li>Does the implementation trace to the agreed behavior?</li><li>Do tests and checks provide meaningful evidence?</li><li>Are deviations documented and accepted?</li></ul></article>
+        </div>
+        <div class="callout"><strong>A gate is a decision point:</strong><small>it should produce a clear pass, fail, or request for clarification, with an owner for the next action.</small></div>
+      </section>
+
+      <section class="slide accent-orange" data-title="Adoption pattern">
+        <div class="eyebrow">11 / Adoption pattern</div>
+        <h2>Adopt SDD in a way that earns trust through useful practice.</h2>
+        <div class="layers">
+          <div class="layer accent-cyan"><strong>Start small</strong><span>Choose one feature workflow where unclear requirements currently create rework.</span></div>
+          <div class="layer accent-blue"><strong>Make artifacts useful</strong><span>Keep specifications concise, discoverable, and connected to the work people actually do.</span></div>
+          <div class="layer accent-teal"><strong>Measure the loop</strong><span>Look for fewer late clarifications, clearer reviews, faster onboarding, and stronger evidence.</span></div>
+          <div class="layer accent-orange"><strong>Scale the pattern</strong><span>Capture principles, templates, roles, and quality gates only after the workflow proves valuable.</span></div>
+        </div>
+        <div class="callout"><strong>Adoption is a product problem:</strong><small>the process has to make developers more effective in their real environment, not merely add a new document type.</small></div>
+      </section>
+
+      <section class="slide accent-cyan" data-title="Practice path">
+        <div class="eyebrow">12 / Practice path</div>
+        <h2>Practice SDD as a sequence of increasingly explicit decisions.</h2>
+        <div class="grid three">
+          <article class="card"><h3>Describe</h3><p>Write the user outcome and a small set of concrete scenarios.</p></article>
+          <article class="card"><h3>Challenge</h3><p>Ask AI and teammates to find ambiguity, edge cases, and missing constraints.</p></article>
+          <article class="card"><h3>Prove</h3><p>Implement a bounded task and connect tests and review evidence back to the spec.</p></article>
+        </div>
+        <div class="callout"><strong>The habit compounds:</strong><small>each clear specification becomes reusable context for planning, implementation, onboarding, and future change.</small></div>
+        <a class="resource-link" href="Spec-Driven Development/resources/exercises/github-spec-kit/lab-exercises.html">Open: GitHub Spec Kit Lab Exercises &rarr;</a>
+      </section>
+
+      <section class="slide accent-teal" data-title="Responsible SDD">
+        <div class="eyebrow">13 / Responsible SDD</div>
+        <h2>Keep the specification human-owned and the evidence inspectable.</h2>
+        <div class="grid three">
+          <article class="card"><h3>Ownership</h3><p>The people accountable for the outcome approve the requirements and tradeoffs.</p></article>
+          <article class="card"><h3>Transparency</h3><p>Show assumptions, generated contributions, deviations, and unresolved uncertainty.</p></article>
+          <article class="card"><h3>Security</h3><p>Protect sensitive context and govern the tools and agents that can act on the project.</p></article>
+        </div>
+        <div class="callout"><strong>Automation can accelerate a bad decision:</strong><small>SDD creates more value when the team uses its artifacts to question decisions, not simply formalize them.</small></div>
+      </section>
+
+      <section class="slide accent-orange" data-title="Next steps">
+        <div class="eyebrow">14 / Next steps</div>
+        <h2>Choose one upcoming feature and write the first useful specification.</h2>
+        <p class="lede">Name the user outcome, write the scenarios, ask what is unclear, and agree on what evidence will count as done. Then use AI to help the team move from a shared understanding to an executable plan.</p>
+        <div class="title-mark"><span></span><span></span><span></span><span></span></div>
+        <div class="date-line">Continue with GitHub Spec Kit, Agent Squad, and the SDD adoption roadmap</div>
+        <a class="resource-link" href="GitHub Copilot and Spec-Driven Development/Spec-Driven Development Rollout Roadmap.html">Open: Spec-Driven Development Rollout Roadmap &rarr;</a>
+      </section>
+    </main>
+    <div class="controls"><button class="control" id="prev" type="button" aria-label="Previous slide" title="Previous slide">&larr;</button><button class="overview-toggle" id="overviewToggle" type="button" aria-expanded="false" aria-controls="overview">Contents</button><button class="control" id="next" type="button" aria-label="Next slide" title="Next slide">&rarr;</button></div>
+    <div class="progress" aria-hidden="true"><span id="progress"></span></div>
+    <aside class="overview" id="overview" aria-hidden="true"><div class="overview-head"><h2>Spec-Driven Development presentation</h2><button class="control" id="closeOverview" type="button" aria-label="Close overview">&times;</button></div><div class="thumbs" id="thumbs"></div></aside>
+  </div>
+  <script>
+    const slides = [...document.querySelectorAll('.slide')];
+    const counter = document.querySelector('#counter');
+    const progress = document.querySelector('#progress');
+    const overview = document.querySelector('#overview');
+    const overviewToggle = document.querySelector('#overviewToggle');
+    const thumbs = document.querySelector('#thumbs');
+    let current = 0;
+
+    function show(index) {
+      current = Math.max(0, Math.min(index, slides.length - 1));
+      slides.forEach((slide, slideIndex) => slide.classList.toggle('active', slideIndex === current));
+      counter.textContent = `${String(current + 1).padStart(2, '0')} / ${String(slides.length).padStart(2, '0')}`;
+      progress.style.width = `${((current + 1) / slides.length) * 100}%`;
+      document.querySelector('#prev').disabled = current === 0;
+      document.querySelector('#next').disabled = current === slides.length - 1;
+    }
+
+    function setOverview(open) {
+      overview.classList.toggle('open', open);
+      overview.setAttribute('aria-hidden', String(!open));
+      overviewToggle.setAttribute('aria-expanded', String(open));
+    }
+
+    slides.forEach((slide, index) => {
+      const thumb = document.createElement('button');
+      thumb.type = 'button';
+      thumb.className = `thumb ${slide.className.match(/accent-\w+/)?.[0] || 'accent-cyan'}`;
+      thumb.innerHTML = `<small>${String(index + 1).padStart(2, '0')}</small><strong>${slide.dataset.title}</strong>`;
+      thumb.addEventListener('click', () => { show(index); setOverview(false); });
+      thumbs.appendChild(thumb);
+    });
+
+    document.querySelector('#prev').addEventListener('click', () => show(current - 1));
+    document.querySelector('#next').addEventListener('click', () => show(current + 1));
+    overviewToggle.addEventListener('click', () => setOverview(!overview.classList.contains('open')));
+    document.querySelector('#closeOverview').addEventListener('click', () => setOverview(false));
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape') setOverview(false);
+      if (overview.classList.contains('open')) return;
+      if (['ArrowRight', 'PageDown', ' '].includes(event.key)) { event.preventDefault(); show(current + 1); }
+      if (['ArrowLeft', 'PageUp'].includes(event.key)) { event.preventDefault(); show(current - 1); }
+      if (event.key === 'Home') { event.preventDefault(); show(0); }
+      if (event.key === 'End') { event.preventDefault(); show(slides.length - 1); }
+    });
+    show(0);
+  </script>
+</body>
+</html>

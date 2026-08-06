@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GitHub Copilot CLI Lab Exercises</title>
+  <style>
+    :root { --ink:#102042; --text:#334155; --muted:#64748b; --paper:#f0f4f8; --card:#fff; --line:#dbe3ec; --blue:#1d4ed8; --blue-light:#dbeafe; --green:#059669; --green-light:#dcfce7; --orange:#c2410c; --orange-light:#ffedd5; --purple:#7c3aed; --shadow:0 4px 20px rgba(10,22,40,.08); }
+    * { box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body { margin:0; background:var(--paper); color:var(--ink); font-family:Georgia,'Times New Roman',serif; }
+    code, pre { font-family:'Cascadia Code','Fira Code',Consolas,monospace; }
+    code { background:#eef2f7; border-radius:4px; color:#1d4ed8; padding:2px 5px; }
+    .progress-bar { background:#0ea5e9; height:4px; left:0; position:fixed; top:0; width:0; z-index:5; }
+    .wrap { margin:auto; max-width:1100px; padding:44px 48px 60px; }
+    .header { align-items:flex-end; background:linear-gradient(135deg,#dbeafe,#e0f2fe 55%,#dcfce7); border:1px solid #c7d8ed; border-radius:18px; box-shadow:var(--shadow); display:flex; gap:32px; justify-content:space-between; padding:38px; }
+    .badge { color:var(--blue); font:700 11px 'Segoe UI',sans-serif; letter-spacing:1.4px; text-transform:uppercase; }
+    h1 { font-size:clamp(30px,4vw,46px); line-height:1.05; margin:12px 0; }
+    .header p { color:#475569; font:15px/1.6 'Segoe UI',sans-serif; margin:0; max-width:700px; }
+    .header-meta { color:#475569; display:grid; font:600 11px/1.8 'Segoe UI',sans-serif; min-width:150px; }
+    .lab-intro, .progress, .ex, .bonus, .completion { background:var(--card); border:1px solid var(--line); border-radius:14px; box-shadow:var(--shadow); }
+    .lab-intro { border-left:4px solid var(--blue); margin:24px 0; padding:18px 22px; }
+    .lab-intro h2 { font-size:16px; margin:0 0 8px; }
+    .lab-intro p { color:var(--muted); font:13.5px/1.6 'Segoe UI',sans-serif; margin:5px 0; }
+    .progress { align-items:center; display:flex; gap:16px; margin-bottom:24px; padding:17px 22px; }
+    .progress-label, .progress-count { color:var(--muted); font:700 12px 'Segoe UI',sans-serif; white-space:nowrap; }
+    .progress-count { color:var(--blue); }
+    .progress-track { background:#e8edf3; border-radius:20px; flex:1; height:8px; overflow:hidden; }
+    .progress-fill { background:linear-gradient(90deg,var(--blue),#0ea5e9,var(--green)); border-radius:20px; height:100%; transition:width .3s; width:0; }
+    .ex { margin-bottom:16px; overflow:hidden; }
+    .ex-header { align-items:center; cursor:pointer; display:flex; gap:13px; padding:18px 22px; }
+    .ex-header:hover { background:#f8fbff; }
+    .ex.open .ex-header { border-bottom:1px solid var(--line); }
+    .ex-num { background:var(--blue-light); border:1px solid #bfdbfe; border-radius:6px; color:var(--blue); font:800 11px 'Segoe UI',sans-serif; padding:4px 9px; }
+    .ex-title { color:var(--ink); flex:1; font:700 16px 'Segoe UI',sans-serif; }
+    .ex-time, .ex-chevron { color:var(--muted); font:11px 'Segoe UI',sans-serif; }
+    .ex-chevron { font-size:13px; transition:transform .2s; }
+    .ex.open .ex-chevron { transform:rotate(180deg); }
+    .ex-body { display:none; padding:24px; }
+    .ex.open .ex-body { display:block; }
+    .goal { background:#eff6ff; border:1px solid #bfdbfe; border-radius:10px; margin-bottom:18px; padding:14px 18px; }
+    .goal-label, .validation-title { color:var(--blue); font:800 10px 'Segoe UI',sans-serif; letter-spacing:.8px; text-transform:uppercase; }
+    .goal-text, .step-text, .check-label { color:var(--text); font:13.5px/1.6 'Segoe UI',sans-serif; }
+    .steps-list { display:flex; flex-direction:column; gap:13px; list-style:none; margin:0 0 18px; padding:0; }
+    .step-item { display:flex; gap:13px; }
+    .step-bullet { align-items:center; background:#f1f5f9; border:2px solid var(--line); border-radius:50%; color:var(--muted); display:flex; flex-shrink:0; font:800 11px 'Segoe UI',sans-serif; height:24px; justify-content:center; width:24px; }
+    .step-content { flex:1; }
+    .step-sub { color:var(--muted); font:12px/1.5 'Segoe UI',sans-serif; margin-top:4px; }
+    pre { background:#0f1d31; border-radius:8px; color:#dbeafe; font-size:12px; line-height:1.65; margin:9px 0; overflow:auto; padding:13px 14px; white-space:pre-wrap; }
+    .prompt { background:#f8fafc; border-left:3px solid var(--blue); border-radius:7px; color:#1e293b; font:12px/1.6 'Cascadia Code',monospace; margin:9px 0; padding:10px 12px; }
+    .tip { border-left:4px solid var(--green); background:#f0fdf4; border-radius:8px; color:#065f46; font:13px/1.55 'Segoe UI',sans-serif; margin:15px 0; padding:12px 15px; }
+    .tip.orange { background:#fff7ed; border-color:#f97316; color:#9a3412; }
+    .validation-title { border-top:1px solid var(--line); margin-top:20px; padding-top:18px; }
+    .check-list { display:flex; flex-direction:column; gap:8px; margin-top:10px; }
+    .check-item { align-items:flex-start; cursor:pointer; display:flex; gap:10px; }
+    .check-box { align-items:center; border:2px solid var(--line); border-radius:4px; display:flex; flex-shrink:0; height:19px; justify-content:center; margin-top:2px; width:19px; }
+    .check-box-tick { color:transparent; font:bold 13px 'Segoe UI',sans-serif; }
+    .check-item.checked .check-box { background:var(--green); border-color:var(--green); }
+    .check-item.checked .check-box-tick { color:#fff; }
+    .check-item.checked .check-label { color:var(--muted); text-decoration:line-through; }
+    .bonus { background:linear-gradient(135deg,#fff7ed,#fef3c7); border-color:#fed7aa; margin-top:24px; padding:22px; }
+    .bonus h2 { color:var(--orange); font-size:17px; margin:0 0 8px; }
+    .bonus p { color:#7c2d12; font:13px/1.6 'Segoe UI',sans-serif; margin:0; }
+    .completion { background:linear-gradient(135deg,#f0fdf4,#ecfeff); border-color:#a7f3d0; display:none; margin-top:24px; padding:24px; text-align:center; }
+    .completion.show { display:block; }
+    .completion h2 { color:var(--green); font-size:22px; margin:0 0 8px; }
+    .completion p, footer { color:var(--muted); font:13px/1.5 'Segoe UI',sans-serif; }
+    footer { border-top:1px solid var(--line); margin-top:38px; padding-top:20px; text-align:center; }
+    #scrollTopBtn { background:var(--ink); border:1px solid #38bdf8; border-radius:50%; bottom:20px; color:#fff; cursor:pointer; display:none; font-size:16px; height:38px; position:fixed; right:20px; width:38px; }
+    #scrollTopBtn.visible { display:block; }
+    @media (max-width:700px) { .wrap { padding:28px 18px 48px; } .header { align-items:flex-start; flex-direction:column; padding:28px 24px; } .header-meta { border-top:1px solid rgba(15,23,42,.12); padding-top:12px; width:100%; } .ex-body { padding:20px; } .ex-header { padding:16px; } .ex-time { display:none; } }
+    @media print { .progress-bar, #scrollTopBtn { display:none!important; } .wrap { padding:12px; } .ex { break-inside:avoid; box-shadow:none; } .ex-body { display:block; } }
+    .solution{border:1px solid #bae6fd;border-radius:10px;margin:22px 0 18px;overflow:hidden}.solution-toggle{background:#f0f9ff;border:0;border-radius:10px;color:#0369a1;cursor:pointer;font:700 13px 'Segoe UI',system-ui,sans-serif;padding:12px 14px;text-align:left;width:100%}.solution-toggle[aria-expanded='true']{border-radius:10px 10px 0 0}.solution-toggle:hover,.solution-toggle:focus{background:#e0f2fe;box-shadow:inset 0 0 0 2px #38bdf8;outline:0}.solution-content{background:#fff;padding:16px 18px}.solution-content[hidden]{display:none}.solution-content:not([hidden]){border-top:1px solid #bae6fd}.solution-content p,.solution-content li{color:var(--muted);font:13px/1.6 'Segoe UI',sans-serif}.solution-content ul{margin:8px 0 0 20px}
+  </style>
+</head>
+<body>
+  <div class="progress-bar" id="progressBar"></div>
+  <main class="wrap">
+    <header class="header">
+      <div>
+        <div class="badge">Terminal-native development · Hands-on lab</div>
+        <h1>GitHub Copilot CLI<br>Lab Exercises</h1>
+        <p>Six guided exercises to explore a repository, plan and implement a bounded change, inspect the diff, and keep tool approvals under your control.</p>
+      </div>
+      <div class="header-meta"><div>⏱ ~75 min total</div><div>6 exercises</div><div>Terminal required</div><div>GitHub Copilot access needed</div></div>
+    </header>
+
+    <section class="lab-intro">
+      <h2>Before You Begin</h2>
+      <p>Use a small, non-production repository with a clean working tree. Replace the example paths and test commands with those used by your project.</p>
+      <p>Copilot proposes; you authorize. Read every command, keep secrets out of prompts, and inspect <code>git diff</code> before keeping a change.</p>
+    </section>
+
+    <div class="progress"><span class="progress-label">Progress</span><div class="progress-track"><div class="progress-fill" id="progressFill"></div></div><span class="progress-count" id="progressCount">0 / 12 checks</span></div>
+
+    <section class="ex open">
+      <div class="ex-header"><span class="ex-num">EX 01</span><span class="ex-title">Install, Launch, and Orient</span><span class="ex-time">10 min</span><span class="ex-chevron">▼</span></div>
+      <div class="ex-body">
+        <div class="goal"><div class="goal-label">Goal</div><div class="goal-text">Start Copilot CLI in the correct repository and learn the controls that keep a session understandable.</div></div>
+        <ol class="steps-list">
+          <li class="step-item"><div class="step-bullet">1</div><div class="step-content"><div class="step-text">Install the CLI if needed, then open a terminal in a test repository:</div><pre>npm install -g @github/copilot
+cd path/to/your-repository
+copilot</pre></div></li>
+          <li class="step-item"><div class="step-bullet">2</div><div class="step-content"><div class="step-text">Run <code>/help</code>, then check the working directory with <code>/cwd</code>. Confirm it is the repository you intended.</div></div></li>
+          <li class="step-item"><div class="step-bullet">3</div><div class="step-content"><div class="step-text">Run <code>/context</code> and <code>/session</code>. Note what context and workspace information the CLI reports.</div></div></li>
+          <li class="step-item"><div class="step-bullet">4</div><div class="step-content"><div class="step-text">Use <code>/exit</code> to end the session, then relaunch it from the same repository.</div></div></li>
+        </ol>
+        <div class="validation-title">Validation Checklist</div><div class="check-list"><div class="check-item"><div class="check-box"><span class="check-box-tick">✓</span></div><span class="check-label">CLI launched from the intended repository</span></div><div class="check-item"><div class="check-box"><span class="check-box-tick">✓</span></div><span class="check-label">Used /help, /cwd, /context, and /session</span></div></div>
+      </div>
+    </section>
+
+    <section class="ex">
+      <div class="ex-header"><span class="ex-num">EX 02</span><span class="ex-title">Explore the Repository with Evidence</span><span class="ex-time">12 min</span><span class="ex-chevron">▼</span></div>
+      <div class="ex-body">
+        <div class="goal"><div class="goal-label">Goal</div><div class="goal-text">Use natural-language prompts to build a useful mental model without asking Copilot to change files.</div></div>
+        <ol class="steps-list">
+          <li class="step-item"><div class="step-bullet">1</div><div class="step-content"><div class="step-text">Ask Copilot to map the repository:</div><div class="prompt">map the architecture of this repository. Identify the application entry point, main modules, test projects, and build command. Do not modify files.</div></div></li>
+          <li class="step-item"><div class="step-bullet">2</div><div class="step-content"><div class="step-text">Ask it to trace one real workflow from entry point to persistence or external API:</div><div class="prompt">trace the login or primary user request end to end. Cite the files and methods that support each step, and call out anything uncertain.</div></div></li>
+          <li class="step-item"><div class="step-bullet">3</div><div class="step-content"><div class="step-text">Verify two claims by opening the cited files yourself. Record one accurate claim and one assumption or missing detail.</div></div></li>
+        </ol>
+        <div class="tip">Use concrete file names and evidence requests. A confident answer without source references is a hypothesis, not project documentation.</div>
+        <div class="validation-title">Validation Checklist</div><div class="check-list"><div class="check-item"><div class="check-box"><span class="check-box-tick">✓</span></div><span class="check-label">Repository map names the real entry point and test command</span></div><div class="check-item"><div class="check-box"><span class="check-box-tick">✓</span></div><span class="check-label">Two workflow claims were verified against source files</span></div></div>
+      </div>
+    </section>
+
+    <section class="ex">
+      <div class="ex-header"><span class="ex-num">EX 03</span><span class="ex-title">Plan Before You Change Anything</span><span class="ex-time">12 min</span><span class="ex-chevron">▼</span></div>
+      <div class="ex-body">
+        <div class="goal"><div class="goal-label">Goal</div><div class="goal-text">Create a bounded implementation plan before granting Copilot permission to edit files.</div></div>
+        <ol class="steps-list">
+          <li class="step-item"><div class="step-bullet">1</div><div class="step-content"><div class="step-text">Choose a small behavior change, such as adding a filter, improving an empty state, or adding validation. Do not choose authentication, deployment, or data deletion.</div></div></li>
+          <li class="step-item"><div class="step-bullet">2</div><div class="step-content"><div class="step-text">Use <code>/plan</code>, then provide a constrained request:</div><div class="prompt">Inspect the existing patterns and create a plan only for [your change]. Name the files you would change, acceptance criteria, focused tests, and validation command. Do not edit files.</div></div></li>
+          <li class="step-item"><div class="step-bullet">3</div><div class="step-content"><div class="step-text">Compare the plan with the repository. Remove speculative files and add any missing acceptance criterion before approving implementation.</div></div></li>
+        </ol>
+        <div class="validation-title">Validation Checklist</div><div class="check-list"><div class="check-item"><div class="check-box"><span class="check-box-tick">✓</span></div><span class="check-label">Plan was produced before any file edit</span></div><div class="check-item"><div class="check-box"><span class="check-box-tick">✓</span></div><span class="check-label">Plan includes files, acceptance criteria, tests, and a check command</span></div></div>
+      </div>
+    </section>
+
+    <section class="ex">
+      <div class="ex-header"><span class="ex-num">EX 04</span><span class="ex-title">Implement a Small Change with Guardrails</span><span class="ex-time">15 min</span><span class="ex-chevron">▼</span></div>
+      <div class="ex-body">
+        <div class="goal"><div class="goal-label">Goal</div><div class="goal-text">Turn the approved plan into a focused change while keeping the command and file boundaries visible.</div></div>
+        <ol class="steps-list">
+          <li class="step-item"><div class="step-bullet">1</div><div class="step-content"><div class="step-text">Before implementation, run <code>git status</code> and confirm the working tree is clean or that your existing work is understood.</div></div></li>
+          <li class="step-item"><div class="step-bullet">2</div><div class="step-content"><div class="step-text">Ask Copilot to implement only the approved plan and to stop before unrelated files or commands:</div><div class="prompt">Implement the approved plan only. Preserve the existing public API and project conventions. Make the smallest change that satisfies the acceptance criteria. Stop if you need to change an unlisted file or run a destructive command.</div></div></li>
+          <li class="step-item"><div class="step-bullet">3</div><div class="step-content"><div class="step-text">Review each proposed tool call. Allow only commands that are necessary for the task; deny anything outside scope.</div></div></li>
+          <li class="step-item"><div class="step-bullet">4</div><div class="step-content"><div class="step-text">Run <code>/diff</code> and compare the changed files with the approved plan.</div></div></li>
+        </ol>
+        <div class="tip orange">Keep Ask mode for the first run. Do not use <code>/allow-all</code> for a learning exercise or a repository you do not fully control.</div>
+        <div class="validation-title">Validation Checklist</div><div class="check-list"><div class="check-item"><div class="check-box"><span class="check-box-tick">✓</span></div><span class="check-label">Only approved files were changed</span></div><div class="check-item"><div class="check-box"><span class="check-box-tick">✓</span></div><span class="check-label">Every tool call was reviewed before approval</span></div></div>
+      </div>
+    </section>
+
+    <section class="ex">
+      <div class="ex-header"><span class="ex-num">EX 05</span><span class="ex-title">Test, Review, and Refine</span><span class="ex-time">15 min</span><span class="ex-chevron">▼</span></div>
+      <div class="ex-body">
+        <div class="goal"><div class="goal-label">Goal</div><div class="goal-text">Validate the change with focused tests and use a separate review pass to challenge the result.</div></div>
+        <ol class="steps-list">
+          <li class="step-item"><div class="step-bullet">1</div><div class="step-content"><div class="step-text">Ask Copilot to identify the narrowest test command for the changed behavior. Confirm the command against the project files before running it.</div></div></li>
+          <li class="step-item"><div class="step-bullet">2</div><div class="step-content"><div class="step-text">Run the focused test or build, then provide the real output if it fails:</div><div class="prompt">Run the focused validation for the changed behavior. If it fails, explain the root cause from the output, propose the smallest fix, and wait for approval before editing.</div></div></li>
+          <li class="step-item"><div class="step-bullet">3</div><div class="step-content"><div class="step-text">Run <code>/review</code>. Verify at least two findings against the source, and reject findings that are not supported by evidence.</div></div></li>
+          <li class="step-item"><div class="step-bullet">4</div><div class="step-content"><div class="step-text">Inspect <code>git diff</code> and <code>git status</code>. Keep the change only when the acceptance criteria and validation result agree.</div></div></li>
+        </ol>
+        <div class="validation-title">Validation Checklist</div><div class="check-list"><div class="check-item"><div class="check-box"><span class="check-box-tick">✓</span></div><span class="check-label">Focused test or build command was run and understood</span></div><div class="check-item"><div class="check-box"><span class="check-box-tick">✓</span></div><span class="check-label">Review findings were verified against the source and diff</span></div></div>
+      </div>
+    </section>
+
+    <section class="ex">
+      <div class="ex-header"><span class="ex-num">EX 06</span><span class="ex-title">Customize the Session Boundary</span><span class="ex-time">11 min</span><span class="ex-chevron">▼</span></div>
+      <div class="ex-body">
+        <div class="goal"><div class="goal-label">Goal</div><div class="goal-text">Make the CLI aware of project conventions and understand how tools and MCP servers expand its operating boundary.</div></div>
+        <ol class="steps-list">
+          <li class="step-item"><div class="step-bullet">1</div><div class="step-content"><div class="step-text">Run <code>/init</code> in a disposable or practice repository. Review the generated instruction file and remove any inaccurate assumptions.</div></div></li>
+          <li class="step-item"><div class="step-bullet">2</div><div class="step-content"><div class="step-text">Add three specific rules: the build or test command, a project naming convention, and a rule requiring focused tests for behavior changes.</div></div></li>
+          <li class="step-item"><div class="step-bullet">3</div><div class="step-content"><div class="step-text">Start a new session and ask Copilot to describe those conventions. Use <code>/instructions</code> if you need to inspect instruction sources.</div></div></li>
+          <li class="step-item"><div class="step-bullet">4</div><div class="step-content"><div class="step-text"><strong>Optional:</strong> use <code>/mcp</code> to inspect configured MCP servers. Approve a tool call only when you understand its server, target, and requested permission.</div></div></li>
+        </ol>
+        <div class="tip orange">Never place secrets in instruction files or prompts. Treat an MCP server as an extension of the tool boundary and review its configuration before connecting it.</div>
+        <div class="validation-title">Validation Checklist</div><div class="check-list"><div class="check-item"><div class="check-box"><span class="check-box-tick">✓</span></div><span class="check-label">Instruction rules are project-specific and verifiable</span></div><div class="check-item"><div class="check-box"><span class="check-box-tick">✓</span></div><span class="check-label">MCP configuration was inspected or safely skipped</span></div></div>
+      </div>
+    </section>
+
+    <section class="bonus"><h2>Bonus Challenge: Terminal Playbook</h2><p>Choose a small recurring maintenance task. Write a four-line playbook containing the goal, scope, constraint, and validation command. Run it in a fresh session, use <code>/clear</code> when context drifts, and compare the result with your acceptance criteria.</p></section>
+    <section class="completion" id="completion"><h2>CLI Lab Complete</h2><p>You practiced the full terminal workflow: orient, explore, plan, authorize, implement, test, review, and refine.</p></section>
+    <footer>GitHub Copilot CLI Lab Exercises · Keep context, commands, and approval boundaries visible.</footer>
+  </main>
+  <button id="scrollTopBtn" title="Back to top" aria-label="Back to top">↑</button>
+  <script>
+    const allChecks = () => document.querySelectorAll('.check-item');
+    function updateProgress() {
+      const checks = allChecks();
+      const checked = document.querySelectorAll('.check-item.checked').length;
+      const percent = checks.length ? checked / checks.length * 100 : 0;
+      document.getElementById('progressFill').style.width = percent + '%';
+      document.getElementById('progressCount').textContent = checked + ' / ' + checks.length + ' checks';
+      document.getElementById('completion').classList.toggle('show', checked === checks.length);
+    }
+    document.querySelectorAll('.check-item').forEach(item => item.addEventListener('click', () => { item.classList.toggle('checked'); updateProgress(); }));
+    document.querySelectorAll('.ex-header').forEach(header => header.addEventListener('click', () => {
+      const exercise = header.parentElement;
+      const wasOpen = exercise.classList.contains('open');
+      document.querySelectorAll('.ex').forEach(item => item.classList.remove('open'));
+      if (!wasOpen) exercise.classList.add('open');
+    }));
+    const progressBar = document.getElementById('progressBar');
+    const scrollTopButton = document.getElementById('scrollTopBtn');
+    window.addEventListener('scroll', () => {
+      const maxScroll = document.documentElement.scrollHeight - window.innerHeight || 1;
+      progressBar.style.width = (window.scrollY / maxScroll * 100) + '%';
+      scrollTopButton.classList.toggle('visible', window.scrollY > 320);
+    }, { passive:true });
+    scrollTopButton.addEventListener('click', () => window.scrollTo({ top:0, behavior:'smooth' }));
+    document.querySelectorAll('.ex').forEach(function(exercise){const panel=document.createElement('div');panel.className='solution';const criteria=[...exercise.querySelectorAll('.check-label')].map(function(item){return item.textContent.trim()});panel.innerHTML='<button class="solution-toggle" type="button" aria-expanded="false">Show solution</button><div class="solution-content" hidden><p>Complete the exercise by producing the following evidence:</p><ul>'+criteria.map(function(item){return '<li>'+item+'</li>'}).join('')+'</ul></div>';const validation=exercise.querySelector('.validation-title');validation.before(panel);const button=panel.querySelector('.solution-toggle');button.addEventListener('click',function(event){event.stopPropagation();const content=panel.querySelector('.solution-content');const open=this.getAttribute('aria-expanded')==='true';this.setAttribute('aria-expanded',String(!open));this.textContent=open?'Show solution':'Hide solution';content.hidden=open})});
+    updateProgress();
+  </script>
+</body>
+</html>

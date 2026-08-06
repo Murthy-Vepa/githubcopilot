@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GitHub Copilot CLI - Quick Reference</title>
+  <style>
+    :root {
+      --ink: #102042; --muted: #64748b; --paper: #f0f4f8; --card: #fff;
+      --line: #dbe3ec; --navy: #0a1628; --blue: #1d4ed8; --sky: #0ea5e9;
+      --green: #059669; --orange: #c2410c; --purple: #7c3aed; --red: #dc2626;
+      --shadow: 0 4px 20px rgba(10,22,40,.08);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; font-family: Georgia, 'Times New Roman', serif; overflow-x: hidden; }
+    body { margin: 0; background: var(--paper); color: var(--ink); overflow-x: hidden; }
+    a { color: inherit; text-decoration: none; }
+    .progress { position: fixed; inset: 0 0 auto; height: 3px; background: var(--sky); z-index: 5; transform-origin: left; transform: scaleX(0); }
+    .layout { display: flex; min-height: 100vh; min-width: 0; }
+    aside { width: 235px; min-width: 235px; background: var(--navy); color: #cbd5e1; position: sticky; top: 0; height: 100vh; padding-bottom: 18px; }
+    .brand { padding: 25px 19px 20px; border-bottom: 1px solid rgba(255,255,255,.1); }
+    .brand small { color: #38bdf8; font: 700 10px/1.2 'Segoe UI', sans-serif; letter-spacing: 1.4px; text-transform: uppercase; }
+    .brand h2 { color: white; font: 700 18px/1.2 Georgia, serif; margin: 7px 0 0; }
+    nav { padding: 16px 10px; font-family: 'Segoe UI', sans-serif; }
+    nav a { display: block; border-left: 3px solid transparent; color: #94a3b8; font-size: 12px; padding: 9px 12px; }
+    nav a:hover, nav a.active { color: white; background: rgba(14,165,233,.12); border-left-color: var(--sky); }
+    .aside-note { border-top: 1px solid rgba(255,255,255,.1); color: #64748b; font: 11px/1.5 'Segoe UI', sans-serif; margin: 8px 18px 0; padding-top: 16px; }
+    main { flex: 1; min-width: 0; }
+    .wrap { max-width: 1100px; width: 100%; margin: auto; padding: 42px 48px 58px; }
+    .hero { background: linear-gradient(135deg, #dbeafe, #e0f2fe 55%, #dcfce7); border: 1px solid #c7d8ed; border-radius: 18px; padding: 40px 38px 34px; box-shadow: var(--shadow); }
+    .eyebrow { color: var(--blue); font: 700 11px/1 'Segoe UI', sans-serif; letter-spacing: 1.5px; text-transform: uppercase; }
+    h1 { font: 900 clamp(30px, 4vw, 46px)/1.05 Georgia, serif; letter-spacing: -.8px; margin: 13px 0 12px; }
+    .hero p { color: #475569; font: 15px/1.6 'Segoe UI', sans-serif; margin: 0; max-width: 720px; }
+    .meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+    .meta span { background: rgba(255,255,255,.72); border: 1px solid rgba(15,23,42,.1); border-radius: 7px; color: #475569; font: 600 11px 'Segoe UI', sans-serif; padding: 5px 11px; }
+    .section-title { align-items: center; display: flex; gap: 12px; margin: 34px 0 16px; }
+    .section-title h2 { font: 800 18px Georgia, serif; margin: 0; white-space: nowrap; }
+    .section-title i { background: linear-gradient(90deg, var(--line), transparent); height: 2px; flex: 1; }
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .grid.two { grid-template-columns: repeat(2, 1fr); }
+    .card { background: var(--card); border: 1px solid var(--line); border-radius: 11px; box-shadow: var(--shadow); padding: 19px; }
+    .card h3 { font: 700 14px 'Segoe UI', sans-serif; margin: 0 0 13px; }
+    .blue h3 { color: var(--blue); } .green h3 { color: var(--green); } .orange h3 { color: var(--orange); }
+    .purple h3 { color: var(--purple); } .red h3 { color: var(--red); } .sky h3 { color: #0891b2; }
+    table { border-collapse: collapse; font: 12px/1.4 'Segoe UI', sans-serif; table-layout: fixed; width: 100%; }
+    td { border-bottom: 1px solid #edf1f5; overflow-wrap: anywhere; padding: 7px 3px; vertical-align: top; }
+    tr:last-child td { border-bottom: 0; }
+    td:first-child { color: var(--blue); font-family: 'Cascadia Code', Consolas, monospace; font-size: 11px; width: 48%; }
+    td:last-child { color: var(--muted); }
+    pre { background: #0f1d31; border-radius: 8px; color: #dbeafe; font: 12px/1.65 'Cascadia Code', Consolas, monospace; margin: 10px 0 0; overflow: auto; padding: 13px 14px; }
+    .prompt { border-left: 3px solid; background: #f8fafc; border-radius: 7px; font: 11.5px/1.55 'Cascadia Code', Consolas, monospace; margin: 8px 0; padding: 9px 11px; }
+    .prompt.blue { border-color: var(--blue); } .prompt.green { border-color: var(--green); } .prompt.orange { border-color: #f97316; } .prompt.purple { border-color: var(--purple); }
+    .label { color: var(--muted); display: block; font: 700 10px 'Segoe UI', sans-serif; letter-spacing: .6px; margin-bottom: 3px; text-transform: uppercase; }
+    .callout { border-left: 4px solid var(--sky); background: #eff6ff; border-radius: 8px; color: #1e40af; font: 13px/1.55 'Segoe UI', sans-serif; margin-top: 16px; padding: 13px 16px; }
+    .callout strong { color: #102042; }
+    footer { border-top: 1px solid var(--line); color: var(--muted); font: 11px 'Segoe UI', sans-serif; margin-top: 38px; padding-top: 20px; text-align: center; }
+    #top { background: var(--navy); border: 1px solid var(--sky); border-radius: 50%; bottom: 20px; color: white; cursor: pointer; display: none; font-size: 16px; height: 38px; position: fixed; right: 20px; width: 38px; }
+    #top.show { display: block; }
+    @media (max-width: 900px) { aside { display: none; } .wrap { padding: 28px 20px 48px; } .grid, .grid.two { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 600px) { .grid, .grid.two { grid-template-columns: 1fr; } .hero { padding: 30px 24px; } }
+    @media print { aside, #top, .progress { display: none !important; } .wrap { padding: 12px; } .card, .hero { box-shadow: none; break-inside: avoid; } }
+  </style>
+</head>
+<body>
+  <div class="progress" id="progress"></div>
+  <div class="layout">
+    <main>
+      <div class="wrap">
+        <header class="hero" id="start">
+          <div class="eyebrow">Terminal-native development</div>
+          <h1>GitHub Copilot CLI</h1>
+          <p>Ask Copilot to explore a repository, explain a command, plan a change, and take action from the terminal while you keep control of the tools it can use.</p>
+          <div class="meta"><span>Install once</span><span>Interactive + programmatic</span><span>Review every change</span></div>
+        </header>
+
+        <div class="section-title" id="commands"><h2>Start and navigate</h2><i></i></div>
+        <div class="grid">
+          <section class="card blue"><h3>Install and launch</h3><pre>npm install -g @github/copilot
+copilot
+
+# Start in a repository
+cd path/to/repo
+copilot</pre></section>
+          <section class="card green"><h3>Session commands</h3><table>
+            <tr><td>/help</td><td>Show help for interactive commands</td></tr><tr><td>/context</td><td>Show context window token usage and visualization</td></tr><tr><td>/usage</td><td>Show session usage metrics</td></tr><tr><td>/session</td><td>Show session info and workspace summary</td></tr><tr><td>/compact</td><td>Summarize conversation history</td></tr><tr><td>/clear</td><td>Clear conversation history</td></tr><tr><td>/share</td><td>Share the session or research report</td></tr><tr><td>/rename</td><td>Rename the current session</td></tr>
+          </table></section>
+          <section class="card orange"><h3>Context and session controls</h3><table>
+            <tr><td>/resume</td><td>Switch to a different session</td></tr><tr><td>/cwd</td><td>Change working directory or show it</td></tr><tr><td>/add-dir</td><td>Add a directory to the allowed list</td></tr><tr><td>/list-dirs</td><td>Display allowed directories</td></tr><tr><td>/reset-allowed-tools</td><td>Reset the allowed tools list</td></tr><tr><td>/exit, /quit</td><td>Exit the CLI</td></tr><tr><td>Ctrl+C</td><td>Cancel, clear input, or exit</td></tr><tr><td>Ctrl+D</td><td>Shut down the CLI</td></tr>
+          </table><div class="callout"><strong>Version note:</strong> command availability can change. Run <code>/help</code> in your session for the definitive list for your installed CLI.</div></section>
+        </div>
+
+        <div class="section-title" id="shortcuts"><h2>Keyboard shortcuts</h2><i></i></div>
+        <div class="grid two">
+          <section class="card blue"><h3>Global</h3><table>
+            <tr><td>@</td><td>Mention files and include their contents in context.</td></tr><tr><td>Ctrl+S</td><td>Run the command while preserving input.</td></tr><tr><td>Shift+Tab</td><td>Cycle modes, including interactive and plan.</td></tr><tr><td>Ctrl+T</td><td>Toggle model reasoning display.</td></tr><tr><td>Ctrl+O</td><td>Expand the recent timeline when no input is present.</td></tr><tr><td>Ctrl+E</td><td>Expand the full timeline when no input is present.</td></tr><tr><td>Up / Down</td><td>Navigate command history.</td></tr><tr><td>!</td><td>Execute a local shell command outside Copilot.</td></tr><tr><td>Esc</td><td>Cancel the current operation.</td></tr><tr><td>Ctrl+L</td><td>Clear the screen.</td></tr>
+          </table></section>
+          <section class="card green"><h3>Editing the prompt</h3><table>
+            <tr><td>Ctrl+A</td><td>Move to the beginning of the line.</td></tr><tr><td>Ctrl+E</td><td>Move to the end of the line while typing.</td></tr><tr><td>Ctrl+H</td><td>Delete the previous character.</td></tr><tr><td>Ctrl+W</td><td>Delete the previous word.</td></tr><tr><td>Ctrl+U</td><td>Delete from the cursor to the beginning.</td></tr><tr><td>Ctrl+K</td><td>Delete from the cursor to the end.</td></tr><tr><td>Meta+Left / Right</td><td>Move the cursor by word.</td></tr><tr><td>Ctrl+G</td><td>Edit the prompt in an external editor.</td></tr>
+          </table></section>
+        </div>
+
+        <div class="section-title" id="commands-reference"><h2>Command reference</h2><i></i></div>
+        <div class="grid">
+          <section class="card purple"><h3>Agent environment</h3><table>
+            <tr><td>/init</td><td>Initialize Copilot instructions for the repository or suppress the init suggestion.</td></tr><tr><td>/agent</td><td>Browse and select available agents.</td></tr><tr><td>/skills</td><td>Manage skills for enhanced capabilities.</td></tr><tr><td>/mcp</td><td>Manage MCP server configuration.</td></tr><tr><td>/plugin</td><td>Manage plugins and plugin marketplaces.</td></tr>
+          </table></section>
+          <section class="card blue"><h3>Models and code</h3><table>
+            <tr><td>/model</td><td>Select the AI model to use.</td></tr><tr><td>/delegate</td><td>Send the session to GitHub to create a pull request.</td></tr><tr><td>/fleet</td><td>Enable fleet mode for parallel subagent execution.</td></tr><tr><td>/tasks</td><td>View and manage background tasks.</td></tr><tr><td>/ide</td><td>Connect to an IDE workspace.</td></tr><tr><td>/diff</td><td>Review changes in the current directory.</td></tr><tr><td>/review</td><td>Run a code review agent.</td></tr><tr><td>/lsp</td><td>Manage language server configuration.</td></tr><tr><td>/terminal-setup</td><td>Configure multiline input support.</td></tr>
+          </table></section>
+          <section class="card orange"><h3>Permissions</h3><table>
+            <tr><td>/allow-all</td><td>Enable all permissions for tools, paths, and URLs.</td></tr><tr><td>/add-dir</td><td>Add a directory to the allowed list.</td></tr><tr><td>/list-dirs</td><td>Display all allowed directories.</td></tr><tr><td>/reset-allowed-tools</td><td>Reset the allowed tools.</td></tr><tr><td>/cwd</td><td>Change or show the working directory.</td></tr>
+          </table></section>
+          <section class="card sky"><h3>Help and feedback</h3><table>
+            <tr><td>/changelog</td><td>Display CLI version changes.</td></tr><tr><td>/feedback</td><td>Provide feedback about the CLI.</td></tr><tr><td>/theme</td><td>View or configure the terminal theme.</td></tr><tr><td>/update</td><td>Update the CLI to the latest version.</td></tr><tr><td>/experimental</td><td>Show or configure experimental features.</td></tr><tr><td>/instructions</td><td>View and toggle custom instruction files.</td></tr><tr><td>/streamer-mode</td><td>Hide preview model names and quota details.</td></tr>
+          </table></section>
+          <section class="card red"><h3>Authentication and research</h3><table>
+            <tr><td>/login</td><td>Log in to Copilot.</td></tr><tr><td>/logout</td><td>Log out of Copilot.</td></tr><tr><td>/plan</td><td>Create an implementation plan before coding.</td></tr><tr><td>/research</td><td>Run a deep research investigation using GitHub search and web sources.</td></tr><tr><td>/user</td><td>Manage the GitHub user list.</td></tr>
+          </table></section>
+        </div>
+
+        <div class="section-title" id="instructions"><h2>Instruction files</h2><i></i></div>
+        <section class="card"><h3>Where Copilot looks for instructions</h3><pre>CLAUDE.md
+GEMINI.md
+AGENTS.md                         # git root and current directory
+.github/instructions/**/*.instructions.md
+.github/copilot-instructions.md
+$HOME/.copilot/copilot-instructions.md
+      COPILOT_CUSTOM_INSTRUCTIONS_DIRS  # additional directories</pre><div class="callout"><strong>Need more capabilities?</strong> Run with <code>--experimental</code> or use <code>/experimental</code> for more commands. Ask <code>What can you do?</code> or visit the <a href="https://docs.github.com/en/copilot/how-tos/use-copilot-agents/use-copilot-cli" target="_blank" rel="noopener">GitHub Copilot CLI documentation</a>.</div></section>
+
+        <div class="section-title" id="permissions"><h2>Permissions and execution</h2><i></i></div>
+        <div class="grid two">
+          <section class="card sky"><h3>Permission modes</h3><table>
+            <tr><td>Ask</td><td>Confirm tool use as it is requested.</td></tr><tr><td>Allow</td><td>Pre-approve a specific tool or command.</td></tr><tr><td>Deny</td><td>Block a tool, path, or operation.</td></tr><tr><td>Autopilot</td><td>Let Copilot continue through a task with fewer prompts.</td></tr>
+          </table><div class="callout"><strong>Good default:</strong> begin in ask mode, allow only the tools needed for the current task, and inspect the diff before committing.</div></section>
+          <section class="card red"><h3>Run with explicit boundaries</h3><pre># Non-interactive prompt
+copilot -p "explain the test failure"
+
+# Permit a named tool for this run
+copilot -p "run the unit tests" \\
+  --allow-tool 'shell(npm test)'
+
+# Block a tool when scripting
+copilot -p "summarize the repo" \\
+  --deny-tool 'shell(git push)'</pre></section>
+        </div>
+
+        <div class="section-title" id="workflows"><h2>Repeatable workflows</h2><i></i></div>
+        <div class="grid">
+          <section class="card purple"><h3>Understand a codebase</h3><pre>copilot
+> map the architecture of this repo
+> trace the login request end to end
+> identify the highest-risk dependency</pre></section>
+          <section class="card blue"><h3>Plan, then implement</h3><pre>copilot
+> /plan add CSV export to the report view
+> implement the plan
+> run the focused tests
+> /review</pre></section>
+          <section class="card green"><h3>Investigate a failure</h3><pre>copilot
+> reproduce the failing test
+> explain the root cause
+> propose the smallest fix
+> apply it and verify the test</pre></section>
+        </div>
+
+        <div class="section-title" id="prompts"><h2>Prompt patterns</h2><i></i></div>
+        <div class="grid two">
+          <section class="card"><h3>Prompts that create useful constraints</h3>
+            <div class="prompt blue"><span class="label">Explore</span>Inspect the existing patterns first. Report the files you would change and why.</div>
+            <div class="prompt green"><span class="label">Implement</span>Implement this behavior without changing the public API. Follow the nearest existing example.</div>
+            <div class="prompt orange"><span class="label">Test</span>Add focused tests for the happy path, invalid input, and the boundary case. Run only the relevant suite.</div>
+            <div class="prompt purple"><span class="label">Review</span>Review the current diff for correctness, security, backward compatibility, and missing tests.</div>
+          </section>
+          <section class="card"><h3>Context worth supplying</h3><table>
+            <tr><td>Goal</td><td>What outcome should change?</td></tr><tr><td>Scope</td><td>Which files, service, or command is in bounds?</td></tr><tr><td>Constraints</td><td>API compatibility, runtime, style, or performance rules.</td></tr><tr><td>Evidence</td><td>Error output, failing test, sample input, or expected result.</td></tr><tr><td>Check</td><td>Exact test, lint, build, or command that proves it works.</td></tr>
+          </table></section>
+        </div>
+
+        <div class="section-title" id="safety"><h2>Safety checklist</h2><i></i></div>
+        <div class="grid">
+          <section class="card red"><h3>Before execution</h3><table><tr><td>1</td><td>Confirm the working directory.</td></tr><tr><td>2</td><td>Check the proposed files and commands.</td></tr><tr><td>3</td><td>Keep secrets and personal data out of prompts.</td></tr></table></section>
+          <section class="card orange"><h3>Before commit</h3><table><tr><td>1</td><td>Inspect <code>git diff</code> and <code>git status</code>.</td></tr><tr><td>2</td><td>Run focused tests and review failures.</td></tr><tr><td>3</td><td>Check generated dependencies and configuration.</td></tr></table></section>
+          <section class="card green"><h3>Remember</h3><table><tr><td>Rule</td><td>Copilot proposes; you authorize.</td></tr><tr><td>Rule</td><td>Small, verifiable steps beat broad autonomous changes.</td></tr><tr><td>Rule</td><td>Use <code>/clear</code> when context starts to drift.</td></tr></table></section>
+        </div>
+        <footer>GitHub Copilot CLI Quick Reference · Keep the terminal, context, and approval boundary visible.</footer>
+      </div>
+    </main>
+  </div>
+  <button id="top" title="Back to top" aria-label="Back to top">↑</button>
+  <script>
+    const progress = document.getElementById('progress');
+    const topButton = document.getElementById('top');
+    function updateScroll() {
+      const max = document.documentElement.scrollHeight - window.innerHeight || 1;
+      progress.style.transform = `scaleX(${window.scrollY / max})`;
+      topButton.classList.toggle('show', window.scrollY > 320);
+    }
+    window.addEventListener('scroll', updateScroll, { passive: true });
+    topButton.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+    updateScroll();
+  </script>
+</body>
+</html>

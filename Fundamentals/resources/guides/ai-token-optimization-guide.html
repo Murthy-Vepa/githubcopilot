@@ -1,0 +1,255 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Token Optimization Guide</title>
+  <style>
+    :root{
+      --blue:#0061A8;
+      --blue2:#003B71;
+      --green:#A4CE4E;
+      --teal:#00A3A1;
+      --ink:#102033;
+      --muted:#5A6B7B;
+      --bg:#F6FAFE;
+      --card:#FFFFFF;
+      --line:#D9E7F3;
+      --warn:#F59E0B;
+      --bad:#EF4444;
+      --good:#16A34A;
+      --shadow:0 12px 34px rgba(0,59,113,.12);
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family:"Segoe UI", Arial, sans-serif;
+      color:var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(164,206,78,.25), transparent 34%),
+        radial-gradient(circle at top right, rgba(0,163,161,.18), transparent 30%),
+        linear-gradient(135deg,#F8FCFF 0%,#EEF7FF 100%);
+      min-height:100vh;
+    }
+    .page{
+      width:min(1380px,96vw);
+      margin:18px auto;
+      background:rgba(255,255,255,.76);
+      border:1px solid rgba(217,231,243,.8);
+      border-radius:28px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    header{
+      display:grid;
+      grid-template-columns:1.2fr .8fr;
+      gap:18px;
+      padding:30px 34px 22px;
+      background:linear-gradient(120deg,var(--blue2),var(--blue));
+      color:white;
+      position:relative;
+    }
+    header:after{
+      content:"";
+      position:absolute;
+      inset:auto 24px 0 auto;
+      width:220px;
+      height:5px;
+      border-radius:99px;
+      background:linear-gradient(90deg,var(--green),var(--teal));
+    }
+    h1{margin:0;font-size:clamp(30px,4vw,56px);line-height:1.02;letter-spacing:-1.8px}
+    .subtitle{margin:12px 0 0;font-size:clamp(15px,1.3vw,20px);color:#DDEEFF;max-width:880px}
+    .hero-card{
+      align-self:center;
+      background:rgba(255,255,255,.13);
+      border:1px solid rgba(255,255,255,.25);
+      border-radius:20px;
+      padding:18px;
+    }
+    .hero-card b{display:block;font-size:22px;margin-bottom:8px;color:white}
+    .hero-card span{display:block;color:#E6F3FF;line-height:1.45}
+    .content{padding:24px 28px 28px;display:grid;gap:18px}
+    .top-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+    .card{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:20px;
+      padding:18px;
+      box-shadow:0 8px 20px rgba(0,59,113,.06);
+    }
+    .card h2,.card h3{margin:0 0 10px;color:var(--blue2);letter-spacing:-.3px}
+    .card h2{font-size:22px}.card h3{font-size:18px}
+    .pill{
+      display:inline-flex;align-items:center;gap:7px;
+      border-radius:999px;background:#ECF7FF;color:var(--blue2);
+      border:1px solid #CDE8FA;padding:6px 10px;font-weight:700;font-size:12px;
+      margin:3px 4px 6px 0;
+    }
+    .formula{font-size:24px;font-weight:800;color:var(--blue2);padding:12px;border-radius:16px;background:#F0F8FF;border:1px dashed #A8D6F4;text-align:center}
+    .muted{color:var(--muted);font-size:14px;line-height:1.45}
+    .levers{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+    .lever{background:#FBFEFF;border:1px solid var(--line);border-radius:18px;padding:15px;min-height:168px;position:relative;overflow:hidden}
+    .lever:before{content:"";position:absolute;left:0;top:0;width:100%;height:5px;background:linear-gradient(90deg,var(--green),var(--teal),var(--blue))}
+    .num{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:var(--blue);color:white;font-weight:800;margin-bottom:8px}
+    .lever b{display:block;color:var(--blue2);margin-bottom:6px;font-size:16px}.lever p{margin:0;color:var(--muted);font-size:13.5px;line-height:1.35}
+    .workflow{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .steps{display:grid;gap:10px}
+    .step{display:grid;grid-template-columns:38px 1fr;gap:10px;align-items:start;background:#F8FCFF;border:1px solid var(--line);border-radius:16px;padding:10px}
+    .bubble{width:34px;height:34px;border-radius:11px;background:#E9F5FF;color:var(--blue2);font-weight:900;display:grid;place-items:center}
+    .step b{display:block;color:var(--blue2);margin-bottom:3px}.step span{color:var(--muted);font-size:13.5px;line-height:1.35}
+    .matrix{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .metric{border-radius:16px;padding:12px;border:1px solid var(--line);background:#FFFFFF}
+    .metric .label{font-weight:800;color:var(--blue2);font-size:14px}.metric .desc{font-size:12.8px;color:var(--muted);margin-top:3px}
+    .anti{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.anti div{border-left:5px solid var(--bad);background:#FFF7F7;border-radius:14px;padding:11px;font-size:13px;color:#243449}.anti b{display:block;color:#991B1B;margin-bottom:4px}
+    .prompt-box{background:#0F2742;color:#EAF6FF;border-radius:18px;padding:16px;position:relative;overflow:hidden}
+    .prompt-box:before{content:"Prompt pattern";position:absolute;right:14px;top:12px;color:#A4CE4E;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.8px}.prompt-box code{white-space:pre-wrap;font-family:Consolas,monospace;font-size:13.5px;line-height:1.55;color:#F3FBFF}
+    footer{padding:16px 28px 24px;color:var(--muted);font-size:12px;display:flex;justify-content:space-between;gap:18px;border-top:1px solid var(--line);background:#F9FCFF}
+    a{color:var(--blue);font-weight:700;text-decoration:none}a:hover{text-decoration:underline}
+    .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}.btn{border:0;border-radius:999px;padding:10px 14px;font-weight:800;cursor:pointer;background:var(--green);color:#17320A}.btn.secondary{background:white;color:var(--blue2);border:1px solid #B9DDF5}
+    @media (max-width:980px){header,.top-grid,.workflow{grid-template-columns:1fr}.levers{grid-template-columns:1fr 1fr}.anti{grid-template-columns:1fr 1fr}.page{width:94vw;margin:12px auto}}
+    @media (max-width:620px){.content{padding:16px}.levers,.anti,.matrix{grid-template-columns:1fr}header{padding:24px 20px}.formula{font-size:18px}footer{flex-direction:column}.hero-card{padding:14px}}
+    @media print{@page{size:A4 landscape;margin:8mm}body{background:white}.page{width:100%;margin:0;border:0;box-shadow:none}.actions{display:none}.content{gap:12px;padding:16px}.card{box-shadow:none}.levers{gap:8px}.lever{min-height:140px;padding:12px}footer{font-size:10px;padding:10px 16px}}
+    /* Cookbook visual language */
+    body { background: #f5f1e8; color: #17212b; font-family: 'Segoe UI', sans-serif; }
+    .page { width: min(1160px, calc(100% - 64px)); margin: 48px auto 0; background: transparent; border: 0; border-radius: 0; box-shadow: none; overflow: visible; }
+    header { display: grid; grid-template-columns: minmax(0, 1fr) minmax(240px, .55fr); gap: 30px; min-height: 420px; padding: 54px 58px; background: #102a43; color: #fffdf8; border: 0; border-radius: 0; box-shadow: 0 18px 45px rgba(23,33,43,.10); overflow: hidden; }
+    header:before { content: ''; position: absolute; width: 125px; height: 125px; right: 190px; top: -45px; border: 20px solid rgba(226,109,90,.6); transform: rotate(27deg); }
+    header:after { content: ''; position: absolute; width: 300px; height: 300px; right: -70px; bottom: -125px; inset: auto -70px -125px auto; border: 45px solid rgba(126,214,209,.32); border-radius: 50%; background: transparent; }
+    header > section, .hero-card { position: relative; z-index: 1; }
+    h1 { color: #fffdf8; font-family: 'Segoe UI', serif; letter-spacing: -1.5px; }
+    .subtitle { color: #d9e8f2; }
+    .hero-card { align-self: end; max-width: none; margin-top: 0; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.22); border-radius: 0; padding: 20px; }
+    .hero-card b { color: #fffdf8; }
+    .hero-card span { color: #d9e8f2; }
+    .hero-pill { background: transparent !important; border-color: rgba(255,255,255,.22) !important; color: #7ed6d1 !important; }
+    .content { padding: 34px 0 42px; gap: 28px; }
+    .card { border-color: #d8d0c4; border-radius: 0; box-shadow: 0 8px 26px rgba(23,33,43,.05); background: #fffdf8; padding: 24px; }
+    .card h2, .card h3, .lever b, .step b, .metric .label { color: #102a43; }
+    .top-grid { gap: 18px; }
+    .lever, .step, .metric { border-color: #d8d0c4; border-radius: 0; background: #faf7f0; }
+    .lever:before { background: #0f9da8; }
+    .formula { background: #eaf6f4; border-color: #9dd8d4; color: #102a43; border-radius: 0; }
+    .pill { background: #edf6fb; border-color: #c7dce8; color: #1769aa; border-radius: 0; }
+    .num, .bubble { background: #1769aa; border-radius: 0; }
+    .anti div { border-left-color: #e26d5a; border-radius: 0; background: #fff0eb; }
+    .prompt-box { border-radius: 0; background: #142d41; }
+    footer { background: transparent; border-top-color: #d8d0c4; }
+    .btn { border-radius: 0; background: #7ed6d1; color: #102a43; }
+    .btn.secondary { background: transparent; color: #fffdf8; border-color: rgba(255,255,255,.35); }
+    @media (max-width: 980px) { .page { width: min(100% - 28px, 720px); margin: 20px auto 0; } header { grid-template-columns: 1fr; min-height: 0; padding: 38px 28px; } .hero-card { max-width: 520px; } }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header>
+      <section>
+        <div class="pill hero-pill">AI FinOps • LLM Cost Control • Engineering Enablement</div>
+        <h1>AI Token Optimization Guide</h1>
+        <p class="subtitle">A one-page playbook to reduce LLM cost, latency and waste while preserving quality. Optimizing tokens is not about making every prompt tiny. It is about sending the right context to the right model at the right time.</p>
+        <div class="actions">
+          <button class="btn" onclick="window.print()">Print / Save as PDF</button>
+          <button class="btn secondary" onclick="document.body.classList.toggle('compact')">One-page view</button>
+        </div>
+      </section>
+      <aside class="hero-card">
+        <b>Golden Rule</b>
+        <span>Maximize <strong>impact per token</strong>, not total token usage. Measure outcome, cost, latency, quality and rework together.</span>
+      </aside>
+    </header>
+
+    <section class="content">
+      <div class="top-grid">
+        <article class="card">
+          <h2>1. Token Economics</h2>
+          <div class="formula">Cost = Input Tokens × Rate + Output Tokens × Rate</div>
+          <p class="muted">Input includes prompts, context, files, tool schemas and prior chat. Output includes generated answers, code, tests and explanations. Output is often the more expensive side, so concise responses matter.</p>
+        </article>
+        <article class="card">
+          <h2>2. Main Cost Drivers</h2>
+          <span class="pill">Long chats</span><span class="pill">Oversized context</span><span class="pill">Agent loops</span><span class="pill">Verbose output</span><span class="pill">Unused tools</span><span class="pill">Premium model default</span>
+          <p class="muted">Most waste comes from context bloat, stale history, repeated static instructions, idle tool schemas and routing every task to the most capable model.</p>
+        </article>
+        <article class="card">
+          <h2>3. Optimization Mindset</h2>
+          <p class="muted"><strong>Do not optimize blindly.</strong> First instrument usage by team, feature, model, prompt tokens, completion tokens, cache hit rate and cost per successful outcome. Then fix the highest-cost workflows.</p>
+        </article>
+      </div>
+
+      <article class="card">
+        <h2>Five Core Levers</h2>
+        <div class="levers">
+          <div class="lever"><div class="num">1</div><b>Context Engineering</b><p>Use targeted retrieval instead of repo dumps or full documents. Split discovery, implementation and verification into focused sessions.</p></div>
+          <div class="lever"><div class="num">2</div><b>Prompt Compression</b><p>Remove repeated instructions, use compact structure, keep examples short and preserve the quality bar with A/B checks.</p></div>
+          <div class="lever"><div class="num">3</div><b>Caching</b><p>Put stable content first, variable content last. Cache system prompts, policy text, tool definitions and reusable context prefixes.</p></div>
+          <div class="lever"><div class="num">4</div><b>Model Routing</b><p>Send simple classification, formatting and extraction to cheaper models. Escalate only when complexity or risk requires it.</p></div>
+          <div class="lever"><div class="num">5</div><b>Output Control</b><p>Set max tokens, ask for bullets, diffs or structured output, and avoid long explanations when a concise decision is enough.</p></div>
+        </div>
+      </article>
+
+      <div class="workflow">
+        <article class="card">
+          <h2>Operating Playbook</h2>
+          <div class="steps">
+            <div class="step"><div class="bubble">A</div><div><b>Audit usage</b><span>Break down token spend by application, feature, team, model and request type.</span></div></div>
+            <div class="step"><div class="bubble">B</div><div><b>Find expensive units</b><span>Prioritize cost per request and repeated agent loops before broad volume tuning.</span></div></div>
+            <div class="step"><div class="bubble">C</div><div><b>Fix context flow</b><span>Prune stale history, retrieve just in time, use summaries and avoid unnecessary attachments.</span></div></div>
+            <div class="step"><div class="bubble">D</div><div><b>Apply routing and caching</b><span>Use stable prefix design, cache-friendly prompts and a complexity ladder for model choice.</span></div></div>
+            <div class="step"><div class="bubble">E</div><div><b>Govern continuously</b><span>Set budgets, alerts, review gates and quality checks so savings do not regress.</span></div></div>
+          </div>
+        </article>
+        <article class="card">
+          <h2>Metrics That Matter</h2>
+          <div class="matrix">
+            <div class="metric"><div class="label">Cost per successful outcome</div><div class="desc">Best leadership metric because it combines delivery value and spend.</div></div>
+            <div class="metric"><div class="label">Input vs output ratio</div><div class="desc">High output ratio suggests over-generation and weak response constraints.</div></div>
+            <div class="metric"><div class="label">Cache hit rate</div><div class="desc">Low hit rate means your stable context is not stable enough or is ordered poorly.</div></div>
+            <div class="metric"><div class="label">Rework percentage</div><div class="desc">Retries and corrections can become the hidden token sink in coding workflows.</div></div>
+            <div class="metric"><div class="label">Tokens per shipped PR</div><div class="desc">Useful for engineering teams using coding agents, reviews and test generation.</div></div>
+            <div class="metric"><div class="label">Model mix by task</div><div class="desc">Shows whether simple work is accidentally running on premium models.</div></div>
+          </div>
+        </article>
+      </div>
+
+      <article class="card">
+        <h2>Anti-Patterns to Avoid</h2>
+        <div class="anti">
+          <div><b>“More context is better”</b>Extra context can add cost and dilute signal. Retrieve only what is needed.</div>
+          <div><b>“Use the best model always”</b>Frontier models should be reserved for complex reasoning, risk, architecture or ambiguous tasks.</div>
+          <div><b>“Let the model explain everything”</b>Verbose output increases review time and cost. Ask for the smallest useful answer.</div>
+          <div><b>“Measure tokens only”</b>Token usage is activity, not impact. Tie tokens to quality, delivery speed and outcomes.</div>
+        </div>
+      </article>
+
+      <article class="prompt-box">
+        <pre>Act as an AI Token Optimization Reviewer.
+Analyze:
+1. Prompt
+2. Context
+3. Model
+4. Tools
+5. Desired Output
+
+Return:
+• Sources of token waste
+• Context reduction opportunities
+• Prompt compression recommendations
+• Cache opportunities
+• Model routing recommendation
+• Output optimization suggestions
+• Expected impact on cost, latency and quality
+
+Constraint:
+Preserve business quality and accuracy.
+        </pre>
+        </article>
+    </section>
+
+    <footer>
+      <div><strong>References:</strong> <a href="https://neuraltrust.ai/blog/ai-token-optimization-guide" target="_blank" rel="noopener">NeuralTrust AI Token Optimization guide</a>, <a href="https://www.tokenoptimize.dev/guides/llm-token-optimization-strategies" target="_blank" rel="noopener">Token Optimize LLM Token Optimization Strategies</a></div>
+    </footer>
+  </main>
+</body>
+</html>

@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GitHub Copilot SDK Lab Exercises</title>
+  <style>
+    :root { --ink:#102042; --text:#334155; --muted:#64748b; --paper:#f0f4f8; --card:#fff; --line:#dbe3ec; --blue:#1d4ed8; --blue-light:#dbeafe; --green:#059669; --orange:#c2410c; --purple:#7c3aed; --shadow:0 4px 20px rgba(10,22,40,.08); }
+    * { box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body { margin:0; background:var(--paper); color:var(--ink); font-family:Georgia,'Times New Roman',serif; }
+    code, pre { font-family:'Cascadia Code','Fira Code',Consolas,monospace; }
+    code { background:#eef2f7; border-radius:4px; color:var(--blue); padding:2px 5px; }
+    .progress-bar { background:#0ea5e9; height:4px; left:0; position:fixed; top:0; width:0; z-index:5; }
+    .wrap { margin:auto; max-width:1100px; padding:44px 48px 60px; }
+    .header { align-items:flex-end; background:linear-gradient(135deg,#dbeafe,#e0f2fe 55%,#dcfce7); border:1px solid #c7d8ed; border-radius:18px; box-shadow:var(--shadow); display:flex; gap:32px; justify-content:space-between; padding:38px; }
+    .badge { color:var(--blue); font:700 11px 'Segoe UI',sans-serif; letter-spacing:1.4px; text-transform:uppercase; }
+    h1 { font-size:clamp(30px,4vw,46px); line-height:1.05; margin:12px 0; }
+    .header p { color:#475569; font:15px/1.6 'Segoe UI',sans-serif; margin:0; max-width:700px; }
+    .header-meta { color:#475569; display:grid; font:600 11px/1.8 'Segoe UI',sans-serif; min-width:160px; }
+    .intro, .progress, .ex, .bonus, .completion { background:var(--card); border:1px solid var(--line); border-radius:14px; box-shadow:var(--shadow); }
+    .intro { border-left:4px solid var(--blue); margin:24px 0; padding:18px 22px; }
+    .intro h2 { font-size:16px; margin:0 0 8px; }
+    .intro p { color:var(--muted); font:13.5px/1.6 'Segoe UI',sans-serif; margin:5px 0; }
+    .progress { align-items:center; display:flex; gap:16px; margin-bottom:24px; padding:17px 22px; }
+    .progress-label, .progress-count { color:var(--muted); font:700 12px 'Segoe UI',sans-serif; white-space:nowrap; }
+    .progress-count { color:var(--blue); }
+    .progress-track { background:#e8edf3; border-radius:20px; flex:1; height:8px; overflow:hidden; }
+    .progress-fill { background:linear-gradient(90deg,var(--blue),#0ea5e9,var(--green)); border-radius:20px; height:100%; transition:width .3s; width:0; }
+    .ex { margin-bottom:16px; overflow:hidden; }
+    .ex-header { align-items:center; cursor:pointer; display:flex; gap:13px; padding:18px 22px; }
+    .ex-header:hover { background:#f8fbff; }
+    .ex.open .ex-header { border-bottom:1px solid var(--line); }
+    .ex-num { background:var(--blue-light); border:1px solid #bfdbfe; border-radius:6px; color:var(--blue); font:800 11px 'Segoe UI',sans-serif; padding:4px 9px; }
+    .ex-title { color:var(--ink); flex:1; font:700 16px 'Segoe UI',sans-serif; }
+    .ex-time, .ex-chevron { color:var(--muted); font:11px 'Segoe UI',sans-serif; }
+    .ex-chevron { font-size:13px; transition:transform .2s; }
+    .ex.open .ex-chevron { transform:rotate(180deg); }
+    .ex-body { display:none; padding:24px; }
+    .ex.open .ex-body { display:block; }
+    .goal { background:#eff6ff; border:1px solid #bfdbfe; border-radius:10px; margin-bottom:18px; padding:14px 18px; }
+    .goal-label, .validation-title { color:var(--blue); font:800 10px 'Segoe UI',sans-serif; letter-spacing:.8px; text-transform:uppercase; }
+    .goal-text, .step-text, .check-label { color:var(--text); font:13.5px/1.6 'Segoe UI',sans-serif; }
+    .steps-list { display:flex; flex-direction:column; gap:13px; list-style:none; margin:0 0 18px; padding:0; }
+    .step-item { display:flex; gap:13px; }
+    .step-bullet { align-items:center; background:#f1f5f9; border:2px solid var(--line); border-radius:50%; color:var(--muted); display:flex; flex-shrink:0; font:800 11px 'Segoe UI',sans-serif; height:24px; justify-content:center; width:24px; }
+    .step-content { flex:1; }
+    .step-sub { color:var(--muted); font:12px/1.5 'Segoe UI',sans-serif; margin-top:4px; }
+    pre { background:#0f1d31; border-radius:8px; color:#dbeafe; font-size:12px; line-height:1.65; margin:9px 0; overflow:auto; padding:13px 14px; white-space:pre-wrap; }
+    .prompt { background:#f8fafc; border-left:3px solid var(--blue); border-radius:7px; color:#1e293b; font:12px/1.6 'Cascadia Code',monospace; margin:9px 0; padding:10px 12px; }
+    .tip { border-left:4px solid var(--green); background:#f0fdf4; border-radius:8px; color:#065f46; font:13px/1.55 'Segoe UI',sans-serif; margin:15px 0; padding:12px 15px; }
+    .tip.orange { background:#fff7ed; border-color:#f97316; color:#9a3412; }
+    .validation-title { border-top:1px solid var(--line); margin-top:20px; padding-top:18px; }
+    .check-list { display:flex; flex-direction:column; gap:8px; margin-top:10px; }
+    .check-item { align-items:flex-start; cursor:pointer; display:flex; gap:10px; }
+    .check-box { align-items:center; border:2px solid var(--line); border-radius:4px; display:flex; flex-shrink:0; height:19px; justify-content:center; margin-top:2px; width:19px; }
+    .check-box-tick { color:transparent; font:bold 13px 'Segoe UI',sans-serif; }
+    .check-item.checked .check-box { background:var(--green); border-color:var(--green); }
+    .check-item.checked .check-box-tick { color:#fff; }
+    .check-item.checked .check-label { color:var(--muted); text-decoration:line-through; }
+    .bonus { background:linear-gradient(135deg,#fff7ed,#fef3c7); border-color:#fed7aa; margin-top:24px; padding:22px; }
+    .bonus h2 { color:var(--orange); font-size:17px; margin:0 0 8px; }
+    .bonus p { color:#7c2d12; font:13px/1.6 'Segoe UI',sans-serif; margin:0; }
+    .completion { background:linear-gradient(135deg,#f0fdf4,#ecfeff); border-color:#a7f3d0; display:none; margin-top:24px; padding:24px; text-align:center; }
+    .completion.show { display:block; }
+    .completion h2 { color:var(--green); font-size:22px; margin:0 0 8px; }
+    .completion p, footer { color:var(--muted); font:13px/1.5 'Segoe UI',sans-serif; }
+    footer { border-top:1px solid var(--line); margin-top:38px; padding-top:20px; text-align:center; }
+    #scrollTopBtn { background:var(--ink); border:1px solid #38bdf8; border-radius:50%; bottom:20px; color:#fff; cursor:pointer; display:none; font-size:16px; height:38px; position:fixed; right:20px; width:38px; }
+    #scrollTopBtn.visible { display:block; }
+    @media (max-width:700px) { .wrap { padding:28px 18px 48px; } .header { align-items:flex-start; flex-direction:column; padding:28px 24px; } .header-meta { border-top:1px solid rgba(15,23,42,.12); padding-top:12px; width:100%; } .ex-body { padding:20px; } .ex-header { padding:16px; } .ex-time { display:none; } }
+    @media print { .progress-bar, #scrollTopBtn { display:none!important; } .wrap { padding:12px; } .ex { break-inside:avoid; box-shadow:none; } .ex-body { display:block; } }
+    .solution{border:1px solid #bae6fd;border-radius:10px;margin:22px 0 18px;overflow:hidden}.solution-toggle{background:#f0f9ff;border:0;border-radius:10px;color:#0369a1;cursor:pointer;font:700 13px 'Segoe UI',system-ui,sans-serif;padding:12px 14px;text-align:left;width:100%}.solution-toggle[aria-expanded='true']{border-radius:10px 10px 0 0}.solution-toggle:hover,.solution-toggle:focus{background:#e0f2fe;box-shadow:inset 0 0 0 2px #38bdf8;outline:0}.solution-content{background:#fff;padding:16px 18px}.solution-content[hidden]{display:none}.solution-content:not([hidden]){border-top:1px solid #bae6fd}.solution-content p,.solution-content li{color:var(--muted);font:13px/1.6 'Segoe UI',sans-serif}.solution-content ul{margin:8px 0 0 20px}
+  </style>
+</head>
+<body>
+  <div class="progress-bar" id="progressBar"></div>
+  <main class="wrap">
+    <header class="header">
+      <div>
+        <div class="badge">Application integration · Hands-on lab</div>
+        <h1>GitHub Copilot SDK<br>Lab Exercises</h1>
+        <p>Six guided exercises to embed Copilot in an application: connect the client, manage sessions, stream responses, add tools, enforce permissions, and extend the agent safely.</p>
+      </div>
+      <div class="header-meta"><div>⏱ ~75 min total</div><div>6 exercises</div><div>.NET 8+ required</div><div>Copilot access needed</div></div>
+    </header>
+
+    <section class="intro">
+      <h2>Before You Begin</h2>
+      <p>This lab uses C# with .NET 8 or later and the <code>GitHub.Copilot.SDK</code> NuGet package. Use a disposable console application so you can experiment with sessions, tools, permissions, and cleanup safely.</p>
+      <p>Verify the Copilot CLI runtime is available, and keep credentials in environment variables. Never put tokens or personal data in prompts, source files, or telemetry.</p>
+    </section>
+
+    <div class="progress"><span class="progress-label">Progress</span><div class="progress-track"><div class="progress-fill" id="progressFill"></div></div><span class="progress-count" id="progressCount">0 / 12 checks</span></div>
+
+    <section class="ex open">
+      <div class="ex-header"><span class="ex-num">EX 01</span><span class="ex-title">Install the SDK and Connect a Client</span><span class="ex-time">10 min</span><span class="ex-chevron">▼</span></div>
+      <div class="ex-body">
+        <div class="goal"><div class="goal-label">Goal</div><div class="goal-text">Create the smallest working SDK program and understand that the SDK connects your application to the Copilot CLI runtime.</div></div>
+        <ol class="steps-list">
+          <li class="step-item"><div class="step-bullet">1</div><div class="step-content"><div class="step-text">Create a .NET console project and install the SDK:</div><pre>dotnet new console -n CopilotSdkLab
+cd CopilotSdkLab
+dotnet add package GitHub.Copilot.SDK</pre></div></li>
+          <li class="step-item"><div class="step-bullet">2</div><div class="step-content"><div class="step-text">Verify the runtime and authentication before writing application code:</div><pre>copilot --version
+gh auth status</pre></div></li>
+            <li class="step-item"><div class="step-bullet">3</div><div class="step-content"><div class="step-text">Replace <code>Program.cs</code> with a client, session, prompt, response output, and cleanup:</div><pre>using GitHub.Copilot;
+
+      await using var client = new CopilotClient();
+      await client.StartAsync();
+      await using var session = await client.CreateSessionAsync(new SessionConfig
+      {
+        Model = "gpt-5"
+      });
+
+      var done = new TaskCompletionSource();
+      session.On&lt;SessionEvent&gt;(evt =&gt;
+      {
+        if (evt is AssistantMessageEvent message)
+          Console.WriteLine(message.Data.Content);
+        else if (evt is SessionIdleEvent)
+          done.SetResult();
+      });
+
+      await session.SendAsync(new MessageOptions { Prompt = "What is 2 + 2?" });
+      await done.Task;</pre></div></li>
+            <li class="step-item"><div class="step-bullet">4</div><div class="step-content"><div class="step-text">Run the sample with <code>dotnet run</code>. Confirm the process exits cleanly through <code>await using</code> disposal.</div></div></li>
+        </ol>
+        <div class="validation-title">Validation Checklist</div><div class="check-list"><div class="check-item"><div class="check-box"><span class="check-box-tick">✓</span></div><span class="check-label">SDK package and runtime are available</span></div><div class="check-item"><div class="check-box"><span class="check-box-tick">✓</span></div><span class="check-label">A prompt returned a response and the client stopped cleanly</span></div></div>
+      </div>
+    </section>
+
+    <section class="ex">
+      <div class="ex-header"><span class="ex-num">EX 02</span><span class="ex-title">Manage Sessions and Conversation State</span><span class="ex-time">12 min</span><span class="ex-chevron">▼</span></div>
+      <div class="ex-body">
+        <div class="goal"><div class="goal-label">Goal</div><div class="goal-text">Use a session as the unit of conversation, inspect its identifier, and understand the difference between sending a message and waiting for idle.</div></div>
+        <ol class="steps-list">
+            <li class="step-item"><div class="step-bullet">1</div><div class="step-content"><div class="step-text">Change the sample to send two related messages through the same session:</div><pre>await session.SendAsync(new MessageOptions
+      {
+        Prompt = "Remember the number 42 for this session."
+      });
+      await session.SendAsync(new MessageOptions
+      {
+        Prompt = "What number did I ask you to remember?"
+      });
+      await done.Task;</pre></div></li>
+          <li class="step-item"><div class="step-bullet">2</div><div class="step-content"><div class="step-text">Print the session ID and record it in the terminal output. Explain what state belongs to the session versus the client.</div></div></li>
+          <li class="step-item"><div class="step-bullet">3</div><div class="step-content"><div class="step-text">Use <code>SendAsync</code>, subscribe to <code>SessionIdleEvent</code>, and identify which event tells your app the turn is complete.</div></div></li>
+          <li class="step-item"><div class="step-bullet">4</div><div class="step-content"><div class="step-text">Dispose the session, then use <code>ResumeSessionAsync(sessionId)</code> with a new client to continue the conversation when session storage is enabled.</div></div></li>
+        </ol>
+        <div class="tip">Keep session IDs out of logs that may contain user data. In a real app, define how long session state should remain resumable.</div>
+        <div class="validation-title">Validation Checklist</div><div class="check-list"><div class="check-item"><div class="check-box"><span class="check-box-tick">✓</span></div><span class="check-label">Two messages shared context in one session</span></div><div class="check-item"><div class="check-box"><span class="check-box-tick">✓</span></div><span class="check-label">Explained SendAsync, SessionIdleEvent, disposal, and resume</span></div></div>
+      </div>
+    </section>
+
+    <section class="ex">
+      <div class="ex-header"><span class="ex-num">EX 03</span><span class="ex-title">Stream Responses and Handle Events</span><span class="ex-time">12 min</span><span class="ex-chevron">▼</span></div>
+      <div class="ex-body">
+        <div class="goal"><div class="goal-label">Goal</div><div class="goal-text">Render incremental response deltas for a responsive application while keeping completion and error handling explicit.</div></div>
+        <ol class="steps-list">
+            <li class="step-item"><div class="step-bullet">1</div><div class="step-content"><div class="step-text">Create a streaming session and subscribe to typed message events:</div><pre>await using var session = await client.CreateSessionAsync(new SessionConfig
+      {
+        Model = "gpt-5",
+        Streaming = true
+      });
+
+      session.On&lt;SessionEvent&gt;(evt =&gt;
+      {
+        switch (evt)
+        {
+          case AssistantMessageDeltaEvent delta:
+            Console.Write(delta.Data.DeltaContent);
+            break;
+          case SessionIdleEvent:
+            Console.WriteLine("\n[complete]");
+            break;
+        }
+      });</pre></div></li>
+          <li class="step-item"><div class="step-bullet">2</div><div class="step-content"><div class="step-text">Send a prompt that produces a multi-paragraph answer. Observe the difference between streamed deltas and the final idle event.</div></div></li>
+          <li class="step-item"><div class="step-bullet">3</div><div class="step-content"><div class="step-text">Add an error handler and an abort path. Test cancellation with a long-running prompt rather than leaving a request uncontrolled.</div></div></li>
+        </ol>
+        <div class="validation-title">Validation Checklist</div><div class="check-list"><div class="check-item"><div class="check-box"><span class="check-box-tick">✓</span></div><span class="check-label">Displayed response text incrementally</span></div><div class="check-item"><div class="check-box"><span class="check-box-tick">✓</span></div><span class="check-label">Handled idle, error, and cancellation behavior</span></div></div>
+      </div>
+    </section>
+
+    <section class="ex">
+      <div class="ex-header"><span class="ex-num">EX 04</span><span class="ex-title">Give the Agent a Safe Custom Tool</span><span class="ex-time">15 min</span><span class="ex-chevron">▼</span></div>
+      <div class="ex-body">
+        <div class="goal"><div class="goal-label">Goal</div><div class="goal-text">Define a deterministic application tool and observe how the model requests it through the SDK.</div></div>
+        <ol class="steps-list">
+          <li class="step-item"><div class="step-bullet">1</div><div class="step-content"><div class="step-text">Define a read-only weather tool with a narrow schema and deterministic sample result:</div><pre>using GitHub.Copilot;
+using Microsoft.Extensions.AI;
+using System.ComponentModel;
+
+var getWeather = CopilotTool.DefineTool(
+    ([Description("City name")] string city) =&gt;
+        new { city, condition = "sunny", temperature = "72F" },
+    factoryOptions: new AIFunctionFactoryOptions
+    {
+        Name = "get_weather",
+        Description = "Get sample weather for a city"
+    });
+
+await using var session = await client.CreateSessionAsync(new SessionConfig
+{
+    Model = "gpt-5",
+    Tools = [getWeather]
+});</pre></div></li>
+          <li class="step-item"><div class="step-bullet">2</div><div class="step-content"><div class="step-text">Ask: <code>What is the weather in Seattle?</code> and observe the typed tool handler result.</div></div></li>
+          <li class="step-item"><div class="step-bullet">3</div><div class="step-content"><div class="step-text">Log the tool input and output. Confirm the handler validates or safely handles an unexpected city value.</div></div></li>
+          <li class="step-item"><div class="step-bullet">4</div><div class="step-content"><div class="step-text">Refactor the handler so it never reads secrets, writes files, or performs network calls without an explicit design decision.</div></div></li>
+        </ol>
+        <div class="tip orange">A tool is application code with an AI-controlled caller. Keep schemas narrow, validate inputs, and return the minimum data needed.</div>
+        <div class="validation-title">Validation Checklist</div><div class="check-list"><div class="check-item"><div class="check-box"><span class="check-box-tick">✓</span></div><span class="check-label">Tool schema, input, handler, and result are visible</span></div><div class="check-item"><div class="check-box"><span class="check-box-tick">✓</span></div><span class="check-label">Tool cannot access secrets or perform unintended side effects</span></div></div>
+      </div>
+    </section>
+
+    <section class="ex">
+      <div class="ex-header"><span class="ex-num">EX 05</span><span class="ex-title">Enforce Permission Decisions</span><span class="ex-time">12 min</span><span class="ex-chevron">▼</span></div>
+      <div class="ex-body">
+        <div class="goal"><div class="goal-label">Goal</div><div class="goal-text">Make permission handling an explicit part of the host application instead of allowing every requested operation.</div></div>
+        <ol class="steps-list">
+          <li class="step-item"><div class="step-bullet">1</div><div class="step-content"><div class="step-text">Add an <code>OnPermissionRequest</code> handler that rejects shell requests and approves only the harmless operation you intend to test:</div><pre>await using var session = await client.CreateSessionAsync(new SessionConfig
+{
+    OnPermissionRequest = async (request, invocation) =&gt;
+    {
+        if (request is PermissionRequestShell shell)
+            return PermissionDecision.Reject($"Shell denied: {shell.FullCommandText}");
+
+        return PermissionDecision.ApproveOnce();
+    }
+});</pre></div></li>
+          <li class="step-item"><div class="step-bullet">2</div><div class="step-content"><div class="step-text">Ask the agent to use a tool that requires approval. Observe the request kind and the rejection feedback.</div></div></li>
+          <li class="step-item"><div class="step-bullet">3</div><div class="step-content"><div class="step-text">Compare <code>PermissionDecision.ApproveOnce()</code>, session or location approval, <code>Reject()</code>, and <code>NoResult()</code>. Choose the least persistent decision for this lab.</div></div></li>
+          <li class="step-item"><div class="step-bullet">4</div><div class="step-content"><div class="step-text">Write a test that proves a denied request cannot invoke the protected operation.</div></div></li>
+        </ol>
+        <div class="validation-title">Validation Checklist</div><div class="check-list"><div class="check-item"><div class="check-box"><span class="check-box-tick">✓</span></div><span class="check-label">Denied operation returned feedback and did not execute</span></div><div class="check-item"><div class="check-box"><span class="check-box-tick">✓</span></div><span class="check-label">Permission behavior has an automated test</span></div></div>
+      </div>
+    </section>
+
+    <section class="ex">
+      <div class="ex-header"><span class="ex-num">EX 06</span><span class="ex-title">Extend and Operate the Agent Safely</span><span class="ex-time">14 min</span><span class="ex-chevron">▼</span></div>
+      <div class="ex-body">
+        <div class="goal"><div class="goal-label">Goal</div><div class="goal-text">Connect an optional MCP server or custom agent, then define the lifecycle, observability, and cleanup rules your host application needs.</div></div>
+        <ol class="steps-list">
+          <li class="step-item"><div class="step-bullet">1</div><div class="step-content"><div class="step-text"><strong>Optional MCP path:</strong> configure a known, trusted server with an explicit URL and ask the agent to perform one read-only operation. Review the server configuration before connecting.</div><pre>var sessionConfig = new SessionConfig
+{
+    McpServers = new Dictionary&lt;string, object&gt;
+    {
+        ["github"] = new
+        {
+            Type = "http",
+            Url = "https://api.githubcopilot.com/mcp/"
+        }
+    }
+};
+
+await using var session = await client.CreateSessionAsync(sessionConfig);</pre></div></li>
+          <li class="step-item"><div class="step-bullet">2</div><div class="step-content"><div class="step-text"><strong>Optional custom agent path:</strong> define a narrow <code>pr-reviewer</code> agent with a prompt that focuses on security and maintainability, then select it at session creation.</div></div></li>
+          <li class="step-item"><div class="step-bullet">3</div><div class="step-content"><div class="step-text">Add cleanup in a <code>finally</code> block, or use <code>await using</code> for the client and session. Configure <code>TelemetryConfig</code> to diagnose latency and tool failures without recording secrets or full user prompts.</div></div></li>
+          <li class="step-item"><div class="step-bullet">4</div><div class="step-content"><div class="step-text">Document the production boundary: allowed tools, session retention, retry behavior, cancellation, error handling, and who can approve permissions.</div></div></li>
+        </ol>
+        <div class="tip orange">Skip MCP and custom agents if you do not have a trusted test configuration. The lifecycle, permission, and cleanup checks still complete the exercise.</div>
+        <div class="validation-title">Validation Checklist</div><div class="check-list"><div class="check-item"><div class="check-box"><span class="check-box-tick">✓</span></div><span class="check-label">Optional extension was read-only, scoped, and reviewed</span></div><div class="check-item"><div class="check-box"><span class="check-box-tick">✓</span></div><span class="check-label">Lifecycle, telemetry, cleanup, and production boundaries are documented</span></div></div>
+      </div>
+    </section>
+
+    <section class="bonus"><h2>Bonus Challenge: Build a Small Copilot Feature</h2><p>Wrap the SDK in a tiny command-line or web endpoint that accepts a prompt, streams the response, exposes one safe read-only tool, records a session identifier, and rejects shell access. Add one automated test for the permission boundary.</p></section>
+    <section class="completion" id="completion"><h2>SDK Lab Complete</h2><p>You practiced the application lifecycle from client connection through sessions, streaming, tools, permissions, extensions, and cleanup.</p></section>
+    <footer>GitHub Copilot SDK Lab Exercises · Build the host boundary before expanding the agent.</footer>
+  </main>
+  <button id="scrollTopBtn" title="Back to top" aria-label="Back to top">↑</button>
+  <script>
+    const allChecks = () => document.querySelectorAll('.check-item');
+    function updateProgress() {
+      const checks = allChecks();
+      const checked = document.querySelectorAll('.check-item.checked').length;
+      const percent = checks.length ? checked / checks.length * 100 : 0;
+      document.getElementById('progressFill').style.width = percent + '%';
+      document.getElementById('progressCount').textContent = checked + ' / ' + checks.length + ' checks';
+      document.getElementById('completion').classList.toggle('show', checked === checks.length);
+    }
+    document.querySelectorAll('.check-item').forEach(item => item.addEventListener('click', () => { item.classList.toggle('checked'); updateProgress(); }));
+    document.querySelectorAll('.ex-header').forEach(header => header.addEventListener('click', () => {
+      const exercise = header.parentElement;
+      const wasOpen = exercise.classList.contains('open');
+      document.querySelectorAll('.ex').forEach(item => item.classList.remove('open'));
+      if (!wasOpen) exercise.classList.add('open');
+    }));
+    const progressBar = document.getElementById('progressBar');
+    const scrollTopButton = document.getElementById('scrollTopBtn');
+    window.addEventListener('scroll', () => {
+      const maxScroll = document.documentElement.scrollHeight - window.innerHeight || 1;
+      progressBar.style.width = (window.scrollY / maxScroll * 100) + '%';
+      scrollTopButton.classList.toggle('visible', window.scrollY > 320);
+    }, { passive:true });
+    scrollTopButton.addEventListener('click', () => window.scrollTo({ top:0, behavior:'smooth' }));
+    document.querySelectorAll('.ex').forEach(function(exercise){const panel=document.createElement('div');panel.className='solution';const criteria=[...exercise.querySelectorAll('.check-label')].map(function(item){return item.textContent.trim()});panel.innerHTML='<button class="solution-toggle" type="button" aria-expanded="false">Show solution</button><div class="solution-content" hidden><p>Complete the exercise by producing the following evidence:</p><ul>'+criteria.map(function(item){return '<li>'+item+'</li>'}).join('')+'</ul></div>';const validation=exercise.querySelector('.validation-title');validation.before(panel);const button=panel.querySelector('.solution-toggle');button.addEventListener('click',function(event){event.stopPropagation();const content=panel.querySelector('.solution-content');const open=this.getAttribute('aria-expanded')==='true';this.setAttribute('aria-expanded',String(!open));this.textContent=open?'Show solution':'Hide solution';content.hidden=open})});
+    updateProgress();
+  </script>
+</body>
+</html>

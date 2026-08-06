@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="GitHub Copilot Fundamentals presentation covering concepts, architecture, models, CLI, SDK, and responsible use.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='80' font-size='80'>🤖</text></svg>" />
+  <title>GitHub Copilot Fundamentals</title>
+  <style>
+    :root {
+      --ink: #17253d;
+      --navy: #071a38;
+      --blue: #1359b5;
+      --cyan: #0d9db2;
+      --teal: #118b83;
+      --orange: #c66b1b;
+      --paper: #f4f7fa;
+      --white: #fff;
+      --muted: #617086;
+      --line: #d8e1eb;
+      --display: "Segoe UI", Georgia, "Times New Roman", serif;
+      --body: "Segoe UI Semibold", "Trebuchet MS", "Segoe UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html, body { min-height: 100%; }
+    body { margin: 0; overflow: hidden; background: var(--paper); color: var(--ink); font-family: var(--body); }
+    button { font: inherit; }
+    .deck { min-height: 100vh; position: relative; isolation: isolate; background: radial-gradient(circle at 10% 12%, rgba(13,157,178,.12), transparent 23rem), radial-gradient(circle at 92% 88%, rgba(198,107,27,.09), transparent 22rem), var(--paper); }
+    .deck::before { content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: .34; background-image: linear-gradient(rgba(23,37,61,.025) 1px, transparent 1px), linear-gradient(90deg, rgba(23,37,61,.025) 1px, transparent 1px); background-size: 36px 36px; -webkit-mask-image: linear-gradient(to bottom, black, transparent 85%); mask-image: linear-gradient(to bottom, black, transparent 85%); }
+    .topbar { position: fixed; inset: 0 0 auto; z-index: 5; display: flex; justify-content: space-between; padding: 18px clamp(20px, 4vw, 60px); color: var(--muted); font-size: 11px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+    .brand { color: var(--navy); }
+    .counter { font-variant-numeric: tabular-nums; }
+    .slides { min-height: 100vh; position: relative; }
+    .slide { display: none; width: min(1240px, 100%); min-height: 100vh; max-height: 100vh; margin: 0 auto; padding: clamp(74px, 8vh, 104px) clamp(24px, 7vw, 104px) 92px; overflow: hidden; animation: enter .45s ease both; }
+    .slide.active, .slides:last-child { background: rgba(255,255,255,.58); display: flex; flex-direction: column; justify-content: center; }
+    @keyframes enter { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+    .eyebrow { color: var(--accent, var(--cyan)); font-size: 12px; font-weight: 900; letter-spacing: .17em; text-transform: uppercase; }
+    .accent-blue { --accent: var(--blue); } .accent-cyan { --accent: var(--cyan); } .accent-teal { --accent: var(--teal); } .accent-orange { --accent: var(--orange); }
+    h1, h2, h3, p { margin-top: 0; }
+    h1, h2 { font-family: var(--display); font-weight: 700; letter-spacing: -.025em; }
+    h1 { max-width: 950px; margin: 14px 0 18px; color: var(--navy); font-size: clamp(42px, 6.2vw, 78px); line-height: .98; }
+    h2 { max-width: 900px; margin: 11px 0 24px; color: var(--navy); font-size: clamp(32px, 4.2vw, 56px); line-height: 1.02; }
+    h3 { margin-bottom: 8px; color: var(--navy); font-size: 16px; line-height: 1.15; }
+    .lede { max-width: 760px; color: #53677d; font-size: clamp(16px, 1.7vw, 21px); line-height: 1.48; }
+    .date-line { margin-top: 24px; color: var(--muted); font-size: 13px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+    .title-mark { display: flex; gap: 8px; margin-top: 34px; }
+    .title-mark span { width: 58px; height: 8px; border-radius: 99px; }
+    .title-mark span:nth-child(1) { background: var(--blue); } .title-mark span:nth-child(2) { background: var(--cyan); } .title-mark span:nth-child(3) { background: var(--teal); } .title-mark span:nth-child(4) { background: var(--orange); }
+    .welcome-slide { position: relative; justify-content: center; }
+    .welcome-slide::after { content: ""; position: absolute; width: min(42vw, 520px); height: min(42vw, 520px); right: -8%; bottom: -24%; border: 1px solid rgba(19,89,181,.16); border-radius: 50%; box-shadow: 0 0 0 34px rgba(13,157,178,.04), 0 0 0 68px rgba(198,107,27,.035); pointer-events: none; }
+    .logo-lockup { display: block; width: min(220px, 62vw); margin-bottom: 15px; }
+    .logo-lockup img { display: block; width: 100%; height: auto; }
+    .welcome-slide h1 { max-width: 820px; margin-bottom: 22px; font-size: clamp(46px, 7vw, 88px); }
+    .welcome-slide .lede { max-width: 680px; color: var(--blue); font-size: clamp(20px, 2.2vw, 29px); font-weight: 700; letter-spacing: -.02em; }
+    .welcome-meta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 30px; color: var(--muted); font-size: 12px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+    .welcome-meta span { padding: 9px 12px; border: 1px solid var(--line); border-radius: 99px; background: rgba(255,255,255,.7); }
+    .grid { display: grid; gap: 12px; } .grid.two { grid-template-columns: repeat(2, 1fr); } .grid.three { grid-template-columns: repeat(3, 1fr); }
+    .card { position: relative; padding: 18px; border: 1px solid var(--line); border-radius: 12px; background: rgba(255,255,255,.84); box-shadow: 0 7px 18px rgba(22,55,87,.05); }
+    .card::before { content: ""; display: block; width: 30px; height: 4px; margin-bottom: 14px; border-radius: 99px; background: var(--accent, var(--cyan)); }
+    .card p, .card li { color: var(--muted); font-size: 13px; line-height: 1.42; } .card p { margin-bottom: 0; }
+    .card .topics { margin-top: 11px; padding-top: 10px; border-top: 1px solid var(--line); color: var(--navy); font-size: 12px; line-height: 1.45; }
+    .card .topics strong { color: var(--accent, var(--cyan)); }
+    ul { margin: 0; padding-left: 17px; } li + li { margin-top: 6px; }
+    .callout { margin-top: 14px; padding: 17px 20px; border-left: 5px solid var(--accent, var(--cyan)); background: rgba(255,255,255,.72); color: var(--navy); font-size: 16px; line-height: 1.38; }
+    .callout small { display: block; margin-top: 9px; color: var(--muted); font-size: 12px; }
+    .flow { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 6px; }
+    .flow-item { min-height: 150px; padding: 15px; border-top: 5px solid var(--accent); background: rgba(255,255,255,.84); box-shadow: 0 9px 22px rgba(7,26,56,.08); }
+    .flow-item h3 { margin-top: 14px; } .flow-item p { color: var(--muted); font-size: 12px; line-height: 1.4; }
+    .flow-number { color: var(--accent); font-family: var(--display); font-size: 30px; line-height: 1; }
+    .architecture { display: grid; grid-template-columns: 1fr 1.2fr 1fr; align-items: stretch; gap: 12px; margin-top: 4px; }
+    .architecture .card { display: flex; flex-direction: column; justify-content: center; min-height: 170px; }
+    .architecture .core { border-color: rgba(13,157,178,.42); background: rgba(13,157,178,.1); }
+    .architecture .core::before { background: linear-gradient(90deg, var(--blue), var(--cyan), var(--teal)); }
+    .architecture .bridge { display: grid; place-items: center; color: var(--accent); font-size: 28px; font-weight: 900; }
+    .architecture-diagram { display: grid; grid-template-columns: 1fr 38px 1.35fr 38px 1fr; grid-template-rows: auto 26px auto; align-items: center; gap: 8px; margin-top: 2px; }
+    .diagram-node { min-height: 104px; padding: 14px 16px; border: 1px solid var(--line); border-top: 5px solid var(--accent); background: rgba(255,255,255,.86); box-shadow: 0 8px 18px rgba(22,55,87,.06); }
+    .diagram-node h3 { margin: 7px 0 5px; }
+    .diagram-node p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.38; }
+    .diagram-kicker { color: var(--accent); font-size: 10px; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; }
+    .diagram-arrow { display: grid; place-items: center; color: var(--cyan); font-size: 25px; font-weight: 900; }
+    .diagram-context { margin-top: 55px; clear:both; grid-column: 3; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .diagram-context .diagram-node { min-height: 82px; padding: 11px 12px; border-top-width: 3px; }
+    .diagram-context .diagram-node h3 { margin: 4px 0 3px; font-size: 13px; }
+    .diagram-context .diagram-node p { font-size: 11px; }
+    .model-table { display: grid; gap: 8px; margin-top: 4px; }
+    .model-row { display: grid; grid-template-columns: 1.05fr 1.75fr 1.35fr .7fr; gap: 14px; align-items: center; padding: 13px 16px; border-left: 4px solid var(--accent); background: rgba(255,255,255,.82); }
+    .model-row strong { color: var(--navy); font-size: 14px; } .model-row span { color: var(--muted); font-size: 12px; line-height: 1.35; } .model-row span strong { color: var(--accent); font-size: inherit; } .model-row em { color: var(--accent); font-size: 11px; font-style: normal; font-weight: 900; text-transform: uppercase; letter-spacing: .08em; }
+    .prompt-example { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+    .prompt-example-item { padding: 12px 14px; border-left: 4px solid var(--accent); background: rgba(255,255,255,.82); }
+    .prompt-example-label { display: block; margin-bottom: 5px; color: var(--accent); font-size: 10px; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; }
+    .prompt-example p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.4; }
+    .terminal { margin-top: 4px; padding: 18px 20px; border: 1px solid #29445f; border-radius: 10px; background: #0b2038; color: #d9f8f2; box-shadow: 0 12px 24px rgba(7,26,56,.14); font-family: Consolas, "Courier New", monospace; font-size: 13px; line-height: 1.65; }
+    .terminal .prompt { color: #5ed8ca; } .terminal .comment { color: #8fa8bc; }
+    .tight-grid { margin-top: 12px; }
+    .resource-link { display: inline-block; margin-top: 14px; color: var(--blue); font-size: 12px; font-weight: 900; text-decoration: none; }
+    .resource-link:hover, .resource-link:focus-visible { color: var(--orange); text-decoration: underline; }
+    .controls { position: fixed; right: clamp(18px, 4vw, 60px); bottom: 24px; z-index: 6; display: flex; gap: 8px; }
+    .control, .overview-toggle { display: grid; place-items: center; min-width: 38px; height: 38px; padding: 0 11px; border: 1px solid #bfd0dd; border-radius: 8px; background: rgba(255,255,255,.9); color: var(--navy); cursor: pointer; box-shadow: 0 5px 18px rgba(22,55,87,.08); font-weight: 900; }
+    .control:hover, .control:focus-visible, .overview-toggle:hover, .overview-toggle:focus-visible { border-color: var(--cyan); color: var(--cyan); outline: none; }
+    .control:disabled { cursor: not-allowed; opacity: .4; }
+    .progress { position: fixed; right: 0; bottom: 0; left: 0; z-index: 5; height: 4px; background: #dfe8ef; } .progress span { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--blue), var(--cyan), var(--teal), var(--orange)); transition: width .35s ease; }
+    .overview { position: fixed; inset: 0; z-index: 10; display: none; padding: 8vh 7vw; overflow: auto; background: rgba(245,248,251,.96); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
+    .overview.open { display: block; animation: enter .25s ease both; } .overview-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 26px; } .overview h2 { margin: 0; font-size: 38px; }
+    .thumbs { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; } .thumb { min-height: 120px; padding: 16px; border: 1px solid var(--line); border-top: 5px solid var(--accent); background: var(--white); color: var(--navy); text-align: left; cursor: pointer; } .thumb:hover, .thumb:focus-visible { transform: translateY(-3px); box-shadow: 0 12px 28px rgba(7,26,56,.09); outline: none; } .thumb small { display: block; margin-bottom: 18px; color: var(--accent); font-weight: 900; } .thumb strong { font-family: var(--display); font-size: 18px; }
+    @media (max-width: 800px) { .grid.two, .grid.three, .flow, .architecture, .prompt-example { grid-template-columns: 1fr; } .flow-item, .architecture .card { min-height: 0; } .architecture .bridge { min-height: 22px; transform: rotate(90deg); } h1 { font-size: clamp(40px, 11vw, 62px); } h2 { font-size: clamp(30px, 8vw, 46px); } .model-row { grid-template-columns: 1fr; gap: 4px; } }
+    @media (max-height: 800px) and (min-width: 801px) { .slide { padding-top: 68px; padding-bottom: 82px; } h1 { font-size: clamp(40px, 5.6vw, 68px); } h2 { font-size: clamp(30px, 3.8vw, 48px); margin-bottom: 18px; } .card { padding: 15px; } .card::before { margin-bottom: 10px; } .card p, .card li, .model-row span { font-size: 12px; } .callout { padding: 13px 16px; font-size: 14px; } .flow-item { min-height: 132px; } }
+    @media (max-width: 520px) { .topbar { padding: 14px 18px; } .slide { min-height: 100dvh; height: 100dvh; max-height: none; padding: 72px 19px 94px; overflow-y: auto; } .card { padding: 16px; } .controls { right: 18px; bottom: 17px; } .lede { font-size: 16px; } .terminal { font-size: 11px; padding: 14px; } }
+    @media print { body { overflow: visible; background: white; } .deck { background: white; } .slide { display: flex !important; min-height: 100vh; page-break-after: always; } .topbar, .controls, .progress, .overview { display: none !important; } }
+  </style>
+</head>
+<body>
+  <div class="deck">
+    <div class="topbar"><span class="brand">GitHub Copilot Fundamentals</span><span class="counter" id="counter">01 / 11</span></div>
+    <main class="slides">
+      <section class="slide active welcome-slide accent-blue" data-title="Welcome">
+        <div class="logo-lockup"><img src="assets/images/GitHub_Copilot_Logo.png" alt="GitHub Copilot"></div>
+        <div class="eyebrow">Module 01 / GitHub Copilot Fundamentals</div>
+        <h1>Fundamentals</h1>
+        <p class="lede">Understand GitHub Copilot before you ask it to help you build.</p>
+        <div class="title-mark"><span></span><span></span><span></span><span></span></div>
+        <div class="welcome-meta"><span>Concepts</span><span>Models</span><span>Tools</span><span>Practice</span></div>
+      </section>
+
+      <section class="slide accent-cyan" data-title="Introduction">
+        <div class="eyebrow">01 / Introduction</div>
+        <h2>Copilot is a development partner, not an automatic approval system.</h2>
+        <p class="lede">GitHub Copilot helps you explore, explain, draft, transform, test, and review. The developer still supplies intent, context, judgment, and accountability.</p>
+        <div class="grid three">
+          <article class="card"><h3>Understand</h3><p>Learn what Copilot can do, where it gets context, and how its responses are produced.</p></article>
+          <article class="card"><h3>Interact</h3><p>Choose the right interaction for the work: inline suggestions, chat, agentic tasks, CLI, or SDK.</p></article>
+          <article class="card"><h3>Verify</h3><p>Review generated output with tests, documentation, security checks, and domain expertise.</p></article>
+        </div>
+        <div class="callout"><strong>Learning objectives:</strong><small>by the end, you can choose the right Copilot surface, provide useful context, select a model for the task, and evaluate the result before it becomes part of the product.</small></div>
+        <div><a class="resource-link" href="Fundamentals/resources/posters/GitHub%20Copilot%20Fundamentals%20-%20Light%20-%20Landscape.png" target="_blank">Fundamentals ↗</a> | <a class="resource-link" href="InaNutshell/GitHub Copilot - In a Nutshell.html" target="_blank">GitHub Copilot - In a Nutshell ↗</a></div>
+      </section>
+
+      <section class="slide accent-blue" data-title="Concepts">
+        <div class="eyebrow">02 / Concepts</div>
+        <h2>The core ideas behind Copilot.</h2>
+        <div class="flow">
+          <article class="flow-item accent-cyan"><div class="flow-number">01</div><h3>Prompt</h3><p>Your request, question, code, or task description establishes intent.</p></article>
+          <article class="flow-item accent-blue"><div class="flow-number">02</div><h3>Context</h3><p>Relevant files, symbols, instructions, history, and tools shape the request.</p></article>
+          <article class="flow-item accent-teal"><div class="flow-number">03</div><h3>Model</h3><p>An LLM predicts a useful response from the information it receives.</p></article>
+          <article class="flow-item accent-orange"><div class="flow-number">04</div><h3>Verification</h3><p>You inspect, test, refine, and decide whether the result is fit for purpose.</p></article>
+        </div>
+        <div class="callout"><strong>Useful mental model:</strong><small>Copilot does not know your intent automatically. Better context reduces ambiguity; verification turns a plausible response into trusted work.</small></div>
+        <div><a class="resource-link" href="Fundamentals/resources/posters/GitHub%20Copilot%20Concepts%20-%20Light%20-%20Landscape.png" target="_blank">Concepts ↗</a> | <a class="resource-link" href="Fundamentals/resources/posters/GitHub%20Copilot%20Concepts,%20Architecture%20-%20Light%20-%20Landscape.png" target="_blank">Concepts &amp; Architecture ↗</a></div>
+      </section>
+
+      <section class="slide accent-teal" data-title="Architecture">
+        <div class="eyebrow">03 / Architecture</div>
+        <h2>How a Copilot request becomes a useful result.</h2>
+        <div class="architecture-diagram" role="img" aria-label="GitHub Copilot architecture: developer surfaces send intent to Copilot orchestration, which combines context and tools, calls model services, and returns explanations, code changes, or actions.">
+          <article class="diagram-node accent-blue"><div class="diagram-kicker">Entry points</div><h3>Developer surfaces</h3><p>VS Code, GitHub.com, CLI, or an application using the SDK.</p></article>
+          <div class="diagram-arrow" aria-hidden="true">&rarr;</div>
+          <article class="diagram-node core accent-cyan"><div class="diagram-kicker">Coordination layer</div><h3>Copilot orchestration</h3><p>Maintains the conversation, assembles context, selects tools, applies policy, and routes the request.</p></article>
+          <div class="diagram-arrow" aria-hidden="true">&rarr;</div>
+          <article class="diagram-node accent-orange"><div class="diagram-kicker">Inference layer</div><h3>Model services</h3><p>Routes the request to an available LLM for reasoning, generation, or transformation.</p></article>
+          <div class="diagram-context">
+            <article class="diagram-node accent-blue"><div class="diagram-kicker">Context</div><h3>Repository</h3><p>Files, symbols, history</p></article>
+            <article class="diagram-node accent-teal"><div class="diagram-kicker">Guidance</div><h3>Instructions</h3><p>Rules, prompts, policies</p></article>
+            <article class="diagram-node accent-orange"><div class="diagram-kicker">Actions</div><h3>Tools</h3><p>Edits, tests, MCP</p></article>
+          </div>
+        </div>
+        <div class="callout" style="margin-top: 60px;"><strong>Response loop:</strong><small>the model proposes an answer; Copilot returns an explanation, code change, or tool action to the developer for inspection and verification.</small></div>
+        <div><a class="resource-link" href="Fundamentals/resources/posters/GitHub%20Copilot%20Concepts,%20Architecture%20-%20Light%20-%20Landscape.png" target="_blank">Concepts & Architecture ↗</a> | <a class="resource-link" href="Fundamentals/resources/posters/GitHub%20Copilot%20Architecture%20-%20Light%20-%20Landscape.png" target="_blank">Architecture ↗</a></div>
+      </section>
+
+      <section class="slide accent-orange" data-title="AI Models">
+        <div class="eyebrow">04 / AI Models</div>
+        <h2>Model choice changes the shape of the answer.</h2>
+        <div class="model-table">
+          <div class="model-row accent-blue"><strong>Fast and economical</strong><span>Good for straightforward edits, explanations, and short transformations.</span><span><strong>Choose this for:</strong> renaming a variable or explaining a small function.</span><em>Speed</em></div>
+          <div class="model-row accent-cyan"><strong>Balanced generalist</strong><span>A practical default for everyday coding, reasoning, and conversational work.</span><span><strong>Choose this for:</strong> implementing a normal feature or writing tests.</span><em>Coverage</em></div>
+          <div class="model-row accent-teal"><strong>Deep reasoning</strong><span>Useful for architecture, debugging, multi-step analysis, and difficult trade-offs.</span><span><strong>Choose this for:</strong> diagnosing a complex failure or comparing designs.</span><em>Depth</em></div>
+          <div class="model-row accent-orange"><strong>Specialized capability</strong><span>Choose a model or mode optimized for a particular language, task, or workflow.</span><span><strong>Choose this for:</strong> language-specific or workflow-specific work.</span><em>Fit</em></div>
+        </div>
+        <div class="callout"><strong>Selection principle:</strong><small>match model capability to task complexity. A larger model is not automatically a better answer for every request.</small></div>
+        <div><a class="resource-link" href="Fundamentals/resources/posters/AI%20Models%20-%20Light%20-%20Landscape.png" target="_blank">AI Models ↗</a> | <a class="resource-link" href="Fundamentals/resources/posters/GitHub%20Copilot%20LLM%20Models%20-%20Light%20-%20Landscape.png" target="_blank">AI Models in GitHub Copilot ↗</a> | <a class="resource-link" href="Fundamentals/resources/posters/LLM%20Token%20Economics%20-%20Light%20-%20Landscape.png" target="_blank">LLM Tokenomics ↗</a> | <a class="resource-link" href="Fundamentals/resources/guides/ai-model-comparison.html" target="_blank">AI Model Comparison Guide ↗</a></div>
+      </section>
+
+      <section class="slide accent-cyan" data-title="Context and Prompts">
+        <div class="eyebrow">05 / Context and prompts</div>
+        <h2>Good prompts are clear. Good context makes them useful.</h2>
+        <div class="grid two">
+          <article class="card"><h3>State the task</h3><ul><li>Name the outcome and audience.</li><li>Identify the files, symbols, or behavior involved.</li><li>Describe constraints, conventions, and edge cases.</li></ul></article>
+          <article class="card"><h3>Shape the response</h3><ul><li>Ask for a plan before implementation when risk is high.</li><li>Request tests, alternatives, and assumptions.</li><li>Refine in small turns instead of writing one giant prompt.</li></ul></article>
+        </div>
+        <div class="prompt-example accent-cyan"><div class="prompt-example-item"><span class="prompt-example-label">Too broad</span><p>Add authentication.</p></div><div class="prompt-example-item"><span class="prompt-example-label">More useful</span><p>Add role-based authentication to the existing API. Use the current middleware pattern, preserve anonymous health checks, cover invalid credentials, and add tests for each role.</p></div></div>
+        <div class="callout"><strong>Context is a design decision:</strong><small>include the information that changes the answer, while keeping sensitive or irrelevant material out of the conversation.</small></div>
+        <div><a class="resource-link" href="InaNutshell/Prompt Engineering - In a Nutshell.html" target="_blank">Prompt Engineering - In a Nutshell ↗</a> | <a class="resource-link" href="InaNutshell/Context Engineering - In a Nutshell.html" target="_blank">Context Engineering - In a Nutshell ↗</a></div>
+      </section>
+
+      <section class="slide accent-blue" data-title="Inline Completions">
+        <div class="eyebrow">06 / Inline completions</div>
+        <h2>Small suggestions can create large momentum.</h2>
+        <div class="grid three">
+          <article class="card"><h3>Predict</h3><p>Continue the code, comment, test, or configuration you have started.</p></article>
+          <article class="card"><h3>Steer</h3><p>Use names, comments, surrounding code, and small edits to guide the next suggestion.</p></article>
+          <article class="card"><h3>Inspect</h3><p>Accept, reject, or move through alternatives. A suggestion is a draft, not a decision.</p></article>
+        </div>
+        <div class="callout"><strong>Best fit:</strong><small>low-friction work where the surrounding code provides strong context, such as boilerplate, familiar patterns, and test scaffolding.</small></div>
+        <div><a class="resource-link" href="Fundamentals/resources/posters/GitHub%20Copilot%20Inline%20Completions%20-%20Light%20-%20Landscape.png" target="_blank">GitHub Copilot Inline Completions ↗</a></div>
+      </section>
+
+      <section class="slide accent-teal" data-title="Chat and modes">
+        <div class="eyebrow">07 / Chat and modes</div>
+        <h2>Use conversation when the work needs explanation, planning, or action.</h2>
+        <div class="grid three">
+          <article class="card"><h3>Ask</h3><p>Explain unfamiliar code, compare approaches, or answer a focused question.</p></article>
+          <article class="card"><h3>Plan</h3><p>Break a change into steps, surface assumptions, and agree on a direction before editing.</p></article>
+          <article class="card"><h3>Act</h3><p>Let an agent work across files and tools, with checkpoints and review at meaningful boundaries.</p></article>
+        </div>
+        <div class="callout"><strong>Choose the least powerful mode that fits the job:</strong><small><strong>Ask</strong> for understanding. <strong>Plan</strong> before a risky change. <strong>Act</strong> when a scoped, multi-file task has clear acceptance criteria and review checkpoints.</small></div>
+        <div><a class="resource-link" href="Fundamentals/resources/posters/GitHub%20Copilot%20Chat%20and%20Modes%20-%20Light%20-%20Landscape.png" target="_blank">GitHub Copilot Chat and Modes ↗</a></div>
+      </section>
+
+      <section class="slide accent-orange" data-title="Copilot CLI">
+        <div class="eyebrow">08 / Copilot CLI</div>
+        <h2>Bring Copilot into the terminal and the repository workflow.</h2>
+        <div class="terminal"><div><span class="prompt">$ copilot</span></div><div class="comment"># Explore a task in the repository</div><div><span class="prompt">&gt;</span> Explain how this service handles retries</div><div><span class="prompt">&gt;</span> Propose tests for the failure path</div><div><span class="prompt">&gt;</span> Review the diff for unintended changes</div></div>
+        <div class="grid two tight-grid"><article class="card"><h3>Why it fits</h3><p>Terminal-native work keeps repository navigation, version control, scripts, and Copilot close together.</p></article><article class="card"><h3>Keep control</h3><p>Inspect proposed commands and changes before execution, especially when tools can mutate the workspace.</p></article></div>
+        <div><a class="resource-link" href="InaNutshell/GitHub Copilot CLI - In a Nutshell.html" target="_blank">GitHub Copilot CLI - In a Nutshell ↗</a> | <a class="resource-link" href="Fundamentals/resources/posters/GitHub%20Copilot%20CLI%20-%20Light%20-%20Landscape.png" target="_blank">GitHub Copilot CLI ↗</a></div>
+      </section>
+
+      <section class="slide accent-cyan" data-title="Copilot SDK">
+        <div class="eyebrow">09 / Copilot SDK</div>
+        <h2>Embed Copilot capabilities inside your own application.</h2>
+        <div class="grid three">
+          <article class="card"><h3>Connect</h3><p>Start a session from an application and provide the task-specific context it needs.</p></article>
+          <article class="card"><h3>Orchestrate</h3><p>Compose prompts, tools, approvals, and application logic around the model interaction.</p></article>
+          <article class="card"><h3>Productize</h3><p>Turn a useful workflow into a governed experience with clear boundaries and observability.</p></article>
+        </div>
+        <div class="callout"><strong>SDK mindset:</strong><small>you are designing a product workflow, not simply adding a chat box. Define permissions, failure behavior, human approval, and data handling.</small></div>
+        <div><a class="resource-link" href="InaNutshell/GitHub Copilot SDK - In a Nutshell.html" target="_blank">GitHub Copilot SDK - In a Nutshell ↗</a> | <a class="resource-link" href="Fundamentals/resources/posters/GitHub%20Copilot%20SDK%20-%20Light%20-%20Landscape.png" target="_blank">GitHub Copilot SDK ↗</a></div>
+      </section>
+
+      <section class="slide accent-blue" data-title="Responsible use">
+        <div class="eyebrow">10 / Responsible use</div>
+        <h2>Trust is built through reviewable evidence.</h2>
+        <div class="grid three">
+          <article class="card"><h3>Check the output</h3><ul><li>Run tests and inspect the diff.</li><li>Check security, privacy, licensing, and dependency implications.</li><li>Compare behavior with requirements and acceptance criteria.</li></ul></article>
+          <article class="card"><h3>Keep ownership visible</h3><ul><li>Understand the code you ship.</li><li>Record important assumptions and decisions.</li><li>Escalate uncertainty instead of hiding it behind fluent text.</li></ul></article>
+          <article class="card"><h3>Know the limits</h3><ul><li>Copilot does not guarantee correctness.</li><li>It does not automatically understand business intent.</li><li>It does not replace testing, review, or code ownership.</li></ul></article>
+        </div>
+        <div class="callout"><strong>Responsible AI is a workflow:</strong><small>the quality bar belongs to the team, even when Copilot accelerates the work.</small></div>
+        <div><a class="resource-link" href="Fundamentals/resources/guides/responsible-ai-guide.html" target="_blank">Responsible AI Guide ↗</a> | <a class="resource-link" href="Fundamentals/resources/posters/Responsible%20AI%20-%20Light%20-%20Landscape.png" target="_blank">Responsible AI ↗</a> | <a class="resource-link" href="Fundamentals/resources/posters/MetLife%20Responsible%20AI%20-%20Light%20-%20Landscape.png" target="_blank">MetLife Responsible AI ↗</a></div>
+      </section>
+
+      <section class="slide accent-teal" data-title="Next steps">
+        <div class="eyebrow">11 / Next steps</div>
+        <h2>Turn the fundamentals into a repeatable working habit.</h2>
+        <p class="lede">Use one small task to practice the complete loop: define intent, provide context, choose the right Copilot surface, review the result, and verify the change.</p>
+        <div class="grid three">
+          <article class="card accent-blue">
+            <h3>1. Practice</h3>
+            <p>Complete the lab exercises and compare Copilot's output with your repository's actual conventions.</p>
+            <a class="resource-link" href="Fundamentals/resources/exercises/lab-exercises.html" target="_blank">Open the lab &rarr;</a>
+          </article>
+          <article class="card accent-cyan">
+            <h3>2. Apply</h3>
+            <p>Use the cheat sheet during a real task. Start with a narrow change and keep the diff easy to review.</p>
+            <a class="resource-link" href="Fundamentals/resources/cheatsheets/github-copilot-cheat-sheet.html" target="_blank">Open the cheat sheet &rarr;</a>
+          </article>
+          <article class="card accent-orange">
+            <h3>3. Customize</h3>
+            <p>Once the workflow is familiar, add instructions, prompts, skills, or tools that encode team context.</p>
+            <a class="resource-link" href="github-copilot-customization.html" target="_blank">Continue to customization &rarr;</a>
+          </article>
+        </div>
+        <div class="callout"><strong>Your next action:</strong><small>choose one low-risk task this week and capture the full loop: <strong>Task → Context → Constraints → Acceptance criteria → Review → Verification.</strong> Keep the final diff and verification result.</small></div>
+        <div class="title-mark"><span></span><span></span><span></span><span></span></div>
+      </section>
+    </main>
+    <div class="controls">
+      <button class="control" id="prev" type="button" aria-label="Previous slide" title="Previous slide">&larr;</button>
+      <button class="overview-toggle" id="overviewToggle" type="button" aria-expanded="false" aria-controls="overview">Contents</button>
+      <button class="control" id="next" type="button" aria-label="Next slide" title="Next slide">&rarr;</button>
+    </div>
+    <div class="progress" aria-hidden="true"><span id="progress"></span></div>
+    <aside class="overview" id="overview" aria-hidden="true">
+      <div class="overview-head"><h2>Fundamentals presentation</h2><button class="control" id="closeOverview" type="button" aria-label="Close overview">&times;</button></div>
+      <div class="thumbs" id="thumbs"></div>
+    </aside>
+  </div>
+  <script>
+    const slides = [...document.querySelectorAll('.slide')];
+    const counter = document.querySelector('#counter');
+    const progress = document.querySelector('#progress');
+    const overview = document.querySelector('#overview');
+    const overviewToggle = document.querySelector('#overviewToggle');
+    const thumbs = document.querySelector('#thumbs');
+    let current = 0;
+
+    function show(index) {
+      current = Math.max(0, Math.min(index, slides.length - 1));
+      slides.forEach((slide, slideIndex) => slide.classList.toggle('active', slideIndex === current));
+      counter.textContent = `${String(current + 1).padStart(2, '0')} / ${String(slides.length).padStart(2, '0')}`;
+      progress.style.width = `${((current + 1) / slides.length) * 100}%`;
+      document.querySelector('#prev').disabled = current === 0;
+      document.querySelector('#next').disabled = current === slides.length - 1;
+    }
+
+    function setOverview(open) {
+      overview.classList.toggle('open', open);
+      overview.setAttribute('aria-hidden', String(!open));
+      overviewToggle.setAttribute('aria-expanded', String(open));
+    }
+
+    slides.forEach((slide, index) => {
+      const thumb = document.createElement('button');
+      thumb.type = 'button';
+      thumb.className = `thumb ${slide.className.match(/accent-\w+/)?.[0] || 'accent-cyan'}`;
+      thumb.innerHTML = `<small>${String(index + 1).padStart(2, '0')}</small><strong>${slide.dataset.title}</strong>`;
+      thumb.addEventListener('click', () => { show(index); setOverview(false); });
+      thumbs.appendChild(thumb);
+    });
+
+    document.querySelector('#prev').addEventListener('click', () => show(current - 1));
+    document.querySelector('#next').addEventListener('click', () => show(current + 1));
+    overviewToggle.addEventListener('click', () => setOverview(!overview.classList.contains('open')));
+    document.querySelector('#closeOverview').addEventListener('click', () => setOverview(false));
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape') setOverview(false);
+      if (overview.classList.contains('open')) return;
+      if (['ArrowRight', 'PageDown', ' '].includes(event.key)) { event.preventDefault(); show(current + 1); }
+      if (['ArrowLeft', 'PageUp'].includes(event.key)) { event.preventDefault(); show(current - 1); }
+      if (event.key === 'Home') { event.preventDefault(); show(0); }
+      if (event.key === 'End') { event.preventDefault(); show(slides.length - 1); }
+    });
+    show(0);
+  </script>
+</body>
+</html>

@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="GitHub Copilot Customization presentation covering agents, skills, instructions, prompts, hooks, and MCP servers.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='80' font-size='80'>🤖</text></svg>" />
+  <title>GitHub Copilot Customization</title>
+  <style>
+    :root { --ink:#17253d; --navy:#071a38; --blue:#1359b5; --cyan:#0d9db2; --teal:#118b83; --orange:#c66b1b; --paper:#f4f7fa; --white:#fff; --muted:#617086; --line:#d8e1eb; --display:"Segoe UI", Georgia, "Times New Roman", serif; --body:"Segoe UI Semibold", "Trebuchet MS", "Segoe UI", sans-serif; }
+    * { box-sizing:border-box; } html,body { min-height:100%; } body { margin:0; overflow:hidden; background:var(--paper); color:var(--ink); font-family:var(--body); } button { font:inherit; }
+    .deck { min-height:100vh; position:relative; isolation:isolate; background:radial-gradient(circle at 10% 12%, rgba(13,157,178,.12), transparent 23rem), radial-gradient(circle at 92% 88%, rgba(198,107,27,.09), transparent 22rem), var(--paper); }
+    .deck::before { content:""; position:fixed; inset:0; z-index:-1; pointer-events:none; opacity:.34; background-image:linear-gradient(rgba(23,37,61,.025) 1px, transparent 1px),linear-gradient(90deg, rgba(23,37,61,.025) 1px, transparent 1px); background-size:36px 36px; -webkit-mask-image:linear-gradient(to bottom, black, transparent 85%); mask-image:linear-gradient(to bottom, black, transparent 85%); }
+    .topbar { position:fixed; inset:0 0 auto; z-index:5; display:flex; justify-content:space-between; padding:18px clamp(20px,4vw,60px); color:var(--muted); font-size:11px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; } .brand { color:var(--navy); } .counter { font-variant-numeric:tabular-nums; }
+    .slides { min-height:100vh; position:relative; } .slide { display:none; width:min(1240px,100%); min-height:100vh; max-height:100vh; margin:0 auto; padding:clamp(74px,8vh,104px) clamp(24px,7vw,104px) 92px; overflow:hidden; animation:enter .45s ease both; } .slide.active,.slides:last-child { background:rgba(255,255,255,.58); display:flex; flex-direction:column; justify-content:center; }
+    @keyframes enter { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:none; } }
+    .eyebrow { color:var(--accent,var(--cyan)); font-size:12px; font-weight:900; letter-spacing:.17em; text-transform:uppercase; } .accent-blue { --accent:var(--blue); } .accent-cyan { --accent:var(--cyan); } .accent-teal { --accent:var(--teal); } .accent-orange { --accent:var(--orange); }
+    h1,h2,h3,p { margin-top:0; } h1,h2 { font-family:var(--display); font-weight:700; letter-spacing:-.025em; } h1 { max-width:950px; margin:14px 0 18px; color:var(--navy); font-size:clamp(42px,6.2vw,78px); line-height:.98; } h2 { max-width:900px; margin:11px 0 24px; color:var(--navy); font-size:clamp(32px,4.2vw,56px); line-height:1.02; } h3 { margin-bottom:8px; color:var(--navy); font-size:16px; line-height:1.15; } .lede { max-width:760px; color:#53677d; font-size:clamp(16px,1.7vw,21px); line-height:1.48; }
+    .date-line { margin-top:24px; color:var(--muted); font-size:13px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; } .title-mark { display:flex; gap:8px; margin-top:34px; } .title-mark span { width:58px; height:8px; border-radius:99px; } .title-mark span:nth-child(1){background:var(--blue)} .title-mark span:nth-child(2){background:var(--cyan)} .title-mark span:nth-child(3){background:var(--teal)} .title-mark span:nth-child(4){background:var(--orange)}
+    .welcome-slide { position:relative; justify-content:center; } .welcome-slide::after { content:""; position:absolute; width:min(42vw,520px); height:min(42vw,520px); right:-8%; bottom:-24%; border:1px solid rgba(19,89,181,.16); border-radius:50%; box-shadow:0 0 0 34px rgba(13,157,178,.04),0 0 0 68px rgba(198,107,27,.035); pointer-events:none; } .logo-lockup { display:block; width:min(220px,62vw); margin-bottom:15px; } .logo-lockup img { display:block; width:100%; height:auto; } .welcome-slide h1 { max-width:820px; margin-bottom:22px; font-size:clamp(46px,7vw,88px); } .welcome-slide .lede { max-width:700px; color:var(--blue); font-size:clamp(20px,2.2vw,29px); font-weight:700; letter-spacing:-.02em; } .welcome-meta { display:flex; flex-wrap:wrap; gap:10px; margin-top:30px; color:var(--muted); font-size:12px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; } .welcome-meta span { padding:9px 12px; border:1px solid var(--line); border-radius:99px; background:rgba(255,255,255,.7); }
+    .grid { display:grid; gap:12px; } .grid.two { grid-template-columns:repeat(2,1fr); } .grid.three { grid-template-columns:repeat(3,1fr); } .card { position:relative; padding:18px; border:1px solid var(--line); border-radius:12px; background:rgba(255,255,255,.84); box-shadow:0 7px 18px rgba(22,55,87,.05); } .card::before { content:""; display:block; width:30px; height:4px; margin-bottom:14px; border-radius:99px; background:var(--accent,var(--cyan)); } .card p,.card li { color:var(--muted); font-size:13px; line-height:1.42; } .card p { margin-bottom:0; } .card .topics { margin-top:11px; padding-top:10px; border-top:1px solid var(--line); color:var(--navy); font-size:12px; line-height:1.45; } .card .topics strong { color:var(--accent,var(--cyan)); } ul { margin:0; padding-left:17px; } li+li { margin-top:6px; }
+    .callout { margin-top:14px; padding:17px 20px; border-left:5px solid var(--accent,var(--cyan)); background:rgba(255,255,255,.72); color:var(--navy); font-size:16px; line-height:1.38; } .callout small { display:block; margin-top:9px; color:var(--muted); font-size:12px; }
+    .flow { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-top:6px; } .flow-item { min-height:150px; padding:15px; border-top:5px solid var(--accent); background:rgba(255,255,255,.84); box-shadow:0 9px 22px rgba(7,26,56,.08); } .flow-item h3 { margin-top:14px; } .flow-item p { color:var(--muted); font-size:12px; line-height:1.4; } .flow-number { color:var(--accent); font-family:var(--display); font-size:30px; line-height:1; }
+    .layers { display:grid; gap:8px; margin-top:4px; } .layer { display:grid; grid-template-columns:150px 1fr; gap:14px; align-items:center; padding:14px 16px; border-left:5px solid var(--accent); background:rgba(255,255,255,.84); } .layer strong { color:var(--accent); font-size:12px; letter-spacing:.08em; text-transform:uppercase; } .layer span { color:var(--muted); font-size:13px; line-height:1.35; }
+    .code { margin-top:4px; padding:17px 20px; border:1px solid #29445f; border-radius:10px; background:#0b2038; color:#d9f8f2; box-shadow:0 12px 24px rgba(7,26,56,.14); font-family:Consolas,"Courier New",monospace; font-size:13px; line-height:1.65; } .code .key { color:#5ed8ca; } .code .value { color:#f4c67e; } .code .comment { color:#8fa8bc; }
+    .resource-link { display:inline-block; margin-top:14px; color:var(--blue); font-size:12px; font-weight:900; text-decoration:none; } .resource-link:hover,.resource-link:focus-visible { color:var(--orange); text-decoration:underline; }
+    .controls { position:fixed; right:clamp(18px,4vw,60px); bottom:24px; z-index:6; display:flex; gap:8px; } .control,.overview-toggle { display:grid; place-items:center; min-width:38px; height:38px; padding:0 11px; border:1px solid #bfd0dd; border-radius:8px; background:rgba(255,255,255,.9); color:var(--navy); cursor:pointer; box-shadow:0 5px 18px rgba(22,55,87,.08); font-weight:900; } .control:hover,.control:focus-visible,.overview-toggle:hover,.overview-toggle:focus-visible { border-color:var(--cyan); color:var(--cyan); outline:none; } .control:disabled { cursor:not-allowed; opacity:.4; }
+    .progress { position:fixed; right:0; bottom:0; left:0; z-index:5; height:4px; background:#dfe8ef; } .progress span { display:block; height:100%; width:0; background:linear-gradient(90deg,var(--blue),var(--cyan),var(--teal),var(--orange)); transition:width .35s ease; }
+    .overview { position:fixed; inset:0; z-index:10; display:none; padding:8vh 7vw; overflow:auto; background:rgba(245,248,251,.96); -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); } .overview.open { display:block; animation:enter .25s ease both; } .overview-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:26px; } .overview h2 { margin:0; font-size:38px; } .thumbs { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px; } .thumb { min-height:120px; padding:16px; border:1px solid var(--line); border-top:5px solid var(--accent); background:var(--white); color:var(--navy); text-align:left; cursor:pointer; } .thumb:hover,.thumb:focus-visible { transform:translateY(-3px); box-shadow:0 12px 28px rgba(7,26,56,.09); outline:none; } .thumb small { display:block; margin-bottom:18px; color:var(--accent); font-weight:900; } .thumb strong { font-family:var(--display); font-size:18px; }
+    @media (max-width:800px) { .grid.two,.grid.three,.flow { grid-template-columns:1fr; } .flow-item { min-height:0; } h1 { font-size:clamp(40px,11vw,62px); } h2 { font-size:clamp(30px,8vw,46px); } .layer { grid-template-columns:1fr; gap:4px; } }
+    @media (max-height:800px) and (min-width:801px) { .slide { padding-top:68px; padding-bottom:82px; } h1 { font-size:clamp(40px,5.6vw,68px); } h2 { font-size:clamp(30px,3.8vw,48px); margin-bottom:18px; } .card { padding:15px; } .card::before { margin-bottom:10px; } .card p,.card li,.layer span { font-size:12px; } .callout { padding:13px 16px; font-size:14px; } .flow-item { min-height:132px; } }
+    @media (max-width: 520px) { .topbar { padding: 14px 18px; } .slide { min-height: 100dvh; height: 100dvh; max-height: none; padding: 72px 19px 94px; overflow-y: auto; } .card { padding: 16px; } .controls { right: 18px; bottom: 17px; } .lede { font-size: 16px; } .terminal { font-size: 11px; padding: 14px; } }
+    @media print { body { overflow:visible; background:white; } .deck { background:white; } .slide { display:flex !important; min-height:100vh; page-break-after:always; } .topbar,.controls,.progress,.overview { display:none !important; } }
+  </style>
+</head>
+<body>
+  <div class="deck">
+    <div class="topbar"><span class="brand">GitHub Copilot Customization</span><span class="counter" id="counter">01 / 14</span></div>
+    <main class="slides">
+      <section class="slide active welcome-slide accent-blue" data-title="Welcome">
+        <div class="logo-lockup"><img src="assets/images/GitHub_Copilot_Logo.png" alt="GitHub Copilot"></div>
+        <div class="eyebrow">Module 02 / Customization</div>
+        <h1>Customization</h1>
+        <p class="lede">Shape the context, behavior, tools, and boundaries that make Copilot useful for your team.</p>
+        <div class="title-mark"><span></span><span></span><span></span><span></span></div>
+        <div class="welcome-meta"><span>Context</span><span>Behavior</span><span>Tools</span><span>Governance</span></div>
+      </section>
+
+      <section class="slide accent-cyan" data-title="Introduction">
+        <div class="eyebrow">01 / Introduction</div>
+        <h2>Customization turns a general assistant into a team-aware collaborator.</h2>
+        <p class="lede">The goal is not to add configuration everywhere. It is to make important context repeatable, useful behavior discoverable, and permissions explicit.</p>
+        <div class="grid three">
+          <article class="card"><h3>Reduce repetition</h3><p>Capture conventions and recurring guidance once so every conversation starts closer to the team standard.</p></article>
+          <article class="card"><h3>Improve consistency</h3><p>Give Copilot stable instructions, reusable skills, and role-specific behaviors for common work.</p></article>
+          <article class="card"><h3>Extend carefully</h3><p>Connect tools and external systems only where the workflow benefits from controlled, reviewable access.</p></article>
+        </div>
+        <div class="callout"><strong>Customization outcome:</strong><small>the team can explain why Copilot behaves a certain way, where that behavior is defined, and how it should be changed.</small></div>
+        <div><a class="resource-link" href="Customization/resources/posters/GitHub%20Copilot%20Customization%20-%20Light%20-%20Landscape.png" target="_blank">GitHub Copilot Customization ↗</a> | <a class="resource-link" href="InaNutshell/GitHub Copilot Customization - In a Nutshell.html" target="_blank">GitHub Copilot Customization - In a Nutshell ↗</a></div>
+      </section>
+
+      <section class="slide accent-blue" data-title="Concepts">
+        <div class="eyebrow">02 / Concepts</div>
+        <h2>Customization is a context pipeline.</h2>
+        <div class="flow">
+          <article class="flow-item accent-cyan"><div class="flow-number">01</div><h3>Intent</h3><p>What outcome is the person or workflow trying to achieve?</p></article>
+          <article class="flow-item accent-blue"><div class="flow-number">02</div><h3>Guidance</h3><p>What rules, conventions, and reusable knowledge should shape the response?</p></article>
+          <article class="flow-item accent-teal"><div class="flow-number">03</div><h3>Capability</h3><p>What agent behavior, skill, or tool can help complete the work?</p></article>
+          <article class="flow-item accent-orange"><div class="flow-number">04</div><h3>Control</h3><p>What approvals, boundaries, and verification steps keep the workflow trustworthy?</p></article>
+        </div>
+        <div class="callout"><strong>Design principle:</strong><small>add the smallest customization that reliably improves the outcome. More configuration is not the same as better context.</small></div>
+        <div><a class="resource-link" href="Customization/resources/guides/copilot-customization-guide.html" target="_blank">Customization Guide ↗</a> | <a class="resource-link" href="Customization/resources/cheatsheets/github-copilot-customization-cheat-sheet.html" target="_blank">Customization Cheat Sheet ↗</a></div>
+      </section>
+
+      <section class="slide accent-teal" data-title="Customization architecture">
+        <div class="eyebrow">03 / Architecture</div>
+        <h2>Place guidance at the narrowest useful boundary.</h2>
+        <div class="layers">
+          <div class="layer accent-blue"><strong>Personal</strong><span>Prompts, preferences, and working notes that help one person move faster.</span></div>
+          <div class="layer accent-cyan"><strong>Repository</strong><span>Instructions and conventions that should travel with a codebase and apply to contributors.</span></div>
+          <div class="layer accent-teal"><strong>Workflow</strong><span>Skills, agents, hooks, and tools that implement a repeatable team activity.</span></div>
+          <div class="layer accent-orange"><strong>Organization</strong><span>Policies, security expectations, and shared standards that establish the quality boundary.</span></div>
+        </div>
+        <div class="callout"><strong>Placement test:</strong><small>if guidance is useful in one repository, keep it local; if it defines a shared policy, make the broader ownership visible.</small></div>
+        <div><a class="resource-link" href="Customization/resources/posters/GitHub%20Copilot%20Customization%20Placement%20-%20Light%20-%20Landscape.png" target="_blank">GitHub Copilot Customization Placement ↗</a> | <a class="resource-link" href="Customization/resources/posters/GitHub%20Copilot%20Customization%20Architecture%20-%20Light%20-%20Landscape.png" target="_blank">GitHub Copilot Customization Architecture ↗</a></div>
+      </section>
+
+      <section class="slide accent-orange" data-title="Agents">
+        <div class="eyebrow">04 / Agents</div>
+        <h2>Agents give Copilot a role, a mission, and a way to work.</h2>
+        <div class="grid three">
+          <article class="card"><h3>Role</h3><p>Define who the agent is for and what kind of expertise it brings to the task.</p></article>
+          <article class="card"><h3>Mission</h3><p>State the outcome, boundaries, expected artifacts, and conditions for success.</p></article>
+          <article class="card"><h3>Method</h3><p>Describe the workflow, tools, approvals, and verification steps the agent should follow.</p></article>
+        </div>
+        <div class="callout"><strong>A useful agent is opinionated:</strong><small>it narrows the work enough to produce consistent results without hiding important decisions from the person responsible.</small></div>
+        <div><a class="resource-link" href="Customization/resources/posters/GitHub%20Copilot%20Agents%20-%20Light%20-%20Landscape.png" target="_blank">GitHub Copilot Agents ↗</a> | <a class="resource-link" href="Customization/resources/exercises/github-copilot-customization-agents-lab-exercises.html" target="_blank">Agents Lab Exercises ↗</a> | <a class="resource-link" href="InaNutshell/GitHub Copilot Agents - In a Nutshell.html" target="_blank">GitHub Copilot Agents - In a Nutshell ↗</a></div>
+      </section>
+
+      <section class="slide accent-cyan" data-title="Skills">
+        <div class="eyebrow">05 / Skills</div>
+        <h2>Skills package repeatable expertise for a task.</h2>
+        <div class="grid two">
+          <article class="card"><h3>What a skill contains</h3><ul><li>A focused capability or procedure.</li><li>Inputs, outputs, and useful examples.</li><li>Quality checks and failure conditions.</li></ul></article>
+          <article class="card"><h3>When skills help</h3><ul><li>The task repeats across projects or people.</li><li>The process has domain-specific steps.</li><li>The result benefits from a consistent format.</li></ul></article>
+        </div>
+        <div class="callout"><strong>Keep skills composable:</strong><small>one skill should make one kind of work easier to invoke, understand, and verify rather than becoming a hidden handbook for everything.</small></div>
+        <div><a class="resource-link" href="Customization/resources/posters/GitHub%20Copilot%20Skills%20-%20Light%20-%20Landscape.png" target="_blank">GitHub Copilot Skills ↗</a> | <a class="resource-link" href="Customization/resources/guides/agent-skills-guide.html" target="_blank">Agent Skills Guide ↗</a> | <a class="resource-link" href="Customization/resources/exercises/github-copilot-customization-skills-lab-exercises.html" target="_blank">Skills Lab Exercises ↗</a> | <a class="resource-link" href="Customization/resources/posters/GitHub%20Copilot%20Prompts%20vs%20Instructions%20vs%20Skills%20-%20Light%20-%20Landscape.png" target="_blank">Prompts vs Instructions vs Skills ↗</a></div>
+      </section>
+
+      <section class="slide accent-blue" data-title="Instructions">
+        <div class="eyebrow">06 / Instructions</div>
+        <h2>Instructions are durable guidance for how Copilot should work here.</h2>
+        <div class="code"><div><span class="key">applyTo:</span> <span class="value">"**/*.ts"</span></div><div><span class="key">purpose:</span> <span class="value">"Keep service boundaries explicit."</span></div><div><span class="key">rules:</span></div><div>&nbsp; - Prefer existing repository helpers.</div><div>&nbsp; - Add tests for changed behavior.</div><div>&nbsp; - Do not expose secrets in logs.</div><div class="comment"># Guidance should be specific enough to act on.</div></div>
+        <div class="callout"><strong>Strong instructions are observable:</strong><small>someone reviewing the output can tell whether the guidance was followed and can locate the source when it was not.</small></div>
+        <div><a class="resource-link" href="Customization/resources/posters/GitHub%20Copilot%20Instructions%20-%20Light%20-%20Landscape.png" target="_blank">GitHub Copilot Instructions ↗</a> | <a class="resource-link" href="Customization/resources/exercises/github-copilot-customization-instructions-lab-exercises.html" target="_blank">Instructions Lab Exercises ↗</a> | <a class="resource-link" href="Customization/resources/posters/GitHub%20Copilot%20Prompts%20vs%20Instructions%20vs%20Skills%20-%20Light%20-%20Landscape.png" target="_blank">Prompts vs Instructions vs Skills ↗</a></div>
+      </section>
+
+      <section class="slide accent-teal" data-title="Prompts">
+        <div class="eyebrow">07 / Prompts</div>
+        <h2>Prompts are the live interface between intent and action.</h2>
+        <div class="grid three">
+          <article class="card"><h3>Frame</h3><p>Name the role, goal, audience, constraints, and relevant context.</p></article>
+          <article class="card"><h3>Sequence</h3><p>Ask for a plan, implementation, review, or explanation in the order that reduces uncertainty.</p></article>
+          <article class="card"><h3>Evaluate</h3><p>Request tests, assumptions, alternatives, and a clear statement of limitations.</p></article>
+        </div>
+        <div class="callout"><strong>Prompt engineering is interaction design:</strong><small>the best prompt is not the longest one. It is the one that makes the desired decision and evidence easy to produce.</small></div>
+        <div><a class="resource-link" href="Customization/resources/posters/GitHub%20Copilot%20Prompts%20-%20Light%20-%20Landscape.png" target="_blank">GitHub Copilot Prompts ↗</a> | <a class="resource-link" href="Customization/resources/exercises/github-copilot-customization-prompts-lab-exercises.html" target="_blank">Prompts Lab Exercises ↗</a> | <a class="resource-link" href="Customization/resources/posters/GitHub%20Copilot%20Prompts%20vs%20Instructions%20vs%20Skills%20-%20Light%20-%20Landscape.png" target="_blank">Prompts vs Instructions vs Skills ↗</a></div>
+      </section>
+
+      <section class="slide accent-orange" data-title="Hooks">
+        <div class="eyebrow">08 / Hooks</div>
+        <h2>Hooks make important workflow moments visible and enforceable.</h2>
+        <div class="grid three">
+          <article class="card"><h3>Before</h3><p>Validate inputs, permissions, context, or a proposed plan before work begins.</p></article>
+          <article class="card"><h3>During</h3><p>Observe tool use, capture state, or apply a controlled policy at a meaningful transition.</p></article>
+          <article class="card"><h3>After</h3><p>Run checks, summarize evidence, record telemetry, or request human review before completion.</p></article>
+        </div>
+        <div class="callout"><strong>Use hooks for guardrails, not decoration:</strong><small>an automated check should protect a real boundary, and its failure should tell the person what to do next.</small></div>
+        <div><a class="resource-link" href="Customization/resources/posters/GitHub%20Copilot%20Hooks%20-%20Light%20-%20Landscape.png" target="_blank">GitHub Copilot Hooks ↗</a> | <a class="resource-link" href="Customization/resources/guides/copilot-hooks-guide.html" target="_blank">Copilot Hooks Guide ↗</a> | <a class="resource-link" href="Customization/resources/exercises/github-copilot-customization-hooks-lab-exercises.html" target="_blank">Hooks Lab Exercises ↗</a></div>
+      </section>
+
+      <section class="slide accent-blue" data-title="Agent Debug Logs">
+        <div class="eyebrow">09 / Agent observability</div>
+        <h2>Agent Debug Logs turn an opaque run into an inspectable workflow.</h2>
+        <div class="grid three">
+          <article class="card"><h3>Trace the run</h3><p>Capture the session, prompt, context, tool calls, decisions, and returned results that shaped the outcome.</p></article>
+          <article class="card"><h3>Diagnose the gap</h3><p>Use the record to distinguish missing context, unclear instructions, tool failures, permission issues, and model behavior.</p></article>
+          <article class="card"><h3>Improve the system</h3><p>Turn recurring failures into better prompts, instructions, skills, hooks, tests, or tool contracts.</p></article>
+        </div>
+        <div class="callout"><strong>Debug logs are evidence, not a substitute for judgment:</strong><small>protect sensitive data, control access to session records, and use the trace to improve a reproducible workflow.</small></div>
+        <div><a class="resource-link" href="Customization/resources/guides/agent-observability-guide.html" target="_blank">Agent Observability Guide ↗</a> | <a class="resource-link" href="Customization/resources/posters/GitHub%20Copilot%20Agent%20Observability%20-%20Light%20-%20Landscape.png" target="_blank">GitHub Copilot Agent Observability ↗</a></div>
+      </section>
+
+      <section class="slide accent-cyan" data-title="MCP Servers">
+        <div class="eyebrow">10 / MCP servers</div>
+        <h2>Model Context Protocol gives tools a discoverable contract.</h2>
+        <div class="layers">
+          <div class="layer accent-blue"><strong>Client</strong><span>Copilot or an application decides when a tool is relevant and starts the interaction.</span></div>
+          <div class="layer accent-cyan"><strong>Server</strong><span>Publishes tools, resources, and prompts through a consistent protocol boundary.</span></div>
+          <div class="layer accent-teal"><strong>System</strong><span>Performs the approved operation against a repository, service, database, or other system.</span></div>
+          <div class="layer accent-orange"><strong>Approval</strong><span>Applies identity, permissions, data boundaries, confirmation, and audit expectations.</span></div>
+        </div>
+        <div class="callout"><strong>MCP is an integration boundary:</strong><small>treat every exposed tool as an API with a clear contract, least privilege, safe failure behavior, and an owner.</small></div>
+        <div><a class="resource-link" href="Customization/resources/posters/GitHub%20Copilot%20MCP%20Server%20-%20Light%20-%20Landscape.png" target="_blank">GitHub Copilot MCP Server ↗</a> | <a class="resource-link" href="Customization/resources/guides/mcp-server-guide.html" target="_blank">MCP Server Guide ↗</a> | <a class="resource-link" href="InaNutshell/Model%20Context%20Protocol%20-%20In%20a%20Nutshell.html" target="_blank">Model Context Protocol - In a Nutshell ↗</a></div>
+      </section>
+
+      <section class="slide accent-orange" data-title="Plugins">
+        <div class="eyebrow">11 / Plugins</div>
+        <h2>Plugins package capabilities so teams can extend Copilot consistently.</h2>
+        <div class="grid three">
+          <article class="card"><h3>Package</h3><p>Bundle agents, Skills, instructions, prompts, hooks, and tools around a recognizable workflow.</p></article>
+          <article class="card"><h3>Compose</h3><p>Combine reusable capabilities without forcing every project to rebuild the same integration from scratch.</p></article>
+          <article class="card"><h3>Govern</h3><p>Make ownership, permissions, dependencies, support expectations, and change review visible.</p></article>
+        </div>
+        <div class="callout"><strong>A plugin is a product boundary:</strong><small>give it a clear audience, a narrow purpose, documented setup, safe defaults, and a versioning or retirement plan.</small></div>
+        <div><a class="resource-link" href="Customization/resources/posters/GitHub%20Copilot%20Plugins%20and%20Integrations%20-%20Light%20-%20Landscape.png" target="_blank">GitHub Copilot Plugins and Integrations ↗</a> | <a class="resource-link" href="Customization/resources/exercises/github-copilot-customization-plugins-lab-exercises.html" target="_blank">Plugins Lab Exercises ↗</a></div>
+      </section>
+
+      <section class="slide accent-teal" data-title="Design and governance">
+        <div class="eyebrow">12 / Design and governance</div>
+        <h2>Customization should be easy to discover, safe to change, and simple to review.</h2>
+        <div class="grid three">
+          <article class="card"><h3>Discoverable</h3><p>Use clear names, ownership, scope, and documentation so people know when a customization applies.</p></article>
+          <article class="card"><h3>Testable</h3><p>Exercise the behavior with representative tasks and confirm that the output follows the intended guidance.</p></article>
+          <article class="card"><h3>Governed</h3><p>Define permissions, sensitive-data handling, change review, and rollback for tools and automation.</p></article>
+        </div>
+        <div class="callout"><strong>Quality bar:</strong><small>customization should reduce uncertainty for the team, not move complexity into a place nobody can see.</small></div>
+        <div><a class="resource-link" href="Customization/resources/posters/GitHub%20Copilot%20Customization%20Design%20and%20Governance%20-%20Light%20-%20Landscape.png" target="_blank">GitHub Copilot Customization Design and Governance ↗</a> | <a class="resource-link" href="Customization/resources/posters/GitHub%20Copilot%20Customization%20Placement%20-%20Light%20-%20Landscape.png" target="_blank">GitHub Copilot Customization Placement ↗</a></div>
+      </section>
+
+      <section class="slide accent-orange" data-title="Next steps">
+        <div class="eyebrow">13 / Next steps</div>
+        <h2>Start with one repeated workflow and make its context explicit.</h2>
+        <p class="lede">Choose a task the team performs often. Capture the guidance, test a small skill or instruction, add an agent only when the role is clear, and introduce tools or hooks when the boundary is worth governing.</p>
+        <div class="title-mark"><span></span><span></span><span></span><span></span></div>
+        <div class="date-line"><a class="next-link" href="github-copilot-ai-assisted-development.html">Next: AI-Assisted Development &rarr;</a></div>
+      </section>
+    </main>
+    <div class="controls"><button class="control" id="prev" type="button" aria-label="Previous slide" title="Previous slide">&larr;</button><button class="overview-toggle" id="overviewToggle" type="button" aria-expanded="false" aria-controls="overview">Contents</button><button class="control" id="next" type="button" aria-label="Next slide" title="Next slide">&rarr;</button></div>
+    <div class="progress" aria-hidden="true"><span id="progress"></span></div>
+    <aside class="overview" id="overview" aria-hidden="true"><div class="overview-head"><h2>Customization presentation</h2><button class="control" id="closeOverview" type="button" aria-label="Close overview">&times;</button></div><div class="thumbs" id="thumbs"></div></aside>
+  </div>
+  <script>
+    const slides = [...document.querySelectorAll('.slide')];
+    const counter = document.querySelector('#counter');
+    const progress = document.querySelector('#progress');
+    const overview = document.querySelector('#overview');
+    const overviewToggle = document.querySelector('#overviewToggle');
+    const thumbs = document.querySelector('#thumbs');
+    let current = 0;
+
+    function show(index) {
+      current = Math.max(0, Math.min(index, slides.length - 1));
+      slides.forEach((slide, slideIndex) => slide.classList.toggle('active', slideIndex === current));
+      counter.textContent = `${String(current + 1).padStart(2, '0')} / ${String(slides.length).padStart(2, '0')}`;
+      progress.style.width = `${((current + 1) / slides.length) * 100}%`;
+      document.querySelector('#prev').disabled = current === 0;
+      document.querySelector('#next').disabled = current === slides.length - 1;
+    }
+
+    function setOverview(open) {
+      overview.classList.toggle('open', open);
+      overview.setAttribute('aria-hidden', String(!open));
+      overviewToggle.setAttribute('aria-expanded', String(open));
+    }
+
+    slides.forEach((slide, index) => {
+      const thumb = document.createElement('button');
+      thumb.type = 'button';
+      thumb.className = `thumb ${slide.className.match(/accent-\w+/)?.[0] || 'accent-cyan'}`;
+      thumb.innerHTML = `<small>${String(index + 1).padStart(2, '0')}</small><strong>${slide.dataset.title}</strong>`;
+      thumb.addEventListener('click', () => { show(index); setOverview(false); });
+      thumbs.appendChild(thumb);
+    });
+
+    document.querySelector('#prev').addEventListener('click', () => show(current - 1));
+    document.querySelector('#next').addEventListener('click', () => show(current + 1));
+    overviewToggle.addEventListener('click', () => setOverview(!overview.classList.contains('open')));
+    document.querySelector('#closeOverview').addEventListener('click', () => setOverview(false));
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape') setOverview(false);
+      if (overview.classList.contains('open')) return;
+      if (['ArrowRight', 'PageDown', ' '].includes(event.key)) { event.preventDefault(); show(current + 1); }
+      if (['ArrowLeft', 'PageUp'].includes(event.key)) { event.preventDefault(); show(current - 1); }
+      if (event.key === 'Home') { event.preventDefault(); show(0); }
+      if (event.key === 'End') { event.preventDefault(); show(slides.length - 1); }
+    });
+    show(0);
+  </script>
+</body>
+</html>

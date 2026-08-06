@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI-Assisted Development Field Guide | MetLife Learning</title>
+<style>
+  :root {
+    --ink: #17212b;
+    --muted: #5f6f7d;
+    --paper: #f5f1e8;
+    --paper-deep: #e9e1d3;
+    --white: #fffdf8;
+    --navy: #102a43;
+    --blue: #1769aa;
+    --cyan: #0f9da8;
+    --coral: #e26d5a;
+    --gold: #d9a441;
+    --line: #d8d0c4;
+    --shadow: 0 18px 45px rgba(23, 33, 43, .10);
+    --display: Georgia, 'Times New Roman', serif;
+    --body: 'Trebuchet MS', 'Segoe UI', sans-serif;
+    --mono: 'Cascadia Code', Consolas, monospace;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--body); line-height: 1.6; }
+  a { color: inherit; }
+  .shell { display: grid; grid-template-columns: 260px minmax(0, 1fr); min-height: 100vh; }
+  .rail { position: sticky; top: 0; height: 100vh; overflow-y: auto; padding: 28px 20px; background: var(--navy); color: #d9e8f2; }
+  .rail-mark { color: #7ed6d1; font-size: 11px; font-weight: 800; letter-spacing: 1.8px; text-transform: uppercase; }
+  .rail h2 { margin: 8px 0 24px; color: #fffdf8; font: 700 24px/1.05 var(--display); }
+  .rail-label { margin: 25px 0 8px; color: #88a7ba; font-size: 10px; font-weight: 800; letter-spacing: 1.4px; text-transform: uppercase; }
+  .rail a { display: block; padding: 7px 9px; border-left: 2px solid transparent; color: #c4d6e0; font-size: 12px; text-decoration: none; }
+  .rail a:hover, .rail a:focus { border-left-color: #7ed6d1; background: rgba(255,255,255,.06); color: #fff; }
+  .rail-footer { margin-top: 30px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,.14); color: #88a7ba; font-size: 11px; }
+  main { min-width: 0; }
+  .content { width: min(1120px, calc(100% - 64px)); margin: 0 auto; padding: 48px 0 80px; }
+  .hero { position: relative; overflow: hidden; min-height: 390px; padding: 54px 58px; background: var(--navy); color: #fffdf8; box-shadow: var(--shadow); }
+  .hero::after { content: ''; position: absolute; width: 300px; height: 300px; right: -70px; bottom: -125px; border: 45px solid rgba(126,214,209,.32); border-radius: 50%; }
+  .hero::before { content: ''; position: absolute; width: 125px; height: 125px; right: 190px; top: -45px; border: 20px solid rgba(226,109,90,.6); transform: rotate(27deg); }
+  .eyebrow { position: relative; z-index: 1; color: #7ed6d1; font-size: 11px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; }
+  h1 { position: relative; z-index: 1; max-width: 740px; margin: 18px 0 18px; font: 700 clamp(44px, 7vw, 82px)/.95 var(--display); letter-spacing: -2px; }
+  .hero p { position: relative; z-index: 1; max-width: 660px; margin: 0; color: #d9e8f2; font-size: 17px; }
+  .hero-meta { position: relative; z-index: 1; display: flex; flex-wrap: wrap; gap: 10px; margin-top: 30px; }
+  .tag { display: inline-flex; padding: 7px 11px; border: 1px solid rgba(255,255,255,.22); color: #fffdf8; font-size: 11px; }
+  .section { margin-top: 34px; padding: 32px 36px; background: var(--white); border: 1px solid var(--line); box-shadow: 0 8px 26px rgba(23,33,43,.05); }
+  .section-head { display: flex; align-items: flex-start; gap: 18px; margin-bottom: 22px; }
+  .section-number { flex: 0 0 auto; color: var(--coral); font: 700 28px/1 var(--display); }
+  h2 { margin: 0; color: var(--navy); font: 700 30px/1.08 var(--display); }
+  h3 { margin: 25px 0 8px; color: var(--navy); font-size: 18px; }
+  h4 { margin: 18px 0 6px; color: var(--blue); font-size: 14px; letter-spacing: .3px; }
+  p { margin: 10px 0; }
+  .lede { color: var(--muted); font-size: 16px; }
+  .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+  .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .card { padding: 20px; background: #faf7f0; border: 1px solid var(--line); }
+  .card strong { display: block; margin-bottom: 5px; color: var(--navy); }
+  .card p { margin: 0; color: var(--muted); font-size: 14px; }
+  .callout { margin: 20px 0; padding: 17px 19px; border-left: 4px solid var(--cyan); background: #eaf6f4; }
+  .callout.warn { border-left-color: var(--coral); background: #fff0eb; }
+  .callout.gold { border-left-color: var(--gold); background: #fff8df; }
+  .callout strong { color: var(--navy); }
+  .flow { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: 22px 0; }
+  .flow-step { min-height: 108px; padding: 14px 12px; background: var(--navy); color: #fffdf8; }
+  .flow-step:nth-child(2), .flow-step:nth-child(4) { background: var(--blue); }
+  .flow-step:nth-child(3) { background: var(--cyan); }
+  .flow-step:nth-child(5) { background: var(--coral); }
+  .flow-step b { display: block; margin-bottom: 5px; color: #fff; font-size: 12px; }
+  .flow-step span { display: block; color: rgba(255,255,255,.86); font-size: 12px; }
+  .prompt { position: relative; margin: 14px 0; padding: 19px 21px; background: #142d41; color: #d9e8f2; font: 13px/1.7 var(--mono); white-space: pre-wrap; }
+  .prompt::before { content: 'PROMPT'; position: absolute; right: 14px; top: 10px; color: #7ed6d1; font: 800 9px var(--body); letter-spacing: 1px; }
+  .checklist { padding: 0; list-style: none; }
+  .checklist li { position: relative; padding: 7px 0 7px 28px; color: var(--muted); }
+  .checklist li::before { content: '□'; position: absolute; left: 0; color: var(--coral); font-size: 19px; line-height: 1.2; }
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { padding: 11px 12px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+  th { background: var(--navy); color: #fffdf8; font-size: 11px; letter-spacing: .5px; text-transform: uppercase; }
+  td { color: var(--muted); }
+  td:first-child { color: var(--navy); font-weight: 700; }
+  .lesson-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 26px; }
+  .lesson-nav a { padding: 7px 10px; border: 1px solid var(--line); color: var(--blue); font-size: 12px; text-decoration: none; }
+  .lesson-nav a:hover, .lesson-nav a:focus { border-color: var(--blue); background: #edf6fb; }
+  .source { margin-top: 34px; padding: 22px 26px; background: var(--paper-deep); color: var(--muted); font-size: 13px; }
+  .source a { color: var(--blue); font-weight: 700; }
+  .top { display: inline-block; margin-top: 18px; color: var(--blue); font-size: 12px; font-weight: 700; text-decoration: none; }
+  .reveal { animation: rise .65s ease both; }
+  @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+  @media (max-width: 850px) {
+    .shell { display: block; }
+    .rail { position: relative; height: auto; }
+    .rail nav { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2px 12px; }
+    .rail-label { grid-column: 1 / -1; }
+    .content { width: min(100% - 28px, 720px); padding-top: 20px; }
+    .hero { padding: 38px 28px; }
+    .section { padding: 26px 22px; }
+    .flow, .grid.three { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 560px) {
+    h1 { letter-spacing: -1px; }
+    .grid, .flow, .grid.three { grid-template-columns: 1fr; }
+    .hero { min-height: 0; }
+  }
+</style>
+</head>
+<body id="top">
+<div class="shell">
+  <aside class="rail">
+    <div class="rail-mark">MetLife Learning</div>
+    <h2>AI-Assisted Development<br>Field Guide</h2>
+    <nav aria-label="Guide sections">
+      <div class="rail-label">Start here</div>
+      <a href="#orientation">Orientation</a>
+      <a href="#map">Course map</a>
+      <div class="rail-label">The course</div>
+      <a href="#what">1. What is AI-assisted development?</a>
+      <a href="#process">2. The process</a>
+      <a href="#prompts">3. Effective prompts</a>
+      <a href="#requirements">4. Requirements and guidelines</a>
+      <a href="#customize">5. Customize Copilot</a>
+      <a href="#exercise">6. Agent exercise</a>
+      <a href="#assessment">7. Assessment</a>
+      <div class="rail-label">Apply it</div>
+      <a href="#playbook">Practical playbook</a>
+      <a href="#spec-bridge">Vibe to spec</a>
+    </nav>
+    <div class="rail-footer">Based on the Microsoft Learn module<br><strong>Introduction to AI-assisted development</strong></div>
+  </aside>
+
+  <main>
+    <div class="content">
+      <header class="hero reveal">
+        <div class="eyebrow">AI-Assisted Development &amp; Spec-Driven Development</div>
+        <h1>Make the idea visible.<br>Make the code answerable.</h1>
+        <p>A practical guide to the Microsoft Learn module <em>Introduction to AI-assisted development</em>, with a field-tested path from natural-language intent to a reviewed prototype and an increasingly durable specification.</p>
+        <div class="hero-meta">
+          <span class="tag">Beginner friendly</span>
+          <span class="tag">GitHub Copilot Agent</span>
+          <span class="tag">9 Microsoft Learn units</span>
+          <span class="tag">Prototype to production thinking</span>
+        </div>
+      </header>
+
+      <section class="section reveal" id="orientation">
+        <div class="section-head"><div class="section-number">00</div><div><h2>Orientation</h2><p class="lede">AI-Assisted Development changes where your effort goes. You spend less time typing every line and more time expressing intent, reviewing evidence, and steering the next iteration.</p></div></div>
+        <div class="callout"><strong>The operating principle:</strong> You bring the product idea and the judgment. Copilot helps translate the idea into artifacts, code, and alternatives. You remain responsible for deciding what is correct, secure, accessible, and worth keeping.</div>
+        <div class="grid three">
+          <div class="card"><strong>Describe</strong><p>State the desired experience, constraints, examples, and success conditions in natural language.</p></div>
+          <div class="card"><strong>Inspect</strong><p>Read the generated requirements, diagrams, code, and tests as proposed work, not as truth.</p></div>
+          <div class="card"><strong>Refine</strong><p>Use feedback, tests, and concrete corrections to move from an exciting first draft toward a dependable result.</p></div>
+        </div>
+      </section>
+
+      <section class="section reveal" id="map">
+        <div class="section-head"><div class="section-number">01</div><div><h2>Course map</h2><p class="lede">Use the original Microsoft Learn units as the source course. This guide is the working companion beside them.</p></div></div>
+        <div class="lesson-nav" aria-label="Microsoft Learn lesson links">
+          <a href="https://learn.microsoft.com/en-us/training/modules/introduction-vibe-coding/1-introduction" target="_blank" rel="noopener">Introduction</a>
+          <a href="https://learn.microsoft.com/en-us/training/modules/introduction-vibe-coding/2-what-vibe-coding" target="_blank" rel="noopener">What is AI-assisted development?</a>
+          <a href="https://learn.microsoft.com/en-us/training/modules/introduction-vibe-coding/3-examine-vibe-coding-process" target="_blank" rel="noopener">The process</a>
+          <a href="https://learn.microsoft.com/en-us/training/modules/introduction-vibe-coding/4-create-effective-prompts-github-copilot" target="_blank" rel="noopener">Effective prompts</a>
+          <a href="https://learn.microsoft.com/en-us/training/modules/introduction-vibe-coding/5-identify-product-requirements-guidelines" target="_blank" rel="noopener">Requirements</a>
+          <a href="https://learn.microsoft.com/en-us/training/modules/introduction-vibe-coding/6-customize-github-copilot-responses" target="_blank" rel="noopener">Customize Copilot</a>
+          <a href="https://learn.microsoft.com/en-us/training/modules/introduction-vibe-coding/7-exercise-get-started-vibe-coding-github-copilot" target="_blank" rel="noopener">Agent exercise</a>
+          <a href="https://learn.microsoft.com/en-us/training/modules/introduction-vibe-coding/8-knowledge-check" target="_blank" rel="noopener">Assessment</a>
+          <a href="https://learn.microsoft.com/en-us/training/modules/introduction-vibe-coding/9-summary" target="_blank" rel="noopener">Summary</a>
+        </div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Unit</th><th>What to learn</th><th>Leave with</th></tr></thead>
+          <tbody>
+            <tr><td>1. Introduction</td><td>AI-Assisted Development uses natural-language direction and AI-generated implementation.</td><td>A clear distinction between guiding, testing, and refining.</td></tr>
+            <tr><td>2. What is AI-assisted development?</td><td>Benefits, audiences, use cases, limitations, and risks.</td><td>A reasoned view of where the approach fits.</td></tr>
+            <tr><td>3. Examine the process</td><td>Envision and plan, prototype, then iterate.</td><td>A repeatable feedback loop.</td></tr>
+            <tr><td>4. Effective prompts</td><td>Context, examples, decomposition, clarity, iteration, and evaluation.</td><td>Prompts that make intent testable.</td></tr>
+            <tr><td>5. Requirements and guidelines</td><td>Vision, PRD, wireframes, coding standards, and quality constraints.</td><td>A north star for humans and AI.</td></tr>
+            <tr><td>6. Customize Copilot</td><td>Instructions, prompt files, settings, and chat modes.</td><td>A Copilot environment that knows your working rules.</td></tr>
+            <tr><td>7. Agent exercise</td><td>Build and refine a prototype e-commerce app.</td><td>Hands-on practice with the complete flow.</td></tr>
+            <tr><td>8. Assessment</td><td>Check understanding across all core concepts.</td><td>Evidence of what you can explain and apply.</td></tr>
+            <tr><td>9. Summary</td><td>Consolidate the approach and its application.</td><td>A personal next-step plan.</td></tr>
+          </tbody>
+        </table></div>
+      </section>
+
+      <section class="section reveal" id="what">
+        <div class="section-head"><div class="section-number">02</div><div><h2>What is AI-assisted development?</h2><p class="lede">The phrase describes a shift from line-by-line implementation toward product intent expressed through conversation with an AI coding tool.</p></div></div>
+        <div class="grid">
+          <div class="card"><strong>Where it helps</strong><p>Rapid prototypes, proof-of-concepts, feature exploration, refactoring, documentation, automation, and technology experiments.</p></div>
+          <div class="card"><strong>Who can use it</strong><p>Developers, product and business professionals, educators, engineers, and data scientists can use natural language to explore an idea.</p></div>
+          <div class="card"><strong>What it changes</strong><p>The developer's role expands from writing code to shaping intent, checking output, testing behavior, and making trade-offs visible.</p></div>
+          <div class="card"><strong>What it does not change</strong><p>Security, architecture, performance, maintainability, accessibility, and production accountability still require human judgment.</p></div>
+        </div>
+        <div class="callout warn"><strong>Risk boundary:</strong> AI-generated code may contain technical debt, weak error handling, security vulnerabilities, poor modularity, or missing tests. AI-Assisted Development accelerates decisions; it does not make decisions for you.</div>
+      </section>
+
+      <section class="section reveal" id="process">
+        <div class="section-head"><div class="section-number">03</div><div><h2>The AI-assisted development process</h2><p class="lede">Microsoft Learn frames the process as three overlapping phases. The overlap is useful: planning can continue while the prototype teaches you what the product actually needs.</p></div></div>
+        <div class="flow">
+          <div class="flow-step"><b>1. Envision</b><span>Clarify the problem, users, value, scope, platform, data, and risks.</span></div>
+          <div class="flow-step"><b>2. Plan</b><span>Create a PRD, user flows, wireframes, and quality guidelines.</span></div>
+          <div class="flow-step"><b>3. Prototype</b><span>Ask Agent to turn the intent into a working first version.</span></div>
+          <div class="flow-step"><b>4. Iterate</b><span>Add features, improve UI, connect data, test, refactor, and optimize.</span></div>
+          <div class="flow-step"><b>5. Reassess</b><span>Keep the idea, change the scope, or move to a more formal spec.</span></div>
+        </div>
+        <h3>The five-step feedback loop</h3>
+        <ol>
+          <li><strong>Prompt:</strong> describe the outcome, context, constraints, and examples.</li>
+          <li><strong>Suggestion:</strong> let Copilot propose code, files, tests, or a design.</li>
+          <li><strong>Review:</strong> compare the result with requirements, conventions, and risks.</li>
+          <li><strong>Refine:</strong> correct the prompt or the implementation with specific feedback.</li>
+          <li><strong>Repeat:</strong> keep the loop small enough that every change remains understandable.</li>
+        </ol>
+        <div class="callout gold"><strong>Protect flow without losing rigor:</strong> work in focused blocks, keep changes incremental, and validate each meaningful step. Momentum comes from short feedback cycles, not from accepting everything quickly.</div>
+      </section>
+
+      <section class="section reveal" id="prompts">
+        <div class="section-head"><div class="section-number">04</div><div><h2>Effective prompts</h2><p class="lede">A prompt is a natural-language instruction, question, or task description. The best prompts give Copilot enough signal to produce a result you can evaluate.</p></div></div>
+        <div class="grid">
+          <div class="card"><strong>Start general, then get specific</strong><p>State the goal first. Add behavior, constraints, edge cases, and implementation context after the goal is clear.</p></div>
+          <div class="card"><strong>Provide concrete examples</strong><p>Show sample inputs, expected outputs, user flows, error messages, or visual references.</p></div>
+          <div class="card"><strong>Break down complex work</strong><p>Split a large feature into smaller prompts that can be reviewed and tested independently.</p></div>
+          <div class="card"><strong>Eliminate ambiguity</strong><p>Name the file, function, component, bug, library, or behavior. Replace “fix this” with a verifiable request.</p></div>
+          <div class="card"><strong>Attach relevant context</strong><p>Open or attach the relevant files and symbols. Use references such as <code>#file</code> and <code>#selection</code>.</p></div>
+          <div class="card"><strong>Iterate deliberately</strong><p>Start a focused thread, refine with concrete feedback, and discard irrelevant conversation history.</p></div>
+        </div>
+        <h3>Prompt pattern</h3>
+        <div class="prompt">Goal: Add CSV export to the existing report page.
+
+Context: Use the current table component and the existing download helper. Keep the export client-side.
+
+Requirements:
+- Include the visible columns in their displayed order.
+- Escape commas, quotes, and line breaks correctly.
+- Preserve the current loading and error states.
+- Add unit tests for empty data and quoted values.
+
+Before editing, list the files you expect to change and any assumptions.</div>
+        <h3>Decide what to do with a suggestion</h3>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Action</th><th>Use it when</th></tr></thead>
+          <tbody><tr><td>Accept</td><td>It meets the requirements, follows local patterns, handles errors, and has an appropriate test story.</td></tr><tr><td>Reject</td><td>It solves a different problem, introduces security risk, uses deprecated APIs, or adds needless complexity.</td></tr><tr><td>Modify</td><td>The core idea is sound but needs a narrower scope, better names, additional validation, or a project-specific pattern.</td></tr></tbody>
+        </table></div>
+      </section>
+
+      <section class="section reveal" id="requirements">
+        <div class="section-head"><div class="section-number">05</div><div><h2>Requirements and coding guidelines</h2><p class="lede">Planning is not opposed to AI-assisted development. It gives the conversation a shared direction and reduces rework.</p></div></div>
+        <div class="grid three">
+          <div class="card"><strong>Product vision</strong><p>Problem, target audience, value, platform, MVP scope, technology, data, and security considerations.</p></div>
+          <div class="card"><strong>PRD</strong><p>Summary, audience, features, UI, navigation, sample data, technical requirements, use cases, and out-of-scope items.</p></div>
+          <div class="card"><strong>Wireframes</strong><p>Low-, medium-, or high-fidelity views that make layout, navigation, and user flow visible before implementation.</p></div>
+        </div>
+        <h3>MVP feature sorting</h3>
+        <div class="grid three"><div class="card"><strong>Must-have</strong><p>Without it, the product cannot demonstrate its core value.</p></div><div class="card"><strong>Should-have</strong><p>Important for usability, but not required for the first useful version.</p></div><div class="card"><strong>Could-have</strong><p>Valuable later, but a candidate for a future iteration.</p></div></div>
+        <h3>Guidelines worth making explicit</h3>
+        <ul class="checklist"><li>Code style: naming, formatting, documentation, and project patterns.</li><li>Security: input validation, authentication, authorization, secrets, and data protection.</li><li>Testing: unit, integration, accessibility, and user acceptance expectations.</li><li>Performance: response times, load behavior, and resource boundaries.</li><li>Accessibility: keyboard access, semantic structure, contrast, and inclusive interaction.</li></ul>
+        <div class="prompt">Suggest coding standards for a secure, accessible web app built with [framework]. Include formatting, testing, performance, accessibility, and security guidelines. Prefer the patterns already present in this repository. Return the result as a concise project instruction file.</div>
+      </section>
+
+      <section class="section reveal" id="customize">
+        <div class="section-head"><div class="section-number">06</div><div><h2>Customize Copilot</h2><p class="lede">Move stable context out of individual prompts and into reusable project configuration.</p></div></div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Mechanism</th><th>Best use</th><th>Key idea</th></tr></thead>
+          <tbody>
+            <tr><td><code>.github/copilot-instructions.md</code></td><td>Workspace-wide conventions</td><td>One shared file automatically included in relevant requests across editors.</td></tr>
+            <tr><td><code>*.instructions.md</code></td><td>Targeted guidance</td><td>Use <code>applyTo</code> patterns for language, framework, or file-specific rules.</td></tr>
+            <tr><td>Prompt files</td><td>Repeatable tasks</td><td>Reusable requests for PRDs, scaffolding, reviews, tests, or plans.</td></tr>
+            <tr><td>Settings instructions</td><td>Scenario-specific behavior</td><td>Configure code generation, testing, review, commits, and pull request descriptions.</td></tr>
+            <tr><td>Custom chat modes</td><td>Workflow boundaries</td><td>Separate planning, research, implementation, and review with different tool access.</td></tr>
+          </tbody>
+        </table></div>
+        <div class="callout warn"><strong>Avoid conflicting rules:</strong> keep instructions concise, organize them by topic, store shared guidance in version control, and target rules with file patterns where possible.</div>
+        <h3>Starter instruction file</h3>
+        <div class="prompt">---
+applyTo: "**"
+---
+# Project standards
+- Preserve existing architecture and public APIs unless the task requires a change.
+- Add or update tests for changed behavior.
+- Validate user input and never expose secrets in source or logs.
+- Follow the repository's naming, formatting, and error-handling patterns.
+- Explain assumptions before making cross-cutting changes.</div>
+      </section>
+
+      <section class="section reveal" id="exercise">
+        <div class="section-head"><div class="section-number">07</div><div><h2>The Agent exercise</h2><p class="lede">The Microsoft Learn exercise applies the complete method to a prototype e-commerce app: define requirements, create a prototype, and refine its design and functionality.</p></div></div>
+        <div class="grid">
+          <div class="card"><strong>Prepare</strong><p>Have an active GitHub account, Visual Studio Code, and access to GitHub Copilot. The exercise links to a public GitHub instruction page.</p></div>
+          <div class="card"><strong>Define</strong><p>Describe the product experience, audience, core features, navigation, sample data, styling, and constraints.</p></div>
+          <div class="card"><strong>Build</strong><p>Use Agent to turn requirements and wireframe direction into a working prototype with basic functionality and navigation.</p></div>
+          <div class="card"><strong>Refine</strong><p>Iterate on visual design, behavior, data integration, tests, quality, and edge cases. Return to the requirements when scope drifts.</p></div>
+        </div>
+        <div class="callout"><strong>Practice rule:</strong> ask Agent to explain the files it changed, review the diff, run the app, test the primary user flow, and make one focused improvement at a time.</div>
+        <p><a href="https://learn.microsoft.com/en-us/training/modules/introduction-vibe-coding/7-exercise-get-started-vibe-coding-github-copilot" target="_blank" rel="noopener">Open the full Microsoft Learn Agent exercise</a></p>
+      </section>
+
+      <section class="section reveal" id="assessment">
+        <div class="section-head"><div class="section-number">08</div><div><h2>Assessment checklist</h2><p class="lede">Use these prompts to test whether you can explain the module, not just recognize its vocabulary.</p></div></div>
+        <ul class="checklist">
+          <li>Can you explain how AI-assisted development differs from line-by-line coding?</li>
+          <li>Can you name the three phases: envision and plan, initial prototype, and iterative feature development?</li>
+          <li>Can you describe the Prompt, Suggestion, Review, Refine, Repeat feedback loop?</li>
+          <li>Can you improve a vague prompt by adding context, examples, constraints, and expected behavior?</li>
+          <li>Can you explain why a PRD and wireframe help both people and AI?</li>
+          <li>Can you distinguish custom instructions, prompt files, settings instructions, and chat modes?</li>
+          <li>Can you identify a case where AI output should be rejected rather than accepted?</li>
+          <li>Can you describe why production code still needs experienced review?</li>
+        </ul>
+        <p><a href="https://learn.microsoft.com/en-us/training/modules/introduction-vibe-coding/8-knowledge-check" target="_blank" rel="noopener">Take the official module assessment</a></p>
+      </section>
+
+      <section class="section reveal" id="playbook">
+        <div class="section-head"><div class="section-number">09</div><div><h2>A practical playbook</h2><p class="lede">Keep this sequence beside your next prototype session.</p></div></div>
+        <ol>
+          <li><strong>Frame the idea:</strong> write the problem, audience, value, and non-goals in plain language.</li>
+          <li><strong>Ask Copilot to question it:</strong> request missing assumptions, edge cases, risks, and a short product vision.</li>
+          <li><strong>Shape the MVP:</strong> sort features into must-have, should-have, and could-have.</li>
+          <li><strong>Visualize the experience:</strong> describe the primary user flow and generate a low-fidelity wireframe.</li>
+          <li><strong>Set the rules:</strong> define security, accessibility, testing, performance, and code-style expectations.</li>
+          <li><strong>Build the smallest prototype:</strong> ask Agent to implement the core flow and explain the file changes.</li>
+          <li><strong>Run the loop:</strong> prompt, inspect, review, refine, test, and repeat.</li>
+          <li><strong>Choose the next mode:</strong> continue exploring, or capture the validated behavior in a specification.</li>
+        </ol>
+      </section>
+
+      <section class="section reveal" id="spec-bridge">
+        <div class="section-head"><div class="section-number">10</div><div><h2>From vibe to spec</h2><p class="lede">AI-Assisted Development and spec-driven development are complementary. The prototype helps discover what matters; the specification makes the discovered behavior durable and traceable.</p></div></div>
+        <div class="grid three">
+          <div class="card"><strong>Capture</strong><p>Ask Copilot to extract the user-visible behaviors the prototype now supports.</p></div>
+          <div class="card"><strong>Clarify</strong><p>Convert assumptions and edge cases into explicit requirements, non-goals, and open questions.</p></div>
+          <div class="card"><strong>Trace</strong><p>Assign requirement IDs, acceptance criteria, implementation tasks, and tests.</p></div>
+        </div>
+        <div class="prompt">Review the current prototype and extract its functional requirements.
+
+For each requirement:
+- Assign a sequential REQ-ID.
+- Write Given/When/Then acceptance criteria.
+- Identify the relevant screen, API, component, or service.
+- List edge cases and security considerations.
+- Separate observed behavior from assumptions.
+
+Then list non-goals and open questions. Do not change code.</div>
+        <div class="callout gold"><strong>Decision point:</strong> stay in vibe mode while the product is changing rapidly. Move toward a specification when the behavior matters to other people, production reliability, security, compliance, or a long maintenance horizon.</div>
+      </section>
+
+      <div class="source">
+        <strong>Source and further study</strong><br>
+        This guide summarizes and organizes the public Microsoft Learn module <a href="https://learn.microsoft.com/en-us/training/modules/introduction-vibe-coding/" target="_blank" rel="noopener">Introduction to AI-assisted development</a>. Use the linked Microsoft Learn units for the complete instructional content, exercise launch, assessment, and current platform details. Content reviewed July 2026.
+        <br><a class="top" href="#top">Back to top</a>
+      </div>
+    </div>
+  </main>
+</div>
+</body>
+</html>

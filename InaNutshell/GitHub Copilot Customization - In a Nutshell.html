@@ -1,0 +1,3034 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='80' font-size='80'>🤖</text></svg>" />
+  <title>GitHub Copilot Customization - In a Nutshell</title>
+  <meta name="description" content="A comprehensive guide to Agile, Scrum, Kanban, and SAFe methodologies." />
+  <!-- Bootstrap CSS -->
+  <link href="assets/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    :root{
+      --bg: #ffffff;
+      --fg: #0f172a;
+      --muted: #64748b;
+      --accent: #3b82f6;
+      --accent-light: #dbeafe;
+      --border: #e2e8f0;
+      --sidebar-bg: #ffffff;
+      --sidebar-fg: #0f172a;
+      --code-bg: linear-gradient(90deg, rgba(59, 130, 246, 0.08) 0%, rgba(59, 130, 246, 0.12) 100%);
+      --focus: #10b981;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md: 0 4px 6px rgba(0,0,0,0.1), 0 2px 4px rgba(0,0,0,0.06);
+      --shadow-lg: 0 10px 20px rgba(0,0,0,0.12), 0 6px 6px rgba(0,0,0,0.08);
+      --gradient: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    }
+    
+    /* Bootstrap Gradient Utility Classes */
+    .bg-gradient-blue { background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%) !important; }
+    .bg-gradient-green { background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%) !important; }
+    .bg-gradient-yellow { background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%) !important; }
+    .bg-gradient-pink { background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%) !important; }
+    .bg-gradient-purple { background: linear-gradient(135deg, #e9d5ff 0%, #d8b4fe 100%) !important; }
+    .bg-gradient-teal { background: linear-gradient(135deg, #ccfbf1 0%, #99f6e4 100%) !important; }
+    .bg-gradient-blue-dark { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important; }
+    .bg-gradient-gray { background: linear-gradient(135deg, #64748b 0%, #475569 100%) !important; }
+    .bg-gradient-purple-dark { background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%) !important; }
+    .bg-gradient-teal-dark { background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%) !important; }
+    .bg-gradient-green-dark { background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important; }
+    .bg-gradient-red { background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%) !important; }
+    .bg-gradient-green-light { background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%) !important; }
+    .bg-gradient-blue-sky { background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%) !important; }
+    .bg-gradient-red-dark { background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%) !important; }
+    .bg-gradient-indigo { background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%) !important; }
+    .bg-gradient-green-medium { background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important; }
+    .bg-gradient-orange { background: linear-gradient(135deg, #f97316 0%, #ea580c 100%) !important; }
+    .bg-gradient-violet { background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%) !important; }
+    .bg-gradient-lime { background: linear-gradient(135deg, #84cc16 0%, #65a30d 100%) !important; }
+    .bg-gradient-sky { background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%) !important; }
+    
+    /* Apply theme colors to Bootstrap elements */
+    body { background-color: var(--bg); color: var(--fg); overflow: hidden; }
+    .navbar { background-color: var(--fg) !important; border-bottom: none !important; box-shadow: var(--shadow-md) !important; }
+    .navbar-brand { cursor: pointer; color: var(--bg) !important; font-weight: 600; letter-spacing: 0px; }
+    .navbar-toggler-icon { 
+      filter: invert(1);
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%2896, 165, 250, 0.9%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+    }
+    
+    .btn-outline-secondary { border-color: var(--border) !important; color: var(--fg) !important; }
+    .btn-outline-secondary:hover { background-color: var(--accent-light) !important; border-color: var(--accent) !important; color: var(--accent) !important; }
+    
+    /* Sidebar - Modern Design */
+    nav.sidebar { 
+      background: linear-gradient(180deg, #f3f4f6 0%, #e5e7eb 100%); 
+      border-right: 1px solid rgba(0, 0, 0, 0.05) !important;  
+      overflow-y: auto; 
+      box-shadow: 4px 0 16px rgba(0, 0, 0, 0.06);
+      padding-top: 0;
+    }
+    
+    .menu-header {  
+      background: linear-gradient(135deg, rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.1) 100%);
+      font-weight: bold; 
+      padding: 1.25rem 1.25rem; 
+      letter-spacing: 0px; 
+      font-size: 1.1rem;
+      position: relative;
+      overflow: hidden;
+      border: none;
+      border-bottom: 2px solid #a5aab3;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+      color: #0c346c;
+      text-shadow: none;
+      margin: 0;
+      text-transform: none;
+    }
+    .menu-header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+      transition: left 0.6s ease;
+    }
+    .menu-header:hover::before {
+      left: 100%;
+    }
+    .menu-header::after {
+      content: '📋';
+      position: absolute;
+      right: 1.5rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.3rem;
+      opacity: 0.9;
+      filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
+    }
+    
+    .toc { 
+      list-style: none; 
+      padding: 0rem 0; 
+      margin: 0; 
+      background: transparent;
+    }
+    .toc li { 
+      margin: 0; 
+    }
+    
+    /* Section grouping */
+    .toc li[data-group="overview"] { margin-bottom: 0.75rem; }
+    .toc li[data-group="solid"]:first-of-type { 
+      margin-top: 1rem; 
+      border-top: 2px solid rgba(59, 130, 246, 0.15);
+      padding-top: 1rem;
+    }
+    .toc li[data-group="other-principles"]:first-of-type { 
+      margin-top: 1rem; 
+      border-top: 2px solid rgba(16, 185, 129, 0.15);
+      padding-top: 1rem;
+    }
+    .toc li[data-group="resources"] { 
+      margin-top: 1rem; 
+      border-top: 2px solid rgba(100, 116, 139, 0.15);
+      padding-top: 1rem;
+    }
+    
+    .list-group-item { 
+      background: transparent; 
+      border-color: transparent; 
+      padding: 0; 
+      margin: 0.25rem 0.75rem; 
+      border-radius: 0rem;
+      transition: all 0.2s ease;
+    }
+    .list-group-item a { 
+      color: #1f2937; 
+      text-decoration: none; 
+      display: flex; 
+      flex-direction: column; 
+      align-items: flex-start; 
+      gap: 0.4rem; 
+      border-left: 3px solid transparent; 
+      padding: 0.85rem 1.25rem; 
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+      font-weight: 500; 
+      border-radius: 0rem;
+      font-size: 0.95rem;
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(90deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.1) 100%);
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+    .list-group-item a::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 4px;
+      background: linear-gradient(180deg, #3b82f6 0%, #2563eb 100%);
+      transform: scaleY(0);
+      transition: transform 0.3s ease;
+      border-radius: 0 0px 0px 0;
+    }
+    .list-group-item a::after {
+      content: '▶';
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%) scale(0.7);
+      font-size: 0.7rem;
+      color: #9ca3af;
+      opacity: 0;
+      transition: all 0.3s ease;
+    }
+    .list-group-item a:hover { 
+      background: linear-gradient(90deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.08) 100%); 
+      border-left-color: transparent;
+      color: #1e40af;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2), 0 2px 4px rgba(0, 0, 0, 0.08);
+      border-color: rgba(59, 130, 246, 0.2);
+      text-decoration: none;
+    }
+    .list-group-item a:hover::before {
+      transform: scaleY(1);
+    }
+    .list-group-item a:hover::after {
+      opacity: 1;
+      transform: translateY(-50%) scale(1);
+      color: #3b82f6;
+    }
+    .list-group-item a.active { 
+      background: linear-gradient(90deg, rgba(59, 130, 246, 0.22) 0%, rgba(59, 130, 246, 0.12) 100%); 
+      color: #1e40af; 
+      font-weight: 600; 
+      border-left-color: transparent;
+      box-shadow: 0 4px 16px rgba(59, 130, 246, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+      border-color: rgba(59, 130, 246, 0.3);
+    }
+    .list-group-item a.active::before {
+      transform: scaleY(1);
+      background: linear-gradient(180deg, #3b82f6 0%, #2563eb 100%);
+      width: 5px;
+      box-shadow: 0 0 8px rgba(59, 130, 246, 0.5);
+    }
+    .list-group-item a.active::after {
+      opacity: 1;
+      color: #2563eb;
+      transform: translateY(-50%) scale(1);
+    }
+    .list-group-item a.active:hover { 
+      background: linear-gradient(90deg, rgba(59, 130, 246, 0.28) 0%, rgba(59, 130, 246, 0.16) 100%); 
+      box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    }
+    
+    /* Sub-items tree connectors */
+    .list-group-sub-item a::before { 
+      content: '├─';
+      font-size: 0.85rem;
+      margin-right: 0.5rem;
+      color: #6b7280;
+      z-index: 1;
+      position: relative;
+    }
+    
+    /* Sub-items styling - similar to main items but smaller and indented */
+    .list-group-sub-item {
+      background: transparent; 
+      border-color: transparent; 
+      padding: 0px; 
+      margin: 0.2rem 0.75rem 0.2rem 1.5rem;
+      border-radius: 0rem;
+      transition: all 0.2s ease;
+      position: relative;
+      list-style-type: none;
+    }
+    .list-group-sub-item::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 4px;
+      background: linear-gradient(180deg, #3b82f6 0%, #2563eb 100%);
+      transform: scaleY(0);
+      transition: transform 0.3s ease;
+      border-radius: 0 0px 0px 0;
+      z-index: 1;
+    }
+    .list-group-sub-item a {
+      color: #1f2937; 
+      text-decoration: none; 
+      display: block;
+      border-left: 3px solid transparent; 
+      padding: 0.65rem 1rem 0.65rem 2.00rem;
+      transition: all 0.2s ease; 
+      font-weight: 500; 
+      border-radius: 0rem;
+      font-size: 0.8125rem;
+      line-height: 1.4;
+      position: relative;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.5);
+      border: 1px solid rgba(0, 0, 0, 0.04);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    }
+    
+    /* Sub-items hover and active states - same as main items */
+    .list-group-sub-item a::after {
+      content: '▶';
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%) scale(0.7);
+      font-size: 0.7rem;
+      color: #9ca3af;
+      opacity: 0;
+      transition: all 0.3s ease;
+    }
+    
+    .list-group-sub-item:hover::before {
+      transform: scaleY(1);
+    }
+    .list-group-sub-item a:hover { 
+      background: linear-gradient(90deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.08) 100%); 
+      border-left-color: transparent;
+      color: #1e40af;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2), 0 2px 4px rgba(0, 0, 0, 0.08);
+      border-color: rgba(59, 130, 246, 0.2);
+      text-decoration: none;
+    }
+    .list-group-sub-item a:hover::after {
+      opacity: 1;
+      transform: translateY(-50%) scale(1);
+      color: #3b82f6;
+    }
+    
+    .list-group-sub-item.active::before {
+      transform: scaleY(1);
+      width: 5px;
+      box-shadow: 0 0 8px rgba(59, 130, 246, 0.5);
+    }
+    .list-group-sub-item a.active { 
+      background: linear-gradient(90deg, rgba(59, 130, 246, 0.22) 0%, rgba(59, 130, 246, 0.12) 100%); 
+      color: #1e40af; 
+      font-weight: 600; 
+      border-left-color: transparent;
+      box-shadow: 0 4px 16px rgba(59, 130, 246, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+      border-color: rgba(59, 130, 246, 0.3);
+    }
+    .list-group-sub-item a.active::after {
+      opacity: 1;
+      color: #2563eb;
+      transform: translateY(-50%) scale(1);
+    }
+    .list-group-sub-item a.active:hover { 
+      background: linear-gradient(90deg, rgba(59, 130, 246, 0.28) 0%, rgba(59, 130, 246, 0.16) 100%); 
+      box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    }
+    
+    .list-group-item a::after {
+      content: '▶';
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%) scale(0.7);
+      font-size: 0.7rem;
+      color: #9ca3af;
+      opacity: 0;
+      transition: all 0.3s ease;
+    }
+    
+    .list-group-item a:hover { 
+      background: linear-gradient(90deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.08) 100%); 
+      border-left-color: transparent;
+      color: #1e40af;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2), 0 2px 4px rgba(0, 0, 0, 0.08);
+      border-color: rgba(59, 130, 246, 0.2);
+      text-decoration: none;
+    }
+    .list-group-item a:hover::before {
+      transform: scaleY(1);
+    }
+    .list-group-item a:hover::after {
+      opacity: 1;
+      transform: translateY(-50%) scale(1);
+      color: #3b82f6;
+    }
+    .list-group-item a.active { 
+      background: linear-gradient(90deg, rgba(59, 130, 246, 0.22) 0%, rgba(59, 130, 246, 0.12) 100%); 
+      color: #1e40af; 
+      font-weight: 600; 
+      border-left-color: transparent;
+      box-shadow: 0 4px 16px rgba(59, 130, 246, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+      border-color: rgba(59, 130, 246, 0.3);
+    }
+    .list-group-item a.active::after {
+      opacity: 1;
+      color: #2563eb;
+      transform: translateY(-50%) scale(1);
+    }
+    .list-group-item a.active:hover { 
+      background: linear-gradient(90deg, rgba(59, 130, 246, 0.28) 0%, rgba(59, 130, 246, 0.16) 100%); 
+      box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    }
+    
+    /* Badge styling */
+    .badge { font-size: 0.8rem; padding: 0.15rem 0.4rem; background: var(--accent-light); color: var(--accent); border: 1px solid var(--accent); font-weight: 600; border-radius: 0.25rem; font-style: normal; line-height: 1.2; opacity: 0.9; }
+    .badge { background: var(--accent); color: white; border: none; font-size: 0.6rem; padding: 0.25rem 0.5rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; display: inline-block; margin-top: 0.5rem; margin-right: 0.35rem; }
+    .list-group-item a:hover .badge { opacity: 1; background: var(--accent); color: white; }
+    .list-group-item a.active .badge { background: rgba(255, 255, 255, 0.3); color: white; border-color: rgba(255, 255, 255, 0.6); font-weight: 600; opacity: 1; }
+        
+    /* Content */
+    .content { width: 100%; max-width: 100%; margin: 0 auto; background: #ffffff; padding: 2rem; border-radius: 0.75rem; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); }
+    section { display: none !important; margin-bottom: 2rem; }
+    section.active { display: block !important; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    
+    h1 { font-size: 2rem; font-weight: 700; margin: 1rem 0 0.25rem 0; letter-spacing: -0.5px; color: var(--fg); display: block; border: none; }
+    h2 { font-size: 1.5rem; font-weight: 600; margin: 1.5rem 0 0.75rem 0; color: var(--fg); border-bottom: 2px solid var(--accent-light); padding-bottom: 0.5rem; }
+    h3 { font-size: 1.1rem; color: var(--accent); font-weight: 600; margin: 1rem 0 0.5rem 0; }
+    h4 { font-size: 0.8rem; color: var(--fg); font-weight: 600; margin: 0.75rem 0 0.4rem 0; }
+    p { margin: 1rem 0; line-height: 1.65; color: var(--fg); }
+    ul, ol { margin: 1rem 0; padding-left: 2rem; }
+    li { margin: 0.5rem 0; color: var(--fg); }
+    
+    code { background: var(--code-bg); border: 1px solid var(--border); padding: 0.2rem 0.5rem; font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', monospace; font-size: 0.9em; color: var(--accent); border-radius: 0.5rem; }
+    pre { background: var(--code-bg); border: 0px solid var(--border); padding: 1rem; border-radius: 0.5rem; overflow: auto; box-shadow: var(--shadow-sm); margin: 1rem 0; }
+    pre code { padding: 0; background: transparent; border: none; color: var(--fg); }
+    
+    .callout { border-left: 5px solid var(--accent); background: var(--accent-light); padding: 1rem 1.2rem; margin: 1.5rem 0; border-radius: 0.5rem; box-shadow: var(--shadow-sm); font-weight: 500; color: var(--fg); }
+    
+    /* Table styling */
+    .table { color: var(--fg); }
+    .table thead th { background: var(--accent-light); color: var(--accent); border-color: var(--border); font-weight: 600; }
+    .table tbody td { border-color: var(--border); }
+    .table-striped tbody tr:nth-of-type(odd) { background-color: rgba(0,0,0,0.02); }
+    .table-striped tbody tr:hover { background-color: var(--accent-light); }
+    
+    /* Controls/Pagination */
+    .controls { opacity: 0.5; position: fixed; bottom: 0.25rem; right: 1rem; width: auto; z-index: 1000; background: transparent; display: flex; align-items: center; justify-content: center; gap: 0rem; padding: 0; min-height: 40px; }
+    @media (max-width: 991px) {
+      .controls { bottom: 0.25rem; right: 1rem; }
+      .menu-header { color: var(--focus); }
+    }
+    .controls:hover { opacity: 1; }
+    
+    .page-indicator { color: var(--accent); font-weight: 600; font-size: 0.875rem; }
+    .btn-group .btn { margin: 0px 2px; padding: 0.2rem 0.5rem; background: var(--accent); color: white; border-color: var(--accent); font-size: 1rem; font-weight: bold; }
+    .btn-group .btn:hover { background: var(--accent); }
+    .btn-group .btn + .btn { margin-left: -1px; }
+    
+    /* Mobile/Offcanvas */
+    .offcanvas { background: var(--bg) !important; }
+    .offcanvas-header { border-bottom: 1px solid var(--border); }
+    .offcanvas-title { color: var(--fg); font-weight: 600; }
+    .btn-close { color: var(--fg); }
+    
+    /* Scrollbar */
+    nav.sidebar::-webkit-scrollbar { width: 6px; }
+    nav.sidebar::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.05); }
+    nav.sidebar::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.2); border-radius: 0px; }
+    nav.sidebar::-webkit-scrollbar-thumb:hover { background: rgba(0, 0, 0, 0.3); }
+    
+    /* Mermaid Diagrams */
+    .mermaid {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 0.5rem;
+      padding: 2rem;
+      margin: 1.5rem 0;
+      min-height: 400px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: visible;
+      position: relative;
+    }
+    .mermaid.rendered {
+      min-height: 0;
+    }
+    .mermaid svg {
+      max-width: 100%;
+      height: auto;
+      min-height: 300px;
+      transition: transform 0.3s ease;
+      transform-origin: center center;
+    }
+    .mermaid.zoomed {
+      overflow: auto;
+      cursor: grab;
+    }
+    .mermaid.zoomed:active {
+      cursor: grabbing;
+    }
+    .mermaid svg text {
+      font-size: 14px !important;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif !important;
+    }
+    
+    /* Mermaid title styling */
+    .mermaid svg text, .diagram-modal-content svg text {
+      font-size: 1rem !important;
+      font-weight: bold !important;
+      fill: var(--fg) !important;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif !important;
+    }
+
+    .mermaid svg *
+    {
+        color: #333;
+    }
+
+    .mermaid[data-processed="true"] {
+      min-height: 0;
+    }
+    
+    .mermaid svg {
+      max-width: 100%;
+      height: auto;
+      display: inline-block;
+    }
+    
+    /* Zoom controls */
+    .zoom-controls {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 10;
+      opacity: 0.5;
+      transition: opacity 0.3s ease;
+    }
+    .mermaid:hover .zoom-controls {
+      opacity: 1;
+    }
+    .zoom-btn {
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 0.25rem;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      transition: all 0.2s ease;
+    }
+    .zoom-btn:hover {
+      background: #2563eb;
+      transform: scale(1.1);
+    }
+
+    /* Modal for diagram zoom */
+    .diagram-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.95);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+    }
+    .diagram-modal.active {
+      display: flex;
+    }
+    .diagram-modal-content {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      background: white;
+      border-radius: 0;
+      padding: 3rem 3rem 3rem 3rem;
+      overflow: auto;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+    }
+    .diagram-modal-content svg {
+      max-width: 100%;
+      height: auto;
+    }
+    .modal-close {
+      position: fixed;
+      top: 1.5rem;
+      right: 1.5rem;
+      background: #ef4444;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+      transition: all 0.2s ease;
+      z-index: 10000;
+    }
+    .modal-close:hover {
+      background: #dc2626;
+      transform: scale(1.1);
+    }
+    .modal-zoom-controls {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      display: flex;
+      gap: 0.5rem;
+      z-index: 10000;
+      padding: 0rem;
+      border-radius: 0.4rem;
+    }
+    .modal-zoom-btn {
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 0.25rem;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      transition: all 0.2s ease;
+    }
+    .modal-zoom-btn:hover {
+      background: #2563eb;
+      transform: scale(1.1);
+    }
+    
+    /* Utilities */
+    .search { height: 0; overflow: hidden; padding: 0 !important; }
+    .search input { display: none; }
+    .min-vh-100 { min-height: 100vh; }
+    .skip-link { position: absolute; left: -9999px; top: auto; width: 1px; height: 1px; overflow: hidden; }
+    .skip-link:focus { position: static; width: auto; height: auto; padding: 0.4rem 0.6rem; background: var(--accent); color: white; border-radius: 0.4rem; }
+    
+    /* Override Bootstrap defaults for theme */
+    a { color: var(--accent); }
+    a:hover { color: var(--accent); text-decoration: underline; }
+    
+    /* Responsive - keep sidebar visible on desktop, offcanvas on mobile */
+    @media (max-width: 991px) {
+      nav.sidebar { display: none; }
+      #main { width: 100%; }
+      .row { --bs-gutter-x: 0; }
+    }
+    
+    /* Layout - prevent unnecessary scrolling */
+    html, body { height: 100%; margin: 0; }
+    #appContainer { display: flex; flex-direction: column; height: calc(100vh - 50px); }
+    #mainRow { flex: 1; overflow: hidden; display: flex; }
+    nav.sidebar { overflow-y: auto; max-height: 100%; position: relative; padding-bottom: 0px; }
+    #main { overflow: hidden; display: flex; flex-direction: column; height: 100%; -webkit-tap-highlight-color: transparent; outline: none; border: none; }
+    #main:focus { outline: none; }
+    .content { overflow-y: auto; flex: 1; width: 100%; min-height: 0; padding: 0rem 1.5rem 0rem 1.5rem; }
+    
+    /* Contact Info */
+    .contact-info {
+      font-weight: 400 !important;
+      padding: 0.5rem 0.75rem;
+      font-size: 0.75rem;
+      color: var(--accent-light);
+      margin: 0;
+      opacity: 0.5;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+    .contact-info:hover {
+      opacity: 0.9;
+      text-decoration: none;
+    }
+    @media (max-width: 991px) {
+      .navbar-brand {
+        font-size: 1rem !important;
+        flex: 1;
+      }
+      .contact-info {
+        font-size: 0.7rem;
+        padding: 0.25rem 0.5rem;
+      }
+    }
+    @media (max-width: 576px) {
+      .navbar-brand {
+        font-size: 0.9rem !important;
+      }
+      .contact-info {
+        font-size: 0.65rem;
+        padding: 0.2rem 0.4rem;
+      }
+    }
+
+    .list-style-none {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    /* JSON Syntax Highlighting */
+    pre code.language-json {
+      display: block;
+      white-space: pre;
+      font-family: 'Cascadia Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+    }
+
+    pre code.language-json .json-key {
+      color: #0451a5;
+      font-weight: 500;
+    }
+
+    pre code.language-json .json-string {
+      color: #a31515;
+    }
+
+    pre code.language-json .json-number {
+      color: #098658;
+    }
+
+    pre code.language-json .json-boolean {
+      color: #0000ff;
+      font-weight: 600;
+    }
+
+    pre code.language-json .json-null {
+      color: #0000ff;
+      font-weight: 600;
+    }
+
+    pre code.language-json .json-punctuation {
+      color: #333;
+    }
+
+    /* SQL Syntax Highlighting */
+    pre code.language-sql {
+      display: block;
+      white-space: pre;
+      font-family: 'Cascadia Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+    }
+
+    pre code.language-sql .sql-keyword {
+      color: #0000ff;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    pre code.language-sql .sql-string {
+      color: #a31515;
+    }
+
+    pre code.language-sql .sql-number {
+      color: #098658;
+    }
+
+    pre code.language-sql .sql-comment {
+      color: #008000;
+      font-style: italic;
+    }
+
+    pre code.language-sql .sql-function {
+      color: #795e26;
+      font-weight: 500;
+    }
+
+    pre code.language-sql .sql-operator {
+      color: #666;
+      font-weight: 500;
+    }
+
+    /* Language Label for Code Blocks */
+    pre[data-language]::before {
+      content: attr(data-language);
+      position: absolute;
+      top: 8px;
+      right: 12px;
+      font-size: 0.75em;
+      color: #6a737d;
+      text-transform: uppercase;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      background: var(--bg);
+      padding: 0.2rem 0.5rem;
+      border-radius: 0.25rem;
+      border: 1px solid var(--border);
+    }
+
+    /* Enhanced pre/code styling for syntax highlighted blocks */
+    pre.syntax-highlighted {
+      position: relative;
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      padding: 1.5rem 1rem 1rem 1rem;
+      border-radius: 0.5rem;
+      overflow-x: auto;
+      box-shadow: var(--shadow-sm);
+      margin: 1rem 0;
+    }
+
+    pre.syntax-highlighted code {
+      background: transparent;
+      padding: 0;
+      border: none;
+      color: var(--fg);
+      font-size: 0.875rem;
+      line-height: 1.6;
+    }
+
+    ul
+    {
+        list-style-type: none;
+    }
+  /* Document Footer */
+    .document-footer {
+      text-align: center;
+      padding: 20px;
+      background-color: #f8f9fa;
+      border-radius: 8px;
+      margin-top: 20px;
+    }
+    .document-footer p {
+      margin: 0;
+      font-size: 14px;
+      color: #6c757d;
+      line-height: 1.6;
+    }
+    .document-footer strong {
+      color: #495057;
+    }  
+  </style>
+  <!-- Mermaid.js for diagrams -->
+  <script src="assets/scripts/mermaid.min.js"></script>
+  <script>
+    // Initialize Mermaid with proper configuration
+    document.addEventListener('DOMContentLoaded', function() {
+
+      mermaid.initialize({
+        startOnLoad: false,
+        theme: 'base',
+        securityLevel: 'loose',
+        logLevel: 'error',
+        fontFamily: 'Segoe UI Semibold',
+        fontSize: '18px',
+        flowchart: {
+          useMaxWidth: true,
+          htmlLabels: true,
+          curve: 'basis',
+        },
+        sequence: {
+          useMaxWidth: false,
+          htmlLabels: true,
+          diagramMarginX: 50,
+          diagramMarginY: 10
+        }
+      });
+      
+      // Render all diagrams
+      renderMermaidDiagrams();
+    });
+    
+    async function renderMermaidDiagrams() {
+      const diagrams = document.querySelectorAll('.mermaid');
+      
+      for (let i = 0; i < diagrams.length; i++) {
+        const diagram = diagrams[i];
+        const code = diagram.textContent.trim();
+        
+        // Store original code
+        if (!diagram.hasAttribute('data-original-code')) {
+          diagram.setAttribute('data-original-code', code);
+        }
+        
+        try {
+          const { svg } = await mermaid.render('mermaid-diagram-' + i, code);
+          diagram.innerHTML = svg;
+          diagram.setAttribute('data-processed', 'true');
+          
+          // Add zoom controls
+          addZoomControls(diagram);
+        } catch (error) {
+          console.error('Mermaid rendering error for diagram ' + i + ':', error);
+          diagram.innerHTML = '<div style="color: red; padding: 1rem; border: 2px solid red; border-radius: 0.5rem;">Error rendering diagram: ' + error.message + '</div>';
+        }
+      }
+    }
+    
+    // Add zoom controls to mermaid diagrams
+    function addZoomControls(diagram) {
+      const controls = document.createElement('div');
+      controls.className = 'zoom-controls';
+      controls.innerHTML = `
+        <button class="zoom-btn" data-action="expand" title="Expand View">⛶</button>
+      `;
+      
+      diagram.style.position = 'relative';
+      diagram.insertBefore(controls, diagram.firstChild);
+      
+      // Expand to modal
+      controls.addEventListener('click', (e) => {
+        const btn = e.target.closest('.zoom-btn');
+        if (!btn) return;
+        
+        openDiagramModal(diagram);
+      });
+    }
+
+    // Open diagram in modal
+    function openDiagramModal(diagram) {
+      // Create modal if it doesn't exist
+      let modal = document.getElementById('diagram-modal');
+      if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'diagram-modal';
+        modal.className = 'diagram-modal';
+        modal.innerHTML = `
+          <button class="modal-close" id="modal-close">×</button>
+          <div class="diagram-modal-content" id="modal-diagram-content"></div>
+          <div class="modal-zoom-controls">
+            <button class="modal-zoom-btn" data-action="zoom-in" title="Zoom In">+</button>
+            <button class="modal-zoom-btn" data-action="zoom-out" title="Zoom Out">−</button>
+            <button class="modal-zoom-btn" data-action="reset" title="Reset Zoom">⟲</button>
+          </div>
+        `;
+        document.body.appendChild(modal);
+        
+        // Close modal handlers
+        modal.querySelector('#modal-close').addEventListener('click', closeDiagramModal);
+        modal.addEventListener('click', (e) => {
+          if (e.target === modal) closeDiagramModal();
+        });
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && modal.classList.contains('active')) {
+            closeDiagramModal();
+          }
+        });
+        
+        // Zoom controls in modal
+        let scale = 1;
+        let translateX = 0;
+        let translateY = 0;
+        
+        modal.querySelector('.modal-zoom-controls').addEventListener('click', (e) => {
+          const btn = e.target.closest('.modal-zoom-btn');
+          if (!btn) return;
+          
+          const action = btn.dataset.action;
+          const svg = modal.querySelector('svg');
+          if (!svg) return;
+          
+          if (action === 'zoom-in') {
+            scale = Math.min(scale + 0.1, 5);
+          } else if (action === 'zoom-out') {
+            scale = Math.max(scale - 0.1, 0.5);
+          } else if (action === 'reset') {
+            scale = 1;
+            translateX = 0;
+            translateY = 0;
+          }
+          
+          svg.style.transform = `scale(${scale}) translate(${translateX / scale}px, ${translateY / scale}px)`;
+        });
+      }
+      
+      // Clone diagram content
+      const svg = diagram.querySelector('svg');
+      if (svg) {
+        const content = modal.querySelector('#modal-diagram-content');
+        content.innerHTML = '';
+        const clonedSvg = svg.cloneNode(true);
+        clonedSvg.style.transform = 'scale(1)';
+        clonedSvg.style.maxWidth = '100%';
+        clonedSvg.style.height = 'auto';
+        content.appendChild(clonedSvg);
+      }
+      
+      modal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeDiagramModal() {
+      const modal = document.getElementById('diagram-modal');
+      if (modal) {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    }
+    
+    // Re-render on theme change
+    window.rerenderMermaid = async function() {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      
+      mermaid.initialize({
+        startOnLoad: false,
+        theme: isDark ? 'base' : 'base',
+        securityLevel: 'loose',
+        flowchart: {
+          useMaxWidth: true,
+          htmlLabels: true,
+          curve: 'basis',
+        },
+        sequence: {
+          useMaxWidth: false,
+          htmlLabels: true,
+          diagramMarginX: 50,
+          diagramMarginY: 10
+        }
+      });
+      
+      const diagrams = document.querySelectorAll('.mermaid[data-processed="true"]');
+      for (let i = 0; i < diagrams.length; i++) {
+        const diagram = diagrams[i];
+        const code = diagram.getAttribute('data-original-code');
+        
+        if (code) {
+          try {
+            const { svg } = await mermaid.render('mermaid-diagram-rerender-' + i + '-' + Date.now(), code);
+            diagram.innerHTML = svg;
+          } catch (error) {
+            console.error('Mermaid re-rendering error:', error);
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg sticky-top" aria-label="Top bar">
+    <div class="container-fluid d-flex align-items-center">
+      <button class="navbar-toggler me-2" id="toggleSidebar" type="button" aria-label="Toggle sidebar">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <span class="navbar-brand mb-0 h1 me-auto">🤖 GitHub Copilot Customization - In a Nutshell</span>
+      <span class="contact-info mb-0">🤝 Curated by Murthy Vepa</span>
+    </div>      
+  </nav>
+
+  <div id="appContainer">
+    <div class="row g-0" id="mainRow">
+      <nav class="col-lg-3 border-end sidebar" id="sidebar" aria-label="Table of contents">
+        <div class="menu-header py-2">Contents</div>
+        <ul class="list-group list-group-flush toc" id="toc"></ul>
+      </nav>
+
+      <main id="main" class="col-lg-9 d-flex flex-column" tabindex="-1">
+        <div class="content" id="content">
+        <section id="github-copilot-customization-introduction" role="article">
+          <h1>📖 Overview</h1>
+          <span class="badge">intro</span>
+          <span class="badge">overview</span>
+
+          <p>GitHub Copilot Customization lets you tailor how Copilot behaves in your projects — shaping agents, skills, instructions, prompts, hooks, tools, and integrations so Copilot works the way your team does.</p>
+
+          <div class="callout">
+            💡 Customizations can be scoped <strong>per-workspace</strong> (shared with your team via source control) or <strong>per-user</strong> (personal preferences that follow you across projects).
+          </div>
+
+          <h2>Why Customize Copilot?</h2>
+          <ul>
+            <li><strong>Consistency</strong> — encode team conventions once, so every suggestion and chat response follows the same standards.</li>
+            <li><strong>Context</strong> — give Copilot domain knowledge it can't infer from code alone (architecture, business rules, tooling).</li>
+            <li><strong>Reusability</strong> — package common workflows as prompts and skills instead of re-explaining them each session.</li>
+            <li><strong>Automation</strong> — trigger actions automatically with hooks when files are saved, tasks run, or events occur.</li>
+            <li><strong>Extensibility</strong> — connect external tools and data sources through MCP servers and plugins.</li>
+          </ul>
+
+          <h2>The Building Blocks</h2>
+          <table class="table table-striped">
+            <thead>
+              <tr><th>Building Block</th><th>Purpose</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>🤖 Agents</td><td>Custom personas with specialized instructions and scoped tool access for specific tasks.</td></tr>
+              <tr><td>💡 Skills</td><td>Reusable, domain-specific knowledge and workflows that Copilot can discover and invoke.</td></tr>
+              <tr><td>📘 Instructions</td><td>Always-on guidance that steers AI behavior across a workspace or user profile.</td></tr>
+              <tr><td>🔖 Prompts</td><td>Reusable, parameterized prompt templates for repeatable tasks.</td></tr>
+              <tr><td>⚡ Hooks</td><td>Automated actions triggered by events such as saving a file or running a task.</td></tr>
+              <tr><td>🔌 MCP Servers</td><td>External tool servers that extend Copilot with custom tools and data sources.</td></tr>
+              <tr><td>🧩 Plugins</td><td>Installable extensions that add tools, skills, and integrations to Copilot.</td></tr>
+            </tbody>
+          </table>
+
+          <h2>Where Customizations Live</h2>
+          <p>Most customizations are Markdown files with YAML frontmatter, stored either in your workspace (e.g. <code>.github/</code>) for team-shared behavior, or in your user profile for personal defaults that apply across all projects.</p>
+        </section>
+
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+
+        <section id="agents-overview" role="article">
+          <h1>🤖 Agents</h1>
+          <span class="badge">agents</span>
+          <span class="badge">personas</span>
+
+          <p>A <strong>custom agent</strong> is a specialized Copilot persona with its own instructions, tool access, and mode of operation. Instead of relying on the default assistant, you can define agents purpose-built for a role — a code reviewer, a security auditor, a deployment planner, a database migration expert — each with the exact knowledge and permissions it needs.</p>
+
+          <div class="callout">
+            🎯 Agents are ideal when a task needs a <strong>consistent persona</strong> across many invocations — e.g. "always review PRs the same way" or "always plan Azure deployments with the same checklist."
+          </div>
+
+          <h2>Why Use Custom Agents?</h2>
+          <ul>
+            <li><strong>Specialization</strong> — a narrow, well-defined persona produces more focused and predictable output than a general-purpose assistant.</li>
+            <li><strong>Safety</strong> — scoping tool access limits blast radius; a docs agent can't accidentally run destructive terminal commands.</li>
+            <li><strong>Repeatability</strong> — the same review checklist, deployment steps, or migration process runs identically every time it's invoked.</li>
+            <li><strong>Discoverability</strong> — agents show up in the chat agent picker with a name and description, so teammates can find and reuse them.</li>
+            <li><strong>Composability</strong> — agents can call subagents for parallelizable or isolated work, building multi-agent workflows.</li>
+          </ul>
+
+          <h2>What Makes Up an Agent</h2>
+          <ul>
+            <li><strong>Name &amp; description</strong> — identifies the agent and when it should be used (shown in the agent picker).</li>
+            <li><strong>Instructions</strong> — the persona's behavior, tone, responsibilities, and step-by-step process.</li>
+            <li><strong>Tool access</strong> — the specific tools/functions the agent is allowed to call.</li>
+            <li><strong>Argument hint</strong> — guidance shown to the user on what input the agent expects.</li>
+            <li><strong>Model preference</strong> (optional) — some platforms let an agent request a specific model tier for its workload.</li>
+          </ul>
+
+          <h2>Common Agent Archetypes</h2>
+          <table class="table table-striped">
+            <thead>
+              <tr><th>Archetype</th><th>Typical Responsibility</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>🔍 Reviewer</td><td>Reviews PRs/diffs for style, security, and correctness against team standards.</td></tr>
+              <tr><td>🧪 Tester</td><td>Writes and runs unit/integration tests, reports coverage gaps.</td></tr>
+              <tr><td>🚀 Deployer</td><td>Plans and executes infrastructure/deployment changes with guardrails.</td></tr>
+              <tr><td>📚 Documenter</td><td>Generates or updates docs, READMEs, and changelogs from code changes.</td></tr>
+              <tr><td>🛡️ Security Auditor</td><td>Scans for vulnerabilities and OWASP Top 10 issues, suggests fixes.</td></tr>
+              <tr><td>🧭 Explorer</td><td>Read-only research and codebase Q&amp;A, safe to call in parallel.</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="agents-definition" role="article">
+          <h2>Agent Definition</h2>
+
+          <p>Custom agents are defined in <code>.agent.md</code> files with YAML frontmatter followed by Markdown instructions — similar to instructions files, but scoped to a single persona.</p>
+
+          <pre class="syntax-highlighted" data-language="markdown"><code>---
+name: code-reviewer
+description: Reviews pull requests for style, security, and correctness.
+tools: ['codebase', 'search', 'runTests']
+argument-hint: Paste a diff or PR link to review
+---
+
+You are a meticulous code reviewer. For every change:
+1. Check for security issues (OWASP Top 10).
+2. Verify tests cover the new behavior.
+3. Flag style inconsistencies with project conventions.
+4. Summarize findings as a short bullet list, ordered by severity.
+</code></pre>
+
+          <h3>Common Frontmatter Fields</h3>
+          <table class="table table-striped">
+            <thead>
+              <tr><th>Field</th><th>Purpose</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><code>name</code></td><td>Unique identifier used to invoke the agent.</td></tr>
+              <tr><td><code>description</code></td><td>Shown in the agent picker; helps users and orchestrators pick the right agent.</td></tr>
+              <tr><td><code>tools</code></td><td>Allow-list of tools/functions the agent may call.</td></tr>
+              <tr><td><code>argument-hint</code></td><td>Placeholder text guiding what input to supply.</td></tr>
+              <tr><td>Body (Markdown)</td><td>The system instructions defining persona, process, and constraints.</td></tr>
+            </tbody>
+          </table>
+
+          <h3>Where Agent Files Live</h3>
+          <ul>
+            <li><strong>Workspace-scoped</strong> — <code>.github/agents/*.agent.md</code>, committed to source control and shared with the team.</li>
+            <li><strong>User-scoped</strong> — stored in the user profile, following you across every project you open.</li>
+          </ul>
+
+          <h3>Invoking an Agent in Chat</h3>
+          <p>Once an <code>.agent.md</code> file is in scope, the agent appears in the chat participant picker. Reference it with the <code>@</code> prefix followed by its <code>name</code> field:</p>
+          <pre class="syntax-highlighted" data-language="bash"><code># In the Copilot Chat input:
+@code-reviewer Please review the changes in src/auth/
+
+# With the optional argument-hint text filled in:
+@code-reviewer https://github.com/org/repo/pull/42</code></pre>
+          <p>You can also type <code>@</code> in the chat input to open the agent picker and browse all available agents.</p>
+
+          <h3>Model Selection</h3>
+          <p>By default, agents use whatever model is active in the Copilot Chat session. You can optionally pin a specific model in the frontmatter — useful when a task consistently needs a reasoning-capable model vs. a fast one:</p>
+          <pre class="syntax-highlighted" data-language="markdown"><code>---
+name: security-auditor
+description: Deep-dives into code for security vulnerabilities — OWASP Top 10 and CWE.
+model: gpt-4o          # Pin to a specific model for this agent
+tools: ['codebase', 'search']
+---</code></pre>
+          <p>Check your Copilot subscription plan — some models (e.g. o3, Claude Sonnet) are only available on Copilot Enterprise or Business plans.</p>
+
+          <div class="callout">
+            📝 Keep agent instructions focused on <em>one</em> responsibility. If an agent's instructions try to cover too many concerns, split it into multiple agents that can be composed together.
+          </div>
+        </section>
+
+        <section id="agents-tools-access" role="article">
+          <h2>Tool Access &amp; Permissions</h2>
+
+          <p>Each agent declares the tools it's allowed to use via the <code>tools</code> frontmatter field. This scopes the agent's capabilities — a documentation agent might only get read/search tools, while a deployment agent might get terminal and cloud provider tools.</p>
+
+          <div class="callout">
+            🔒 Least-privilege by default: an agent can only call the tools explicitly listed. This prevents an agent designed for one purpose from taking unintended actions.
+          </div>
+
+          <h3>Tool Categories</h3>
+          <table class="table table-striped">
+            <thead>
+              <tr><th>Category</th><th>Examples</th><th>Risk Level</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Read-only</td><td>File search, semantic search, reading files, listing directories</td><td>🟢 Low</td></tr>
+              <tr><td>Write</td><td>File edits, creating files, renaming symbols</td><td>🟡 Medium</td></tr>
+              <tr><td>Execution</td><td>Terminal commands, running tests/builds</td><td>🟠 Medium-High</td></tr>
+              <tr><td>Integration</td><td>MCP servers, cloud provider tools (Azure, GitHub), databases</td><td>🔴 High</td></tr>
+            </tbody>
+          </table>
+
+          <h3>Design Guidance</h3>
+          <ul>
+            <li>Start with the smallest tool set that lets the agent complete its job, then expand only if needed.</li>
+            <li>Separate read-only "explorer" agents from write-capable "implementer" agents so research never accidentally mutates code.</li>
+            <li>For destructive or hard-to-reverse actions (deletes, force-pushes, infra teardown), require explicit user confirmation even if the tool is technically available.</li>
+            <li>Review an agent's tool list periodically as your toolset grows — unused permissions should be removed.</li>
+          </ul>
+        </section>
+
+        <section id="agents-builtin-vs-custom" role="article">
+          <h2>Built-in vs Custom Agents</h2>
+
+          <table class="table table-striped">
+            <thead>
+              <tr><th>Aspect</th><th>Built-in Agent</th><th>Custom Agent</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Source</td><td>Shipped with Copilot (e.g. default chat agent, Explore)</td><td>Defined by the user/team in <code>.agent.md</code></td></tr>
+              <tr><td>Behavior</td><td>General-purpose, broad knowledge</td><td>Tailored to a specific task or domain</td></tr>
+              <tr><td>Tool access</td><td>Full default toolset</td><td>Explicitly scoped subset</td></tr>
+              <tr><td>Portability</td><td>Always available, no setup</td><td>Shared via source control or user profile</td></tr>
+              <tr><td>Maintenance</td><td>Maintained by the platform vendor</td><td>Maintained by your team; can go stale if not reviewed</td></tr>
+              <tr><td>Best for</td><td>Everyday coding assistance, ad-hoc questions</td><td>Repeatable workflows with guardrails (review, deploy, migrate)</td></tr>
+            </tbody>
+          </table>
+
+          <h3>Choosing Between Them</h3>
+          <ul>
+            <li>Use the <strong>default/built-in agent</strong> for general coding help, exploratory questions, and one-off tasks.</li>
+            <li>Reach for a <strong>custom agent</strong> when a task recurs often enough to justify codifying the process, or when you need to restrict what actions are possible.</li>
+            <li>Combine both: a custom orchestrator agent can delegate research to a built-in explorer subagent, then hand off implementation to a specialized coder agent.</li>
+          </ul>
+
+          <p>Use built-in agents for everyday coding assistance, and reach for custom agents when you need repeatable, specialized workflows with guardrails on tool access.</p>
+        </section>
+
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+
+        <section id="skills-overview" role="article">
+          <h1>💡 Skills</h1>
+          <span class="badge">skills</span>
+          <span class="badge">knowledge</span>
+          <span class="badge">agentskills.io</span>
+
+          <p><strong>Agent Skills</strong> are a lightweight, open format for extending an AI agent's capabilities with specialized, reusable knowledge and workflows. A skill is simply a folder containing a <code>SKILL.md</code> file with metadata and instructions — optionally bundled with scripts, reference docs, and templates the agent can pull in as needed.</p>
+
+          <div class="callout">
+            🎯 Skills package <strong>procedural knowledge</strong> — company, team, or domain-specific know-how — into portable, version-controlled folders that any skills-compatible agent can load on demand.
+          </div>
+
+          <h2>Why Skills Exist</h2>
+          <p>Agents are increasingly capable, but they often lack the specific context needed to do real work reliably. Skills solve this by turning tribal knowledge into structured, reusable instructions:</p>
+          <ul>
+            <li><strong>Domain expertise</strong> — capture specialized knowledge (legal review, data pipelines, deployment runbooks) as instructions and resources instead of re-explaining it every session.</li>
+            <li><strong>Repeatable workflows</strong> — turn multi-step tasks into consistent, auditable procedures anyone on the team can trigger.</li>
+            <li><strong>Cross-product reuse</strong> — Agent Skills is an <em>open standard</em>; build a skill once and use it across any compatible client (GitHub Copilot, Claude, Cursor, Gemini CLI, and dozens more).</li>
+            <li><strong>Small context footprint</strong> — unlike stuffing everything into one instructions file, skills load lazily so an agent can keep hundreds on hand without bloating every prompt.</li>
+          </ul>
+
+          <h2>Skills vs Agents vs Instructions</h2>
+          <table class="table table-striped">
+            <thead>
+              <tr><th>Mechanism</th><th>Answers</th><th>Loaded</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Instructions</td><td>"How should <em>all</em> code in this repo be written?"</td><td>Always, for matching files</td></tr>
+              <tr><td>Agent</td><td>"Who is doing the work, and what can they touch?"</td><td>When that persona is invoked</td></tr>
+              <tr><td>Skill</td><td>"How do I perform <em>this specific</em> task?"</td><td>On demand, only when relevant</td></tr>
+            </tbody>
+          </table>
+          <p>Any agent — built-in or custom — can invoke a matching skill mid-task. Skills are the reusable "how-to" library that agents draw from.</p>
+
+          <h2>Example Skill Categories</h2>
+          <table class="table table-striped">
+            <thead>
+              <tr><th>Category</th><th>Example Skills</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Document processing</td><td>PDF extraction/merging, spreadsheet generation, slide-deck formatting</td></tr>
+              <tr><td>Cloud &amp; DevOps</td><td>Provisioning checklists, deployment runbooks, IaC scaffolding conventions</td></tr>
+              <tr><td>Data &amp; analytics</td><td>ETL pipeline patterns, SQL query guidelines, dashboard build steps</td></tr>
+              <tr><td>Compliance &amp; review</td><td>Legal contract review, security audit checklists, accessibility review</td></tr>
+              <tr><td>Team conventions</td><td>Company style guides, commit message formats, release-note templates</td></tr>
+            </tbody>
+          </table>
+
+          <h2>Skills vs MCP Servers</h2>
+          <p>Skills and <a href="#mcp-overview">MCP servers</a> solve different problems and are often used together:</p>
+          <ul>
+            <li><strong>MCP servers</strong> expose live <em>capabilities</em> — new tools/functions the agent can call (query a database, hit an API).</li>
+            <li><strong>Skills</strong> package <em>knowledge</em> about how to use those capabilities correctly — which query patterns to prefer, what edge cases to check, how to format the result.</li>
+            <li>A skill's <code>allowed-tools</code> field can reference MCP-provided tools directly, tying the "how" to the "what."</li>
+          </ul>
+
+          <div class="callout">
+            🧩 Think of MCP servers as adding new hands to the agent, and skills as the training manual for using those hands well.
+          </div>
+        </section>
+
+        <section id="skills-structure" role="article">
+          <h2>SKILL Structure</h2>
+
+          <p>Every skill lives in its own directory, matching its <code>name</code>, with a required <code>SKILL.md</code> at the root:</p>
+
+          <pre class="syntax-highlighted" data-language="markdown"><code>pdf-processing/
+├── SKILL.md          # Required: metadata + instructions
+├── scripts/          # Optional: executable code (Python, Bash, JS...)
+├── references/       # Optional: detailed docs loaded on demand
+├── assets/           # Optional: templates, images, data files
+└── ...               # Any additional files or directories</code></pre>
+
+          <h3>SKILL.md Frontmatter</h3>
+          <table class="table table-striped">
+            <thead>
+              <tr><th>Field</th><th>Required</th><th>Constraints</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><code>name</code></td><td>Yes</td><td>1–64 chars; lowercase letters, digits, hyphens only; no leading/trailing/double hyphens; must match the folder name.</td></tr>
+              <tr><td><code>description</code></td><td>Yes</td><td>1–1024 chars; states <em>what</em> the skill does and <em>when</em> to use it — this is what agents match against.</td></tr>
+              <tr><td><code>license</code></td><td>No</td><td>License name or reference to a bundled license file.</td></tr>
+              <tr><td><code>compatibility</code></td><td>No</td><td>Max 500 chars; environment requirements (e.g. "Requires git, docker, jq").</td></tr>
+              <tr><td><code>metadata</code></td><td>No</td><td>Free-form string key/value map for client-specific extensions (e.g. author, version).</td></tr>
+              <tr><td><code>allowed-tools</code></td><td>No</td><td>Space-separated, pre-approved tools (experimental; e.g. <code>Bash(git:*) Read</code>).</td></tr>
+            </tbody>
+          </table>
+
+          <pre class="syntax-highlighted" data-language="markdown"><code>---
+name: pdf-processing
+description: Extracts text and tables from PDF files, fills PDF forms, and merges multiple PDFs. Use when working with PDF documents or when the user mentions PDFs, forms, or document extraction.
+license: Apache-2.0
+metadata:
+  author: example-org
+  version: "1.0"
+---
+
+## Instructions
+1. Identify the requested operation (extract, fill, merge).
+2. Run the matching script in scripts/ with the input file path.
+3. Report the output file location and a summary of what changed.</code></pre>
+
+          <div class="callout">
+            ✍️ Write a <strong>specific</strong> description with concrete keywords ("PDFs, forms, document extraction"), not a vague one like "Helps with PDFs." Vague descriptions make skills harder for agents to match correctly.
+          </div>
+
+          <h3>Optional Directories</h3>
+          <ul>
+            <li><strong><code>scripts/</code></strong> — self-contained executable code the agent can run; should include clear error messages and handle edge cases.</li>
+            <li><strong><code>references/</code></strong> — deeper documentation (e.g. <code>REFERENCE.md</code>, <code>FORMS.md</code>) loaded only when the task needs that level of detail.</li>
+            <li><strong><code>assets/</code></strong> — templates, images, schemas, or other static resources the skill's instructions point to.</li>
+          </ul>
+
+          <div class="callout">
+            📏 Keep <code>SKILL.md</code> under ~500 lines (ideally &lt;5,000 tokens). Move deep detail into <code>references/</code> files linked with relative paths, one level deep, so context stays small until it's actually needed.
+          </div>
+
+          <h3>Naming Rules — Valid vs Invalid</h3>
+          <table class="table table-striped">
+            <thead>
+              <tr><th>Example</th><th>Valid?</th><th>Reason</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><code>pdf-processing</code></td><td>✅</td><td>Lowercase, hyphen-separated, matches folder name.</td></tr>
+              <tr><td><code>data-analysis</code></td><td>✅</td><td>Simple, descriptive, no special characters.</td></tr>
+              <tr><td><code>PDF-Processing</code></td><td>❌</td><td>Uppercase letters are not allowed.</td></tr>
+              <tr><td><code>-pdf</code></td><td>❌</td><td>Cannot start with a hyphen.</td></tr>
+              <tr><td><code>pdf--processing</code></td><td>❌</td><td>Consecutive hyphens are not allowed.</td></tr>
+            </tbody>
+          </table>
+
+          <h3>File References</h3>
+          <p>When a skill's instructions need to point at bundled files, use relative paths and keep the reference chain shallow:</p>
+          <pre class="syntax-highlighted" data-language="markdown"><code>See [the reference guide](references/REFERENCE.md) for details.
+
+Run the extraction script:
+scripts/extract.py</code></pre>
+          <p>Avoid deeply nested reference chains (a reference file pointing to another reference file pointing to another) — keep everything one hop from <code>SKILL.md</code> so the agent doesn't have to chase a trail of links.</p>
+
+          <h3>Writing Effective Instructions</h3>
+          <ul>
+            <li>Lead with <strong>step-by-step instructions</strong> written as an ordered list — agents follow procedures more reliably than prose.</li>
+            <li>Include <strong>examples of inputs and outputs</strong> so the agent can pattern-match expected results.</li>
+            <li>Call out <strong>common edge cases</strong> and how to handle them (missing files, malformed input, empty results).</li>
+            <li>Prefer concrete, imperative language ("Run X, then check Y") over abstract advice ("Be careful with X").</li>
+          </ul>
+        </section>
+
+        <section id="skills-discovery" role="article">
+          <h2>Skill Discovery &amp; Invocation</h2>
+
+          <p>Skills load through <strong>progressive disclosure</strong> — agents only pull in as much detail as a task actually requires, in three stages:</p>
+
+          <ol>
+            <li><strong>Discovery</strong> — at startup, the agent loads only each skill's <code>name</code> and <code>description</code> (~100 tokens each), just enough to know when it might be relevant.</li>
+            <li><strong>Activation</strong> — when a task matches a skill's description, the agent reads the full <code>SKILL.md</code> body into context.</li>
+            <li><strong>Execution</strong> — the agent follows the instructions, optionally running bundled scripts or loading referenced files as needed.</li>
+          </ol>
+
+          <div class="callout">
+            💡 This is why the <code>description</code> field matters so much: it's the <em>only</em> thing evaluated against every incoming task before a skill is activated. A precise description with the right trigger keywords is the difference between a skill being found and being ignored.
+          </div>
+
+          <h3>Where Skills Live</h3>
+          <ul>
+            <li><strong>Workspace-scoped</strong> — bundled with a repository so the whole team gets the same skill automatically.</li>
+            <li><strong>User-scoped</strong> — installed in a personal profile/toolbox, following the user across projects.</li>
+            <li><strong>Shared/marketplace</strong> — since the format is open, skills can be published and pulled into any compatible client without modification.</li>
+          </ul>
+
+          <h3>Ecosystem</h3>
+          <p>Agent Skills was originally developed by Anthropic and released as an open standard; it's now supported by a wide range of agentic tools — GitHub Copilot, VS Code, Claude Code, Cursor, Gemini CLI, OpenAI Codex, Goose, OpenCode, and many more — so a skill written once can be reused across whichever client a team member prefers.</p>
+
+          <div class="callout">
+            🔧 Validate a skill before sharing it with the <code>skills-ref</code> reference tool: <code>skills-ref validate ./my-skill</code> — it checks frontmatter validity and naming conventions.
+          </div>
+
+          <h3>How Matching Works in Practice</h3>
+          <ul>
+            <li>The agent compares the user's request against every available skill's <code>description</code> — not its name or body — to decide relevance.</li>
+            <li>Multiple skills can match; a well-behaved agent picks the most specific one, or asks for clarification if the choice is ambiguous.</li>
+            <li>If no skill's description is a good match, the agent falls back to general reasoning instead of forcing a poor fit.</li>
+            <li>Skills don't need to be manually invoked by name — good descriptions make them trigger naturally from everyday phrasing.</li>
+          </ul>
+
+          <h3>Testing a New Skill</h3>
+          <ol>
+            <li>Run <code>skills-ref validate</code> to confirm frontmatter and folder naming are correct.</li>
+            <li>Ask the agent a realistic question that should trigger the skill, using the same words a real user would.</li>
+            <li>Confirm the full <code>SKILL.md</code> was loaded (not just the metadata) and the agent followed the documented steps.</li>
+            <li>Try a near-miss request that should <em>not</em> trigger the skill, to check the description isn't too broad.</li>
+          </ol>
+
+          <h3>Common Pitfalls</h3>
+          <ul>
+            <li><strong>Vague descriptions</strong> — "Helps with data" matches almost everything or nothing; be specific about scope and trigger keywords.</li>
+            <li><strong>Overloaded skills</strong> — one skill trying to cover too many unrelated tasks; split into focused, single-purpose skills instead.</li>
+            <li><strong>Bloated SKILL.md</strong> — burying instructions in a huge file wastes context; move detail into <code>references/</code>.</li>
+            <li><strong>Undocumented scripts</strong> — bundled scripts with no usage notes force the agent to guess arguments; document expected inputs/outputs.</li>
+          </ul>
+        </section>
+
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+
+        <section id="instructions-overview" role="article">
+          <h1>📘 Instructions</h1>
+          <span class="badge">instructions</span>
+          <span class="badge">guidance</span>
+
+          <p><strong>Instructions</strong> are standing guidance that Copilot automatically applies to every relevant request — repo-wide conventions, coding standards, and house rules that shouldn't need to be repeated in every prompt. Unlike agents (a persona) or skills (a task-specific how-to), instructions are always-on context that shapes <em>every</em> response for matching files.</p>
+
+          <div class="callout">
+            🎯 Use instructions for things you'd otherwise say in every single chat message — "use tabs not spaces," "always add null checks," "never use <code>any</code> in TypeScript." Say it once, apply it everywhere.
+          </div>
+
+          <h2>Two Flavors of Instructions</h2>
+          <table class="table table-striped">
+            <thead>
+              <tr><th>File</th><th>Scope</th><th>When It Applies</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><code>.github/copilot-instructions.md</code></td><td>Whole repository</td><td>Always, for every Copilot request in this workspace</td></tr>
+              <tr><td><code>*.instructions.md</code></td><td>Targeted file patterns</td><td>Only when the active/edited file matches its <code>applyTo</code> glob</td></tr>
+            </tbody>
+          </table>
+
+          <h2>Instructions vs Agents vs Skills</h2>
+          <ul>
+            <li><strong>Instructions</strong> — passive, always-considered background rules ("how code should look").</li>
+            <li><strong>Agents</strong> — active personas you invoke for a role ("who is doing the work").</li>
+            <li><strong>Skills</strong> — on-demand how-to knowledge for a specific task ("how to do this one thing").</li>
+          </ul>
+          <p>They compose together: an agent can be bound by repo-wide instructions while also pulling in a skill mid-task.</p>
+        </section>
+
+        <section id="instructions-copilot-instructions" role="article">
+          <h2>copilot-instructions.md</h2>
+
+          <p>Placed at <code>.github/copilot-instructions.md</code>, this file is the single most impactful customization for a repo — its content is automatically included as context for every chat request and inline suggestion in that workspace, with no <code>applyTo</code> matching required.</p>
+
+          <pre class="syntax-highlighted" data-language="markdown"><code># Copilot Instructions
+
+This is a .NET 8 Web API with a React frontend.
+
+## Conventions
+- Use dependency injection; no static service locators.
+- Controllers stay thin — business logic lives in services.
+- All new endpoints require an integration test in `tests/`.
+
+## Style
+- C#: prefer expression-bodied members for simple properties.
+- React: functional components with hooks only, no class components.
+
+## Do Not
+- Do not commit secrets or connection strings — use Key Vault references.
+- Do not add new NuGet packages without checking `Directory.Packages.props`.</code></pre>
+
+          <h3>What Belongs Here</h3>
+          <ul>
+            <li><strong>Project context</strong> — stack, architecture style, folder layout, where things live.</li>
+            <li><strong>Global conventions</strong> — naming, formatting, error handling, testing expectations that apply everywhere.</li>
+            <li><strong>Guardrails</strong> — things Copilot must never do (commit secrets, bypass auth, use deprecated APIs).</li>
+            <li><strong>Pointers</strong> — references to other instructions/skills files for more specific guidance, so this file doesn't become a dumping ground.</li>
+          </ul>
+
+          <div class="callout">
+            ⚠️ Keep this file lean and high-signal. Since it loads on <em>every</em> request regardless of what file is open, bloating it with narrow, file-specific rules wastes context on requests where those rules don't even apply — use <code>.instructions.md</code> with <code>applyTo</code> for that instead.
+          </div>
+        </section>
+
+        <section id="instructions-applyto" role="article">
+          <h2>.instructions.md &amp; applyTo</h2>
+
+          <p>For guidance that should only apply to certain files or folders, use a <code>*.instructions.md</code> file under <code>.github/instructions/</code>. Its YAML frontmatter <code>applyTo</code> field is a glob pattern — Copilot only loads the file's content when the currently active or edited file matches that pattern.</p>
+
+          <pre class="syntax-highlighted" data-language="markdown"><code>---
+applyTo: "**/*.test.ts"
+---
+
+Use Jest with `describe`/`it` blocks. Mock external HTTP calls with `nock`.
+Every test file must cover at least one failure-path scenario.
+Prefer `screen.getByRole` over `getByTestId` in React Testing Library tests.</code></pre>
+
+          <h3>Common applyTo Patterns</h3>
+          <table class="table table-striped">
+            <thead>
+              <tr><th>Pattern</th><th>Matches</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><code>**</code></td><td>Every file (equivalent scope to copilot-instructions.md, but composable/optional)</td></tr>
+              <tr><td><code>**/*.ts,**/*.tsx</code></td><td>All TypeScript and TSX files anywhere in the repo</td></tr>
+              <tr><td><code>src/api/**</code></td><td>Everything under the <code>src/api</code> folder</td></tr>
+              <tr><td><code>**/*.bicep</code></td><td>All Bicep infrastructure files</td></tr>
+              <tr><td><code>**/*.test.*,**/*.spec.*</code></td><td>Test files regardless of extension/language</td></tr>
+            </tbody>
+          </table>
+
+          <h3>Why Split Instructions by applyTo</h3>
+          <ul>
+            <li><strong>Relevance</strong> — frontend rules don't clutter context when editing backend code, and vice versa.</li>
+            <li><strong>Ownership</strong> — different teams can own different instructions files without merge conflicts in one giant file.</li>
+            <li><strong>Composability</strong> — multiple <code>.instructions.md</code> files can match the same file simultaneously; all matching ones are applied together.</li>
+            <li><strong>Discoverability</strong> — a file per concern (testing, security, database access) is easier to review and update than one monolith.</li>
+          </ul>
+
+          <h3>Instruction Stacking &amp; Precedence</h3>
+          <p>When several instruction files match the active file, Copilot applies <strong>all of them simultaneously</strong> — there is no overriding or last-wins behaviour. Rules from multiple files are combined into the context:</p>
+          <ul>
+            <li><strong>No conflict resolution</strong> — if two files give contradictory guidance for the same pattern (e.g. one says "use tabs", another says "use 2-space indent"), the model must reconcile them itself. Avoid overlapping rules for the same concern.</li>
+            <li><strong>Specificity is not ranked</strong> — a pattern like <code>src/auth/**</code> does not automatically take priority over <code>**/*.ts</code>; both instructions are injected with equal weight.</li>
+            <li><code>copilot-instructions.md</code> is always loaded for every request, in addition to any matching <code>.instructions.md</code> files — so it forms the base layer.</li>
+            <li><strong>Audit overlap periodically</strong> — use a glob visualiser or run <code>git ls-files | grep -E "test|spec"</code> to check which files would match multiple patterns.</li>
+          </ul>
+
+          <div class="callout">
+            📁 A typical layout: <code>.github/instructions/testing.instructions.md</code>, <code>security.instructions.md</code>, <code>frontend.instructions.md</code>, <code>infra.instructions.md</code> — each scoped with its own <code>applyTo</code>.
+          </div>
+        </section>
+
+        <section id="instructions-best-practices" role="article">
+          <h2>Best Practices</h2>
+
+          <h3>Writing Effective Instructions</h3>
+          <ul>
+            <li><strong>Be specific and actionable</strong> — "use dependency injection, not static service locators" beats "write clean code."</li>
+            <li><strong>State the "don't"s explicitly</strong> — models follow explicit negative constraints ("never log PII") better than implied ones.</li>
+            <li><strong>Prefer short, scannable bullets</strong> over long prose paragraphs; instructions are re-read on every request, so density matters.</li>
+            <li><strong>Give examples</strong> for non-obvious conventions (a snippet showing the exact error-handling pattern beats a description of it).</li>
+            <li><strong>Version-control instructions files</strong> alongside the code so they evolve with the codebase and are reviewed in PRs like any other change.</li>
+          </ul>
+
+          <h3>Common Pitfalls</h3>
+          <ul>
+            <li><strong>Overloading copilot-instructions.md</strong> — cramming every rule into the global file wastes context on requests where most rules are irrelevant; split with <code>applyTo</code> instead.</li>
+            <li><strong>Conflicting instructions</strong> — two files giving contradictory guidance for the same files confuses the model; review overlapping <code>applyTo</code> patterns periodically.</li>
+            <li><strong>Stale guidance</strong> — instructions describing a migrated-away framework or deprecated pattern actively mislead; treat them as living documentation.</li>
+            <li><strong>Too vague to act on</strong> — "follow best practices" gives the model nothing concrete to check against; always tie guidance to a specific, verifiable rule.</li>
+          </ul>
+
+          <h3>A Layered Approach</h3>
+          <ol>
+            <li>Start with a lean <code>copilot-instructions.md</code> covering project context and the handful of rules that truly apply everywhere.</li>
+            <li>Add scoped <code>.instructions.md</code> files as specific pain points emerge (a recurring review comment is a sign an instruction is missing).</li>
+            <li>Periodically prune: remove instructions that no longer reflect the codebase, and merge near-duplicate files.</li>
+            <li>Pair instructions with skills for anything that needs multi-step procedural guidance rather than a standing rule.</li>
+          </ol>
+
+          <div class="callout">
+            💡 A good test: if you find yourself repeating the same correction across multiple PR reviews or chat sessions, that correction belongs in an instructions file, not in your memory.
+          </div>
+        </section>
+
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+
+        <section id="prompts-overview" role="article">
+          <h1>🔖 Prompts</h1>
+          <span class="badge">prompts</span>
+          <span class="badge">reusable</span>
+
+          <p><strong>Prompt files</strong> are reusable, parameterized chat starters stored as <code>.prompt.md</code> files. Instead of typing the same detailed request from scratch every session, you write it once in a file, attach relevant context, wire in variables, and invoke it by name from the chat. Think of them as saved macros for complex, frequently repeated Copilot interactions.</p>
+
+          <div class="callout">
+            🔖 Prompts are for <strong>repeatable interactions</strong> — "generate a REST API spec from this schema," "write a post-incident report for this alert," "draft a PR description from the diff." Write once, reuse forever, share with the team.
+          </div>
+
+          <h2>Prompts vs Instructions vs Skills</h2>
+          <table class="table table-striped">
+            <thead>
+              <tr><th>Mechanism</th><th>Triggered by</th><th>Best for</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Instructions</td><td>Automatically, on every matching request</td><td>Standing rules and conventions</td></tr>
+              <tr><td>Skills</td><td>Automatically, when task matches description</td><td>Procedural how-to knowledge</td></tr>
+              <tr><td>Prompts</td><td>Explicitly, by the user selecting the prompt</td><td>Complex tasks the user wants to kick off on demand</td></tr>
+            </tbody>
+          </table>
+
+          <h2>When to Use Prompts</h2>
+          <ul>
+            <li><strong>Repeatable tasks with rich context</strong> — tasks that need several sentences of setup (e.g. "review this diff using our security checklist") benefit most from being saved rather than retyped.</li>
+            <li><strong>Team workflows</strong> — commit a prompt to <code>.github/prompts/</code> so everyone runs the same task the same way (PR descriptions, sprint retrospective notes, API documentation drafts).</li>
+            <li><strong>Teaching new team members</strong> — a well-named prompt with clear variables is self-documenting; a new hire can invoke "generate-unit-tests" without understanding all the underlying conventions yet.</li>
+            <li><strong>Multi-step scaffolding</strong> — chain instructions together in a single prompt body to walk Copilot through a multi-step generation task.</li>
+          </ul>
+        </section>
+
+        <section id="prompts-files" role="article">
+          <h2>.prompt.md Files</h2>
+
+          <p>A prompt file is a <code>.prompt.md</code> file with optional YAML frontmatter, stored in <code>.github/prompts/</code> (shared with the team) or in your user profile (personal prompts). The filename becomes the prompt's display name in the chat slash-command picker.</p>
+
+          <pre class="syntax-highlighted" data-language="markdown"><code>---
+description: Generates a unit test file for a given source file.
+tools: ['codebase', 'search']
+---
+
+You are a test-writing assistant for a TypeScript project using Jest.
+
+Given the file `${file}`, generate a comprehensive unit test file that:
+1. Imports the subject under test and any required mocks.
+2. Uses `describe`/`it` blocks with descriptive names.
+3. Covers the happy path, at least one error path, and edge cases for each exported function.
+4. Mocks all external HTTP calls with `nock`.
+
+Place the output in a file named `${file.base}.test.ts` alongside the source file.</code></pre>
+
+          <h3>Frontmatter Fields</h3>
+          <table class="table table-striped">
+            <thead>
+              <tr><th>Field</th><th>Purpose</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><code>description</code></td><td>Shown in the prompt picker so users know what it does before invoking it.</td></tr>
+              <tr><td><code>tools</code></td><td>Restricts which tools the prompt's session can use — same syntax as agent tool lists.</td></tr>
+              <tr><td><code>mode</code></td><td>Optional. Can pin the prompt to a specific agent mode (e.g. <code>agent</code> for agentic, <code>chat</code> for plain chat).</td></tr>
+            </tbody>
+          </table>
+
+          <h3>Using the <code>mode</code> Field</h3>
+          <p>The <code>mode</code> field controls the execution environment for the prompt:</p>
+          <pre class="syntax-highlighted" data-language="markdown"><code>---
+description: Scaffolds a new React component with tests and a Storybook story.
+tools: ['codebase', 'search', 'createFile']
+mode: agent        # Runs in agentic mode — Copilot can create files autonomously
+---
+
+Create a new React functional component named `${input:Component name}`.
+Generate:
+1. The component file at `src/components/${input:Component name}/${input:Component name}.tsx`
+2. A Jest unit test at `src/components/${input:Component name}/${input:Component name}.test.tsx`
+3. A Storybook story at `src/components/${input:Component name}/${input:Component name}.stories.tsx`</code></pre>
+          <ul>
+            <li><code>mode: agent</code> — Copilot operates autonomously, can call tools, create/edit files, and run multi-step tasks.</li>
+            <li><code>mode: chat</code> — Plain conversational mode; tools listed in the <code>tools</code> field are still available but Copilot won't take autonomous file-system actions.</li>
+            <li>Omitting <code>mode</code> inherits the current session mode.</li>
+          </ul>
+
+          <h3>Prompt Execution Context</h3>
+          <p>When a prompt runs, Copilot has access to the following context automatically:</p>
+          <ul>
+            <li><strong>Active editor file</strong> — available via <code>${file}</code> and related variables; the full file content is included if small enough to fit in the context window.</li>
+            <li><strong>Current selection</strong> — available via <code>${selection}</code>; only present if text was highlighted before invoking the prompt.</li>
+            <li><strong>Workspace root</strong> — available via <code>${workspaceFolder}</code>; useful for constructing absolute paths.</li>
+            <li><strong>Tools allowed by <code>tools</code> field</strong> — e.g. listing <code>codebase</code> lets Copilot semantically search the workspace during prompt execution.</li>
+            <li><strong>Active instructions files</strong> — any <code>.instructions.md</code> files matching the active file continue to apply during a prompt session.</li>
+          </ul>
+          <p>Prompts do <em>not</em> automatically receive the full repository content. If the prompt needs to read a specific file that isn't the active one, reference it explicitly in the prompt body or use a <code>codebase</code> tool call.</p>
+
+          <h3>Prompt Body</h3>
+          <p>The Markdown body after the frontmatter is the full prompt text sent to Copilot when the user invokes it. It can be as long and structured as needed — headings, numbered lists, code blocks, and variable placeholders all work as-is.</p>
+
+          <h3>Where Prompt Files Live</h3>
+          <ul>
+            <li><strong><code>.github/prompts/*.prompt.md</code></strong> — workspace-level, checked in to source control, available to every teammate who opens the repo.</li>
+            <li><strong>User profile</strong> — personal prompts that follow you across all projects, not visible to teammates.</li>
+          </ul>
+
+          <h3>Invoking a Prompt</h3>
+          <ol>
+            <li>Open the Copilot Chat input.</li>
+            <li>Type <code>/</code> to open the slash-command picker — all <code>.prompt.md</code> files in scope appear by their filename.</li>
+            <li>Select the prompt; Copilot pre-fills the chat with the prompt body and resolves any variables before sending.</li>
+          </ol>
+
+          <div class="callout">
+            📁 A clean naming convention helps: use verb-noun format — <code>generate-unit-tests.prompt.md</code>, <code>review-security.prompt.md</code>, <code>draft-pr-description.prompt.md</code> — so the picker list reads like an action menu.
+          </div>
+        </section>
+
+        <section id="prompts-variables" role="article">
+          <h2>Prompt Variables</h2>
+
+          <p>Variables make prompts generic and reusable. They are written as <code>${variableName}</code> placeholders in the prompt body and are resolved at invocation time — either automatically from VS Code's current editor context or by prompting the user for input.</p>
+
+          <h3>Built-in Context Variables</h3>
+          <table class="table table-striped">
+            <thead>
+              <tr><th>Variable</th><th>Resolves to</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><code>${file}</code></td><td>The currently active file path.</td></tr>
+              <tr><td><code>${file.base}</code></td><td>The filename without extension (e.g. <code>userService</code> from <code>userService.ts</code>).</td></tr>
+              <tr><td><code>${file.ext}</code></td><td>The file extension (e.g. <code>.ts</code>).</td></tr>
+              <tr><td><code>${selection}</code></td><td>The currently selected text in the editor.</td></tr>
+              <tr><td><code>${input}</code></td><td>Free-text value — Copilot prompts the user to type something before sending.</td></tr>
+              <tr><td><code>${workspaceFolder}</code></td><td>The absolute path to the workspace root.</td></tr>
+            </tbody>
+          </table>
+
+          <h3>Using Variables Effectively</h3>
+          <ul>
+            <li><strong>Combine variables</strong> to build dynamic paths: <code>${workspaceFolder}/tests/${file.base}.test.ts</code>.</li>
+            <li>Use <code>${selection}</code> for "act on what I've highlighted" prompts — code review, explanation, refactoring.</li>
+            <li>Use <code>${input}</code> for open-ended parameters (ticket number, feature name, target API version) that can't be inferred from context.</li>
+            <li>Keep variables minimal — a prompt that requires the user to fill in five <code>${input}</code> values is just as tedious as typing the prompt from scratch; parameterize only what genuinely varies.</li>
+          </ul>
+
+          <h3>Example — PR Description Generator</h3>
+          <pre class="syntax-highlighted" data-language="markdown"><code>---
+description: Drafts a pull request description from the current diff.
+tools: ['codebase', 'search']
+---
+
+Write a pull request description for the changes in the current branch.
+Ticket reference: ${input:Ticket number (e.g. JIRA-1234)}
+
+Structure the description as:
+## Summary
+One paragraph explaining *what* changed and *why*.
+
+## Changes
+Bullet list of the key changes.
+
+## Testing
+What was tested and how to verify.
+
+## Notes
+Any breaking changes, migration steps, or follow-up items.</code></pre>
+
+          <div class="callout">
+            💡 The <code>${input:label}</code> syntax lets you add a descriptive label to the user-facing input dialog, making prompts self-documenting: <code>${input:Ticket number (e.g. JIRA-1234)}</code> is far clearer than a bare <code>${input}</code>.
+          </div>
+
+          <h3>Prompt Composition Tips</h3>
+          <ul>
+            <li>Reference workspace files inline with a relative path so Copilot knows exactly where to write generated output.</li>
+            <li>Chain prompts by having one prompt's output become the input file for a follow-up prompt (e.g. "generate spec" → "generate tests from spec").</li>
+            <li>Version prompts alongside code — when a convention changes, update the prompt and commit the change so history is preserved.</li>
+          </ul>
+        </section>
+
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+
+        <section id="skills-instructions-prompts-comparison" role="article">
+          <h1>📊 Skills vs Instructions vs Prompts</h1>
+          <span class="badge">comparison</span>
+          <span class="badge">reference</span>
+
+          <p>Skills, Instructions, and Prompts are the three knowledge-injection mechanisms in Copilot customization. They are often confused because they all involve Markdown files — but they serve completely different purposes, fire at different times, and live in different locations.</p>
+
+          <div class="callout">
+            🗝 Simple rule of thumb: <strong>Instructions</strong> = always-on rules; <strong>Skills</strong> = on-demand playbooks; <strong>Prompts</strong> = reusable task templates.
+          </div>
+
+          <h2>At-a-Glance Comparison</h2>
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Dimension</th>
+                <th>📘 Instructions</th>
+                <th>💡 Skills</th>
+                <th>🔖 Prompts</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Primary purpose</strong></td>
+                <td>Inject persistent rules and conventions into Copilot's system prompt</td>
+                <td>Package domain knowledge that Copilot loads on demand</td>
+                <td>Define reusable task templates that a user or hook executes</td>
+              </tr>
+              <tr>
+                <td><strong>When loaded</strong></td>
+                <td>Automatically — on every request that matches the <code>applyTo</code> glob (or always for <code>copilot-instructions.md</code>)</td>
+                <td>On demand — when Copilot's routing logic decides the skill description matches the user's request</td>
+                <td>On demand — user invokes <code>/prompt-name</code> in chat, or a Hook triggers it automatically</td>
+              </tr>
+              <tr>
+                <td><strong>Typical content</strong></td>
+                <td>Coding standards, naming conventions, PR rules, security policies, tech-stack constraints</td>
+                <td>Step-by-step runbooks, technology guides, decision trees, multi-step workflows</td>
+                <td>A single focused task: generate a PR summary, create an ADR, write a changelog entry</td>
+              </tr>
+              <tr>
+                <td><strong>File type</strong></td>
+                <td><code>.instructions.md</code> or <code>copilot-instructions.md</code></td>
+                <td><code>SKILL.md</code> (inside a named folder)</td>
+                <td><code>.prompt.md</code></td>
+              </tr>
+              <tr>
+                <td><strong>Canonical location</strong></td>
+                <td><code>.github/instructions/</code> or <code>.github/copilot-instructions.md</code></td>
+                <td><code>.agents/skills/&lt;skill-name&gt;/SKILL.md</code> or <code>.copilot/skills/&lt;name&gt;/SKILL.md</code></td>
+                <td><code>.github/prompts/</code> or <code>.copilot/prompts/</code></td>
+              </tr>
+              <tr>
+                <td><strong>Scope</strong></td>
+                <td>Repository-wide (or file-pattern scoped via <code>applyTo</code>)</td>
+                <td>User-global or repo-local depending on install location</td>
+                <td>Repository-wide; can also be in user settings for personal templates</td>
+              </tr>
+              <tr>
+                <td><strong>Supports variables</strong></td>
+                <td>No</td>
+                <td>No</td>
+                <td>Yes — <code>${{ variableName }}</code>, <code>${{ file }}</code>, <code>${{ workspaceFolder }}</code>, etc.</td>
+              </tr>
+              <tr>
+                <td><strong>Can invoke other files</strong></td>
+                <td>No</td>
+                <td>Can reference tools and supporting assets in its folder</td>
+                <td>Yes — can reference other prompt files or instruct Copilot to read specific files</td>
+              </tr>
+              <tr>
+                <td><strong>Triggered by Hooks</strong></td>
+                <td>No</td>
+                <td>Indirectly (a hook can invoke an agent that uses a skill)</td>
+                <td>Yes — hooks fire prompt files directly on IDE events</td>
+              </tr>
+              <tr>
+                <td><strong>User-visible in chat</strong></td>
+                <td>No — transparent to the user; injected silently</td>
+                <td>Partially — users see the skill being loaded when Copilot announces it</td>
+                <td>Yes — appears in the <code>/</code> command picker; user explicitly selects it</td>
+              </tr>
+              <tr>
+                <td><strong>Best for teams?</strong></td>
+                <td>✅ Essential — commit to the repo so every team member gets the same baseline</td>
+                <td>✅ Strong — bundle team-specific domain knowledge that agents reuse</td>
+                <td>✅ Strong — standardise repetitive tasks (PR summaries, ADRs, changelogs)</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h2>Lifecycle Comparison</h2>
+          <table class="table table-striped">
+            <thead>
+              <tr><th>Stage</th><th>Instructions</th><th>Skills</th><th>Prompts</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Author creates file</td>
+                <td>Writes rules in <code>.instructions.md</code> with optional <code>applyTo</code> frontmatter</td>
+                <td>Writes a playbook in <code>SKILL.md</code> with a rich <code>description</code> field</td>
+                <td>Writes a task template in <code>.prompt.md</code> with optional variable placeholders</td>
+              </tr>
+              <tr>
+                <td>File is discovered</td>
+                <td>At session start, Copilot scans <code>.github/instructions/</code> and caches all instruction files</td>
+                <td>Copilot reads the <code>description</code> field from every <code>SKILL.md</code> in watched folders</td>
+                <td>At session start, Copilot indexes all <code>.prompt.md</code> files and populates the <code>/</code> picker</td>
+              </tr>
+              <tr>
+                <td>File is activated</td>
+                <td>Automatically when a file matching <code>applyTo</code> is in context, or always for <code>copilot-instructions.md</code></td>
+                <td>When Copilot's semantic router decides the skill description best matches the user's intent</td>
+                <td>When the user types <code>/prompt-name</code> in chat, or a Hook fires it</td>
+              </tr>
+              <tr>
+                <td>Content is used</td>
+                <td>Prepended to the system prompt — Copilot follows these rules for every response in that session</td>
+                <td>Full <code>SKILL.md</code> content is loaded into context; Copilot executes the playbook steps</td>
+                <td>Template is expanded (variables substituted), then sent as the user's message to Copilot</td>
+              </tr>
+              <tr>
+                <td>Session end</td>
+                <td>Instruction context is dropped; re-applied fresh next session</td>
+                <td>Skill is unloaded; re-selected next time routing matches</td>
+                <td>Prompt result stays in conversation history until the conversation is closed</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h2>Content Authoring Guidelines</h2>
+          <table class="table table-striped">
+            <thead>
+              <tr><th>Guideline</th><th>Instructions</th><th>Skills</th><th>Prompts</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Ideal length</strong></td>
+                <td>Short to medium — under 500 words per file; split into multiple files if needed</td>
+                <td>As long as the playbook requires — 1–5 pages is normal for complex domains</td>
+                <td>Short — the template itself is a single focused request, not a guide</td>
+              </tr>
+              <tr>
+                <td><strong>Tone</strong></td>
+                <td>Imperative rules: <em>"Always use async/await", "Never use var"</em></td>
+                <td>Instructional / procedural: <em>"Step 1: Check X. Step 2: Run Y."</em></td>
+                <td>First-person request: <em>"Generate a PR summary for the changes in {{file}}"</em></td>
+              </tr>
+              <tr>
+                <td><strong>Key frontmatter fields</strong></td>
+                <td><code>applyTo</code> — glob to scope which files trigger this instruction</td>
+                <td><code>name</code>, <code>description</code> — description drives the routing decision</td>
+                <td><code>name</code>, <code>description</code>, <code>mode</code> — mode controls edit vs ask vs agent</td>
+              </tr>
+              <tr>
+                <td><strong>Version-control strategy</strong></td>
+                <td>Commit to <code>.github/</code> — all teammates share the same rules immediately</td>
+                <td>Commit to <code>.agents/</code> or <code>.copilot/</code> — keeps skills with the codebase they describe</td>
+                <td>Commit to <code>.github/prompts/</code> — prompt history documents how team tasks evolve</td>
+              </tr>
+              <tr>
+                <td><strong>Security consideration</strong></td>
+                <td>Avoid embedding secrets or PII — instructions are injected into every prompt</td>
+                <td>Do not include credentials — skill content becomes part of the LLM context</td>
+                <td>Use variables for dynamic values rather than hard-coding sensitive paths or IDs</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h2>Decision Tree: Which Should I Use?</h2>
+          <ul>
+            <li><strong>"I want Copilot to always follow a rule without me asking"</strong> → <em>Instructions file</em></li>
+            <li><strong>"I want Copilot to know how our team does X when it's working in that area"</strong> → <em>Skill</em></li>
+            <li><strong>"I want a shortcut to run a specific task repeatedly"</strong> → <em>Prompt file</em></li>
+            <li><strong>"I want a task to run automatically when I commit code"</strong> → <em>Prompt file + Hook</em></li>
+            <li><strong>"I want to give Copilot a persona for a specific type of work"</strong> → <em>Agent (which can use all three)</em></li>
+            <li><strong>"I want Copilot to call a live API or read a database"</strong> → <em>MCP server</em></li>
+          </ul>
+        </section>
+
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+
+        <section id="hooks-overview" role="article">
+          <h1>⚡ Hooks</h1>
+          <span class="badge">hooks</span>
+          <span class="badge">automation</span>
+
+          <p><strong>Hooks</strong> let you attach automated Copilot actions to specific events in your development workflow — things like opening a file, saving a change, running a test, or committing code. Rather than manually asking Copilot to do something every time an event occurs, a hook fires automatically and runs a configured action or prompt in the background.</p>
+
+          <div class="callout">
+            ⚡ Hooks turn Copilot from a <strong>reactive assistant</strong> (answer when asked) into a <strong>proactive partner</strong> (do the right thing at the right moment without being asked).
+          </div>
+
+          <h2>Why Use Hooks</h2>
+          <ul>
+            <li><strong>Eliminate repetitive requests</strong> — if you always ask Copilot to explain a test failure or check coverage after every test run, a hook can fire that request automatically.</li>
+            <li><strong>Enforce team practices</strong> — a pre-commit hook can automatically run a security review prompt on staged changes before they leave the developer's machine.</li>
+            <li><strong>Reduce context switching</strong> — inline suggestions and ambient analysis that appear at the right moment mean fewer interruptions to fetch information manually.</li>
+            <li><strong>Consistent quality gates</strong> — every save, every commit, every PR can trigger the same quality check, making the process repeatable rather than dependent on individual discipline.</li>
+          </ul>
+
+          <h2>Hooks vs Prompts vs Instructions</h2>
+          <table class="table table-striped">
+            <thead>
+              <tr><th>Mechanism</th><th>Triggered by</th><th>Requires user action?</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Instructions</td><td>Copilot matching context automatically</td><td>No</td></tr>
+              <tr><td>Prompts</td><td>User selecting from the slash-command picker</td><td>Yes (explicit invoke)</td></tr>
+              <tr><td>Hooks</td><td>A workspace or editor event (save, test run, commit…)</td><td>No — fires automatically</td></tr>
+            </tbody>
+          </table>
+
+          <h2>Hook Execution Model</h2>
+          <p>Understanding how hooks execute helps you write reliable, non-disruptive configurations:</p>
+          <ul>
+            <li><strong>Non-blocking by default</strong> — most hooks fire asynchronously so they do not delay your save, commit, or build. The only exception is a <code>onGitCommit (pre)</code> hook with a <code>block: true</code> condition, which can hold a commit until the action completes.</li>
+            <li><strong>Timeout protection</strong> — hooks have a configurable timeout (default: 30 s). If the Copilot action does not complete within the timeout, the hook is silently cancelled to avoid hanging your workflow.</li>
+            <li><strong>No queue buildup</strong> — rapid events (e.g. multiple saves in a second) are debounced; only the most recent event in the burst triggers the hook.</li>
+            <li><strong>Failure isolation</strong> — if a hook's action fails (e.g. the prompt errors out, the network is unavailable), it logs the failure silently and does not surface a blocking error unless you set <code>block: true</code>.</li>
+          </ul>
+
+          <h3>Knowing if a Hook Fired</h3>
+          <ul>
+            <li>Open <strong>VS Code Output panel</strong> → select <em>GitHub Copilot (Hooks)</em> channel to see a real-time log of hook events, conditions evaluated, and actions dispatched.</li>
+            <li>In Copilot Chat, a hook-triggered response is annotated with "Auto-triggered by &lt;event&gt;" so you can distinguish it from a user-initiated request.</li>
+            <li>Add a brief <code>action.text</code> that starts with "Hook fired:" during initial setup so hook responses are visually distinctive while you tune conditions.</li>
+          </ul>
+        </section>
+
+        <section id="hooks-events" role="article">
+          <h2>Hook Events</h2>
+
+          <p>Each hook is bound to a specific <strong>event</strong> — the trigger that causes it to fire. Events span the full development lifecycle, from editing through to deployment.</p>
+
+          <h3>Editor &amp; File Events</h3>
+          <table class="table table-striped">
+            <thead>
+              <tr><th>Event</th><th>Fires when…</th><th>Common use</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><code>onFileOpen</code></td><td>A file is opened in the editor</td><td>Surface relevant context, known issues, or recent changes for that file</td></tr>
+              <tr><td><code>onFileSave</code></td><td>A file is saved</td><td>Trigger inline lint feedback, auto-format reminders, or doc-sync checks</td></tr>
+              <tr><td><code>onFileClose</code></td><td>A file is closed</td><td>Prompt to add a test if the file changed but no test file was modified</td></tr>
+              <tr><td><code>onDiagnosticChange</code></td><td>A new compiler error or warning appears</td><td>Automatically explain the error and suggest a fix without the user asking</td></tr>
+            </tbody>
+          </table>
+
+          <h3>Source Control Events</h3>
+          <table class="table table-striped">
+            <thead>
+              <tr><th>Event</th><th>Fires when…</th><th>Common use</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><code>onGitStage</code></td><td>Files are staged for a commit</td><td>Run a security scan or compliance check on the staged diff</td></tr>
+              <tr><td><code>onGitCommit</code> (pre)</td><td>Just before a commit is finalised</td><td>Validate commit message format; block or warn on policy violations</td></tr>
+              <tr><td><code>onGitCommit</code> (post)</td><td>After a commit completes</td><td>Generate a changelog entry or update a DEVLOG</td></tr>
+              <tr><td><code>onBranchChange</code></td><td>The active branch switches</td><td>Summarise what the new branch is about using recent commit history</td></tr>
+              <tr><td><code>onPullRequestOpen</code></td><td>A PR is opened or updated</td><td>Auto-draft PR description, request review checklist, run impact analysis</td></tr>
+            </tbody>
+          </table>
+
+          <h3>Build &amp; Test Events</h3>
+          <table class="table table-striped">
+            <thead>
+              <tr><th>Event</th><th>Fires when…</th><th>Common use</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><code>onTestRun</code> (post)</td><td>A test run completes</td><td>Summarise failures, suggest fixes, flag coverage regressions</td></tr>
+              <tr><td><code>onBuildFail</code></td><td>A build step fails</td><td>Parse the build output and surface the root-cause error with a suggested fix</td></tr>
+              <tr><td><code>onBuildSuccess</code></td><td>A build step succeeds</td><td>Remind to update docs or run integration tests if only unit tests were run</td></tr>
+            </tbody>
+          </table>
+
+          <div class="callout">
+            🔍 Not all hook events are available in every Copilot client. Check your client's documentation for the exact supported event list — VS Code exposes the richest set, including editor, SCM, and task events.
+          </div>
+        </section>
+
+        <section id="hooks-configuration" role="article">
+          <h2>Hook Configuration</h2>
+
+          <p>Hooks are configured in a <code>.github/copilot-hooks.yml</code> (or equivalent client-specific config file). Each hook entry names the event, optionally adds a condition, and specifies either an inline prompt or a reference to a <code>.prompt.md</code> file to run.</p>
+
+          <pre class="syntax-highlighted" data-language="yaml"><code># .github/copilot-hooks.yml
+hooks:
+  - event: onTestRun
+    trigger: post
+    condition: "failure"            # only fires when tests fail
+    action:
+      type: prompt
+      text: |
+        The test run just failed. Review the output, identify the root cause
+        of each failing test, and suggest minimal fixes without changing
+        unrelated code.
+
+  - event: onGitCommit
+    trigger: pre
+    condition: "stagedFiles contains '*.ts'"
+    action:
+      type: prompt-file
+      path: .github/prompts/pre-commit-security.prompt.md
+
+  - event: onFileSave
+    condition: "file matches 'src/api/**/*.ts'"
+    action:
+      type: prompt
+      text: |
+        Check the saved file for any new public endpoints that are missing
+        authentication middleware. Report any issues as inline comments.</code></pre>
+
+          <h3>Configuration Fields</h3>
+          <table class="table table-striped">
+            <thead>
+              <tr><th>Field</th><th>Required</th><th>Description</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><code>event</code></td><td>Yes</td><td>The lifecycle event that triggers this hook (see Hook Events section).</td></tr>
+              <tr><td><code>trigger</code></td><td>No</td><td><code>pre</code> or <code>post</code> for events that have before/after phases (e.g. commit). Defaults to <code>post</code>.</td></tr>
+              <tr><td><code>condition</code></td><td>No</td><td>A boolean expression that gates the hook — it only fires when the condition evaluates to true. Keeps noisy hooks quiet.</td></tr>
+              <tr><td><code>action.type</code></td><td>Yes</td><td><code>prompt</code> (inline text) or <code>prompt-file</code> (path to a <code>.prompt.md</code>).</td></tr>
+              <tr><td><code>action.text</code></td><td>If type=prompt</td><td>The inline prompt text sent to Copilot when the hook fires.</td></tr>
+              <tr><td><code>action.path</code></td><td>If type=prompt-file</td><td>Relative path to the <code>.prompt.md</code> file to use as the action.</td></tr>
+            </tbody>
+          </table>
+
+          <h3>Conditions</h3>
+          <p>Conditions prevent hook fatigue by limiting when a hook fires. They support simple expressions over event context:</p>
+          <ul>
+            <li><code>"failure"</code> — only fire on a failed outcome (tests, builds).</li>
+            <li><code>"success"</code> — only fire on a successful outcome.</li>
+            <li><code>"stagedFiles contains '*.sql'"</code> — fire when the staged diff includes SQL files.</li>
+            <li><code>"file matches 'src/security/**'"</code> — fire only when the active file is in a specific folder.</li>
+            <li><code>"testCount &gt; 0"</code> — fire only when at least one test was executed.</li>
+          </ul>
+
+          <h3>Design Guidance</h3>
+          <ul>
+            <li><strong>Start narrow</strong> — add conditions to every hook from day one; unconditioned hooks on frequent events (every save) quickly become noise.</li>
+            <li><strong>Prefer prompt-file over inline text</strong> for anything longer than a sentence — it keeps the config readable and lets you iterate on the prompt without touching the hook config.</li>
+            <li><strong>Use pre-commit hooks sparingly</strong> — they block the commit workflow; reserve them for critical checks (secrets detection, compliance) and keep them fast.</li>
+            <li><strong>Test hooks in a branch first</strong> — an overly eager hook that fires on every keystroke will frustrate the team; validate scope and conditions before committing to <code>main</code>.</li>
+            <li><strong>Document each hook's purpose</strong> in the YAML comments so teammates understand why it exists without reading the prompt body.</li>
+          </ul>
+
+          <div class="callout">
+            🚦 A well-designed hook set feels invisible — it quietly surfaces the right information at the right moment without interrupting flow. If developers start dismissing hook output habitually, the hook is either too noisy or its output isn't actionable enough.
+          </div>
+        </section>
+
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+
+        <section id="mcp-overview" role="article">
+          <h1>🔌 MCP Servers</h1>
+          <span class="badge">mcp</span>
+          <span class="badge">tools</span>
+
+          <p>The <strong>Model Context Protocol (MCP)</strong> is an open standard that lets AI assistants like Copilot communicate with external tools, data sources, and services through a lightweight server/client architecture. An MCP server exposes a set of <em>tools</em> — named functions the model can call — and Copilot discovers and invokes them as needed during a chat session.</p>
+
+          <div class="callout">
+            🔌 MCP turns Copilot into a <strong>connected agent</strong>. Instead of answering from training data alone, it can query live databases, call REST APIs, read file systems, interact with CI/CD pipelines, and much more — all within the same conversation.
+          </div>
+
+          <h2>Why MCP Matters</h2>
+          <ul>
+            <li><strong>Live data access</strong> — Copilot can query real-time information rather than relying on stale training data or copy-pasted context.</li>
+            <li><strong>Standardised integration</strong> — any service that implements the MCP spec can be connected to any compatible AI assistant, not just Copilot.</li>
+            <li><strong>Composable tool sets</strong> — combine multiple MCP servers in a single session; Copilot picks the right tool for each subtask automatically.</li>
+            <li><strong>Security boundary</strong> — each MCP server runs in its own process with its own credentials; Copilot sends structured requests and receives structured responses without direct access to underlying systems.</li>
+            <li><strong>No context window stuffing</strong> — instead of pasting large files or API responses into chat, Copilot calls a tool that returns only the relevant slice of data.</li>
+          </ul>
+
+          <h2>MCP vs Skills vs Built-in Tools</h2>
+          <table class="table table-striped">
+            <thead>
+              <tr><th>Mechanism</th><th>Lives in</th><th>Invoked by</th><th>Best for</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Built-in tools</td><td>Copilot client</td><td>Model automatically</td><td>File reads, terminal runs, web search — bundled actions</td></tr>
+              <tr><td>Skills (<code>SKILL.md</code>)</td><td>Workspace / user folder</td><td>Semantic keyword match</td><td>Domain knowledge, team playbooks, long prompts loaded on demand</td></tr>
+              <tr><td>MCP servers</td><td>External process or remote URL</td><td>Model calls a named tool</td><td>Live data, authenticated APIs, stateful operations, cross-app actions</td></tr>
+            </tbody>
+          </table>
+
+          <h2>Architecture Overview</h2>
+          <ul>
+            <li><strong>MCP Host</strong> — the Copilot client (VS Code, GitHub.com, CLI). It manages MCP server connections and proxies tool calls from the model.</li>
+            <li><strong>MCP Server</strong> — a local or remote process that advertises tools via the MCP spec. Each tool has a name, description, and JSON Schema for its parameters.</li>
+            <li><strong>Transport</strong> — communication between host and server uses either <code>stdio</code> (local subprocess) or <code>SSE / HTTP</code> (remote service).</li>
+            <li><strong>Tool call flow</strong> — model decides a tool is relevant → host sends a JSON-RPC <code>tools/call</code> request → server executes → host returns result to model → model incorporates into its response.</li>
+          </ul>
+        </section>
+
+        <section id="mcp-configuration" role="article">
+          <h2>Configuring MCP Servers</h2>
+
+          <p>MCP servers are declared in a JSON configuration file that the Copilot host reads on startup. VS Code uses <code>.vscode/mcp.json</code> (workspace-scoped) or the user <code>settings.json</code> (global). GitHub.com and the CLI use their own config locations but follow the same schema.</p>
+
+          <h3>VS Code — Workspace Config (<code>.vscode/mcp.json</code>)</h3>
+          <pre class="syntax-highlighted" data-language="json"><code>{
+  "servers": {
+    "github": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${env:GITHUB_PAT}"
+      }
+    },
+    "postgres": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-postgres",
+               "postgresql://localhost/mydb"]
+    },
+    "azure-devops": {
+      "type": "sse",
+      "url": "https://my-mcp-proxy.example.com/azure-devops/sse",
+      "headers": {
+        "Authorization": "Bearer ${env:ADO_TOKEN}"
+      }
+    }
+  }
+}</code></pre>
+
+          <h3>VS Code — User Settings (<code>settings.json</code>)</h3>
+          <pre class="syntax-highlighted" data-language="json"><code>{
+  "github.copilot.chat.mcp.servers": {
+    "filesystem": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem",
+               "/Users/me/projects"]
+    }
+  }
+}</code></pre>
+
+          <h3>Configuration Fields</h3>
+          <table class="table table-striped">
+            <thead>
+              <tr><th>Field</th><th>Required</th><th>Description</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><code>type</code></td><td>Yes</td><td><code>stdio</code> (local subprocess) or <code>sse</code> (remote HTTP/SSE endpoint).</td></tr>
+              <tr><td><code>command</code></td><td>If stdio</td><td>Executable to launch (e.g. <code>node</code>, <code>npx</code>, <code>python</code>, a compiled binary).</td></tr>
+              <tr><td><code>args</code></td><td>If stdio</td><td>Array of command-line arguments passed to the executable.</td></tr>
+              <tr><td><code>url</code></td><td>If sse</td><td>Full URL of the remote SSE endpoint.</td></tr>
+              <tr><td><code>env</code></td><td>No</td><td>Environment variables injected into the subprocess. Use <code>${env:VAR}</code> to reference host environment variables rather than hardcoding secrets.</td></tr>
+              <tr><td><code>headers</code></td><td>If sse</td><td>HTTP headers sent with every request to the remote server (e.g. auth tokens).</td></tr>
+            </tbody>
+          </table>
+
+          <h3>Stdio vs SSE — When to Use Which</h3>
+          <table class="table table-striped">
+            <thead>
+              <tr><th>Transport</th><th>Use when…</th><th>Trade-offs</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><code>stdio</code></td><td>Server runs locally (Node, Python, Go binary)</td><td>Zero network latency; server starts/stops with the IDE; easiest to develop and debug</td></tr>
+              <tr><td><code>sse</code></td><td>Server is a shared remote service or needs centralised auth</td><td>Accessible from any machine; requires network; manage availability and TLS yourself</td></tr>
+            </tbody>
+          </table>
+
+          <h3>Security Best Practices</h3>
+          <ul>
+            <li><strong>Never hardcode credentials</strong> — always use <code>${env:VAR}</code> references and store secrets in your OS keychain, a <code>.env</code> file (gitignored), or a vault.</li>
+            <li><strong>Least-privilege tokens</strong> — create dedicated tokens with only the scopes the MCP server actually needs (e.g. read-only GitHub token for a search server).</li>
+            <li><strong>Validate server provenance</strong> — only install MCP servers from trusted publishers; review the package code before running unknown packages with <code>npx -y</code>.</li>
+            <li><strong>Workspace vs user scope</strong> — put team-shared servers in <code>.vscode/mcp.json</code> (committed); put personal or credential-bearing servers in user settings (never committed).</li>
+            <li><strong>Remote server TLS</strong> — SSE endpoints must use HTTPS in non-local environments; avoid plain HTTP over untrusted networks.</li>
+          </ul>
+
+          <div class="callout">
+            🔑 The most common MCP misconfiguration is checking a token directly into <code>.vscode/mcp.json</code>. Always use <code>${env:MY_TOKEN}</code> and set the variable in your shell profile or CI secret store.
+          </div>
+        </section>
+
+        <section id="mcp-tool-discovery" role="article">
+          <h2>Tool Discovery</h2>
+
+          <p>Once an MCP server is configured and running, Copilot automatically queries it for its available tools via the <code>tools/list</code> RPC call. The server responds with a manifest of each tool — name, description, and parameter schema — which Copilot uses to decide when and how to call it.</p>
+
+          <h3>How Copilot Selects a Tool</h3>
+          <ol>
+            <li><strong>User sends a message</strong> — e.g. "Show me the open PRs on the main branch".</li>
+            <li><strong>Model scans the tool manifest</strong> — it evaluates each tool's name and description against the user's intent.</li>
+            <li><strong>Model constructs a tool call</strong> — it generates a JSON payload matching the tool's parameter schema.</li>
+            <li><strong>Host executes the call</strong> — the MCP host routes the request to the appropriate server and returns the JSON response.</li>
+            <li><strong>Model synthesises the answer</strong> — the tool result is injected as context and the model formulates its final response.</li>
+          </ol>
+
+          <h3>Writing Effective Tool Descriptions</h3>
+          <p>The model cannot see your server's source code — it only sees the tool name and description. A well-written description dramatically improves how reliably Copilot picks the right tool.</p>
+          <table class="table table-striped">
+            <thead>
+              <tr><th>Principle</th><th>Poor example</th><th>Better example</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>State the action verb</td><td><code>PR data</code></td><td><code>List open pull requests for a repository</code></td></tr>
+              <tr><td>Name key parameters</td><td><code>Get issues</code></td><td><code>Search GitHub issues by label, assignee, or state</code></td></tr>
+              <tr><td>Describe the return value</td><td><code>Run a query</code></td><td><code>Execute a SQL query and return rows as JSON</code></td></tr>
+              <tr><td>Distinguish from similar tools</td><td><code>Read file</code></td><td><code>Read a file from the local filesystem (use for source code, config, logs)</code></td></tr>
+              <tr><td>Include domain keywords</td><td><code>Get data</code></td><td><code>Fetch Azure DevOps work items by sprint or area path</code></td></tr>
+            </tbody>
+          </table>
+
+          <h3>Inspecting the Tool Manifest</h3>
+          <p>You can inspect what tools an MCP server advertises directly from VS Code:</p>
+          <ol>
+            <li>Open the Command Palette (<kbd>Ctrl/Cmd+Shift+P</kbd>) → <strong>MCP: List Servers</strong>.</li>
+            <li>Select the server → <strong>Show Tools</strong> to see the full manifest including each tool's parameter schema.</li>
+            <li>Use <strong>MCP: Restart Server</strong> after modifying a server's tool list to force a re-discovery.</li>
+          </ol>
+
+          <h3>Tool Namespacing and Conflicts</h3>
+          <ul>
+            <li>When multiple MCP servers expose a tool with the same name, Copilot qualifies calls with the server name (e.g. <code>github.search_issues</code> vs <code>jira.search_issues</code>).</li>
+            <li>Give each server a descriptive key in the config (e.g. <code>"github-readonly"</code>, <code>"postgres-analytics"</code>) — this becomes the namespace prefix and affects how the model references tools.</li>
+            <li>Avoid generic tool names like <code>get</code>, <code>search</code>, <code>run</code> — they clash across servers and confuse selection.</li>
+          </ul>
+
+          <h3>Debugging Tool Calls</h3>
+          <ul>
+            <li><strong>VS Code Output panel</strong> → select <em>GitHub Copilot (MCP)</em> channel to see raw tool call requests and responses in real time.</li>
+            <li><strong>Tool call transparency</strong> — Copilot shows which tool it called and the arguments used in the chat response (look for the collapsed "Used tool" disclosure).</li>
+            <li><strong>Server logs</strong> — for stdio servers, add console logging to your server code; output appears in the MCP output channel.</li>
+            <li><strong>Schema validation errors</strong> — if the model generates a malformed call, the host returns a structured error; check the output channel for <code>INVALID_PARAMS</code> messages and tighten your parameter schema descriptions.</li>
+          </ul>
+
+          <h3>Error Handling &amp; Fallback Behaviour</h3>
+          <p>MCP tool calls can fail in several ways — knowing how Copilot responds prevents silent issues:</p>
+          <table class="table table-striped">
+            <thead>
+              <tr><th>Failure Type</th><th>What Copilot Does</th><th>How to Resolve</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Tool returns an error JSON</td><td>Injects the error message into context; may attempt a different tool or ask the user for clarification</td><td>Improve error messages in your server code — make them actionable (e.g. "Permission denied: token needs <code>repo:read</code> scope")</td></tr>
+              <tr><td>Tool call times out</td><td>Reports timeout to the user; does not automatically retry</td><td>Add a timeout parameter to your tool and return a partial result rather than hanging</td></tr>
+              <tr><td>Server is unreachable</td><td>Shows a "Server unavailable" warning; skips the tool and proceeds without it</td><td>Check <strong>MCP: List Servers</strong> status; use <strong>MCP: Restart Server</strong> to reconnect</td></tr>
+              <tr><td><code>INVALID_PARAMS</code> from schema mismatch</td><td>Logs the error in the MCP output channel; the model may retry with adjusted arguments</td><td>Inspect the Output panel for the exact schema violation; tighten descriptions of optional vs. required parameters</td></tr>
+              <tr><td>Server crashes mid-session</td><td>Marks the server as stopped; tool calls to that server fail until restart</td><td>Configure <code>"autoRestart": true</code> in the server config (stdio servers only) so VS Code restarts the process automatically</td></tr>
+            </tbody>
+          </table>
+          <div class="callout">
+            💡 MCP tool failures are <strong>non-fatal</strong> — Copilot will try to answer using whatever context it has, noting what it couldn't retrieve. Build tool descriptions and error messages to guide recovery: tell the model (and the user) <em>why</em> a call failed and what action would fix it.
+          </div>
+
+          <div class="callout">
+            🛠 If Copilot isn't calling your MCP tool when you expect it to, the description is almost always the culprit. Rewrite it to explicitly match the user phrasing you expect — treat it like writing a search-engine meta description, not an API comment.
+          </div>
+        </section>
+
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+
+        <section id="plugins-overview" role="article">
+          <h1>🧩 Plugins</h1>
+          <span class="badge">plugins</span>
+          <span class="badge">extensions</span>
+
+          <p><strong>Copilot Plugins</strong> are packaged VS Code extensions (or GitHub Apps) that expose additional capabilities to Copilot Chat — things like slash commands, context providers, chat participants, and inline actions. Where MCP servers extend what Copilot can <em>do</em> (call tools), plugins extend how Copilot <em>presents</em> in the UI and what extra context it can pull from the IDE or external systems.</p>
+
+          <div class="callout">
+            🧩 A plugin is to Copilot what an add-in is to a spreadsheet — it deepens integration with specific platforms, workflows, or data sources without you having to manually describe that context in every prompt.
+          </div>
+
+          <h2>What Plugins Can Provide</h2>
+          <table class="table table-striped">
+            <thead>
+              <tr><th>Capability</th><th>Description</th><th>Example</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Chat Participants</td><td>Named <code>@agents</code> in chat that focus Copilot on a specific domain</td><td><code>@azure</code>, <code>@docker</code>, <code>@databases</code></td></tr>
+              <tr><td>Slash Commands</td><td>Custom <code>/command</code> shortcuts that trigger specific behaviours</td><td><code>/deploy</code>, <code>/explain-pr</code>, <code>/runtest</code></td></tr>
+              <tr><td>Context Providers</td><td>Inject structured data into Copilot's context automatically</td><td>Active sprint items, open incidents, dependency graph</td></tr>
+              <tr><td>Inline Actions</td><td>Editor toolbar or right-click menu items that invoke Copilot with pre-built prompts</td><td>"Explain this query", "Generate migration"</td></tr>
+              <tr><td>Code Lens Providers</td><td>Decorations above functions/classes that invoke Copilot actions</td><td>"Ask Copilot", "Generate test", "Fix vulnerability"</td></tr>
+            </tbody>
+          </table>
+
+          <h2>Plugins vs MCP vs Skills</h2>
+          <table class="table table-striped">
+            <thead>
+              <tr><th>Mechanism</th><th>Packaged as</th><th>Extends</th><th>Best for</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Plugin</td><td>VS Code Extension / GitHub App</td><td>UI surface, chat participants, commands</td><td>Deep IDE integration, named agents, slash commands</td></tr>
+              <tr><td>MCP Server</td><td>Standalone process (Node, Python…)</td><td>Tool-calling capability</td><td>Live data access, API integrations, stateful actions</td></tr>
+              <tr><td>Skill</td><td><code>SKILL.md</code> file in a folder</td><td>Copilot's knowledge</td><td>Domain playbooks, prompt templates loaded on demand</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="plugins-installing" role="article">
+          <h2>Installing Plugins</h2>
+
+          <p>Copilot plugins are distributed as ordinary VS Code extensions. Installing them also registers their chat participants and commands with Copilot Chat automatically — no separate activation step is required.</p>
+
+          <h3>Installing from the VS Code Marketplace</h3>
+          <ol>
+            <li>Open the Extensions view (<kbd>Ctrl/Cmd+Shift+X</kbd>) or go to the VS Code Marketplace website.</li>
+            <li>Search for the plugin by name (e.g. <em>"GitHub Copilot for Azure"</em>, <em>"Docker"</em>, <em>"Databases"</em>).</li>
+            <li>Click <strong>Install</strong>. The extension activates immediately — no restart required in most cases.</li>
+            <li>Open Copilot Chat and type <code>@</code> to see the new participant listed, or <code>/</code> to see new slash commands.</li>
+          </ol>
+
+          <h3>Installing via the CLI</h3>
+          <pre class="syntax-highlighted" data-language="bash"><code># Install by extension ID
+code --install-extension ms-azuretools.vscode-azure-github-copilot
+
+# Install a specific version
+code --install-extension ms-azuretools.vscode-azure-github-copilot@1.2.0
+
+# Install from a local .vsix file (e.g. internal/private plugin)
+code --install-extension ./my-company-copilot-plugin-1.0.0.vsix</code></pre>
+
+          <h3>Installing via devcontainer or Workspace Recommendations</h3>
+          <pre class="syntax-highlighted" data-language="json"><code>// .vscode/extensions.json — recommends plugins to all team members
+{
+  "recommendations": [
+    "ms-azuretools.vscode-azure-github-copilot",
+    "ms-vscode.vscode-github-copilot-data",
+    "github.copilot-labs"
+  ]
+}</code></pre>
+          <p>Team members opening the workspace will see a prompt to install all recommended extensions, including any Copilot plugins.</p>
+
+          <pre class="syntax-highlighted" data-language="json"><code>// .devcontainer/devcontainer.json — auto-installs in dev containers
+{
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-azuretools.vscode-azure-github-copilot",
+        "github.vscode-github-actions"
+      ]
+    }
+  }
+}</code></pre>
+
+          <h3>GitHub Apps as Copilot Plugins</h3>
+          <p>On GitHub.com, some plugins are distributed as <strong>GitHub Apps</strong> rather than VS Code extensions. These extend Copilot in the GitHub web UI (PR summaries, issue analysis, code reviews):</p>
+          <ol>
+            <li>Go to <strong>github.com/marketplace</strong> and filter by <em>Copilot</em>.</li>
+            <li>Select the app and click <strong>Install it for free</strong> (or your organisation's billing option).</li>
+            <li>Choose the repositories or organisation scope to grant access to.</li>
+            <li>The app's Copilot features activate immediately on the granted repositories.</li>
+          </ol>
+
+          <div class="callout">
+            🔐 GitHub App plugins request specific repository/organisation permissions during installation. Review the requested scopes carefully — prefer <em>Selected repositories</em> over <em>All repositories</em> to limit the blast radius of a compromised token.
+          </div>
+        </section>
+
+        <section id="plugins-managing" role="article">
+          <h2>Managing Plugins</h2>
+
+          <p>Once installed, plugins appear as regular VS Code extensions. You can enable, disable, update, configure, and uninstall them through the same Extensions view used for all other extensions.</p>
+
+          <h3>Enabling and Disabling</h3>
+          <ul>
+            <li><strong>Globally</strong> — right-click the extension in the Extensions view → <em>Disable</em> to stop it loading in all workspaces.</li>
+            <li><strong>Per workspace</strong> — right-click → <em>Disable (Workspace)</em> to suppress it only in the current project without affecting other workspaces.</li>
+            <li>Disabling a plugin removes its chat participants and slash commands from Copilot Chat immediately — you will see them disappear from the <code>@</code> and <code>/</code> pickers.</li>
+          </ul>
+
+          <h3>Updating Plugins</h3>
+          <ul>
+            <li>VS Code auto-updates extensions by default. To control update behaviour: <strong>Settings → Extensions → Auto Update</strong>.</li>
+            <li>To update a specific plugin manually: Extensions view → filter by <em>Outdated</em> → click <strong>Update</strong> next to the plugin.</li>
+            <li>To pin a plugin at a specific version: right-click → <em>Install Another Version</em> → select the version → then disable auto-update for that extension.</li>
+          </ul>
+
+          <h3>Configuring Plugin Settings</h3>
+          <p>Most plugins expose settings under the standard VS Code settings UI. Typical settings categories:</p>
+          <table class="table table-striped">
+            <thead>
+              <tr><th>Setting type</th><th>Where to set it</th><th>Example</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Authentication / credentials</td><td>VS Code settings or OS keychain (via the extension's auth flow)</td><td>Azure subscription ID, API endpoint URL</td></tr>
+              <tr><td>Scope / filter</td><td><code>settings.json</code> — workspace or user</td><td>Which resource groups to surface, which repos to include</td></tr>
+              <tr><td>Feature toggles</td><td><code>settings.json</code></td><td>Enable/disable specific slash commands or inline actions</td></tr>
+              <tr><td>Logging verbosity</td><td><code>settings.json</code></td><td>Set to <code>"verbose"</code> when debugging tool call failures</td></tr>
+            </tbody>
+          </table>
+
+          <h3>Auditing Installed Plugins</h3>
+          <p>In enterprise environments, track which Copilot plugins are installed across the team to manage security and licensing:</p>
+          <ul>
+            <li><strong>Extensions view → filter "Installed"</strong> — manually review the list; look for the Copilot chat participant icon to identify Copilot-contributing plugins.</li>
+            <li><strong><code>.vscode/extensions.json</code> <code>unwantedRecommendations</code></strong> — list extension IDs here to suppress VS Code prompts to install them in this workspace.</li>
+            <li><strong>VS Code Policy (enterprise)</strong> — use <code>extensionsInstallAllowlist</code> in the VS Code policy file to restrict which extensions (including plugins) team members can install on managed devices.</li>
+          </ul>
+
+          <h3>Uninstalling</h3>
+          <ul>
+            <li>Extensions view → right-click the plugin → <em>Uninstall</em>. The participant and commands are removed from Copilot Chat immediately.</li>
+            <li>For GitHub Apps: go to <strong>github.com → Settings → Applications → Installed GitHub Apps</strong> → <em>Configure</em> → <em>Uninstall</em>.</li>
+          </ul>
+
+          <div class="callout">
+            🛡 Treat Copilot plugins with the same scrutiny as any other code that runs in your IDE. A plugin with broad file-system or network permissions can exfiltrate secrets or code. Only install plugins from publishers you trust, and review the permissions they request.
+          </div>
+        </section>
+
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+
+        <section id="glossary" role="article">
+          <h1>📖 Glossary</h1>
+          <span class="badge">terms</span>
+          <span class="badge">definitions</span>
+
+          <p>Quick-reference definitions for every term used across the Copilot customization surface.</p>
+
+          <table class="table table-striped">
+            <thead>
+              <tr><th>Term</th><th>Definition</th><th>Where used</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Agent</strong></td>
+                <td>A named AI persona defined in a <code>.agent.md</code> file. Agents combine a system prompt, tool permissions, model selection, and optional skills into a reusable workflow mode invoked via <code>@agent-name</code> in chat.</td>
+                <td>Agents section</td>
+              </tr>
+              <tr>
+                <td><strong>applyTo</strong></td>
+                <td>A glob pattern in an instruction file's YAML frontmatter that controls which files trigger automatic inclusion of that instruction. E.g. <code>applyTo: "**/*.ts"</code> applies the instruction whenever a TypeScript file is in context.</td>
+                <td>Instructions section</td>
+              </tr>
+              <tr>
+                <td><strong>Chat Participant</strong></td>
+                <td>A named <code>@handle</code> in Copilot Chat backed by a VS Code extension or GitHub App. Chat participants can receive user messages and respond with structured output, code, or UI actions.</td>
+                <td>Plugins section</td>
+              </tr>
+              <tr>
+                <td><strong>Context Provider</strong></td>
+                <td>A plugin capability that automatically injects structured data (e.g. open tickets, sprint board, live metrics) into Copilot's context without the user needing to attach files manually.</td>
+                <td>Plugins section</td>
+              </tr>
+              <tr>
+                <td><strong>copilot-instructions.md</strong></td>
+                <td>The repository-level instruction file at <code>.github/copilot-instructions.md</code>. Always included in Copilot's context for any request made in that repository — the highest-priority persistent instruction file.</td>
+                <td>Instructions section</td>
+              </tr>
+              <tr>
+                <td><strong>Frontmatter</strong></td>
+                <td>YAML metadata block at the top of a <code>.md</code> file enclosed by <code>---</code> delimiters. Used in <code>.agent.md</code>, <code>.prompt.md</code>, and <code>.instructions.md</code> files to declare metadata like <code>name</code>, <code>description</code>, <code>applyTo</code>, and <code>mode</code>.</td>
+                <td>All customization files</td>
+              </tr>
+              <tr>
+                <td><strong>Hook</strong></td>
+                <td>An event-driven trigger that automatically runs a <code>.prompt.md</code> or agent workflow when a specific IDE event fires — such as saving a file, creating a commit, or completing a build. Configured in <code>.github/copilot/hooks.yml</code>.</td>
+                <td>Hooks section</td>
+              </tr>
+              <tr>
+                <td><strong>Inline Suggestion</strong></td>
+                <td>The ghost-text completion Copilot offers as you type in the editor (not in chat). Accepts with <kbd>Tab</kbd>. Influenced by open files, instructions, and cursor context but not by skills or agents.</td>
+                <td>General Copilot concepts</td>
+              </tr>
+              <tr>
+                <td><strong>Instructions file</strong> (<code>.instructions.md</code>)</td>
+                <td>A Markdown file with optional <code>applyTo</code> frontmatter that injects persistent rules, conventions, or constraints into Copilot's system prompt. Stored in <code>.github/instructions/</code> or <code>.copilot/instructions/</code>.</td>
+                <td>Instructions section</td>
+              </tr>
+              <tr>
+                <td><strong>MCP (Model Context Protocol)</strong></td>
+                <td>An open standard that lets Copilot call external tools via a structured JSON-RPC protocol over stdio or SSE. MCP servers expose <em>tools</em> Copilot can invoke to read/write data or trigger actions in external systems.</td>
+                <td>MCP section</td>
+              </tr>
+              <tr>
+                <td><strong>MCP Server</strong></td>
+                <td>A standalone process (any language) that implements the MCP protocol. Configured in <code>.vscode/mcp.json</code> or user settings. Copilot discovers its available tools automatically at session start.</td>
+                <td>MCP section</td>
+              </tr>
+              <tr>
+                <td><strong>Mode</strong></td>
+                <td>The interaction model for an agent: <code>ask</code> (read-only conversation), <code>edit</code> (can modify files), or <code>agent</code> (full agentic loop with tool use and multi-step planning). Set in <code>.agent.md</code> frontmatter.</td>
+                <td>Agents section</td>
+              </tr>
+              <tr>
+                <td><strong>Plugin</strong></td>
+                <td>A VS Code extension or GitHub App that extends Copilot's UI surface — adding chat participants (<code>@name</code>), slash commands (<code>/command</code>), context providers, or Code Lens actions. Installed through the VS Code Marketplace or GitHub Marketplace.</td>
+                <td>Plugins section</td>
+              </tr>
+              <tr>
+                <td><strong>Prompt file</strong> (<code>.prompt.md</code>)</td>
+                <td>A reusable prompt template stored in <code>.github/prompts/</code> or <code>.copilot/prompts/</code>. Can be invoked by name in chat (<code>/prompt-name</code>), by a hook, or by another agent. Supports <code>${{ variable }}</code> interpolation.</td>
+                <td>Prompts section</td>
+              </tr>
+              <tr>
+                <td><strong>Skill</strong></td>
+                <td>A domain knowledge package consisting of a <code>SKILL.md</code> file and optional supporting assets, stored in a named folder. Loaded on demand when Copilot's routing logic matches the user's request to the skill's <code>description</code>.</td>
+                <td>Skills section</td>
+              </tr>
+              <tr>
+                <td><strong>Slash Command</strong></td>
+                <td>A <code>/keyword</code> shortcut in Copilot Chat that triggers a specific behaviour. Built-in commands include <code>/explain</code>, <code>/fix</code>, <code>/tests</code>. Plugins can register additional slash commands.</td>
+                <td>Plugins section</td>
+              </tr>
+              <tr>
+                <td><strong>stdio transport</strong></td>
+                <td>An MCP connection method where VS Code spawns the MCP server as a child process and communicates via standard input/output streams. Simpler and more secure than SSE — preferred for local tools.</td>
+                <td>MCP section</td>
+              </tr>
+              <tr>
+                <td><strong>SSE transport</strong></td>
+                <td>Server-Sent Events — an MCP connection method where VS Code connects to an already-running HTTP server via a URL. Used for remote or shared MCP servers accessible over a network.</td>
+                <td>MCP section</td>
+              </tr>
+              <tr>
+                <td><strong>System Prompt</strong></td>
+                <td>The hidden instructions Copilot receives before every conversation. Includes VS Code's base instructions plus any applicable instruction files, agent definitions, and skill content. Not directly visible to users.</td>
+                <td>Instructions, Agents sections</td>
+              </tr>
+              <tr>
+                <td><strong>Tool Call</strong></td>
+                <td>When Copilot invokes an MCP tool or built-in capability (file read, terminal command, etc.) during an agentic session to gather information or perform an action, rather than answering from its training data alone.</td>
+                <td>MCP, Agents sections</td>
+              </tr>
+              <tr>
+                <td><strong>Variable interpolation</strong></td>
+                <td>The substitution of <code>${{ variableName }}</code> placeholders in prompt files with actual values at runtime — for example <code>${{ workspaceFolder }}</code>, <code>${{ file }}</code>, or custom parameters defined in the prompt's frontmatter.</td>
+                <td>Prompts section</td>
+              </tr>
+              <tr>
+                <td><strong>Composability</strong></td>
+                <td>The ability to combine multiple customization files — instructions, skills, prompts, MCP servers — independently and in layers. Multiple <code>.instructions.md</code> files matching the same file are all applied simultaneously; MCP servers from different providers coexist in the same session.</td>
+                <td>Instructions, MCP, Skills sections</td>
+              </tr>
+              <tr>
+                <td><strong>Persona</strong></td>
+                <td>The role or character that a custom agent or prompt adopts — defined in the Markdown body of an <code>.agent.md</code> file. E.g. "You are a meticulous security reviewer." The persona shapes tone, priorities, and constraints for that agent's responses.</td>
+                <td>Agents section</td>
+              </tr>
+              <tr>
+                <td><strong>Routing</strong></td>
+                <td>The process by which Copilot (or the underlying model) decides which skill, MCP tool, or agent to invoke for a given user message. Routing is driven by matching the user's intent against each option's <code>description</code> field.</td>
+                <td>Skills, MCP sections</td>
+              </tr>
+              <tr>
+                <td><strong>Scoped vs. global</strong></td>
+                <td><em>Global</em> customizations (e.g. <code>copilot-instructions.md</code> with <code>applyTo: **</code>) apply to every request in the workspace. <em>Scoped</em> customizations (e.g. an <code>.instructions.md</code> with a narrow <code>applyTo</code> pattern) apply only when the active file matches that scope.</td>
+                <td>Instructions section</td>
+              </tr>
+              <tr>
+                <td><strong>JSON-RPC</strong></td>
+                <td>The lightweight remote-procedure-call protocol used by the Model Context Protocol. MCP clients and servers exchange JSON-RPC 2.0 messages (tool/list, tools/call, resources/list, etc.) over either stdio or SSE transports.</td>
+                <td>MCP section</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="resources" role="article">
+          <h1>📚 Resources</h1>
+          <span class="badge">docs</span>
+          <span class="badge">community</span>
+
+          <p>Curated links to official documentation, tooling, and community resources for every Copilot customization mechanism covered in this guide.</p>
+
+          <h2>Official Documentation</h2>
+          <table class="table table-striped">
+            <thead>
+              <tr><th>Topic</th><th>Resource</th><th>What you'll find</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Customizing Copilot (overview)</td>
+                <td><a href="https://docs.github.com/en/copilot/customizing-copilot" target="_blank">docs.github.com/en/copilot/customizing-copilot</a></td>
+                <td>Entry point for all customization features — instruction files, prompt files, agents, MCP</td>
+              </tr>
+              <tr>
+                <td>Copilot Instructions</td>
+                <td><a href="https://docs.github.com/en/copilot/customizing-copilot/adding-repository-instructions-for-github-copilot" target="_blank">Adding repository instructions</a></td>
+                <td>How to create <code>copilot-instructions.md</code> and scoped instruction files</td>
+              </tr>
+              <tr>
+                <td>Prompt files</td>
+                <td><a href="https://docs.github.com/en/copilot/customizing-copilot/reusing-prompts-in-github-copilot" target="_blank">Reusing prompts in GitHub Copilot</a></td>
+                <td>Creating <code>.prompt.md</code> files, variables, and invoking from chat</td>
+              </tr>
+              <tr>
+                <td>Custom agents (chat modes)</td>
+                <td><a href="https://docs.github.com/en/copilot/customizing-copilot/creating-a-custom-ai-model-in-github-copilot" target="_blank">Creating a custom AI model (agent)</a></td>
+                <td>Frontmatter reference, mode types, tool permissions for <code>.agent.md</code></td>
+              </tr>
+              <tr>
+                <td>MCP in VS Code Copilot</td>
+                <td><a href="https://code.visualstudio.com/docs/copilot/chat/mcp-servers" target="_blank">code.visualstudio.com/docs/copilot/chat/mcp-servers</a></td>
+                <td>Configuring MCP servers in <code>mcp.json</code>, tool discovery, stdio vs SSE</td>
+              </tr>
+              <tr>
+                <td>Model Context Protocol spec</td>
+                <td><a href="https://modelcontextprotocol.io/docs" target="_blank">modelcontextprotocol.io/docs</a></td>
+                <td>Official MCP specification — protocol, transports, tool schemas, security model</td>
+              </tr>
+              <tr>
+                <td>GitHub Copilot Extensions</td>
+                <td><a href="https://docs.github.com/en/copilot/building-copilot-extensions" target="_blank">Building Copilot Extensions</a></td>
+                <td>Creating GitHub Apps that act as Copilot chat participants (plugins)</td>
+              </tr>
+              <tr>
+                <td>VS Code Extension API (chat)</td>
+                <td><a href="https://code.visualstudio.com/api/extension-guides/chat" target="_blank">VS Code Chat Extension Guide</a></td>
+                <td>Building VS Code plugins that register chat participants and slash commands</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h2>Tools &amp; Repositories</h2>
+          <table class="table table-striped">
+            <thead>
+              <tr><th>Tool</th><th>Link</th><th>Purpose</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>MCP Server SDK (TypeScript)</td>
+                <td><a href="https://github.com/modelcontextprotocol/typescript-sdk" target="_blank">github.com/modelcontextprotocol/typescript-sdk</a></td>
+                <td>Official SDK for building MCP servers in TypeScript/Node.js</td>
+              </tr>
+              <tr>
+                <td>MCP Server SDK (Python)</td>
+                <td><a href="https://github.com/modelcontextprotocol/python-sdk" target="_blank">github.com/modelcontextprotocol/python-sdk</a></td>
+                <td>Official SDK for building MCP servers in Python</td>
+              </tr>
+              <tr>
+                <td>MCP Server Registry</td>
+                <td><a href="https://github.com/modelcontextprotocol/servers" target="_blank">github.com/modelcontextprotocol/servers</a></td>
+                <td>Community-curated list of ready-to-use MCP servers (filesystem, git, GitHub, databases, Playwright, etc.)</td>
+              </tr>
+              <tr>
+                <td>GitHub Copilot Customization Evaluations</td>
+                <td>VS Code extension: <code>ms-vscode.vscode-chat-customizations-evaluations</code></td>
+                <td>Lints and evaluates your <code>.instructions.md</code> and <code>.agent.md</code> files inside VS Code</td>
+              </tr>
+              <tr>
+                <td>Spec Kit</td>
+                <td><a href="https://github.com/github/spec-kit" target="_blank">github.com/github/spec-kit</a></td>
+                <td>Template repository with pre-built instruction files, prompt templates, and agent definitions</td>
+              </tr>
+              <tr>
+                <td>GitHub Awesome Copilot</td>
+                <td><a href="https://github.com/github/awesome-copilot" target="_blank">github.com/github/awesome-copilot</a></td>
+                <td>Community-curated collection of Copilot instructions, prompts, and workflows</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h2>Learning &amp; Community</h2>
+          <ul>
+            <li><a href="https://github.blog/category/product/copilot/" target="_blank">GitHub Blog — Copilot</a> — product announcements, new features, and deep-dives from the GitHub Copilot team.</li>
+            <li><a href="https://github.com/orgs/community/discussions/categories/copilot" target="_blank">GitHub Community Discussions — Copilot</a> — ask questions, share customization patterns, and follow feature requests.</li>
+            <li><a href="https://discord.gg/modelcontextprotocol" target="_blank">MCP Community Discord</a> — active discussion channel for MCP server development, integration patterns, and troubleshooting.</li>
+            <li><a href="https://learn.microsoft.com/training/paths/copilot/" target="_blank">Microsoft Learn — GitHub Copilot path</a> — structured learning path covering Copilot fundamentals through advanced customization.</li>
+            <li><a href="https://www.youtube.com/@GitHub" target="_blank">GitHub YouTube Channel</a> — demo videos, "What's New in Copilot" recaps, and live-coding sessions featuring customization patterns.</li>
+          </ul>
+
+          <h2>Quick Reference Card</h2>
+          <table class="table table-striped">
+            <thead>
+              <tr><th>Customization</th><th>File / Location</th><th>Scope</th><th>Primary use</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Repository instructions</td><td><code>.github/copilot-instructions.md</code></td><td>Repo-wide, always active</td><td>Coding standards, tech stack, PR conventions</td></tr>
+              <tr><td>Scoped instructions</td><td><code>.github/instructions/*.instructions.md</code></td><td>Files matching <code>applyTo</code> glob</td><td>Per-language or per-folder rules</td></tr>
+              <tr><td>Prompt templates</td><td><code>.github/prompts/*.prompt.md</code></td><td>On-demand / hook-triggered</td><td>Reusable tasks, PR summaries, ADRs</td></tr>
+              <tr><td>Custom agents</td><td><code>.github/agents/*.agent.md</code></td><td>On-demand via <code>@name</code></td><td>Domain specialists, review bots, workflow personas</td></tr>
+              <tr><td>Skills</td><td><code>.agents/skills/&lt;name&gt;/SKILL.md</code></td><td>Auto-loaded when description matches</td><td>Domain playbooks, runbooks, technology guides</td></tr>
+              <tr><td>Hooks</td><td><code>.github/copilot/hooks.yml</code></td><td>Event-triggered</td><td>Automate tasks on save / commit / build</td></tr>
+              <tr><td>MCP servers</td><td><code>.vscode/mcp.json</code></td><td>Workspace / user settings</td><td>Live data access, API integrations, tool calling</td></tr>
+              <tr><td>Plugins</td><td>VS Code Marketplace / GitHub Marketplace</td><td>Workspace or global</td><td>Chat participants, slash commands, inline actions</td></tr>
+            </tbody>
+          </table>
+
+          <hr />
+          <div class="document-footer">
+            <p>
+              <strong>Last Updated:</strong> July 2026 | 
+              <strong>Curated by:</strong> Murthy Vepa with ❤️ | <strong>Powered by:</strong> GitHub Copilot
+            </p>
+          </div>
+         </section>
+        </div>
+      </main>
+    </div>
+    
+    <nav class="controls" role="navigation" aria-label="Pagination">
+      <div class="btn-group" role="group">
+        <button class="btn btn-outline-info btn-sm" id="prevBtn" title="Previous" aria-label="Previous concept">&nbsp;&lt;&nbsp;</button>
+        <button class="btn btn-outline-info btn-sm" id="nextBtn" title="Next" aria-label="Next concept">&nbsp;&gt;&nbsp;</button>
+      </div>
+    </nav>
+  </div>  <div class="offcanvas offcanvas-start" tabindex="-1" id="sidebarOffcanvas" aria-labelledby="sidebarLabel">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title" id="sidebarLabel">Contents</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body p-0">
+      <ul class="list-group list-group-flush w-100" id="tocMobile"></ul>
+    </div>
+  </div>
+
+  <script>
+    // ---- Mermaid Initialization ----
+    document.addEventListener('DOMContentLoaded', () => {
+      if (window.mermaid) {
+        window.mermaid.contentLoaded();
+      }
+    });
+
+    // ---- Configuration ----
+    const sectionConfig = [
+      { id: "github-copilot-customization-introduction", title: "📖 Overview", tags: ["intro", "overview"] },
+      { id: "agents-overview", title: "🤖 Agents", tags: ["agents", "personas"] },
+      { id: "agents-definition", title: "Agent Definition", tags: ["agents"] },
+      { id: "agents-tools-access", title: "Tool Access & Permissions", tags: ["agents"] },
+      { id: "agents-builtin-vs-custom", title: "Built-in vs Custom Agents", tags: ["agents"] },
+      { id: "skills-overview", title: "💡 Skills", tags: ["skills", "knowledge"] },
+      { id: "skills-structure", title: "SKILL Structure", tags: ["skills"] },
+      { id: "skills-discovery", title: "Skill Discovery & Invocation", tags: ["skills"] },
+      { id: "instructions-overview", title: "📘 Instructions", tags: ["instructions", "guidance"] },
+      { id: "instructions-copilot-instructions", title: "copilot-instructions.md", tags: ["instructions"] },
+      { id: "instructions-applyto", title: ".instructions.md & applyTo", tags: ["instructions"] },
+      { id: "instructions-best-practices", title: "Best Practices", tags: ["instructions"] },
+      { id: "prompts-overview", title: "🔖 Prompts", tags: ["prompts", "reusable"] },
+      { id: "prompts-files", title: ".prompt.md Files", tags: ["prompts"] },
+      { id: "prompts-variables", title: "Prompt Variables", tags: ["prompts"] },
+      { id: "skills-instructions-prompts-comparison", title: "📊 Skills vs Instructions vs Prompts", tags: ["comparison", "skills", "instructions", "prompts"] },
+      { id: "hooks-overview", title: "⚡ Hooks", tags: ["hooks", "automation"] },
+      { id: "hooks-events", title: "Hook Events", tags: ["hooks"] },
+      { id: "hooks-configuration", title: "Hook Configuration", tags: ["hooks"] },
+      { id: "mcp-overview", title: "🔌 MCP Servers", tags: ["mcp", "tools"] },
+      { id: "mcp-configuration", title: "Configuring MCP Servers", tags: ["mcp"] },
+      { id: "mcp-tool-discovery", title: "Tool Discovery", tags: ["mcp"] },
+      { id: "plugins-overview", title: "🧩 Plugins", tags: ["plugins", "extensions"] },
+      { id: "plugins-installing", title: "Installing Plugins", tags: ["plugins"] },
+      { id: "plugins-managing", title: "Managing Plugins", tags: ["plugins"] },
+      { id: "glossary", title: "📖 Glossary", tags: ["terms", "definitions", "vocabulary"] },
+      { id: "resources", title: "📚 Resources", tags: ["docs", "community"] }
+    ];
+
+    // ---- State & rendering ----
+    const state = {
+      index: 0,
+      filtered: sectionConfig.map((_, i) => i), // indices
+    };
+
+    const els = {
+      toc: document.getElementById('toc'),
+      tocMobile: document.getElementById('tocMobile'),
+      prev: document.getElementById('prevBtn'),
+      next: document.getElementById('nextBtn'),
+      toggleSidebar: document.getElementById('toggleSidebar'),
+      themeToggle: document.getElementById('themeToggle'),
+      main: document.getElementById('main'),
+      sidebar: document.querySelector('nav.sidebar'),
+      sidebarOffcanvas: document.getElementById('sidebarOffcanvas')
+    };
+
+    function buildTOC(){
+      // Clear both TOC lists
+      els.toc.innerHTML = '';
+      els.tocMobile.innerHTML = '';
+      
+      state.filtered.forEach((idx) => {
+        const s = sectionConfig[idx];
+        
+        // Check if this is a sub-item (Scrum concepts under Definition of Scrum, ceremonies under Scrum Events, role details under Scrum Team & Roles, artifacts under Scrum Artifacts, modern practices under Modern Scrum Practices)
+        const isSubItem = ['agents-definition', 'agents-tools-access', 'agents-builtin-vs-custom', 'skills-structure', 'skills-discovery', 'instructions-copilot-instructions', 'instructions-applyto', 'instructions-best-practices', 'prompts-files', 'prompts-variables', 'hooks-events', 'hooks-configuration', 'mcp-configuration', 'mcp-tool-discovery', 'plugins-installing', 'plugins-managing'].includes(s.id);
+        
+        // Desktop sidebar
+        const liDesktop = document.createElement('li');
+        liDesktop.className = isSubItem ? 'list-group-sub-item' : 'list-group-item';
+        const aDesktop = document.createElement('a');
+        aDesktop.href = `#${s.id}`;
+        aDesktop.textContent = s.title;
+        aDesktop.addEventListener('click', (e) => {
+          e.preventDefault();
+          navigateToId(s.id);
+          closeSidebar();
+        });
+        liDesktop.appendChild(aDesktop);
+        els.toc.appendChild(liDesktop);
+        
+        // Mobile offcanvas
+        const liMobile = document.createElement('li');
+        liMobile.className = isSubItem ? 'list-group-sub-item' : 'list-group-item';
+        const aMobile = document.createElement('a');
+        aMobile.href = `#${s.id}`;
+        aMobile.textContent = s.title;
+        aMobile.addEventListener('click', (e) => {
+          e.preventDefault();
+          navigateToId(s.id);
+          closeSidebar();
+        });
+        liMobile.appendChild(aMobile);
+        els.tocMobile.appendChild(liMobile);
+      });
+      highlightActiveTOC();
+    }
+
+    function setActiveByIndex(i){
+      const ids = state.filtered.map(idx => sectionConfig[idx].id);
+      document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+      const id = ids[i];
+      const active = document.getElementById(id);
+      if (active){
+        active.classList.add('active');
+        active.setAttribute('tabindex', '-1');
+        active.focus({preventScroll:true});
+      }
+      updateControls();
+      highlightActiveTOC();
+      updateURLHash(id);
+    }
+
+    function updateControls(){
+      const count = state.filtered.length;
+      els.prev.disabled = state.index <= 0;
+      els.next.disabled = state.index >= count - 1;
+    }
+
+    function filterTOC(query){
+      const q = query.trim().toLowerCase();
+      state.filtered = sectionConfig
+        .map((s, i) => ({s, i}))
+        .filter(({s}) => s.title.toLowerCase().includes(q) || s.tags.some(t => t.toLowerCase().includes(q)))
+        .map(({i}) => i);
+
+      state.index = Math.min(state.index, Math.max(0, state.filtered.length - 1));
+      buildTOC();
+      setActiveByIndex(state.index);
+    }
+
+    function navigate(delta){
+      const count = state.filtered.length;
+      const nextIndex = Math.min(Math.max(state.index + delta, 0), count - 1);
+      if (nextIndex !== state.index){
+        state.index = nextIndex;
+        setActiveByIndex(state.index);
+        // Scroll content to top
+        const contentEl = document.querySelector('.content');
+        if (contentEl) contentEl.scrollTop = 0;
+      }
+    }
+
+    function navigateToId(id){
+      const idxInFiltered = state.filtered.findIndex(fi => sectionConfig[fi].id === id);
+      if (idxInFiltered !== -1){
+        state.index = idxInFiltered;
+        setActiveByIndex(state.index);
+        // Scroll content to top
+        const contentEl = document.querySelector('.content');
+        if (contentEl) contentEl.scrollTop = 0;
+      } else {
+        state.filtered = sectionConfig.map((_, i) => i);
+        buildTOC();
+        navigateToId(id);
+      }
+    }
+
+    function updateURLHash(id){
+      const url = new URL(window.location);
+      url.hash = id;
+      history.replaceState(null, '', url);
+    }
+
+    function highlightActiveTOC(){
+      const ids = state.filtered.map(idx => sectionConfig[idx].id);
+      const activeId = ids[state.index];
+      
+      // Highlight desktop sidebar
+      let activeDesktopLink = null;
+      els.toc.querySelectorAll('a').forEach(a => {
+        const isActive = a.getAttribute('href') === `#${activeId}`;
+        a.classList.toggle('active', isActive);
+        if (isActive) activeDesktopLink = a;
+      });
+      
+      // Highlight mobile offcanvas
+      let activeMobileLink = null;
+      els.tocMobile.querySelectorAll('a').forEach(a => {
+        const isActive = a.getAttribute('href') === `#${activeId}`;
+        a.classList.toggle('active', isActive);
+        if (isActive) activeMobileLink = a;
+      });
+      
+      // Scroll active item into view in sidebar
+      if (activeDesktopLink) {
+        activeDesktopLink.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+      if (activeMobileLink) {
+        activeMobileLink.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    }
+
+    function openSidebar(){
+      const offcanvas = new bootstrap.Offcanvas(document.getElementById('sidebarOffcanvas'));
+      offcanvas.show();
+    }
+    function closeSidebar(){
+      const offcanvasElement = document.getElementById('sidebarOffcanvas');
+      const offcanvas = bootstrap.Offcanvas.getInstance(offcanvasElement);
+      if(offcanvas) offcanvas.hide();
+    }
+
+    // ---- Events ----
+    els.prev.addEventListener('click', () => navigate(-1));
+    els.next.addEventListener('click', () => navigate(1));
+
+    // Keyboard navigation
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') navigate(-1);
+      else if (e.key === 'ArrowRight') navigate(1);
+      else if (e.key === 'Escape') closeSidebar();
+    });
+
+    // Deep linking on load/hash change
+    window.addEventListener('hashchange', () => {
+      const id = location.hash.replace('#','');
+      if (id) navigateToId(id);
+    });
+
+    // Sidebar toggle (mobile)
+    els.toggleSidebar.addEventListener('click', () => {
+      openSidebar();
+    });
+
+    // Restore theme
+    (function(){
+      try {
+        const saved = localStorage.getItem('concepts-theme');
+        if (saved) { 
+          document.documentElement.setAttribute('data-theme', saved);
+          els.themeToggle.textContent = saved === 'light' ? '🌗' : '🌙';
+        }
+      } catch {}
+    })();
+
+    // Initial render
+    buildTOC();
+
+    // Navigate to hash if present, otherwise show first section
+    const initialId = location.hash.replace('#','');
+    if (initialId){ 
+      navigateToId(initialId); 
+    } else {
+      setActiveByIndex(0);
+      // Scroll content to top on initial load
+      const contentEl = document.querySelector('.content');
+      if (contentEl) contentEl.scrollTop = 0;
+    }
+
+  </script>
+  <!-- Bootstrap JS -->
+  <script src="assets/scripts/bootstrap.bundle.min.js"></script>
+</body>
+</html>

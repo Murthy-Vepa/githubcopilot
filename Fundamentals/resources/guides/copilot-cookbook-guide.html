@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="A practical, single-page guide to all 35 examples in the GitHub Copilot Cookbook.">
+<title>GitHub Copilot Cookbook | MetLife Learning</title>
+<style>
+  :root {
+    --ink: #17212b; --muted: #5f6f7d; --paper: #f5f1e8; --paper-deep: #e9e1d3;
+    --white: #fffdf8; --navy: #102a43; --blue: #1769aa; --cyan: #0f9da8;
+    --coral: #e26d5a; --gold: #d9a441; --line: #d8d0c4;
+    --shadow: 0 18px 45px rgba(23,33,43,.10);
+    --display: 'Segoe UI', serif;
+    --body: 'Segoe UI', sans-serif;
+    --mono: 'Segoe UI', Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--body); line-height: 1.6; }
+  a { color: inherit; }
+  button, input { font: inherit; }
+  .shell { display: grid; grid-template-columns: 260px minmax(0, 1fr); min-height: 100vh; }
+  .rail { position: sticky; top: 0; height: 100vh; overflow-y: auto; padding: 28px 20px; background: var(--navy); color: #d9e8f2; }
+  .rail-mark { color: #7ed6d1; font-size: 11px; font-weight: 800; letter-spacing: 1.8px; text-transform: uppercase; }
+  .rail h2 { margin: 8px 0 24px; color: #fffdf8; font: 700 24px/1.05 var(--display); }
+  .rail-label { margin: 25px 0 8px; color: #88a7ba; font-size: 10px; font-weight: 800; letter-spacing: 1.4px; text-transform: uppercase; }
+  .rail a { display: block; padding: 7px 9px; border-left: 2px solid transparent; color: #c4d6e0; font-size: 12px; text-decoration: none; }
+  .rail a:hover, .rail a:focus { border-left-color: #7ed6d1; background: rgba(255,255,255,.06); color: #fff; }
+  .rail-footer { margin-top: 30px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,.14); color: #88a7ba; font-size: 11px; }
+  main { min-width: 0; }
+  .content { width: min(1160px, calc(100% - 64px)); margin: 0 auto; padding: 48px 0 80px; }
+  .hero { position: relative; overflow: hidden; min-height: 420px; padding: 54px 58px; background: var(--navy); color: #fffdf8; box-shadow: var(--shadow); }
+  .hero::after { content: ''; position: absolute; width: 300px; height: 300px; right: -70px; bottom: -125px; border: 45px solid rgba(126,214,209,.32); border-radius: 50%; }
+  .hero::before { content: ''; position: absolute; width: 125px; height: 125px; right: 190px; top: -45px; border: 20px solid rgba(226,109,90,.6); transform: rotate(27deg); }
+  .eyebrow { position: relative; z-index: 1; color: #7ed6d1; font-size: 11px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; }
+  h1 { position: relative; z-index: 1; max-width: 800px; margin: 18px 0; color: #fffdf8; font: 700 clamp(44px, 7vw, 82px)/.95 var(--display); letter-spacing: -2px; }
+  .hero p { position: relative; z-index: 1; max-width: 720px; margin: 0; color: #d9e8f2; font-size: 17px; }
+  .hero-meta { position: relative; z-index: 1; display: flex; flex-wrap: wrap; gap: 10px; margin-top: 30px; }
+  .tag { display: inline-flex; padding: 7px 11px; border: 1px solid rgba(255,255,255,.22); color: #fffdf8; font-size: 11px; }
+  .section { margin-top: 34px; padding: 32px 36px; background: var(--white); border: 1px solid var(--line); box-shadow: 0 8px 26px rgba(23,33,43,.05); }
+  .section-head { display: flex; align-items: flex-start; gap: 18px; margin-bottom: 22px; }
+  .section-number { flex: 0 0 auto; color: var(--coral); font: 700 28px/1 var(--display); }
+  h2 { margin: 0; color: var(--navy); font: 700 30px/1.08 var(--display); }
+  h3 { margin: 25px 0 8px; color: var(--navy); font-size: 18px; }
+  p { margin: 10px 0; }
+  .lede { color: var(--muted); font-size: 16px; }
+  .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+  .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .card { padding: 20px; background: #faf7f0; border: 1px solid var(--line); }
+  .card strong { display: block; margin-bottom: 5px; color: var(--navy); }
+  .card p, .card li { margin: 0; color: var(--muted); font-size: 14px; }
+  .callout { margin: 20px 0; padding: 17px 19px; border-left: 4px solid var(--cyan); background: #eaf6f4; }
+  .callout.warn { border-left-color: var(--coral); background: #fff0eb; }
+  .callout.gold { border-left-color: var(--gold); background: #fff8df; }
+  .callout strong { color: var(--navy); }
+  .principles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 22px 0; }
+  .principle { min-height: 126px; padding: 18px; color: #fffdf8; background: var(--navy); }
+  .principle:nth-child(2), .principle:nth-child(5) { background: var(--blue); }
+  .principle:nth-child(3) { background: var(--cyan); }
+  .principle:nth-child(4) { background: var(--coral); }
+  .principle:nth-child(6) { background: #7d5a26; }
+  .principle b { display: block; margin-bottom: 7px; font: 700 19px/1.1 var(--display); }
+  .principle span { display: block; color: rgba(255,255,255,.88); font-size: 13px; line-height: 1.45; }
+  .lesson-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 26px; }
+  .lesson-nav a { padding: 7px 10px; border: 1px solid var(--line); color: var(--blue); font-size: 12px; text-decoration: none; }
+  .lesson-nav a:hover, .lesson-nav a:focus { border-color: var(--blue); background: #edf6fb; }
+  .toolbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 22px 0 8px; }
+  .search { flex: 1 1 260px; min-width: 220px; padding: 12px 14px; border: 1px solid var(--line); background: var(--white); color: var(--ink); }
+  .search:focus, .filter:focus, .copy:focus { outline: 3px solid rgba(15,157,168,.25); outline-offset: 2px; }
+  .filter { padding: 12px 14px; border: 1px solid var(--line); background: var(--white); color: var(--navy); }
+  .result-count { margin-left: auto; color: var(--muted); font-size: 12px; }
+  .recipe-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+  .recipe { position: relative; display: flex; flex-direction: column; min-width: 0; padding: 22px; background: #faf7f0; border: 1px solid var(--line); }
+  .recipe.hidden { display: none; }
+  .recipe-top { display: flex; gap: 12px; align-items: flex-start; }
+  .recipe-number { flex: 0 0 auto; color: var(--coral); font: 700 24px/1 var(--display); }
+  .recipe h3 { margin: 0; font-size: 19px; }
+  .recipe-category { margin: 8px 0 10px; color: var(--blue); font-size: 10px; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase; }
+  .recipe p { color: var(--muted); font-size: 14px; }
+  .recipe .prompt-label { margin: 16px 0 6px; color: var(--navy); font-size: 11px; font-weight: 800; letter-spacing: .8px; text-transform: uppercase; }
+  .prompt { position: relative; margin-top: auto; padding: 15px 48px 15px 16px; background: #142d41; color: #d9e8f2; font: 12px/1.6 var(--mono); }
+  .copy { position: absolute; top: 9px; right: 9px; padding: 5px 7px; border: 1px solid rgba(255,255,255,.25); background: transparent; color: #7ed6d1; cursor: pointer; font-size: 10px; }
+  .copy:hover, .copy:focus { background: rgba(255,255,255,.1); color: #fff; }
+  .source-link { display: inline-block; margin-top: 15px; color: var(--blue); font-size: 12px; font-weight: 800; text-decoration: none; }
+  .source-link:hover, .source-link:focus { color: var(--coral); text-decoration: underline; }
+  .modal { position: fixed; inset: 0; z-index: 20; display: grid; place-items: center; padding: 24px; background: rgba(16,42,67,.78); }
+  .modal[hidden] { display: none; }
+  .modal-panel { position: relative; display: flex; flex-direction: column; width: min(860px, 100%); max-height: min(780px, calc(100vh - 48px)); background: var(--white); border: 1px solid var(--line); box-shadow: 0 24px 80px rgba(0,0,0,.28); }
+  .modal-header { display: flex; align-items: flex-start; gap: 18px; padding: 26px 30px 20px; background: var(--navy); color: #fffdf8; }
+  .modal-number { flex: 0 0 auto; color: #7ed6d1; font: 700 28px/1 var(--display); }
+  .modal-header h2 { color: #fffdf8; font-size: 32px; }
+  .modal-category { margin-top: 7px; color: #7ed6d1; font-size: 10px; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase; }
+  .modal-close { flex: 0 0 auto; margin-left: auto; padding: 5px 9px; border: 1px solid rgba(255,255,255,.3); background: transparent; color: #fff; cursor: pointer; font-size: 20px; line-height: 1; }
+  .modal-close:hover, .modal-close:focus { background: rgba(255,255,255,.12); }
+  .modal-body { overflow-y: auto; padding: 26px 30px 30px; }
+  .modal-body h3 { margin-top: 0; }
+  .modal-body p, .modal-body li { color: var(--muted); font-size: 14px; }
+  .modal-body ul { padding-left: 22px; }
+  .modal-prompt { margin: 16px 0 24px; padding: 17px; background: #142d41; color: #d9e8f2; font: 12px/1.6 var(--mono); white-space: pre-wrap; }
+  .modal-example { margin: 16px 0 24px; padding: 17px; max-height: 420px; overflow: auto; background: #f4f0e8; border: 1px solid #d8d0c2; color: #263746; font: 12px/1.65 var(--mono); white-space: pre-wrap; overflow-wrap: anywhere; }
+  .modal-source { display: inline-block; margin-top: 15px; color: var(--blue); font-size: 12px; font-weight: 800; }
+  body.modal-open { overflow: hidden; }
+  .flow { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; margin: 22px 0; }
+  .flow-step { padding: 16px; color: #fffdf8; background: var(--navy); }
+  .flow-step:nth-child(2), .flow-step:nth-child(4) { background: var(--blue); }
+  .flow-step:nth-child(3) { background: var(--cyan); }
+  .flow-step:nth-child(5) { background: var(--coral); }
+  .flow-step b { display: block; margin-bottom: 5px; font: 700 17px/1.1 var(--display); }
+  .flow-step span { display: block; color: rgba(255,255,255,.88); font-size: 12px; line-height: 1.4; }
+  .source { margin-top: 34px; padding: 22px 26px; background: var(--paper-deep); color: var(--muted); font-size: 13px; }
+  .source a { color: var(--blue); }
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+  .reveal { animation: rise .65s ease both; }
+  @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+  @media (max-width: 900px) {
+    .shell { display: block; }
+    .rail { position: relative; height: auto; }
+    .rail nav { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2px 12px; }
+    .rail-label { grid-column: 1 / -1; }
+    .content { width: min(100% - 28px, 720px); padding-top: 20px; }
+    .hero { padding: 38px 28px; }
+    .section { padding: 26px 22px; }
+    .principles, .grid.three, .flow { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 620px) {
+    h1 { letter-spacing: -1px; }
+    .grid, .principles, .grid.three, .flow, .recipe-grid { grid-template-columns: 1fr; }
+    .hero { min-height: 0; }
+    .result-count { width: 100%; margin-left: 0; }
+  }
+  /* Fundamentals visual language */
+  body { background: #f0f4f8; color: #1e293b; font-family: 'Segoe UI', system-ui, sans-serif; }
+  .content { width: min(1100px, calc(100% - 64px)); padding: 42px 0 58px; }
+  .hero { min-height: 0; padding: 40px 38px 34px; background: linear-gradient(135deg, #dbeafe, #e0f2fe 55%, #dcfce7); color: #102042; border: 1px solid #c7d8ed; border-radius: 18px; box-shadow: 0 4px 24px rgba(10,22,40,.10); }
+  .hero::after { border-color: rgba(14,165,233,.20); }
+  .hero::before { border-color: rgba(245,158,11,.30); }
+  .eyebrow { color: #1d4ed8; }
+  h1 { color: #0a1628; font-family: Georgia, serif; letter-spacing: -.8px; }
+  .hero p { color: #475569; }
+  .hero-meta { margin-top: 20px; }
+  .tag { padding: 5px 11px; border: 1px solid rgba(15,23,42,.1); border-radius: 7px; background: rgba(255,255,255,.72); color: #475569; }
+  .section { margin-top: 28px; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px; background: #fff; box-shadow: 0 4px 16px rgba(10,22,40,.06); }
+  .section-number, .recipe-number { color: #1d4ed8; }
+  h2, h3 { color: #102042; }
+  .card, .recipe { background: #f8fafc; border-color: #e2e8f0; }
+  .callout { background: #eff6ff; border-left-color: #0ea5e9; }
+  .callout.warn { background: #fff7ed; border-left-color: #f97316; }
+  .callout.gold { background: #fffbeb; border-left-color: #f59e0b; }
+  .source { background: #f1f5f9; }
+  .principle, .flow-step { background: #102042; }
+  .principle:nth-child(2), .principle:nth-child(5), .flow-step:nth-child(2), .flow-step:nth-child(4) { background: #1d4ed8; }
+  .principle:nth-child(3), .flow-step:nth-child(3) { background: #0891b2; }
+  .principle:nth-child(4), .flow-step:nth-child(5) { background: #c2410c; }
+  @media (max-width: 900px) { .content { width: min(100% - 28px, 720px); } }
+</style>
+</head>
+<body id="top">
+<div class="shell">
+  <aside class="rail">
+    <div class="rail-mark">MetLife Learning</div>
+    <h2>GitHub Copilot<br>Cookbook</h2>
+    <nav aria-label="Guide sections">
+      <div class="rail-label">Start here</div>
+      <a href="#orientation">Orientation</a>
+      <a href="#workflow">Recipe workflow</a>
+      <a href="#recipes">All 35 recipes</a>
+      <div class="rail-label">Recipe groups</div>
+      <a href="#communicate">Communicate effectively</a>
+      <a href="#debug">Debug errors</a>
+      <a href="#analyze">Analyze functionality</a>
+      <a href="#generate">Generate code</a>
+      <a href="#refactor">Refactor code</a>
+      <a href="#document">Document code</a>
+      <a href="#testing">Testing code</a>
+      <a href="#security">Analyze security</a>
+      <div class="rail-label">Close</div>
+      <a href="#review">Review checklist</a>
+      <a href="#sources">Sources</a>
+    </nav>
+    <div class="rail-footer">A single-page companion to the GitHub Copilot Cookbook<br><strong>Fundamentals</strong></div>
+  </aside>
+
+  <main>
+    <div class="content">
+      <header class="hero reveal">
+        <div class="eyebrow">GitHub Copilot Fundamentals</div>
+        <h1>35 recipes.<br>One working guide.</h1>
+        <p>A practical index of every example in the GitHub Copilot Cookbook. Find a task, copy the prompt pattern, and use the linked GitHub Docs article for the full scenario and response.</p>
+        <div class="hero-meta">
+          <span class="tag">35 examples</span>
+          <span class="tag">8 workflows</span>
+          <span class="tag">Chat and CLI</span>
+          <span class="tag">Prompt patterns</span>
+        </div>
+      </header>
+
+      <section class="section reveal" id="orientation">
+        <div class="section-head"><div class="section-number">00</div><div><h2>Orientation</h2><p class="lede">The Cookbook is a set of concrete, repeatable ways to ask GitHub Copilot for help with everyday development work.</p></div></div>
+        <div class="callout"><strong>The useful habit:</strong> give Copilot enough context to reason about the task, ask for a plan before a broad change, and verify the result with tests, a diff, or a second review.</div>
+        <div class="grid three">
+          <div class="card"><strong>Choose a recipe</strong><p>Start with the closest task: explain, debug, generate, refactor, document, test, or secure.</p></div>
+          <div class="card"><strong>Shape the prompt</strong><p>Name the files, constraints, expected behavior, output format, and edge cases that matter.</p></div>
+          <div class="card"><strong>Check the result</strong><p>Review generated code and run the project tools that can confirm correctness, safety, and maintainability.</p></div>
+        </div>
+        <div class="callout warn"><strong>Remember:</strong> the examples are starting points. Copilot responses are non-deterministic, so adapt each prompt to your repository, policies, and technology stack.</div>
+      </section>
+
+      <section class="section reveal" id="workflow">
+        <div class="section-head"><div class="section-number">01</div><div><h2>A recipe workflow</h2><p class="lede">The reference deck favors a clear, phase-based reading experience. Use this compact loop for any Cookbook example.</p></div></div>
+        <div class="flow">
+          <div class="flow-step"><b>Frame</b><span>State the goal, scope, and relevant context.</span></div>
+          <div class="flow-step"><b>Ask</b><span>Use a precise prompt with constraints.</span></div>
+          <div class="flow-step"><b>Inspect</b><span>Read the explanation and proposed changes.</span></div>
+          <div class="flow-step"><b>Verify</b><span>Run tests, lint, scans, or a focused check.</span></div>
+          <div class="flow-step"><b>Steer</b><span>Refine the request when assumptions are wrong.</span></div>
+        </div>
+        <div class="lesson-nav" aria-label="Recipe group links">
+          <a href="#communicate">01 Communicate</a><a href="#debug">02 Debug</a><a href="#analyze">03 Analyze</a><a href="#generate">04 Generate</a><a href="#refactor">05 Refactor</a><a href="#document">06 Document</a><a href="#testing">07 Test</a><a href="#security">08 Secure</a>
+        </div>
+      </section>
+
+      <section class="section reveal" id="recipes">
+        <div class="section-head"><div class="section-number">02</div><div><h2>All 35 recipes</h2><p class="lede">Search by task, language, tool, or outcome. Every card includes a prompt pattern and a direct link to the original GitHub Docs example.</p></div></div>
+        <div class="toolbar">
+          <label class="sr-only" for="recipe-search">Search recipes</label>
+          <input class="search" id="recipe-search" type="search" placeholder="Search recipes, prompts, or outcomes...">
+          <label class="sr-only" for="category-filter">Filter by category</label>
+          <select class="filter" id="category-filter">
+            <option value="all">All categories</option>
+            <option value="communicate">Communicate</option>
+            <option value="debug">Debug</option>
+            <option value="analyze">Analyze</option>
+            <option value="generate">Generate</option>
+            <option value="refactor">Refactor</option>
+            <option value="document">Document</option>
+            <option value="testing">Testing</option>
+            <option value="security">Security</option>
+          </select>
+          <span class="result-count" id="result-count">35 recipes</span>
+        </div>
+
+        <div class="recipe-grid" id="recipe-grid">
+          <article class="recipe" id="communicate" data-category="communicate" data-search="creating templates README documentation consistency">
+            <div class="recipe-top"><div class="recipe-number">01</div><div><h3>Creating templates</h3><div class="recipe-category">Communicate effectively</div></div></div>
+            <p>Generate a reusable README or project template with the sections, conventions, and examples your team expects.</p>
+            <div class="prompt-label">Prompt pattern</div><div class="prompt">Create a README template for a new open-source project with project description, installation, usage examples, and contribution guidelines.<button class="copy" type="button">Copy</button></div>
+            <a class="source-link" href="https://docs.github.com/en/copilot/tutorials/copilot-cookbook/communicate-effectively/creating-templates" target="_blank" rel="noopener">Open full example</a>
+          </article>
+
+          <article class="recipe" data-category="communicate" data-search="triage summarize repository activity commits pull requests CI security">
+            <div class="recipe-top"><div class="recipe-number">02</div><div><h3>Triage and summarize repository activity</h3><div class="recipe-category">Communicate effectively</div></div></div>
+            <p>Catch up on issues, pull requests, commits, CI health, and security notifications in one prioritized report.</p>
+            <div class="prompt-label">Prompt pattern</div><div class="prompt">Summarize activity in this repository over the past week. Highlight anything blocked or urgent, and suggest what I should prioritize.<button class="copy" type="button">Copy</button></div>
+            <a class="source-link" href="https://docs.github.com/en/copilot/tutorials/copilot-cookbook/communicate-effectively/summarize-repository-activity" target="_blank" rel="noopener">Open full example</a>
+          </article>
+
+          <article class="recipe" data-category="communicate" data-search="synthesize research trends insights reports">
+            <div class="recipe-top"><div class="recipe-number">03</div><div><h3>Synthesizing research</h3><div class="recipe-category">Communicate effectively</div></div></div>
+            <p>Turn several articles, reports, or pasted findings into a concise summary of themes, evidence, recommendations, and gaps.</p>
+            <div class="prompt-label">Prompt pattern</div><div class="prompt">Synthesize this research into a summary outlining the key trends, insights, recommendations, and open questions. Separate evidence from assumptions.<button class="copy" type="button">Copy</button></div>
+            <a class="source-link" href="https://docs.github.com/en/copilot/tutorials/copilot-cookbook/communicate-effectively/synthesizing-research" target="_blank" rel="noopener">Open full example</a>
+          </article>
+
+          <article class="recipe" data-category="communicate" data-search="creating diagrams Mermaid gantt flowchart visualize">
+            <div class="recipe-top"><div class="recipe-number">04</div><div><h3>Creating diagrams</h3><div class="recipe-category">Communicate effectively</div></div></div>
+            <p>Convert project facts, relationships, or timelines into Mermaid code that can render in GitHub issues, discussions, and Markdown.</p>
+            <div class="prompt-label">Prompt pattern</div><div class="prompt">Create a Mermaid diagram for this project. Use a Gantt chart with five phases, their dates, durations, and overlaps. Return only valid Mermaid code.<button class="copy" type="button">Copy</button></div>
+            <a class="source-link" href="https://docs.github.com/en/copilot/tutorials/copilot-cookbook/communicate-effectively/creating-diagrams" target="_blank" rel="noopener">Open full example</a>
+          </article>
+
+          <article class="recipe" data-category="communicate" data-search="generating tables markdown data organize compare">
+            <div class="recipe-top"><div class="recipe-number">05</div><div><h3>Generating tables</h3><div class="recipe-category">Communicate effectively</div></div></div>
+            <p>Organize unstructured facts into a readable Markdown table for comparison, planning, or team reference.</p>
+            <div class="prompt-label">Prompt pattern</div><div class="prompt">Convert the following information into a Markdown table. Preserve every field, use clear column names, and keep each cell concise.<button class="copy" type="button">Copy</button></div>
+            <a class="source-link" href="https://docs.github.com/en/copilot/tutorials/copilot-cookbook/communicate-effectively/generating-tables" target="_blank" rel="noopener">Open full example</a>
+          </article>
+
+          <article class="recipe" id="debug" data-category="debug" data-search="debug invalid JSON syntax parse error">
+            <div class="recipe-top"><div class="recipe-number">06</div><div><h3>Debugging invalid JSON</h3><div class="recipe-category">Debug errors</div></div></div>
+            <p>Find malformed quotes, commas, braces, or data structures and explain why a JSON payload fails to parse.</p>
+            <div class="prompt-label">Prompt pattern</div><div class="prompt">Why is this JSON invalid? Identify the exact syntax error, return a corrected version, and explain the change briefly.<button class="copy" type="button">Copy</button></div>
+            <a class="source-link" href="https://docs.github.com/en/copilot/tutorials/copilot-cookbook/debug-errors/debug-invalid-json" target="_blank" rel="noopener">Open full example</a>
+          </article>
+
+          <article class="recipe" data-category="debug" data-search="API rate limits retry exponential backoff HTTP Python">
+            <div class="recipe-top"><div class="recipe-number">07</div><div><h3>Handling API rate limits</h3><div class="recipe-category">Debug errors</div></div></div>
+            <p>Ask Copilot to identify rate-limit responses and add bounded retry behavior with backoff and useful error handling.</p>
+            <div class="prompt-label">Prompt pattern</div><div class="prompt">How can I handle API rate limits within get_weather()? Include bounded retries, exponential backoff, and clear failure behavior.<button class="copy" type="button">Copy</button></div>
+            <a class="source-link" href="https://docs.github.com/en/copilot/tutorials/copilot-cookbook/debug-errors/handle-api-rate-limits" target="_blank" rel="noopener">Open full example</a>
+          </article>
+
+          <article class="recipe" data-category="debug" data-search="CI test failures GitHub Actions logs timezone race condition CLI">
+            <div class="recipe-top"><div class="recipe-number">08</div><div><h3>Diagnosing CI test failures</h3><div class="recipe-category">Debug errors</div></div></div>
+            <p>Use Copilot CLI to pull workflow logs, compare passing and failing runs, correlate them to local files, and steer a fix.</p>
+            <div class="prompt-label">Prompt pattern</div><div class="prompt">Pull the latest workflow logs, identify the failing test, correlate it with @order.py and @test_order_service.py, and explain the root cause before proposing a fix.<button class="copy" type="button">Copy</button></div>
+            <a class="source-link" href="https://docs.github.com/en/copilot/tutorials/copilot-cookbook/debug-errors/diagnose-ci-test-failures" target="_blank" rel="noopener">Open full example</a>
+          </article>
+
+          <article class="recipe" id="analyze" data-category="analyze" data-search="explore implementations feature options tradeoffs issue architecture">
+            <div class="recipe-top"><div class="recipe-number">09</div><div><h3>Exploring potential feature implementations</h3><div class="recipe-category">Analyze functionality</div></div></div>
+            <p>Generate multiple implementation approaches for a feature, compare tradeoffs against acceptance criteria, and ask for a recommendation.</p>
+            <div class="prompt-label">Prompt pattern</div><div class="prompt">Given the criteria in this issue, list implementation options and tradeoffs for each. Recommend one based on performance, scale, consistency, and complexity.<button class="copy" type="button">Copy</button></div>
+            <a class="source-link" href="https://docs.github.com/en/copilot/tutorials/copilot-cookbook/analyze-functionality/explore-implementations" target="_blank" rel="noopener">Open full example</a>
+          </article>
+
+          <article class="recipe" data-category="analyze" data-search="user feedback issues sentiment prioritize feature specification">
+            <div class="recipe-top"><div class="recipe-number">10</div><div><h3>Analyzing and incorporating user feedback</h3><div class="recipe-category">Analyze functionality</div></div></div>
+            <p>Cluster feedback by sentiment and priority, then turn a selected issue into a feature specification with risks and tests.</p>
+            <div class="prompt-label">Prompt pattern</div><div class="prompt">Find the issues with the feedback label that have the most reactions and categorize them by sentiment. Then write a feature specification for Issue #426.<button class="copy" type="button">Copy</button></div>
+            <a class="source-link" href="https://docs.github.com/en/copilot/tutorials/copilot-cookbook/analyze-functionality/analyze-feedback" target="_blank" rel="noopener">Open full example</a>
+          </article>
+
+          <article class="recipe" id="generate" data-category="generate" data-search="implement feature GitHub issue Copilot CLI plan tests pull request">
+            <div class="recipe-top"><div class="recipe-number">11</div><div><h3>Implementing a feature from a GitHub Issue</h3><div class="recipe-category">Generate code</div></div></div>
+            <p>Give Copilot CLI an issue, ask for a plan, steer it toward existing conventions, run tests, review the diff, and open a pull request.</p>
+            <div class="prompt-label">Prompt pattern</div><div class="prompt">Read the issue and linked items. Summarize the requirements, draft a plan, follow the existing endpoint conventions, add tests, run them, and show the diff before opening a PR.<button class="copy" type="button">Copy</button></div>
+            <a class="source-link" href="https://docs.github.com/en/copilot/tutorials/copilot-cookbook/generate-code/implement-a-feature" target="_blank" rel="noopener">Open full example</a>
+          </article>
+
+          <article class="recipe" id="refactor" data-category="refactor" data-search="readability maintainability variable names conditionals nested logic methods">
+            <div class="recipe-top"><div class="recipe-number">12</div><div><h3>Improving code readability and maintainability</h3><div class="recipe-category">Refactor code</div></div></div>
+            <p>Improve names, simplify conditional chains, flatten nested logic, and split large methods while preserving behavior.</p>
+            <div class="prompt-label">Prompt pattern</div><div class="prompt">Improve this code for readability and maintainability. Preserve behavior, use descriptive names, reduce nesting, and split unrelated responsibilities into focused methods.<button class="copy" type="button">Copy</button></div>
+            <a class="source-link" href="https://docs.github.com/en/copilot/tutorials/copilot-cookbook/refactor-code/improve-code-readability" target="_blank" rel="noopener">Open full example</a>
+          </article>
+
+          <article class="recipe" data-category="refactor" data-search="lint errors PEP8 style guide formatting imports">
+            <div class="recipe-top"><div class="recipe-number">13</div><div><h3>Fixing lint errors</h3><div class="recipe-category">Refactor code</div></div></div>
+            <p>Apply a linter's findings or a local style guide, then rerun the linter to confirm the generated edits resolved the issues.</p>
+            <div class="prompt-label">Prompt pattern</div><div class="prompt">Use the attached style guide to fix the lint errors. Change only what is required, preserve behavior, and list any warnings that remain.<button class="copy" type="button">Copy</button></div>
+            <a class="source-link" href="https://docs.github.com/en/copilot/tutorials/copilot-cookbook/refactor-code/fix-lint-errors" target="_blank" rel="noopener">Open full example</a>
+          </article>
+
+          <article class="recipe" data-category="refactor" data-search="performance optimization algorithm data structures caching Python prime">
+            <div class="recipe-top"><div class="recipe-number">14</div><div><h3>Refactoring for performance optimization</h3><div class="recipe-category">Refactor code</div></div></div>
+            <p>Find unnecessary work, inefficient loops, or expensive allocations and replace them with a more appropriate algorithm or structure.</p>
+            <div class="prompt-label">Prompt pattern</div><div class="prompt">Optimize this code for performance. Explain the bottleneck, preserve the output, state the complexity before and after, and include a way to benchmark it.<button class="copy" type="button">Copy</button></div>
+            <a class="source-link" href="https://docs.github.com/en/copilot/tutorials/copilot-cookbook/refactor-code/refactor-for-optimization" target="_blank" rel="noopener">Open full example</a>
+          </article>
+
+          <article class="recipe" data-category="refactor" data-search="sustainability energy memory computational overhead efficient Python">
+            <div class="recipe-top"><div class="recipe-number">15</div><div><h3>Refactoring for environmental sustainability</h3><div class="recipe-category">Refactor code</div></div></div>
+            <p>Reduce memory use, unnecessary computation, and resource consumption while keeping the code's behavior and output intact.</p>
+            <div class="prompt-label">Prompt pattern</div><div class="prompt">Refactor this code to improve environmental sustainability by reducing memory usage and computational overhead. Explain the tradeoffs.<button class="copy" type="button">Copy</button></div>
+            <a class="source-link" href="https://docs.github.com/en/copilot/tutorials/copilot-cookbook/refactor-code/refactor-for-sustainability" target="_blank" rel="noopener">Open full example</a>
+          </article>
+
+          <article class="recipe" data-category="refactor" data-search="design pattern module singleton factory observer JavaScript">
+            <div class="recipe-top"><div class="recipe-number">16</div><div><h3>Refactoring to implement a design pattern</h3><div class="recipe-category">Refactor code</div></div></div>
+            <p>Ask for pattern options first, then choose and implement the pattern that best fits the coupling, reuse, and ownership problems.</p>
+            <div class="prompt-label">Prompt pattern</div><div class="prompt">What design patterns could improve this code? Do not show code yet. Explain the tradeoffs, then refactor it using the selected module pattern.<button class="copy" type="button">Copy</button></div>
+            <a class="source-link" href="https://docs.github.com/en/copilot/tutorials/copilot-cookbook/refactor-code/refactor-design-patterns" target="_blank" rel="noopener">Open full example</a>
+          </article>
+
+          <article class="recipe" data-category="refactor" data-search="data access repository SQL injection database context manager Python">
+            <div class="recipe-top"><div class="recipe-number">17</div><div><h3>Refactoring data access layers</h3><div class="recipe-category">Refactor code</div></div></div>
+            <p>Separate persistence from business logic, use parameterized queries, manage connections safely, and improve testability.</p>
+            <div class="prompt-label">Prompt pattern</div><div class="prompt">Rewrite this code using a repository pattern and context manager. Avoid hardcoded SQL, prevent SQL injection, handle errors, and keep the data access layer reusable.<button class="copy" type="button">Copy</button></div>
+            <a class="source-link" href="https://docs.github.com/en/copilot/tutorials/copilot-cookbook/refactor-code/refactor-data-access-layers" target="_blank" rel="noopener">Open full example</a>
+          </article>
+
+          <article class="recipe" data-category="refactor" data-search="business logic UI components Redux state management React">
+            <div class="recipe-top"><div class="recipe-number">18</div><div><h3>Decoupling business logic from UI components</h3><div class="recipe-category">Refactor code</div></div></div>
+            <p>Move state and business rules out of UI components so they can be reused, scaled, and tested independently.</p>
+            <div class="prompt-label">Prompt pattern</div><div class="prompt">Use a state management approach to separate the business logic from this UI component. Preserve behavior, show the new file boundaries, and include tests for the extracted logic.<button class="copy" type="button">Copy</button></div>
+            <a class="source-link" href="https://docs.github.com/en/copilot/tutorials/copilot-cookbook/refactor-code/decouple-business-logic" target="_blank" rel="noopener">Open full example</a>
+          </article>
+
+          <article class="recipe" data-category="refactor" data-search="cross-cutting logging AOP decorators middleware Python">
+            <div class="recipe-top"><div class="recipe-number">19</div><div><h3>Handling cross-cutting concerns</h3><div class="recipe-category">Refactor code</div></div></div>
+            <p>Centralize logging, validation, security, or error handling with an appropriate decorator, middleware, or AOP approach.</p>
+            <div class="prompt-label">Prompt pattern</div><div class="prompt">@workspace Refactor this project to centralize the logging cross-cutting concern. Preserve business behavior and show which files change and why.<button class="copy" type="button">Copy</button></div>
+            <a class="source-link" href="https://docs.github.com/en/copilot/tutorials/copilot-cookbook/refactor-code/handle-cross-cutting" target="_blank" rel="noopener">Open full example</a>
+          </article>
+
+          <article class="recipe" data-category="refactor" data-search="inheritance hierarchy composition classes C#">
+            <div class="recipe-top"><div class="recipe-number">20</div><div><h3>Simplifying complex inheritance hierarchies</h3><div class="recipe-category">Refactor code</div></div></div>
+            <p>Reduce deep inheritance chains and make class relationships easier to understand, modify, and extend.</p>
+            <div class="prompt-label">Prompt pattern</div><div class="prompt">Refactor this hierarchy so only shared Employee properties are inherited. Declare role-specific properties independently and explain the tradeoff versus composition.<button class="copy" type="button">Copy</button></div>
+            <a class="source-link" href="https://docs.github.com/en/copilot/tutorials/copilot-cookbook/refactor-code/simplify-inheritance-hierarchies" target="_blank" rel="noopener">Open full example</a>
+          </article>
+
+          <article class="recipe" data-category="refactor" data-search="database deadlocks integrity transactions indexing locking SQL">
+            <div class="recipe-top"><div class="recipe-number">21</div><div><h3>Fixing database deadlocks or data integrity issues</h3><div class="recipe-category">Refactor code</div></div></div>
+            <p>Review transaction order, lock duration, indexes, batch processing, and rollback behavior to prevent blocked or inconsistent data operations.</p>
+            <div class="prompt-label">Prompt pattern</div><div class="prompt">Review this transaction for deadlocks and integrity risks. Recommend the smallest performance-conscious changes, including access order, transaction scope, indexes, and rollback behavior.<button class="copy" type="button">Copy</button></div>
+            <a class="source-link" href="https://docs.github.com/en/copilot/tutorials/copilot-cookbook/refactor-code/fix-database-deadlocks" target="_blank" rel="noopener">Open full example</a>
+          </article>
+
+          <article class="recipe" data-category="refactor" data-search="translate code language migration Perl TypeScript Node">
+            <div class="recipe-top"><div class="recipe-number">22</div><div><h3>Translating code to a different programming language</h3><div class="recipe-category">Refactor code</div></div></div>
+            <p>Rewrite a standalone script in another language while keeping functionality, output, validation, and run instructions equivalent.</p>
+            <div class="prompt-label">Prompt pattern</div><div class="prompt">Convert this script to TypeScript. Keep functionality and output exactly the same, preserve input validation, and explain how to compile and run it with Node.<button class="copy" type="button">Copy</button></div>
+            <a class="source-link" href="https://docs.github.com/en/copilot/tutorials/copilot-cookbook/refactor-code/translate-code" target="_blank" rel="noopener">Open full example</a>
+          </article>
+
+          <article class="recipe" id="document" data-category="document" data-search="file issues CI failure TODO FIXME GitHub CLI labels">
+            <div class="recipe-top"><div class="recipe-number">23</div><div><h3>Filing issues without breaking your flow</h3><div class="recipe-category">Document code</div></div></div>
+            <p>Use Copilot CLI to turn a CI failure or prioritized TODO into a well-contextualized GitHub issue with labels and links.</p>
+            <div class="prompt-label">Prompt pattern</div><div class="prompt">Scan this repo for TODO and FIXME comments. Prioritize the five most important, include code context and file locations, and create an issue for each with a suggested label.<button class="copy" type="button">Copy</button></div>
+            <a class="source-link" href="https://docs.github.com/en/copilot/tutorials/copilot-cookbook/document-code/filing-issues-without-breaking-your-flow" target="_blank" rel="noopener">Open full example</a>
+          </article>
+
+          <article class="recipe" data-category="document" data-search="legacy code COBOL comments documentation">
+            <div class="recipe-top"><div class="recipe-number">24</div><div><h3>Documenting legacy code</h3><div class="recipe-category">Document code</div></div></div>
+            <p>Add useful comments and a high-level overview to unfamiliar legacy code without changing the code's behavior.</p>
+            <div class="prompt-label">Prompt pattern</div><div class="prompt">Comment this legacy code thoroughly. Explain its purpose, inputs, outputs, control flow, error handling, and database operations without changing behavior.<button class="copy" type="button">Copy</button></div>
+            <a class="source-link" href="https://docs.github.com/en/copilot/tutorials/copilot-cookbook/document-code/document-legacy-code" target="_blank" rel="noopener">Open full example</a>
+          </article>
+
+          <article class="recipe" data-category="document" data-search="explain legacy code COBOL Python analogy unfamiliar language">
+            <div class="recipe-top"><div class="recipe-number">25</div><div><h3>Explaining legacy code</h3><div class="recipe-category">Document code</div></div></div>
+            <p>Translate an unfamiliar codebase into concepts a developer already knows, using a high-level overview and grounded analogies.</p>
+            <div class="prompt-label">Prompt pattern</div><div class="prompt">I am a Python developer. Help me understand this legacy code. Explain the control flow, data structures, database work, and key concepts using Python analogies.<button class="copy" type="button">Copy</button></div>
+            <a class="source-link" href="https://docs.github.com/en/copilot/tutorials/copilot-cookbook/document-code/explain-legacy-code" target="_blank" rel="noopener">Open full example</a>
+          </article>
+
+          <article class="recipe" data-category="document" data-search="complex algorithms logic comments retries cancellation C#">
+            <div class="recipe-top"><div class="recipe-number">26</div><div><h3>Explaining complex algorithms or logic</h3><div class="recipe-category">Document code</div></div></div>
+            <p>Make retry loops, cancellation, concurrency, or other non-obvious logic understandable with focused comments and API documentation.</p>
+            <div class="prompt-label">Prompt pattern</div><div class="prompt">Add concise comments and documentation that explain the retry strategy, cancellation behavior, failure path, and thread-safety assumptions. Do not alter code.<button class="copy" type="button">Copy</button></div>
+            <a class="source-link" href="https://docs.github.com/en/copilot/tutorials/copilot-cookbook/document-code/explain-complex-logic" target="_blank" rel="noopener">Open full example</a>
+          </article>
+
+          <article class="recipe" data-category="document" data-search="sync documentation code changes TypeScript API docs">
+            <div class="recipe-top"><div class="recipe-number">27</div><div><h3>Syncing documentation with code changes</h3><div class="recipe-category">Document code</div></div></div>
+            <p>Compare current implementation and documentation, then update parameters, return values, examples, pagination, and errors.</p>
+            <div class="prompt-label">Prompt pattern</div><div class="prompt">Update the existing documentation for this function to reflect the current implementation. Include parameters, defaults, return shape, errors, pagination, and a current example.<button class="copy" type="button">Copy</button></div>
+            <a class="source-link" href="https://docs.github.com/en/copilot/tutorials/copilot-cookbook/document-code/sync-documentation" target="_blank" rel="noopener">Open full example</a>
+          </article>
+
+          <article class="recipe" data-category="document" data-search="discussions blog posts ideas outline draft refine PR issues">
+            <div class="recipe-top"><div class="recipe-number">28</div><div><h3>Writing discussions or blog posts</h3><div class="recipe-category">Document code</div></div></div>
+            <p>Turn recent PRs, issues, or technical work into ideas, outlines, drafts, and clearer final communications.</p>
+            <div class="prompt-label">Prompt pattern</div><div class="prompt">Using PRs #21, #27, and #44, propose five developer-focused discussion topics. Include the challenge, solution, lesson learned, and likely audience for each.<button class="copy" type="button">Copy</button></div>
+            <a class="source-link" href="https://docs.github.com/en/copilot/tutorials/copilot-cookbook/document-code/write-discussions-or-blog-posts" target="_blank" rel="noopener">Open full example</a>
+          </article>
+
+          <article class="recipe" id="testing" data-category="testing" data-search="unit tests Python edge cases validation function">
+            <div class="recipe-top"><div class="recipe-number">29</div><div><h3>Generating unit tests</h3><div class="recipe-category">Testing code</div></div></div>
+            <p>Generate tests for success, failure, boundaries, and edge cases while following the project's existing test framework and conventions.</p>
+            <div class="prompt-label">Prompt pattern</div><div class="prompt">/tests Generate unit tests for this function. Cover successful inputs, failures, boundary values, and edge cases. Follow the existing test style.<button class="copy" type="button">Copy</button></div>
+            <a class="source-link" href="https://docs.github.com/en/copilot/tutorials/copilot-cookbook/testing-code/generate-unit-tests" target="_blank" rel="noopener">Open full example</a>
+          </article>
+
+          <article class="recipe" data-category="testing" data-search="mock objects abstract layers service database Vitest TypeScript">
+            <div class="recipe-top"><div class="recipe-number">30</div><div><h3>Creating mock objects to abstract layers</h3><div class="recipe-category">Testing code</div></div></div>
+            <p>Replace database or service calls with deterministic mocks so a unit test checks the code under test in isolation.</p>
+            <div class="prompt-label">Prompt pattern</div><div class="prompt">/tests Create a unit test to ensure the service is called correctly. Mock the service object, reset mocks between tests, and assert the returned value.<button class="copy" type="button">Copy</button></div>
+            <a class="source-link" href="https://docs.github.com/en/copilot/tutorials/copilot-cookbook/testing-code/create-mock-objects" target="_blank" rel="noopener">Open full example</a>
+          </article>
+
+          <article class="recipe" data-category="testing" data-search="end-to-end tests webpage Playwright React loading error">
+            <div class="recipe-top"><div class="recipe-number">31</div><div><h3>Creating end-to-end tests for a webpage</h3><div class="recipe-category">Testing code</div></div></div>
+            <p>Generate browser tests for loading, successful content, error states, and API behavior, using mocks when appropriate.</p>
+            <div class="prompt-label">Prompt pattern</div><div class="prompt">Using Playwright, generate an end-to-end test for this page. Cover loading, successful product display, API failure, and the visible error message.<button class="copy" type="button">Copy</button></div>
+            <a class="source-link" href="https://docs.github.com/en/copilot/tutorials/copilot-cookbook/testing-code/create-end-to-end-tests" target="_blank" rel="noopener">Open full example</a>
+          </article>
+
+          <article class="recipe" data-category="testing" data-search="update unit tests code changes regression thresholds Python">
+            <div class="recipe-top"><div class="recipe-number">32</div><div><h3>Updating unit tests to match code changes</h3><div class="recipe-category">Testing code</div></div></div>
+            <p>Identify tests that fail or become misleading after a behavior change, then add coverage for new thresholds and branches.</p>
+            <div class="prompt-label">Prompt pattern</div><div class="prompt">Given this implementation change, update the affected unit tests. Identify tests that fail, tests that are now misleading, and missing coverage for every new behavior.<button class="copy" type="button">Copy</button></div>
+            <a class="source-link" href="https://docs.github.com/en/copilot/tutorials/copilot-cookbook/testing-code/update-unit-tests" target="_blank" rel="noopener">Open full example</a>
+          </article>
+
+          <article class="recipe" id="security" data-category="security" data-search="secure repository secret scanning push protection Dependabot branch protection SECURITY.md">
+            <div class="recipe-top"><div class="recipe-number">33</div><div><h3>Securing your repository</h3><div class="recipe-category">Analyze security</div></div></div>
+            <p>Configure secret scanning, push protection, Dependabot, branch protection, and a responsible vulnerability disclosure policy.</p>
+            <div class="prompt-label">Prompt pattern</div><div class="prompt">Give step-by-step instructions to enable secret scanning, push protection, Dependabot alerts and updates, and branch protection with required reviews. Explain why each matters.<button class="copy" type="button">Copy</button></div>
+            <a class="source-link" href="https://docs.github.com/en/copilot/tutorials/copilot-cookbook/analyze-security/secure-your-repository" target="_blank" rel="noopener">Open full example</a>
+          </article>
+
+          <article class="recipe" data-category="security" data-search="dependency updates Dependabot package ecosystems configuration YAML">
+            <div class="recipe-top"><div class="recipe-number">34</div><div><h3>Managing dependency updates</h3><div class="recipe-category">Analyze security</div></div></div>
+            <p>Detect package ecosystems and directories, generate a Dependabot configuration, and tune schedules, labels, owners, and limits.</p>
+            <div class="prompt-label">Prompt pattern</div><div class="prompt">Analyze this repository for every package ecosystem and directory. Create a top-level .github/dependabot.yml with reasonable security and version update schedules, labels, and limits.<button class="copy" type="button">Copy</button></div>
+            <a class="source-link" href="https://docs.github.com/en/copilot/tutorials/copilot-cookbook/analyze-security/manage-dependency-updates" target="_blank" rel="noopener">Open full example</a>
+          </article>
+
+          <article class="recipe" data-category="security" data-search="vulnerabilities XSS SQL injection CSRF secure code scanning">
+            <div class="recipe-top"><div class="recipe-number">35</div><div><h3>Finding existing vulnerabilities in code</h3><div class="recipe-category">Analyze security</div></div></div>
+            <p>Ask Copilot to inspect common vulnerability patterns and propose a fix, then use dedicated code scanning for deeper coverage.</p>
+            <div class="prompt-label">Prompt pattern</div><div class="prompt">Analyze this code for potential security vulnerabilities. Identify realistic attack paths, explain severity and impact, and suggest secure fixes. Do not assume input is trusted.<button class="copy" type="button">Copy</button></div>
+            <a class="source-link" href="https://docs.github.com/en/copilot/tutorials/copilot-cookbook/analyze-security/find-vulnerabilities" target="_blank" rel="noopener">Open full example</a>
+          </article>
+        </div>
+        <div class="callout gold" id="no-results" hidden><strong>No matching recipes.</strong> Try a broader term such as <em>test</em>, <em>refactor</em>, <em>security</em>, or <em>issue</em>.</div>
+      </section>
+
+      <section class="section reveal" id="review">
+        <div class="section-head"><div class="section-number">03</div><div><h2>Review checklist</h2><p class="lede">Use this short check after any Cookbook recipe that produces code, configuration, documentation, or a decision.</p></div></div>
+        <div class="grid three">
+          <div class="card"><strong>Context</strong><p>Did Copilot use the right files, issue, requirements, style guide, and project conventions?</p></div>
+          <div class="card"><strong>Correctness</strong><p>Does the output preserve existing behavior and cover success, failure, boundary, and integration cases?</p></div>
+          <div class="card"><strong>Security</strong><p>Are input validation, authorization, secrets, privacy, dependencies, and error paths handled safely?</p></div>
+          <div class="card"><strong>Maintainability</strong><p>Is the change understandable, focused, testable, and consistent with the surrounding code?</p></div>
+          <div class="card"><strong>Evidence</strong><p>What test, lint, scan, benchmark, or rendered preview confirms the result?</p></div>
+          <div class="card"><strong>Human decision</strong><p>What assumption or tradeoff still needs a developer, reviewer, or product owner to decide?</p></div>
+        </div>
+        <div class="callout"><strong>A good Copilot session ends with evidence:</strong> a passing check, a reviewed diff, a documented decision, or a clear next action.</div>
+      </section>
+
+      <section class="source" id="sources">
+        <strong>Sources and attribution</strong>
+        <p>This guide combines the 35 examples listed in the <a href="https://docs.github.com/en/copilot/tutorials/copilot-cookbook" target="_blank" rel="noopener">GitHub Copilot Cookbook</a>. Each recipe links to its original GitHub Docs page for the complete scenario, example response, and further reading.</p>
+        <p>Compiled for MetLife Learning · July 2026 · <a href="#top">Back to top</a></p>
+      </section>
+    </div>
+  </main>
+</div>
+<div class="modal" id="recipe-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" hidden>
+  <div class="modal-panel">
+    <div class="modal-header">
+      <div class="modal-number" id="modal-number"></div>
+      <div><h2 id="modal-title"></h2><div class="modal-category" id="modal-category"></div></div>
+      <button class="modal-close" id="modal-close" type="button" aria-label="Close recipe details">&times;</button>
+    </div>
+    <div class="modal-body">
+      <h3>Scenario</h3>
+      <p id="modal-scenario"></p>
+      <h3>Prompt from the Cookbook</h3>
+      <div class="modal-prompt" id="modal-prompt"></div>
+      <h3>Complete worked example</h3>
+      <pre class="modal-example" id="modal-example"></pre>
+      <h3>What the example demonstrates</h3>
+      <ul id="modal-takeaways"></ul>
+      <a class="modal-source" id="modal-source" href="#" target="_blank" rel="noopener">View the original GitHub Docs source</a>
+    </div>
+  </div>
+</div>
+<script>
+  const searchInput = document.getElementById('recipe-search');
+  const categoryFilter = document.getElementById('category-filter');
+  const resultCount = document.getElementById('result-count');
+  const noResults = document.getElementById('no-results');
+  const recipes = Array.from(document.querySelectorAll('.recipe'));
+  const recipeModal = document.getElementById('recipe-modal');
+  const modalClose = document.getElementById('modal-close');
+  const recipeDetails = {
+    '01': ['Create a consistent README starting point for a new open-source project.', ['Ask for standard sections and clear examples.', 'Customize the generated structure for the repository, audience, and contribution process.']],
+    '02': ['Catch up on a repository after time away by combining commits, pull requests, issues, CI, and security signals.', ['Ask for urgency and blockers, not just a chronological summary.', 'Use the prioritized report to choose the next investigation or review.']],
+    '03': ['Turn several articles or reports into a concise synthesis of trends, insights, recommendations, and open questions.', ['Supply the source material directly or link to accessible sources.', 'Ask Copilot to distinguish evidence from assumptions and call out gaps.']],
+    '04': ['Turn project dates and phases into Mermaid that can render in GitHub Markdown.', ['Specify the diagram type, date format, durations, and overlap.', 'Check the generated Mermaid syntax in the target GitHub surface.']],
+    '05': ['Convert loosely structured people or project data into a readable Markdown reference table.', ['Name the columns and preserve every important field.', 'Review the result for missing values, alignment, and overly long cells.']],
+    '06': ['Locate the malformed value in a JSON response and return a corrected object.', ['Ask for the exact syntax problem rather than only a replacement.', 'Validate the corrected JSON with the parser used by the application.']],
+    '07': ['Add graceful handling for external API failures, including retries and backoff.', ['Ask for bounded retries and a clear failure response.', 'Tune retryable status codes and delays for the API instead of blindly retrying every error.']],
+    '08': ['Use Copilot CLI to correlate a failing CI log with local source and tests.', ['Compare the failing evidence with the relevant files and recent runs.', 'Review the diff and rerun the focused test before pushing the fix.']],
+    '09': ['Explore multiple ways to implement a feature before committing to one architecture.', ['Provide acceptance criteria and ask for tradeoffs across performance, scale, and complexity.', 'Use a follow-up prompt to challenge the recommendation against local conventions.']],
+    '10': ['Cluster user feedback by sentiment and reactions, then turn a selected issue into a feature specification.', ['Use labels and issue context to narrow the feedback set.', 'Ask the specification to include scope, risks, compatibility, and tests.']],
+    '11': ['Give Copilot CLI a GitHub issue and steer it through planning, implementation, tests, review, and pull request creation.', ['Ask it to read linked issues and existing endpoint patterns first.', 'Approve changes incrementally and use /diff before opening the pull request.']],
+    '12': ['Improve names, conditionals, nesting, and method boundaries without changing behavior.', ['Ask for a behavior-preserving refactor.', 'Review each extracted method and confirm the existing tests still describe the contract.']],
+    '13': ['Use a linter output or local style guide to make focused, mechanical fixes.', ['Attach the project rules when they are not obvious from the workspace.', 'Run the linter again because generated edits may not resolve every warning.']],
+    '14': ['Find an algorithmic bottleneck and replace it with a more efficient approach.', ['Ask Copilot to explain complexity before and after the change.', 'Benchmark representative inputs and verify the output remains identical.']],
+    '15': ['Reduce memory use and unnecessary computation to make a program more resource-efficient.', ['Look for whole-file reads, repeated work, and avoidable allocations.', 'Measure the tradeoff instead of treating sustainability claims as automatic.']],
+    '16': ['Compare design patterns, then encapsulate shared state and behavior with the selected pattern.', ['Ask for options before requesting code.', 'Check that the pattern reduces coupling rather than adding ceremony.']],
+    '17': ['Separate database connection management and query logic from the rest of the application.', ['Use parameterized queries, context managers, and a repository boundary.', 'Review transaction, error, and resource-cleanup behavior after the refactor.']],
+    '18': ['Move business rules and state management out of a UI component so they can be reused and tested.', ['Ask for explicit file boundaries and preserved behavior.', 'Test the extracted logic independently from rendering.']],
+    '19': ['Centralize logging or another cross-cutting concern with an aspect, decorator, or middleware approach.', ['Describe the concern and the existing service boundaries.', 'Confirm that observability is preserved while business code becomes simpler.']],
+    '20': ['Flatten a deep inheritance chain while keeping shared employee properties available.', ['Ask Copilot to show the resulting properties on every class.', 'Consider composition when future roles are likely to vary independently.']],
+    '21': ['Reduce database deadlocks, full-table scans, long transactions, and partial updates.', ['Review lock order, transaction scope, indexes, batching, and rollback behavior.', 'Test concurrency and integrity assumptions against the actual database engine.']],
+    '22': ['Translate a standalone script to another language while preserving behavior and output.', ['State the source and target runtimes and preserve input validation.', 'Compile and run representative cases in the target environment.']],
+    '23': ['Turn a CI failure or high-value TODO into a tracked GitHub issue without leaving the terminal.', ['Include stack traces, file locations, related commits, and useful labels.', 'Review the issue body before creating it because the action changes repository state.']],
+    '24': ['Add useful documentation to legacy code without changing its behavior.', ['Ask for purpose, inputs, outputs, control flow, and error handling.', 'Prefer comments that explain why and how over comments that repeat syntax.']],
+    '25': ['Explain unfamiliar legacy code using concepts and analogies familiar to the reader.', ['State your background and the concepts you already know.', 'Ask for a high-level map before diving into individual statements.']],
+    '26': ['Make retry, cancellation, concurrency, and failure behavior understandable in complex code.', ['Request concise comments plus API documentation.', 'Check that comments remain accurate when the algorithm changes.']],
+    '27': ['Bring API documentation into agreement with a function that now supports pagination, related data, or new errors.', ['Ask Copilot to compare the current implementation with the existing docs.', 'Verify parameters, defaults, return shape, examples, and exceptions.']],
+    '28': ['Turn recent pull requests and issues into discussion topics, outlines, drafts, and polished technical writing.', ['Specify the audience, tone, and lessons you want to share.', 'Refine the draft for accuracy and avoid inventing project history.']],
+    '29': ['Generate unit tests for success, failure, boundary, and edge cases.', ['Point Copilot at the existing test framework and neighboring tests.', 'Run the tests and inspect whether each assertion checks meaningful behavior.']],
+    '30': ['Mock a service or database boundary so a unit test remains isolated and deterministic.', ['Reset mocks between tests and assert the dependency call contract.', 'Keep the mock representative without duplicating the implementation.']],
+    '31': ['Create browser coverage for loading, successful data, and visible API error states.', ['Use Playwright or the project standard and mock external APIs when appropriate.', 'Assert user-visible outcomes rather than internal implementation details.']],
+    '32': ['Update tests after a logic change so thresholds, branches, and expectations match the new behavior.', ['Identify failing and misleading tests separately.', 'Add coverage for the newly introduced tier or branch before declaring the suite healthy.']],
+    '33': ['Configure repository protections such as secret scanning, push protection, Dependabot, and branch reviews.', ['Ask for step-by-step setup and the reason each control matters.', 'Add a SECURITY.md policy for responsible vulnerability reports.']],
+    '34': ['Detect every package ecosystem and create a practical Dependabot configuration.', ['Include all relevant directories and reasonable schedules.', 'Tune labels, reviewers, open PR limits, and production-only rules to the team workflow.']],
+    '35': ['Inspect code for common vulnerabilities such as XSS, injection, and unsafe trust boundaries.', ['Ask for realistic attack paths, impact, and secure fixes.', 'Use code scanning and other security tooling for comprehensive coverage; Copilot is not a substitute.']]
+  };
+  const fullExamples = {
+    '01': `# Project Name\n\n## Description\nExplain what the project does, why it exists, and its key features.\n\n## Installation\n1. Clone the repository.\n2. Install dependencies with the project package manager.\n3. Add required environment variables.\n\n## Usage\nShow the most common command and a small code example.\n\n## Contributing\nDescribe branches, tests, pull requests, and the code of conduct.\n\n## License\nState the license and link to the license file.`,
+    '02': `Repository activity summary (past 7 days)\n\nP1 - Urgent\n- Failing CI workflow is blocking merges.\n- High-severity dependency alert is unassigned.\n\nP2 - Needs attention\n- Approved pull request is waiting for final review.\n- Reopened issue has a new reproduction.\n\nSuggested next steps:\n1. Fix the failing workflow.\n2. Assign the security alert.\n3. Review the blocked pull request.`,
+    '03': `## EcoSmart Bottle: Key Trends and Insights\n\nThe research shows a convergence of sustainability and health technology.\n\n- Integrated hydration, environmental sensing, and sustainability feedback fill a product gap.\n- Convenience and habit formation remain adoption barriers.\n- Lower-cost sensors make everyday environmental monitoring practical.\n- Early testing suggests better hydration and awareness, but weight and battery life need refinement.\n\nConclusion: combine user evidence, technical constraints, and market signals into a short recommendation rather than repeating each source.`,
+    '04': `\`\`\`mermaid\ngantt\n    title Project Timeline\n    dateFormat YYYY-MM-DD\n    axisFormat %b %d\n    section Phase 1\n    Discovery :a1, 2025-08-01, 42d\n    section Phase 2\n    Build :a2, 2025-09-07, 42d\n    section Phase 3\n    Test :a3, 2025-10-13, 42d\n    section Phase 4\n    Launch :a4, 2025-11-18, 42d\n\`\`\``,
+    '05': `| Name  | Age | Role      | Timezone | Availability |\n|-------|-----|-----------|----------|--------------|\n| Alice | 30  | Engineer  | PST      | Mon-Fri      |\n| Bob   | 25  | Designer  | EST      | Mon-Thu      |\n| Carol | 27  | Writer    | CST      | Mon-Thu      |\n| Dave  | 35  | Manager   | PST      | Mon-Fri      |\n| Eve   | 28  | Analyst   | CST      | Mon-Fri      |`,
+    '06': `{\n  "location": "San Francisco",\n  "current_weather": {\n    "temperature": 18,\n    "unit": "Celsius",\n    "conditions": "Cloudy"\n  },\n  "forecast": {\n    "day": "Monday",\n    "high": 22,\n    "low": 15,\n    "precipitation": 10\n  }\n}`,
+    '07': `def get_weather(city):\n    response = requests_retry_session().get(\n        WEATHER_API_URL, params={"city": city}\n    )\n    response.raise_for_status()\n    return response.json()\n\ndef requests_retry_session(retries=3):\n    retry = Retry(\n        total=retries,\n        backoff_factor=0.3,\n        status_forcelist=(429, 500, 502, 503, 504),\n        respect_retry_after_header=True,\n    )\n    session = requests.Session()\n    adapter = HTTPAdapter(max_retries=retry)\n    session.mount("https://", adapter)\n    return session`,
+    '08': `CI failure: test_order_created_today\nAssertionError: 2024-01-15 != 2024-01-16\n\nDiagnosis: the runner uses UTC while the local machine uses another timezone.\n\nFix:\nfrom datetime import datetime, timezone\n\ndef get_today():\n    return datetime.now(timezone.utc).date()\n\nUpdate production code and tests to use get_today(), then rerun the focused test.`,
+    '09': `Implementation options for Recent Items:\n\n1. Client storage - fast and simple, but device-local and unsuitable for shared data.\n2. Indexed database storage - durable and scalable, but adds query load.\n3. Redis cache - very fast, but requires invalidation and persistence planning.\n4. Hybrid database plus cache - balanced performance and durability, with consistency work.\n\nRecommendation: use the hybrid approach when the 200ms target and near-real-time updates justify the operational complexity.`,
+    '10': `Feedback triage:\n\n1. CLI error messages are difficult to understand\n   Reactions: 543 | Sentiment: Negative\n2. Add an API for third-party integration\n   Reactions: 482 | Sentiment: Positive\n3. Shortcut for --with-token\n   Reactions: 187 | Sentiment: Neutral-positive\n\nFeature specification:\nAdd -wt as a backward-compatible alias for --with-token, document it, and test valid, invalid, and combined option cases.`,
+    '11': `Workflow:\n\n1. Read the issue and linked work.\n2. /plan the service, route, OpenAPI, tests, and changelog updates.\n3. Reuse the existing billing client and error classes.\n4. Implement GET /subscriptions/:id/plan.\n5. Test active, missing, cancelled, and plan-less subscriptions.\n6. Run the suite and review /diff before opening a pull request.`,
+    '12': `function logPersonAge(name, age, revealAge) {\n  if (revealAge) {\n    console.log(name + " is " + age + " years old.");\n  } else {\n    console.log(name + " does not want to reveal their age.");\n  }\n}\n\n// Refactor larger methods into validate, calculate, update, and report steps.\n// Replace long conditional chains with a lookup or guard clauses when behavior is preserved.`,
+    '13': `Before: import os, sys\n\ndef f(x,y):return x+y\n\nAfter applying the project style guide:\nimport os\n\ndef add_values(first, second):\n    return first + second\n\nRun the linter again, inspect remaining warnings, and avoid changing behavior while formatting.`,
+    '14': `def sieve_of_eratosthenes(limit):\n    sieve = [True] * (limit + 1)\n    sieve[0] = sieve[1] = False\n    for start in range(2, int(limit ** 0.5) + 1):\n        if sieve[start]:\n            for multiple in range(start * start, limit + 1, start):\n                sieve[multiple] = False\n    return [n for n, prime in enumerate(sieve) if prime]\n\n# Replace repeated trial division with the sieve and benchmark both versions.`,
+    '15': `def count_lines(filename):\n    with open(filename, "r") as file:\n        return sum(1 for _ in file)\n\n# The generator processes one line at a time instead of loading the entire\n# file and building a second list in memory.`,
+    '16': `const PersonModule = (() => {\n  const people = new Map();\n\n  function addPerson(name, age) {\n    people.set(name, { name, age });\n  }\n\n  function getAge(name) {\n    const person = people.get(name);\n    console.log(person ? name + " is " + person.age + " years old." : "Person not found.");\n  }\n\n  return { addPerson, getAge };\n})();\n\nPersonModule.addPerson("Mario", 25);\nPersonModule.getAge("Mario");`,
+    '17': `class Database:\n    def __init__(self, path):\n        self.path = path\n\n    def __enter__(self):\n        self.connection = sqlite3.connect(self.path)\n        return self\n\n    def __exit__(self, exc_type, *_):\n        self.connection.rollback() if exc_type else self.connection.commit()\n        self.connection.close()\n\nclass UserRepository:\n    def __init__(self, database):\n        self.database = database\n\n    def get_user_by_id(self, user_id):\n        return self.database.connection.execute(\n            "SELECT display_name FROM users WHERE id = ?", (user_id,)\n        ).fetchone()`,
+    '18': `// actions.js\nexport const increment = () => ({ type: "INCREMENT" });\n\n// reducer.js\nconst initialState = { count: 0 };\nexport function reducer(state = initialState, action) {\n  if (action.type !== "INCREMENT" || state.count >= 10) return state;\n  return { ...state, count: state.count + 1 };\n}\n\n// The UI dispatches increment() and reads count; the rule is tested without rendering.`,
+    '19': `@aspectlib.Aspect(bind=True)\ndef log_method(cutpoint, *args, **kwargs):\n    logger.info("Entering %s", cutpoint.__name__)\n    try:\n        result = yield aspectlib.Proceed\n        logger.info("Completed %s", cutpoint.__name__)\n        return result\n    except Exception:\n        logger.exception("Failed %s", cutpoint.__name__)\n        raise\n\n# Apply the aspect at the service boundary and remove duplicated logging from business methods.`,
+    '20': `public class Employee {\n    public string Name { get; set; }\n    public int EmployeeID { get; set; }\n}\n\npublic class SeniorManager : Employee {\n    public int NumberOfTeams { get; set; }\n    public string Region { get; set; }\n}\n\n// Each role inherits only Employee and declares its own role-specific properties.`,
+    '21': `BEGIN TRANSACTION;\n-- All transactions update rows in the same order.\nUPDATE my_table SET value = 'Another value' WHERE id = 127;\nUPDATE my_table SET value = 'Some value' WHERE id = 301;\nCOMMIT TRANSACTION;\n\n-- Also shorten transaction scope, index WHERE columns, batch large work,\n-- and use TRY/CATCH with rollback when both operations must succeed.`,
+    '22': `import * as fs from "fs";\nimport * as path from "path";\n\nconst filePath = await askForPath();\nif (/[|;&<>(){}\\[\\]]/.test(filePath) || (!path.isAbsolute(filePath) && path.dirname(filePath) !== ".")) {\n  throw new Error("Invalid file path");\n}\nconst content = fs.readFileSync(filePath, "utf8");\nconsole.log(filePath + " contains " + content.trim().split(/\\s+/).length + " words.");\n\n// Compile with tsc, then run the generated JavaScript with Node.`,
+    '23': `Created issue: Regression in payment processing\n\nWhat's failing:\nThe build job has failed since commit a3f7c21.\n\nStack trace:\nTypeError: transaction is undefined at processRefund (src/services/payment.ts:94)\n\nLikely cause: PR #398 introduced a nullable transaction field without updating processRefund.\nLabels: bug, regression\n\nReview the generated issue before creating it.`,
+    '24': `*****************************************************************\n* Program: INSERT-RECORD\n* Purpose: Insert a person and report database status\n*****************************************************************\nPROCEDURE DIVISION USING LS-PARAMETERS.\n    PERFORM INSERT-AND-VALIDATE\n    GOBACK.\n\nINSERT-AND-VALIDATE.\n    EXEC SQL\n        INSERT INTO persons (id, name, age)\n        VALUES (:PERSON-ID, :PERSON-NAME, :PERSON-AGE)\n    END-EXEC\n\n    IF SQLCODE = 0\n        EXEC SQL COMMIT END-EXEC\n        SET SUCCESS TO TRUE\n    ELSE\n        EXEC SQL ROLLBACK END-EXEC\n        SET FAILED TO TRUE\n    END-IF.`,
+    '25': `High-level explanation:\n\n- IDENTIFICATION DIVISION is like the module name.\n- DATA DIVISION declares working variables and parameters.\n- LINKAGE SECTION describes values supplied by the caller.\n- PERFORM calls a named procedure, similar to calling a function.\n- EXEC SQL performs the database operation, followed by COMMIT or ROLLBACK.`,
+    '26': `private async Task<string> FetchWithRetryAsync(string url, CancellationToken token)\n{\n    for (var attempt = 0; attempt < maxRetries; attempt++)\n    {\n        try { return await client.GetStringAsync(url, token); }\n        catch (HttpRequestException) when (attempt < maxRetries - 1)\n        {\n            var delay = TimeSpan.FromSeconds(Math.Pow(2, attempt));\n            await Task.Delay(delay, token);\n        }\n    }\n    throw new InvalidOperationException("All retries failed.");\n}\n\n// Comments should explain cancellation, retry bounds, and why backoff is used.`,
+    '27': `/**\n * Retrieves products by category with pagination and recent reviews.\n * @param categoryId category identifier\n * @param page page number, starting at 1\n * @param pageSize number of products per page\n * @returns products with up to five recent reviews each\n * @throws PrismaClientKnownRequestError when the query fails\n */\nasync getByCategoryName(categoryId: number, page = 1, pageSize = 10) {\n  return prisma.products.findMany({\n    where: { categoryId },\n    skip: (page - 1) * pageSize,\n    take: pageSize,\n    include: { reviews: { orderBy: { date: "desc" }, take: 5 } }\n  });\n}`,
+    '28': `Technical deep-dive outline:\n\n1. Problem and user impact\n2. Constraints and rejected approaches\n3. Architecture and implementation\n4. Testing and rollout\n5. Performance or reliability evidence\n6. Lessons learned and next steps\n\nDraft the post from actual PRs and issues, then refine tone for the intended developer audience.`,
+    '29': `def validate_price(price: float):\n    if price <= 0:\n        raise ValueError("Price must be greater than 0")\n    if price > 1000:\n        raise ValueError("Price must be less than or equal to 1000")\n\nclass TestValidatePrice(unittest.TestCase):\n    def test_zero_and_negative_are_rejected(self):\n        for price in (0, -10):\n            with self.assertRaises(ValueError):\n                validate_price(price)\n\n    def test_maximum_is_valid(self):\n        validate_price(1000)`,
+    '30': `vi.mock("./service", () => ({\n  default: { getRunner: vi.fn() }\n}));\n\nit("loads a runner by id", async () => {\n  service.getRunner.mockResolvedValue({ id: "123", name: "Test Runner" });\n  const result = await load({ params: { id: "123" } });\n  expect(service.getRunner).toHaveBeenCalledWith("123");\n  expect(result.runner.id).toBe("123");\n});`,
+    '31': `test("displays product details", async ({ page }) => {\n  await page.route("/api/product/1", route => route.fulfill({\n    status: 200,\n    contentType: "application/json",\n    body: JSON.stringify({ name: "Test Product", description: "A test product", price: 99.99 })\n  }));\n  await page.goto("/product/1");\n  await expect(page.getByText("Test Product")).toBeVisible();\n  await expect(page.getByText("Price: $99.99")).toBeVisible();\n});`,
+    '32': `def calculate_discount(amount: float) -> float:\n    if amount > 200:\n        return amount * 0.2\n    if amount > 150:\n        return amount * 0.1\n    return 0.0\n\n# Tests should cover: 250 -> 50, 175 -> 17.5, 150 -> 0,\n# and the unchanged below-threshold behavior.`,
+    '33': `Repository security checklist:\n\n- Enable secret scanning and push protection.\n- Enable Dependabot alerts and security updates.\n- Require reviews and passing checks on protected branches.\n\nSECURITY.md\n\nReport vulnerabilities privately through security@yourdomain.com or\nGitHub security advisories. Do not use public issues. Include impact,\nreproduction steps, logs, and a responsible-disclosure timeline.`,
+    '34': `version: 2\nupdates:\n  - package-ecosystem: "pip"\n    directory: "/"\n    schedule:\n      interval: "weekly"\n    open-pull-requests-limit: 5\n    labels: ["dependencies", "python"]\n  - package-ecosystem: "github-actions"\n    directory: "/"\n    schedule:\n      interval: "weekly"\n    labels: ["dependencies", "github-actions"]\n\nAdd entries for every detected ecosystem and directory.`,
+    '35': `function displayName(name) {\n  const nameElement = document.getElementById("name-display");\n  nameElement.textContent = "Showing results for \\"" + name + "\\"";\n}\n\nThe original innerHTML assignment allowed injected markup. Use textContent,\nvalidate untrusted input, parameterize database queries, and run code scanning\nfor broader coverage.`,
+  };
+
+  function openRecipe(recipe) {
+    const number = recipe.querySelector('.recipe-number').textContent.trim();
+    const title = recipe.querySelector('h3').textContent.trim();
+    const category = recipe.querySelector('.recipe-category').textContent.trim();
+    const scenario = recipe.querySelector(':scope > p').textContent.trim();
+    const prompt = recipe.querySelector('.prompt').textContent.replace('Copy', '').trim();
+    const source = recipe.querySelector('.source-link').href;
+    const details = recipeDetails[number] || ['', []];
+    document.getElementById('modal-number').textContent = number;
+    document.getElementById('modal-title').textContent = title;
+    document.getElementById('modal-category').textContent = category;
+    document.getElementById('modal-scenario').textContent = details[0] || scenario;
+    document.getElementById('modal-prompt').textContent = prompt;
+    document.getElementById('modal-example').textContent = fullExamples[number] || 'No embedded worked example is available for this recipe.';
+    document.getElementById('modal-takeaways').innerHTML = details[1].map((item) => '<li>' + item + '</li>').join('');
+    document.getElementById('modal-source').href = source;
+    recipeModal.hidden = false;
+    document.body.classList.add('modal-open');
+    modalClose.focus();
+  }
+
+  function closeRecipe() {
+    recipeModal.hidden = true;
+    document.body.classList.remove('modal-open');
+  }
+
+  function updateRecipes() {
+    const query = searchInput.value.trim().toLowerCase();
+    const category = categoryFilter.value;
+    let visible = 0;
+
+    recipes.forEach((recipe) => {
+      const matchesQuery = !query || recipe.dataset.search.includes(query) || recipe.textContent.toLowerCase().includes(query);
+      const matchesCategory = category === 'all' || recipe.dataset.category === category;
+      const isVisible = matchesQuery && matchesCategory;
+      recipe.classList.toggle('hidden', !isVisible);
+      if (isVisible) visible += 1;
+    });
+
+    resultCount.textContent = visible + (visible === 1 ? ' recipe' : ' recipes');
+    noResults.hidden = visible !== 0;
+  }
+
+  searchInput.addEventListener('input', updateRecipes);
+  categoryFilter.addEventListener('change', updateRecipes);
+
+  document.querySelectorAll('.copy').forEach((button) => {
+    button.addEventListener('click', async () => {
+      const prompt = button.parentElement.textContent.replace('Copy', '').trim();
+      const originalLabel = button.textContent;
+      try {
+        await navigator.clipboard.writeText(prompt);
+        button.textContent = 'Copied';
+      } catch (error) {
+        button.textContent = 'Select';
+      }
+      window.setTimeout(() => { button.textContent = originalLabel; }, 1400);
+    });
+  });
+
+  document.querySelectorAll('.source-link').forEach((link) => {
+    link.addEventListener('click', (event) => {
+      event.preventDefault();
+      openRecipe(link.closest('.recipe'));
+    });
+  });
+  modalClose.addEventListener('click', closeRecipe);
+  recipeModal.addEventListener('click', (event) => { if (event.target === recipeModal) closeRecipe(); });
+  document.addEventListener('keydown', (event) => { if (event.key === 'Escape' && !recipeModal.hidden) closeRecipe(); });
+</script>
+</body>
+</html>

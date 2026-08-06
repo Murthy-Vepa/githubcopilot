@@ -1,0 +1,1752 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="data:image/svg+xml,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22&gt;&lt;text y=%22.9em%22 font-size=%2290%22&gt;🌱&lt;/text&gt;&lt;/svg&gt;">
+  <title>SDD - Agent Squad - In a Nutshell</title>
+  <meta name="description" content="A comprehensive guide to the SDD - Agent Squad — 10 specialist AI agents that automate your software delivery pipeline.">
+  <!-- Bootstrap CSS -->
+  <link href="assets/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    :root{
+      --bg: #ffffff;
+      --fg: #0f172a;
+      --muted: #64748b;
+      --accent: #f97316;
+      --accent-light: #ffedd5;
+      --border: #e2e8f0;
+      --sidebar-bg: #ffffff;
+      --sidebar-fg: #0f172a;
+      --code-bg: linear-gradient(90deg, rgba(249, 115, 22, 0.08) 0%, rgba(249, 115, 22, 0.12) 100%);
+      --focus: #10b981;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md: 0 4px 6px rgba(0,0,0,0.1), 0 2px 4px rgba(0,0,0,0.06);
+      --shadow-lg: 0 10px 20px rgba(0,0,0,0.12), 0 6px 6px rgba(0,0,0,0.08);
+      --gradient: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+    }
+    
+    /* Bootstrap Gradient Utility Classes */
+    .bg-gradient-blue { background: linear-gradient(135deg, #ffedd5 0%, #fed7aa 100%) !important; }
+    .bg-gradient-green { background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%) !important; }
+    .bg-gradient-yellow { background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%) !important; }
+    .bg-gradient-pink { background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%) !important; }
+    .bg-gradient-purple { background: linear-gradient(135deg, #e9d5ff 0%, #d8b4fe 100%) !important; }
+    .bg-gradient-teal { background: linear-gradient(135deg, #ccfbf1 0%, #99f6e4 100%) !important; }
+    .bg-gradient-blue-dark { background: linear-gradient(135deg, #f97316 0%, #ea580c 100%) !important; }
+    .bg-gradient-gray { background: linear-gradient(135deg, #64748b 0%, #475569 100%) !important; }
+    .bg-gradient-purple-dark { background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%) !important; }
+    .bg-gradient-teal-dark { background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%) !important; }
+    .bg-gradient-green-dark { background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important; }
+    .bg-gradient-red { background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%) !important; }
+    .bg-gradient-green-light { background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%) !important; }
+    .bg-gradient-blue-sky { background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%) !important; }
+    .bg-gradient-red-dark { background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%) !important; }
+    .bg-gradient-indigo { background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%) !important; }
+    .bg-gradient-green-medium { background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important; }
+    .bg-gradient-orange { background: linear-gradient(135deg, #f97316 0%, #ea580c 100%) !important; }
+    .bg-gradient-violet { background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%) !important; }
+    .bg-gradient-lime { background: linear-gradient(135deg, #84cc16 0%, #65a30d 100%) !important; }
+    .bg-gradient-sky { background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%) !important; }
+    
+    /* Apply theme colors to Bootstrap elements */
+    body { background-color: var(--bg); color: var(--fg); overflow: hidden; }
+    .navbar { background-color: var(--fg) !important; border-bottom: none !important; box-shadow: var(--shadow-md) !important; }
+    .navbar-brand { cursor: pointer; color: var(--bg) !important; font-weight: 600; letter-spacing: 0px; }
+    .navbar-toggler-icon { 
+      filter: invert(1);
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%2896, 165, 250, 0.9%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+    }
+    
+    .btn-outline-secondary { border-color: var(--border) !important; color: var(--fg) !important; }
+    .btn-outline-secondary:hover { background-color: var(--accent-light) !important; border-color: var(--accent) !important; color: var(--accent) !important; }
+    
+    /* Sidebar - Modern Design */
+    nav.sidebar { 
+      background: linear-gradient(180deg, #f3f4f6 0%, #e5e7eb 100%); 
+      border-right: 1px solid rgba(0, 0, 0, 0.05) !important;  
+      overflow-y: auto; 
+      box-shadow: 4px 0 16px rgba(0, 0, 0, 0.06);
+      padding-top: 0;
+    }
+    
+    .menu-header {  
+      background: linear-gradient(135deg, rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.1) 100%);
+      font-weight: bold; 
+      padding: 1.25rem 1.25rem; 
+      letter-spacing: 0px; 
+      font-size: 1.1rem;
+      position: relative;
+      overflow: hidden;
+      border: none;
+      border-bottom: 2px solid #a5aab3;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+      color: #0c346c;
+      text-shadow: none;
+      margin: 0;
+      text-transform: none;
+    }
+    .menu-header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+      transition: left 0.6s ease;
+    }
+    .menu-header:hover::before {
+      left: 100%;
+    }
+    .menu-header::after {
+      content: '📋';
+      position: absolute;
+      right: 1.5rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.3rem;
+      opacity: 0.9;
+      filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
+    }
+    
+    .toc { 
+      list-style: none; 
+      padding: 0rem 0; 
+      margin: 0; 
+      background: transparent;
+    }
+    .toc li { 
+      margin: 0; 
+    }
+    
+    /* Section grouping */
+    .toc li[data-group="overview"] { margin-bottom: 0.75rem; }
+    .toc li[data-group="solid"]:first-of-type { 
+      margin-top: 1rem; 
+      border-top: 2px solid rgba(249, 115, 22, 0.15);
+      padding-top: 1rem;
+    }
+    .toc li[data-group="other-principles"]:first-of-type { 
+      margin-top: 1rem; 
+      border-top: 2px solid rgba(16, 185, 129, 0.15);
+      padding-top: 1rem;
+    }
+    .toc li[data-group="resources"] { 
+      margin-top: 1rem; 
+      border-top: 2px solid rgba(100, 116, 139, 0.15);
+      padding-top: 1rem;
+    }
+    
+    .list-group-item { 
+      background: transparent; 
+      border-color: transparent; 
+      padding: 0; 
+      margin: 0.25rem 0.75rem; 
+      border-radius: 0rem;
+      transition: all 0.2s ease;
+    }
+    .list-group-item a { 
+      color: #1f2937; 
+      text-decoration: none; 
+      display: flex; 
+      flex-direction: column; 
+      align-items: flex-start; 
+      gap: 0.4rem; 
+      border-left: 3px solid transparent; 
+      padding: 0.85rem 1.25rem; 
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+      font-weight: 500; 
+      border-radius: 0rem;
+      font-size: 0.95rem;
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(90deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.1) 100%);
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+    .list-group-item a::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 4px;
+      background: linear-gradient(180deg, #f97316 0%, #ea580c 100%);
+      transform: scaleY(0);
+      transition: transform 0.3s ease;
+      border-radius: 0 0px 0px 0;
+    }
+    .list-group-item a::after {
+      content: '▶';
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%) scale(0.7);
+      font-size: 0.7rem;
+      color: #9ca3af;
+      opacity: 0;
+      transition: all 0.3s ease;
+    }
+    .list-group-item a:hover { 
+      background: linear-gradient(90deg, rgba(249, 115, 22, 0.15) 0%, rgba(249, 115, 22, 0.08) 100%); 
+      border-left-color: transparent;
+      color: #c2410c;
+      box-shadow: 0 4px 12px rgba(249, 115, 22, 0.2), 0 2px 4px rgba(0, 0, 0, 0.08);
+      border-color: rgba(249, 115, 22, 0.2);
+      text-decoration: none;
+    }
+    .list-group-item a:hover::before {
+      transform: scaleY(1);
+    }
+    .list-group-item a:hover::after {
+      opacity: 1;
+      transform: translateY(-50%) scale(1);
+      color: #f97316;
+    }
+    .list-group-item a.active { 
+      background: linear-gradient(90deg, rgba(249, 115, 22, 0.22) 0%, rgba(249, 115, 22, 0.12) 100%); 
+      color: #c2410c; 
+      font-weight: 600; 
+      border-left-color: transparent;
+      box-shadow: 0 4px 16px rgba(249, 115, 22, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+      border-color: rgba(249, 115, 22, 0.3);
+    }
+    .list-group-item a.active::before {
+      transform: scaleY(1);
+      background: linear-gradient(180deg, #f97316 0%, #ea580c 100%);
+      width: 5px;
+      box-shadow: 0 0 8px rgba(249, 115, 22, 0.5);
+    }
+    .list-group-item a.active::after {
+      opacity: 1;
+      color: #ea580c;
+      transform: translateY(-50%) scale(1);
+    }
+    .list-group-item a.active:hover { 
+      background: linear-gradient(90deg, rgba(249, 115, 22, 0.28) 0%, rgba(249, 115, 22, 0.16) 100%); 
+      box-shadow: 0 6px 20px rgba(249, 115, 22, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    }
+    
+    /* Sub-items tree connectors */
+    .list-group-sub-item a::before { 
+      content: '├─';
+      font-size: 0.85rem;
+      margin-right: 0.5rem;
+      color: #6b7280;
+      z-index: 1;
+      position: relative;
+    }
+    
+    /* Sub-items styling - similar to main items but smaller and indented */
+    .list-group-sub-item {
+      background: transparent; 
+      border-color: transparent; 
+      padding: 0px; 
+      margin: 0.2rem 0.75rem 0.2rem 1.5rem;
+      border-radius: 0rem;
+      transition: all 0.2s ease;
+      position: relative;
+      list-style-type: none;
+    }
+    .list-group-sub-item::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 4px;
+      background: linear-gradient(180deg, #f97316 0%, #ea580c 100%);
+      transform: scaleY(0);
+      transition: transform 0.3s ease;
+      border-radius: 0 0px 0px 0;
+      z-index: 1;
+    }
+    .list-group-sub-item a {
+      color: #1f2937; 
+      text-decoration: none; 
+      display: block;
+      border-left: 3px solid transparent; 
+      padding: 0.65rem 1rem 0.65rem 2.00rem;
+      transition: all 0.2s ease; 
+      font-weight: 500; 
+      border-radius: 0rem;
+      font-size: 0.8125rem;
+      line-height: 1.4;
+      position: relative;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.5);
+      border: 1px solid rgba(0, 0, 0, 0.04);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    }
+    
+    /* Sub-items hover and active states - same as main items */
+    .list-group-sub-item a::after {
+      content: '▶';
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%) scale(0.7);
+      font-size: 0.7rem;
+      color: #9ca3af;
+      opacity: 0;
+      transition: all 0.3s ease;
+    }
+    
+    .list-group-sub-item:hover::before {
+      transform: scaleY(1);
+    }
+    .list-group-sub-item a:hover { 
+      background: linear-gradient(90deg, rgba(249, 115, 22, 0.15) 0%, rgba(249, 115, 22, 0.08) 100%); 
+      border-left-color: transparent;
+      color: #c2410c;
+      box-shadow: 0 4px 12px rgba(249, 115, 22, 0.2), 0 2px 4px rgba(0, 0, 0, 0.08);
+      border-color: rgba(249, 115, 22, 0.2);
+      text-decoration: none;
+    }
+    .list-group-sub-item a:hover::after {
+      opacity: 1;
+      transform: translateY(-50%) scale(1);
+      color: #f97316;
+    }
+    
+    .list-group-sub-item.active::before {
+      transform: scaleY(1);
+      width: 5px;
+      box-shadow: 0 0 8px rgba(249, 115, 22, 0.5);
+    }
+    .list-group-sub-item a.active { 
+      background: linear-gradient(90deg, rgba(249, 115, 22, 0.22) 0%, rgba(249, 115, 22, 0.12) 100%); 
+      color: #c2410c; 
+      font-weight: 600; 
+      border-left-color: transparent;
+      box-shadow: 0 4px 16px rgba(249, 115, 22, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+      border-color: rgba(249, 115, 22, 0.3);
+    }
+    .list-group-sub-item a.active::after {
+      opacity: 1;
+      color: #ea580c;
+      transform: translateY(-50%) scale(1);
+    }
+    .list-group-sub-item a.active:hover { 
+      background: linear-gradient(90deg, rgba(249, 115, 22, 0.28) 0%, rgba(249, 115, 22, 0.16) 100%); 
+      box-shadow: 0 6px 20px rgba(249, 115, 22, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    }
+    
+    .list-group-item a::after {
+      content: '▶';
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%) scale(0.7);
+      font-size: 0.7rem;
+      color: #9ca3af;
+      opacity: 0;
+      transition: all 0.3s ease;
+    }
+    
+    .list-group-item a:hover { 
+      background: linear-gradient(90deg, rgba(249, 115, 22, 0.15) 0%, rgba(249, 115, 22, 0.08) 100%); 
+      border-left-color: transparent;
+      color: #c2410c;
+      box-shadow: 0 4px 12px rgba(249, 115, 22, 0.2), 0 2px 4px rgba(0, 0, 0, 0.08);
+      border-color: rgba(249, 115, 22, 0.2);
+      text-decoration: none;
+    }
+    .list-group-item a:hover::before {
+      transform: scaleY(1);
+    }
+    .list-group-item a:hover::after {
+      opacity: 1;
+      transform: translateY(-50%) scale(1);
+      color: #f97316;
+    }
+    .list-group-item a.active { 
+      background: linear-gradient(90deg, rgba(249, 115, 22, 0.22) 0%, rgba(249, 115, 22, 0.12) 100%); 
+      color: #c2410c; 
+      font-weight: 600; 
+      border-left-color: transparent;
+      box-shadow: 0 4px 16px rgba(249, 115, 22, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+      border-color: rgba(249, 115, 22, 0.3);
+    }
+    .list-group-item a.active::after {
+      opacity: 1;
+      color: #ea580c;
+      transform: translateY(-50%) scale(1);
+    }
+    .list-group-item a.active:hover { 
+      background: linear-gradient(90deg, rgba(249, 115, 22, 0.28) 0%, rgba(249, 115, 22, 0.16) 100%); 
+      box-shadow: 0 6px 20px rgba(249, 115, 22, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    }
+    
+    /* Badge styling */
+    .badge { font-size: 0.8rem; padding: 0.15rem 0.4rem; background: var(--accent-light); color: var(--accent); border: 1px solid var(--accent); font-weight: 600; border-radius: 0.25rem; font-style: normal; line-height: 1.2; opacity: 0.9; }
+    .badge { background: var(--accent); color: white; border: none; font-size: 0.6rem; padding: 0.25rem 0.5rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; display: inline-block; margin-top: 0.5rem; margin-right: 0.35rem; }
+    .list-group-item a:hover .badge { opacity: 1; background: var(--accent); color: white; }
+    .list-group-item a.active .badge { background: rgba(255, 255, 255, 0.3); color: white; border-color: rgba(255, 255, 255, 0.6); font-weight: 600; opacity: 1; }
+        
+    /* Content */
+    .content { width: 100%; max-width: 100%; margin: 0 auto; background: #ffffff; padding: 2rem; border-radius: 0.75rem; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); }
+    section { display: none !important; margin-bottom: 2rem; }
+    section.active { display: block !important; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    
+    h1 { font-size: 2rem; font-weight: 700; margin: 1rem 0 0.25rem 0; letter-spacing: -0.5px; color: var(--fg); display: block; border: none; }
+    h2 { font-size: 1.5rem; font-weight: 600; margin: 1.5rem 0 0.75rem 0; color: var(--fg); border-bottom: 2px solid var(--accent-light); padding-bottom: 0.5rem; }
+    h3 { font-size: 1.1rem; color: var(--accent); font-weight: 600; margin: 1rem 0 0.5rem 0; }
+    h4 { font-size: 0.8rem; color: var(--fg); font-weight: 600; margin: 0.75rem 0 0.4rem 0; }
+    p { margin: 1rem 0; line-height: 1.65; color: var(--fg); }
+    ul, ol { margin: 1rem 0; padding-left: 2rem; }
+    li { margin: 0.5rem 0; color: var(--fg); }
+    
+    code { background: var(--code-bg); border: 1px solid var(--border); padding: 0.2rem 0.5rem; font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', monospace; font-size: 0.9em; color: var(--accent); border-radius: 0.5rem; }
+    pre { background: var(--code-bg); border: 0px solid var(--border); padding: 1rem; border-radius: 0.5rem; overflow: auto; box-shadow: var(--shadow-sm); margin: 1rem 0; }
+    pre code { padding: 0; background: transparent; border: none; color: var(--fg); }
+    
+    .callout { border-left: 5px solid var(--accent); background: var(--accent-light); padding: 1rem 1.2rem; margin: 1.5rem 0; border-radius: 0.5rem; box-shadow: var(--shadow-sm); font-weight: 500; color: var(--fg); }
+    
+    /* Table styling */
+    .table { color: var(--fg); }
+    .table thead th { background: var(--accent-light); color: var(--accent); border-color: var(--border); font-weight: 600; }
+    .table tbody td { border-color: var(--border); }
+    .table-striped tbody tr:nth-of-type(odd) { background-color: rgba(0,0,0,0.02); }
+    .table-striped tbody tr:hover { background-color: var(--accent-light); }
+    
+    /* Controls/Pagination */
+    .controls { opacity: 0.5; position: fixed; bottom: 0.25rem; right: 1rem; width: auto; z-index: 1000; background: transparent; display: flex; align-items: center; justify-content: center; gap: 0rem; padding: 0; min-height: 40px; }
+    @media (max-width: 991px) {
+      .controls { bottom: 0.25rem; right: 1rem; }
+      .menu-header { color: var(--focus); }
+    }
+    .controls:hover { opacity: 1; }
+    
+    .page-indicator { color: var(--accent); font-weight: 600; font-size: 0.875rem; }
+    .btn-group .btn { margin: 0px 2px; padding: 0.2rem 0.5rem; background: var(--accent); color: white; border-color: var(--accent); font-size: 1rem; font-weight: bold; }
+    .btn-group .btn:hover { background: var(--accent); }
+    .btn-group .btn + .btn { margin-left: -1px; }
+    
+    /* Mobile/Offcanvas */
+    .offcanvas { background: var(--bg) !important; }
+    .offcanvas-header { border-bottom: 1px solid var(--border); }
+    .offcanvas-title { color: var(--fg); font-weight: 600; }
+    .btn-close { color: var(--fg); }
+    
+    /* Scrollbar */
+    nav.sidebar::-webkit-scrollbar { width: 6px; }
+    nav.sidebar::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.05); }
+    nav.sidebar::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.2); border-radius: 0px; }
+    nav.sidebar::-webkit-scrollbar-thumb:hover { background: rgba(0, 0, 0, 0.3); }
+    
+    /* Mermaid Diagrams */
+    .mermaid {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 0.5rem;
+      padding: 2rem;
+      margin: 1.5rem 0;
+      min-height: 400px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: visible;
+      position: relative;
+    }
+    .mermaid.rendered {
+      min-height: 0;
+    }
+    .mermaid svg {
+      max-width: 100%;
+      height: auto;
+      min-height: 300px;
+      transition: transform 0.3s ease;
+      transform-origin: center center;
+    }
+    .mermaid.zoomed {
+      overflow: auto;
+      cursor: grab;
+    }
+    .mermaid.zoomed:active {
+      cursor: grabbing;
+    }
+    .mermaid svg text {
+      font-size: 14px !important;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif !important;
+    }
+    
+    /* Mermaid title styling */
+    .mermaid svg text, .diagram-modal-content svg text {
+      font-size: 1rem !important;
+      font-weight: bold !important;
+      fill: var(--fg) !important;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif !important;
+    }
+
+    .mermaid svg *
+    {
+        color: #333;
+    }
+
+    .mermaid[data-processed="true"] {
+      min-height: 0;
+    }
+    
+    .mermaid svg {
+      max-width: 100%;
+      height: auto;
+      display: inline-block;
+    }
+    
+    /* Zoom controls */
+    .zoom-controls {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 10;
+      opacity: 0.5;
+      transition: opacity 0.3s ease;
+    }
+    .mermaid:hover .zoom-controls {
+      opacity: 1;
+    }
+    .zoom-btn {
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 0.25rem;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      transition: all 0.2s ease;
+    }
+    .zoom-btn:hover {
+      background: #ea580c;
+      transform: scale(1.1);
+    }
+
+    /* Modal for diagram zoom */
+    .diagram-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.95);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+    }
+    .diagram-modal.active {
+      display: flex;
+    }
+    .diagram-modal-content {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      background: white;
+      border-radius: 0;
+      padding: 3rem 3rem 3rem 3rem;
+      overflow: auto;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+    }
+    .diagram-modal-content svg {
+      max-width: 100%;
+      height: auto;
+    }
+    .modal-close {
+      position: fixed;
+      top: 1.5rem;
+      right: 1.5rem;
+      background: #ef4444;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+      transition: all 0.2s ease;
+      z-index: 10000;
+    }
+    .modal-close:hover {
+      background: #dc2626;
+      transform: scale(1.1);
+    }
+    .modal-zoom-controls {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      display: flex;
+      gap: 0.5rem;
+      z-index: 10000;
+      padding: 0rem;
+      border-radius: 0.4rem;
+    }
+    .modal-zoom-btn {
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 0.25rem;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      transition: all 0.2s ease;
+    }
+    .modal-zoom-btn:hover {
+      background: #ea580c;
+      transform: scale(1.1);
+    }
+    
+    /* Utilities */
+    .search { height: 0; overflow: hidden; padding: 0 !important; }
+    .search input { display: none; }
+    .min-vh-100 { min-height: 100vh; }
+    .skip-link { position: absolute; left: -9999px; top: auto; width: 1px; height: 1px; overflow: hidden; }
+    .skip-link:focus { position: static; width: auto; height: auto; padding: 0.4rem 0.6rem; background: var(--accent); color: white; border-radius: 0.4rem; }
+    
+    /* Override Bootstrap defaults for theme */
+    a { color: var(--accent); }
+    a:hover { color: var(--accent); text-decoration: underline; }
+    
+    /* Responsive - keep sidebar visible on desktop, offcanvas on mobile */
+    @media (max-width: 991px) {
+      nav.sidebar { display: none; }
+      #main { width: 100%; }
+      .row { --bs-gutter-x: 0; }
+    }
+    
+    /* Layout - prevent unnecessary scrolling */
+    html, body { height: 100%; margin: 0; }
+    #appContainer { display: flex; flex-direction: column; height: calc(100vh - 50px); }
+    #mainRow { flex: 1; overflow: hidden; display: flex; }
+    nav.sidebar { overflow-y: auto; max-height: 100%; position: relative; padding-bottom: 0px; }
+    #main { overflow: hidden; display: flex; flex-direction: column; height: 100%; -webkit-tap-highlight-color: transparent; outline: none; border: none; }
+    #main:focus { outline: none; }
+    .content { overflow-y: auto; flex: 1; width: 100%; min-height: 0; padding: 0rem 1.5rem 0rem 1.5rem; }
+    
+    /* Contact Info */
+    .contact-info {
+      font-weight: 400 !important;
+      padding: 0.5rem 0.75rem;
+      font-size: 0.75rem;
+      color: var(--accent-light);
+      margin: 0;
+      opacity: 0.5;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+    .contact-info:hover {
+      opacity: 0.9;
+      text-decoration: none;
+    }
+    @media (max-width: 991px) {
+      .navbar-brand {
+        font-size: 1rem !important;
+        flex: 1;
+      }
+      .contact-info {
+        font-size: 0.7rem;
+        padding: 0.25rem 0.5rem;
+      }
+    }
+    @media (max-width: 576px) {
+      .navbar-brand {
+        font-size: 0.9rem !important;
+      }
+      .contact-info {
+        font-size: 0.65rem;
+        padding: 0.2rem 0.4rem;
+      }
+    }
+
+    .list-style-none {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    /* JSON Syntax Highlighting */
+    pre code.language-json {
+      display: block;
+      white-space: pre;
+      font-family: 'Cascadia Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+    }
+
+    pre code.language-json .json-key {
+      color: #0451a5;
+      font-weight: 500;
+    }
+
+    pre code.language-json .json-string {
+      color: #a31515;
+    }
+
+    pre code.language-json .json-number {
+      color: #098658;
+    }
+
+    pre code.language-json .json-boolean {
+      color: #0000ff;
+      font-weight: 600;
+    }
+
+    pre code.language-json .json-null {
+      color: #0000ff;
+      font-weight: 600;
+    }
+
+    pre code.language-json .json-punctuation {
+      color: #333;
+    }
+
+    /* SQL Syntax Highlighting */
+    pre code.language-sql {
+      display: block;
+      white-space: pre;
+      font-family: 'Cascadia Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+    }
+
+    pre code.language-sql .sql-keyword {
+      color: #0000ff;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    pre code.language-sql .sql-string {
+      color: #a31515;
+    }
+
+    pre code.language-sql .sql-number {
+      color: #098658;
+    }
+
+    pre code.language-sql .sql-comment {
+      color: #008000;
+      font-style: italic;
+    }
+
+    pre code.language-sql .sql-function {
+      color: #795e26;
+      font-weight: 500;
+    }
+
+    pre code.language-sql .sql-operator {
+      color: #666;
+      font-weight: 500;
+    }
+
+    /* Language Label for Code Blocks */
+    pre[data-language]::before {
+      content: attr(data-language);
+      position: absolute;
+      top: 8px;
+      right: 12px;
+      font-size: 0.75em;
+      color: #6a737d;
+      text-transform: uppercase;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      background: var(--bg);
+      padding: 0.2rem 0.5rem;
+      border-radius: 0.25rem;
+      border: 1px solid var(--border);
+    }
+
+    /* Enhanced pre/code styling for syntax highlighted blocks */
+    pre.syntax-highlighted {
+      position: relative;
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      padding: 1.5rem 1rem 1rem 1rem;
+      border-radius: 0.5rem;
+      overflow-x: auto;
+      box-shadow: var(--shadow-sm);
+      margin: 1rem 0;
+    }
+
+    pre.syntax-highlighted code {
+      background: transparent;
+      padding: 0;
+      border: none;
+      color: var(--fg);
+      font-size: 0.875rem;
+      line-height: 1.6;
+    }
+
+    ul
+    {
+        list-style-type: none;
+    }
+  /* Document Footer */
+    .document-footer {
+      text-align: center;
+      padding: 20px;
+      background-color: #f8f9fa;
+      border-radius: 8px;
+      margin-top: 20px;
+    }
+    .document-footer p {
+      margin: 0;
+      font-size: 14px;
+      color: #6c757d;
+      line-height: 1.6;
+    }
+    .document-footer strong {
+      color: #495057;
+    }  
+  </style>
+  <!-- Mermaid.js for diagrams -->
+  <script src="assets/scripts/mermaid.min.js"></script>
+  <script>
+    // Initialize Mermaid with proper configuration
+    document.addEventListener('DOMContentLoaded', function() {
+
+      mermaid.initialize({
+        startOnLoad: false,
+        theme: 'base',
+        securityLevel: 'loose',
+        logLevel: 'error',
+        fontFamily: 'Segoe UI Semibold',
+        flowchart: {
+          useMaxWidth: true,
+          htmlLabels: true,
+          curve: 'basis',
+        },
+        sequence: {
+          useMaxWidth: false,
+          htmlLabels: true,
+          diagramMarginX: 50,
+          diagramMarginY: 10
+        }
+      });
+      
+      // Render all diagrams
+      renderMermaidDiagrams();
+    });
+    
+    async function renderMermaidDiagrams() {
+      const diagrams = document.querySelectorAll('.mermaid');
+      
+      for (let i = 0; i < diagrams.length; i++) {
+        const diagram = diagrams[i];
+        const code = diagram.textContent.trim();
+        
+        // Store original code
+        if (!diagram.hasAttribute('data-original-code')) {
+          diagram.setAttribute('data-original-code', code);
+        }
+        
+        try {
+          const { svg } = await mermaid.render('mermaid-diagram-' + i, code);
+          diagram.innerHTML = svg;
+          diagram.setAttribute('data-processed', 'true');
+          
+          // Add zoom controls
+          addZoomControls(diagram);
+        } catch (error) {
+          console.error('Mermaid rendering error for diagram ' + i + ':', error);
+          diagram.innerHTML = '<div class="text-danger p-3 border border-danger border-2 rounded">Error rendering diagram: ' + error.message + '</div>';
+        }
+      }
+    }
+    
+    // Add zoom controls to mermaid diagrams
+    function addZoomControls(diagram) {
+      const controls = document.createElement('div');
+      controls.className = 'zoom-controls';
+      controls.innerHTML = `
+        <button class="zoom-btn" data-action="expand" title="Expand View">⛶</button>
+      `;
+      
+      diagram.style.position = 'relative';
+      diagram.insertBefore(controls, diagram.firstChild);
+      
+      // Expand to modal
+      controls.addEventListener('click', (e) => {
+        const btn = e.target.closest('.zoom-btn');
+        if (!btn) return;
+        
+        openDiagramModal(diagram);
+      });
+    }
+
+    // Open diagram in modal
+    function openDiagramModal(diagram) {
+      // Create modal if it doesn't exist
+      let modal = document.getElementById('diagram-modal');
+      if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'diagram-modal';
+        modal.className = 'diagram-modal';
+        modal.innerHTML = `
+          <button class="modal-close" id="modal-close">×</button>
+          <div class="diagram-modal-content" id="modal-diagram-content"></div>
+          <div class="modal-zoom-controls">
+            <button class="modal-zoom-btn" data-action="zoom-in" title="Zoom In">+</button>
+            <button class="modal-zoom-btn" data-action="zoom-out" title="Zoom Out">−</button>
+            <button class="modal-zoom-btn" data-action="reset" title="Reset Zoom">⟲</button>
+          </div>
+        `;
+        document.body.appendChild(modal);
+        
+        // Close modal handlers
+        modal.querySelector('#modal-close').addEventListener('click', closeDiagramModal);
+        modal.addEventListener('click', (e) => {
+          if (e.target === modal) closeDiagramModal();
+        });
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && modal.classList.contains('active')) {
+            closeDiagramModal();
+          }
+        });
+        
+        // Zoom controls in modal
+        let scale = 1;
+        let translateX = 0;
+        let translateY = 0;
+        
+        modal.querySelector('.modal-zoom-controls').addEventListener('click', (e) => {
+          const btn = e.target.closest('.modal-zoom-btn');
+          if (!btn) return;
+          
+          const action = btn.dataset.action;
+          const svg = modal.querySelector('svg');
+          if (!svg) return;
+          
+          if (action === 'zoom-in') {
+            scale = Math.min(scale + 0.1, 5);
+          } else if (action === 'zoom-out') {
+            scale = Math.max(scale - 0.1, 0.5);
+          } else if (action === 'reset') {
+            scale = 1;
+            translateX = 0;
+            translateY = 0;
+          }
+          
+          svg.style.transform = `scale(${scale}) translate(${translateX / scale}px, ${translateY / scale}px)`;
+        });
+      }
+      
+      // Clone diagram content
+      const svg = diagram.querySelector('svg');
+      if (svg) {
+        const content = modal.querySelector('#modal-diagram-content');
+        content.innerHTML = '';
+        const clonedSvg = svg.cloneNode(true);
+        clonedSvg.style.transform = 'scale(1)';
+        clonedSvg.style.maxWidth = '100%';
+        clonedSvg.style.height = 'auto';
+        content.appendChild(clonedSvg);
+      }
+      
+      modal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeDiagramModal() {
+      const modal = document.getElementById('diagram-modal');
+      if (modal) {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    }
+    
+    // Re-render on theme change
+    window.rerenderMermaid = async function() {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      
+      mermaid.initialize({
+        startOnLoad: false,
+        theme: isDark ? 'base' : 'base',
+        securityLevel: 'loose',
+        flowchart: {
+          useMaxWidth: true,
+          htmlLabels: true,
+          curve: 'basis',
+        },
+        sequence: {
+          useMaxWidth: false,
+          htmlLabels: true,
+          diagramMarginX: 50,
+          diagramMarginY: 10
+        }
+      });
+      
+      const diagrams = document.querySelectorAll('.mermaid[data-processed="true"]');
+      for (let i = 0; i < diagrams.length; i++) {
+        const diagram = diagrams[i];
+        const code = diagram.getAttribute('data-original-code');
+        
+        if (code) {
+          try {
+            const { svg } = await mermaid.render('mermaid-diagram-rerender-' + i + '-' + Date.now(), code);
+            diagram.innerHTML = svg;
+          } catch (error) {
+            console.error('Mermaid re-rendering error:', error);
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg sticky-top" aria-label="Top bar">
+    <div class="container-fluid d-flex align-items-center">
+      <button class="navbar-toggler me-2" id="toggleSidebar" type="button" aria-label="Toggle sidebar">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <span class="navbar-brand mb-0 h1 me-auto">🤖 SDD - Agent Squad - In a Nutshell</span>
+      <span class="contact-info mb-0"></span>
+    </div>      
+  </nav>
+
+  <div id="appContainer">
+    <div class="row g-0" id="mainRow">
+      <nav class="col-lg-3 border-end sidebar" id="sidebar" aria-label="Table of contents">
+        <div class="menu-header py-2">Contents</div>
+        <ul class="list-group list-group-flush toc" id="toc"></ul>
+      </nav>
+
+      <main id="main" class="col-lg-9 d-flex flex-column" tabindex="-1">
+        <div class="content" id="content">
+
+        <section id="overview" role="article">
+          <h1>🤖 What is SDD - Agent Squad?</h1>
+          <span class="badge">intro</span>
+          <span class="badge">overview</span>
+          <p>The <strong>SDD - Agent Squad</strong> is a set of <strong>10 specialist AI agents</strong> that each own a distinct phase of the software delivery pipeline. The Orchestrator coordinates them, humans approve at two critical gates, and all agents read <code>constitution.md</code> before acting.</p>
+
+          <div class="callout">
+            <strong>Core Principle</strong><br />
+            You describe a feature in plain English. The squad writes the spec, designs the UI, implements the code, tests it, reviews it, secures it, makes it observable, documents it, and opens the PR — automatically.
+          </div>
+
+          <h2>Why Use the Agent Squad?</h2>
+          <ul>
+            <li>⚡ <strong>Speed:</strong> Parallelise independent work across specialist agents</li>
+            <li>✅ <strong>Quality:</strong> Each agent is an expert — no generalist compromises</li>
+            <li>🔒 <strong>Security:</strong> Dedicated security review on every change</li>
+            <li>📊 <strong>Observability:</strong> SRE review built into the pipeline</li>
+            <li>📝 <strong>Traceability:</strong> Every task linked to REQ-XXX requirements</li>
+            <li>🔁 <strong>Rework loops:</strong> Failures automatically route back for correction</li>
+          </ul>
+
+          <h2>The 10 Agents at a Glance</h2>
+          <table class="table table-striped">
+            <thead>
+              <tr><th>#</th><th>Agent</th><th>Role</th><th>Model</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>1</td><td>🎭 Orchestrator</td><td>Pipeline conductor — sequences all other agents</td><td>Claude Sonnet 4.6</td></tr>
+              <tr><td>2</td><td>📝 Planner</td><td>Writes spec.md, plan.md, tasks.json from requirements</td><td>GPT-5.4 / Claude Sonnet</td></tr>
+              <tr><td>3</td><td>🎨 Designer</td><td>UI/UX wireframes and component recommendations</td><td>Claude Sonnet 4.6</td></tr>
+              <tr><td>4</td><td>💻 Coder</td><td>Implements tasks from spec and plan</td><td>GPT-5.4 / Claude Sonnet</td></tr>
+              <tr><td>5</td><td>🧪 Tester</td><td>Unit, integration, and E2E tests (85%+ coverage)</td><td>GPT-5.4 mini / Claude Haiku</td></tr>
+              <tr><td>6</td><td>🔍 Reviewer</td><td>Code quality review against spec and constitution</td><td>Claude Sonnet / GPT-5.4</td></tr>
+              <tr><td>7</td><td>🔐 Security Review</td><td>OWASP Top 10 and injection vulnerability detection</td><td>GPT-5.4 mini / Claude Haiku</td></tr>
+              <tr><td>8</td><td>📊 SRE / Observability</td><td>Production readiness: logging, health checks, runbooks</td><td>GPT-5.4 mini / Claude Haiku</td></tr>
+              <tr><td>9</td><td>📚 Document Writer</td><td>API references, user guides, changelogs</td><td>GPT-5.4 mini / Claude Haiku</td></tr>
+              <tr><td>10</td><td>🏛️ Constitution Generator</td><td>Scans repo and generates constitution.md</td><td>Claude Sonnet 4.6</td></tr>
+            </tbody>
+          </table>
+
+          <h2>Human Approval Gates</h2>
+          <ul>
+            <li>🟡 <strong>Gate 1:</strong> Spec approval — human reviews spec.md before any code is written</li>
+            <li>🟡 <strong>Gate 2:</strong> PR approval — human reviews the final PR before merge</li>
+          </ul>
+        </section>
+
+        <section id="orchestrator" role="article">
+          <h1>🎭 Agent 1: Orchestrator</h1>
+          <span class="badge">orchestrator</span>
+          <span class="badge">pipeline</span>
+          <span class="badge">conductor</span>
+          <p>The <strong>Orchestrator</strong> is the pipeline conductor. It sequences all other agents, manages quality gates, handles rework loops, maintains the status manifest, and surfaces the final PR. <em>The Orchestrator never writes code itself.</em></p>
+
+          <h2>Responsibilities</h2>
+          <ul>
+            <li>Reads <code>tasks.json</code> and builds the execution plan</li>
+            <li>Dispatches agents in dependency order</li>
+            <li>Monitors each agent's output for gate pass/fail</li>
+            <li>Routes back to the appropriate agent on failures</li>
+            <li>Opens the PR when all gates pass</li>
+          </ul>
+
+          <h2>Key Behaviours</h2>
+          <ul>
+            <li>🔀 <strong>Parallelises</strong> tasks with no dependencies on each other</li>
+            <li>⏸️ <strong>Stops and waits</strong> at human approval gates (spec approval, PR approval)</li>
+            <li>🔁 <strong>Rework loops:</strong> re-invokes any agent up to 5 iterations with additional context</li>
+            <li>🆘 <strong>Escalates</strong> to the human after 5 failed rework iterations — with full context of what was tried</li>
+          </ul>
+
+          <h2>Invocation</h2>
+          <div class="callout">
+            <strong>Plain English:</strong><br />
+            <code>@orchestrator "Add export to CSV feature to the Todo App"</code><br /><br />
+            <strong>From tasks file:</strong><br />
+            <code>@orchestrator execute tasks.json at .github/specs/my-feature/tasks.json</code>
+          </div>
+
+          <h2>Quality Gates Enforced</h2>
+          <ul>
+            <li>Gate 3: Validates tasks.json before dispatching (acyclic deps, all IDs valid)</li>
+            <li>Gate 4: Validates all tasks complete before opening PR</li>
+          </ul>
+        </section>
+
+        <section id="planner-designer" role="article">
+          <h1>📝 Agents 2–3: Planner & Designer</h1>
+          <span class="badge">planner</span>
+          <span class="badge">designer</span>
+          <span class="badge">spec</span>
+
+          <h2>Agent 2: Planner</h2>
+          <p>Transforms an ambiguous requirement into a complete, unambiguous specification. <em>The Planner never writes code — it writes documents that enable code to be written correctly.</em></p>
+
+          <h3>What It Produces</h3>
+          <ul>
+            <li><strong>spec.md</strong> — requirements (REQ-XXX) with acceptance criteria</li>
+            <li><strong>plan.md</strong> — implementation steps linked to REQ-XXX</li>
+            <li><strong>tasks.json</strong> — machine-readable task list with dependencies</li>
+          </ul>
+
+          <h3>Key Behaviours</h3>
+          <ul>
+            <li>Always asks at least 3 clarifying questions before writing spec.md</li>
+            <li>Writes acceptance criteria that are independently testable</li>
+            <li>Flags open questions rather than resolving them silently</li>
+            <li>Refuses to proceed with unresolved mandatory decisions</li>
+          </ul>
+
+          <h3>Interaction Pattern</h3>
+          <div class="callout">
+            <code>@planner "Add CSV export to the Todo list"</code><br /><br />
+            Planner asks:<br />
+            "1. What columns should the CSV include?"<br />
+            "2. Should the filename include the current date?"<br />
+            "3. Is there a row limit for exports?"<br /><br />
+            You answer → Planner writes spec.md
+          </div>
+
+          <h2>Agent 3: Designer</h2>
+          <p>Provides UI/UX guidance for features that include a user-facing component. <em>The Designer does not write final code — it guides the Coder.</em></p>
+
+          <h3>What It Produces</h3>
+          <ul>
+            <li>Component recommendations (MLDC for public-facing, Bootstrap for internal)</li>
+            <li>Wireframe-level descriptions of each new UI element</li>
+            <li>WCAG 2.0 AA accessibility requirements</li>
+            <li>UX concern flags if the spec has usability issues</li>
+          </ul>
+
+          <div class="callout">
+            <strong>Note:</strong> The Orchestrator invokes the Designer only when the spec has UI-related REQ-XXX items. Skip for pure backend features.
+          </div>
+        </section>
+
+        <section id="coder-tester" role="article">
+          <h1>💻 Agents 4–5: Coder & Tester</h1>
+          <span class="badge">coder</span>
+          <span class="badge">tester</span>
+          <span class="badge">implementation</span>
+
+          <h2>Agent 4: Coder</h2>
+          <p>Implements code changes based on the approved spec, plan, and designer guidance. <em>Produces working code that builds, follows the constitution, and references all REQ-XXX IDs.</em></p>
+
+          <h3>Key Behaviours</h3>
+          <ul>
+            <li>Reads <code>constitution.md</code> before writing any code</li>
+            <li>Implements each assigned task from <code>tasks.json</code></li>
+            <li>Confirms build passes after each task</li>
+            <li>Tags code with <code>// REQ-XXX</code> comments where non-obvious</li>
+            <li><strong>Does not refactor</strong> beyond what the task requires</li>
+            <li><strong>Does not add</strong> unrequested features ("gold plating")</li>
+          </ul>
+
+          <h2>Agent 5: Tester</h2>
+          <p>Ensures test coverage exceeds the threshold and validates that behaviour matches the spec. <em>Generates tests that trace back to REQ-XXX requirements.</em></p>
+
+          <h3>Coverage Requirements</h3>
+          <ul>
+            <li>Default threshold: <strong>85% on changed files</strong></li>
+            <li>Every REQ-XXX must have at least one test validating its acceptance criterion</li>
+            <li>Happy path + at least one failure path per method</li>
+          </ul>
+
+          <h3>Test Naming Convention</h3>
+          <div class="callout">
+            <code>MethodName_StateUnderTest_ExpectedBehavior</code><br /><br />
+            Example:<br />
+            <code>ExportToCsv_EmptyList_ReturnsHeaderRowOnly</code><br />
+            <code>ExportToCsv_ValidItems_ContainsAllColumns</code>
+          </div>
+
+          <h3>Test Types</h3>
+          <ul>
+            <li><strong>Unit:</strong> mock IRepository&lt;T&gt;, test service implementations</li>
+            <li><strong>Integration:</strong> use TestServerFixture for HTTP-level tests</li>
+            <li><strong>E2E (optional):</strong> use PlaywrightFixture for browser-level flows</li>
+          </ul>
+        </section>
+
+        <section id="reviewer-security" role="article">
+          <h1>🔍 Agents 6–7: Reviewer & Security</h1>
+          <span class="badge">reviewer</span>
+          <span class="badge">security</span>
+          <span class="badge">OWASP</span>
+
+          <h2>Agent 6: Reviewer</h2>
+          <p>Reviews all code changes for defects, standards compliance, and correctness against the spec. <em>The Reviewer does NOT fix issues — it reports them to the Orchestrator for Coder rework.</em></p>
+
+          <h3>Review Checklist</h3>
+          <ul>
+            <li>☑ Follows naming conventions from constitution.md</li>
+            <li>☑ Repository pattern used (no direct DbContext in services)</li>
+            <li>☑ Async/await correct</li>
+            <li>☑ No magic strings</li>
+            <li>☑ Error handling present on all public methods</li>
+            <li>☑ Logging at appropriate levels</li>
+            <li>☑ All REQ-XXX requirements are implemented</li>
+          </ul>
+
+          <h3>Output</h3>
+          <ul>
+            <li><strong>PASS</strong> — code approved, Orchestrator proceeds</li>
+            <li><strong>FAIL</strong> — specific line-level findings sent to Coder for rework</li>
+          </ul>
+
+          <h2>Agent 7: Security Review</h2>
+          <p>Identifies security vulnerabilities in code changes. <em>Blocks the PR if any CRITICAL findings remain unresolved.</em></p>
+
+          <h3>What It Checks</h3>
+          <ul>
+            <li>OWASP Top 10 against all changed files</li>
+            <li>Injection vulnerabilities (SQL, command, LDAP)</li>
+            <li>Authentication and authorisation checks</li>
+            <li>Secrets/PII in code and logs</li>
+            <li>XSS/CSRF for any HTML-rendering code</li>
+          </ul>
+
+          <h3>Severity Levels</h3>
+          <table class="table table-striped">
+            <thead><tr><th>Level</th><th>Action</th></tr></thead>
+            <tbody>
+              <tr><td>🔴 CRITICAL</td><td>Orchestrator blocks PR, routes to Coder for immediate fix</td></tr>
+              <tr><td>🟠 HIGH</td><td>Must be fixed before merge; Orchestrator holds PR</td></tr>
+              <tr><td>🟡 MEDIUM</td><td>Noted in PR, team decides fix timeline</td></tr>
+              <tr><td>🟢 LOW</td><td>Advisory only — listed in PR description</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="sre-docwriter" role="article">
+          <h1>📊 Agents 8–9: SRE & Document Writer</h1>
+          <span class="badge">sre</span>
+          <span class="badge">observability</span>
+          <span class="badge">documentation</span>
+
+          <h2>Agent 8: SRE / Observability</h2>
+          <p>Ensures the code change is production-ready: logging, health checks, error handling, and monitoring are in place.</p>
+
+          <h3>Checks Performed</h3>
+          <ul>
+            <li>☑ <code>ILogger&lt;T&gt;</code> used (not Console.Write)</li>
+            <li>☑ Structured log messages (not string interpolation)</li>
+            <li>☑ No PII in logs</li>
+            <li>☑ Exceptions logged with the exception object</li>
+            <li>☑ Health check endpoint reachable at <code>/health</code></li>
+            <li>☑ New dependencies (DB, external APIs) have timeouts configured</li>
+          </ul>
+
+          <h3>What It Produces</h3>
+          <p>A <code>runbook.md</code> snippet attached to the PR describing:</p>
+          <ul>
+            <li>What the new feature does operationally</li>
+            <li>What to look for in logs when it fails</li>
+            <li>How to recover</li>
+          </ul>
+
+          <h2>Agent 9: Document Writer</h2>
+          <p>Produces user-facing documentation, API references, and changelog entries from implementation artifacts.</p>
+
+          <h3>What It Updates</h3>
+          <ul>
+            <li><code>docs/API_REFERENCE.md</code> — new/changed endpoints</li>
+            <li><code>docs/USER_GUIDE.md</code> — relevant sections</li>
+            <li><code>docs/CHANGELOG.md</code> — entry from user's perspective</li>
+            <li><code>docs/README.md</code> — if feature changes the setup process</li>
+          </ul>
+
+          <h3>Quality Bar</h3>
+          <ul>
+            <li>CHANGELOG entries written from user's perspective (not technical jargon)</li>
+            <li>API docs include: endpoint URL, method, request/response schema, error codes</li>
+          </ul>
+        </section>
+
+        <section id="constitution-generator" role="article">
+          <h1>🏛️ Agent 10: Constitution Generator</h1>
+          <span class="badge">constitution</span>
+          <span class="badge">conventions</span>
+          <span class="badge">architecture</span>
+          <p>The <strong>Constitution Generator</strong> scans a repository and generates a populated <code>constitution.md</code> capturing the project's architecture, conventions, and patterns. <em>All other agents read constitution.md before acting.</em></p>
+
+          <h2>Invocation</h2>
+          <div class="callout">
+            <code>@constitution-generator scan this repository and generate constitution.md</code>
+          </div>
+
+          <h2>What It Captures</h2>
+          <ul>
+            <li><strong>Technology stack</strong> — runtime, framework, database, test tools</li>
+            <li><strong>Folder structure</strong> — what goes where</li>
+            <li><strong>Naming conventions</strong> — files, classes, methods, databases</li>
+            <li><strong>Architectural patterns</strong> — DI, repository, unit of work</li>
+            <li><strong>Code patterns</strong> — how services, repositories, controllers are written</li>
+            <li><strong>Test conventions</strong> — test project structure, naming, fixtures</li>
+            <li><strong>Key decisions</strong> — why this approach was chosen</li>
+          </ul>
+
+          <h2>Why It Matters</h2>
+          <div class="callout">
+            <strong>constitution.md is the team's "law of the land".</strong><br />
+            Without it, agents make inconsistent choices about naming, patterns, and structure. With it, every agent produces code that looks like a human expert on your team wrote it.
+          </div>
+
+          <h2>When to Regenerate</h2>
+          <ul>
+            <li>At the start of a new project (run first before any agent work)</li>
+            <li>After major refactoring changes the patterns</li>
+            <li>When onboarding a new service/module with different conventions</li>
+          </ul>
+        </section>
+
+        <section id="workflow" role="article">
+          <h1>🔄 The Orchestrated Workflow</h1>
+          <span class="badge">workflow</span>
+          <span class="badge">process</span>
+          <span class="badge">pipeline</span>
+          <p>The Agent Squad follows a structured pipeline with 4 quality gates and 2 human approval checkpoints.</p>
+
+          <h2>Pipeline Overview</h2>
+          <table class="table table-striped">
+            <thead><tr><th>Phase</th><th>Agent</th><th>Output</th><th>Gate</th></tr></thead>
+            <tbody>
+              <tr><td>1. Discovery</td><td>Constitution Generator (if new)</td><td>constitution.md</td><td>—</td></tr>
+              <tr><td>2. Specification</td><td>Planner</td><td>spec.md, plan.md, tasks.json</td><td>🟡 Gate 1: Human spec approval</td></tr>
+              <tr><td>3. Design (UI only)</td><td>Designer</td><td>design-notes.md</td><td>—</td></tr>
+              <tr><td>4. Validation</td><td>Orchestrator</td><td>Validated tasks.json</td><td>🚦 Gate 3: Automated</td></tr>
+              <tr><td>5. Implementation</td><td>Coder</td><td>Code + build ✓</td><td>—</td></tr>
+              <tr><td>6. Testing</td><td>Tester</td><td>Tests + coverage ≥ 85%</td><td>—</td></tr>
+              <tr><td>7. Review</td><td>Reviewer</td><td>PASS / FAIL</td><td>—</td></tr>
+              <tr><td>8. Security</td><td>Security Review</td><td>No CRITICAL findings</td><td>—</td></tr>
+              <tr><td>9. Observability</td><td>SRE</td><td>Runbook snippet</td><td>—</td></tr>
+              <tr><td>10. Documentation</td><td>Document Writer</td><td>Docs updated</td><td>—</td></tr>
+              <tr><td>11. PR Opening</td><td>Orchestrator</td><td>PR opened</td><td>🟡 Gate 4: Human PR approval</td></tr>
+            </tbody>
+          </table>
+
+          <h2>Rework Loops</h2>
+          <ul>
+            <li>If <strong>Reviewer FAILS</strong> → routes back to Coder with findings</li>
+            <li>If <strong>Security finds CRITICAL</strong> → routes back to Coder for immediate fix</li>
+            <li>If <strong>Tester finds coverage gap</strong> → routes back to Coder and Tester</li>
+            <li>Maximum <strong>5 rework iterations</strong> before human escalation</li>
+          </ul>
+
+          <h2>Parallelisation</h2>
+          <div class="callout">
+            <strong>The Orchestrator parallelises tasks with no dependencies.</strong><br />
+            Example: Security Review and SRE run in parallel after Tester passes. Document Writer runs in parallel with PR prep.
+          </div>
+        </section>
+
+        <section id="quality-gates" role="article">
+          <h1>🚦 Quality Gates</h1>
+          <span class="badge">gates</span>
+          <span class="badge">quality</span>
+          <span class="badge">approval</span>
+          <p>The pipeline has <strong>4 quality gates</strong> — 2 automated and 2 human.</p>
+
+          <table class="table table-striped">
+            <thead><tr><th>Gate</th><th>Type</th><th>Check</th><th>Blocks?</th></tr></thead>
+            <tbody>
+              <tr>
+                <td>🟡 Gate 1</td>
+                <td>Human</td>
+                <td>Spec approval — human reviews spec.md, plan.md, tasks.json</td>
+                <td>Yes — Planner reworks until approved</td>
+              </tr>
+              <tr>
+                <td>🟡 Gate 2</td>
+                <td>Automated</td>
+                <td>Plan coverage — every REQ-XXX has at least one plan step</td>
+                <td>Yes — Planner adds missing plan steps</td>
+              </tr>
+              <tr>
+                <td>🚦 Gate 3</td>
+                <td>Automated</td>
+                <td>tasks.json validity — acyclic deps, all IDs valid, all REQ-XXX referenced</td>
+                <td>Yes — Orchestrator fixes and re-validates</td>
+              </tr>
+              <tr>
+                <td>🟡 Gate 4</td>
+                <td>Human</td>
+                <td>PR approval — human reviews the final pull request</td>
+                <td>Yes — Coder reworks based on PR comments</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h2>What Happens on Gate Failure</h2>
+          <ul>
+            <li><strong>Gate 1 fail:</strong> Planner revises spec.md based on human feedback, re-submits for approval</li>
+            <li><strong>Gate 2 fail:</strong> Planner adds missing plan steps and regenerates tasks.json</li>
+            <li><strong>Gate 3 fail:</strong> Orchestrator fixes the specific issue (adds missing REQ-XXX refs, resolves circular deps)</li>
+            <li><strong>Gate 4 fail:</strong> Orchestrator dispatches Coder to address PR comments, then loops back through Reviewer and Security</li>
+          </ul>
+
+          <div class="callout">
+            <strong>Never bypass a gate.</strong><br />
+            Quality gates are not optional. The Orchestrator will not proceed past a failed gate without either fixing the issue or escalating to the human after 5 failed rework attempts.
+          </div>
+        </section>
+
+        <section id="getting-started" role="article">
+          <h1>🚀 Getting Started</h1>
+          <span class="badge">setup</span>
+          <span class="badge">quickstart</span>
+          <h2>Prerequisites</h2>
+          <ul>
+            <li>GitHub Copilot Business or Enterprise licence</li>
+            <li>VS Code with GitHub Copilot Chat extension</li>
+            <li>Access to Claude Sonnet 4.6 and GPT-5.4 models in Copilot</li>
+          </ul>
+
+          <h2>Step 1: Generate constitution.md</h2>
+          <div class="callout">
+            <code>@constitution-generator scan this repository and generate constitution.md</code><br /><br />
+            Save the output to <code>.github/memory/constitution.md</code>
+          </div>
+
+          <h2>Step 2: Install Agent Files</h2>
+          <p>Copy the agent files from the squad repository into your project:</p>
+          <ul>
+            <li><code>.github/agents/orchestrator.agent.md</code></li>
+            <li><code>.github/agents/planner.agent.md</code></li>
+            <li><code>.github/agents/designer.agent.md</code></li>
+            <li><code>.github/agents/coder.agent.md</code></li>
+            <li><code>.github/agents/tester.agent.md</code></li>
+            <li><code>.github/agents/reviewer.agent.md</code></li>
+            <li><code>.github/agents/security-review.agent.md</code></li>
+            <li><code>.github/agents/sre-observability.agent.md</code></li>
+            <li><code>.github/agents/document-writer.agent.md</code></li>
+            <li><code>.github/agents/constitution-generator.agent.md</code></li>
+          </ul>
+
+          <h2>Step 3: Run Your First Feature</h2>
+          <div class="callout">
+            <code>@orchestrator "Add a dark mode toggle to the application settings page"</code>
+          </div>
+
+          <h2>What Happens Next</h2>
+          <ol>
+            <li>Orchestrator invokes Planner with your request</li>
+            <li>Planner asks 3 clarifying questions</li>
+            <li>You answer → spec.md is generated</li>
+            <li><strong>You approve the spec</strong> (Gate 1)</li>
+            <li>Orchestrator dispatches Designer (if UI), then Coder, Tester, Reviewer, Security, SRE, Document Writer — all with rework loops</li>
+            <li><strong>You approve the PR</strong> (Gate 4)</li>
+            <li>Merge and ship 🚀</li>
+          </ol>
+        </section>
+
+        <section id="resources" role="article">
+          <h1>📚 Resources</h1>
+          <span class="badge">docs</span>
+          <span class="badge">links</span>
+          <span class="badge">reference</span>
+          <h2>Learning Materials</h2>
+          <ul>
+            <li>📖 <strong>Agent Roles Guide</strong> — detailed charter reference for all 10 agents</li>
+            <li>🧪 <strong>Lab Capstone</strong> — hands-on project using the full Agent Squad</li>
+            <li>📄 <strong>One-Pager</strong> — quick reference card for the Agent Squad</li>
+            <li>🎙️ <strong>Podcast Script</strong> — conversational overview for team discussions</li>
+          </ul>
+
+          <h2>Key Files in Your Repo</h2>
+          <table class="table table-striped">
+            <thead><tr><th>File</th><th>Purpose</th></tr></thead>
+            <tbody>
+              <tr><td><code>.github/memory/constitution.md</code></td><td>Project conventions — all agents read this first</td></tr>
+              <tr><td><code>.github/specs/{feature}/spec.md</code></td><td>Requirements (REQ-XXX) with acceptance criteria</td></tr>
+              <tr><td><code>.github/specs/{feature}/plan.md</code></td><td>Implementation steps linked to REQ-XXX</td></tr>
+              <tr><td><code>.github/specs/{feature}/tasks.json</code></td><td>Machine-readable task list with dependencies</td></tr>
+              <tr><td><code>.github/specs/{feature}/design-notes.md</code></td><td>UI/UX guidance from Designer (if applicable)</td></tr>
+              <tr><td><code>docs/runbook.md</code></td><td>Operational runbook from SRE agent</td></tr>
+            </tbody>
+          </table>
+
+          <h2>GitHub Copilot Documentation</h2>
+          <ul>
+            <li><a href="https://docs.github.com/copilot" target="_blank" rel="noopener">GitHub Copilot Docs</a></li>
+            <li><a href="https://docs.github.com/copilot/customizing-copilot/using-extensions-to-integrate-external-tools-with-copilot-chat" target="_blank" rel="noopener">Copilot Extensions</a></li>
+            <li><a href="https://docs.github.com/copilot/github-copilot-chat/using-github-copilot-chat-in-your-ide" target="_blank" rel="noopener">Copilot Chat in VS Code</a></li>
+          </ul>
+        </section>
+
+
+        </div>
+      </main>
+    </div>
+    
+    <nav class="controls" role="navigation" aria-label="Pagination">
+      <div class="btn-group" role="group">
+        <button class="btn btn-outline-info btn-sm" id="prevBtn" title="Previous" aria-label="Previous concept">&nbsp;&lt;&nbsp;</button>
+        <button class="btn btn-outline-info btn-sm" id="nextBtn" title="Next" aria-label="Next concept">&nbsp;&gt;&nbsp;</button>
+      </div>
+    </nav>
+  </div>  <div class="offcanvas offcanvas-start" tabindex="-1" id="sidebarOffcanvas" aria-labelledby="sidebarLabel">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title" id="sidebarLabel">Contents</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body p-0">
+      <ul class="list-group list-group-flush w-100" id="tocMobile"></ul>
+    </div>
+  </div>
+
+  <script>
+    // ---- Configuration ----
+    const sectionConfig = [
+      { id: "overview", title: "🤖 What is SDD - Agent Squad?", tags: ["intro", "overview"] },
+      { id: "orchestrator", title: "🎭 Agent 1: Orchestrator", tags: ["orchestrator", "pipeline", "conductor"] },
+      { id: "planner-designer", title: "📝 Agents 2–3: Planner & Designer", tags: ["planner", "designer", "spec", "requirements"] },
+      { id: "coder-tester", title: "💻 Agents 4–5: Coder & Tester", tags: ["coder", "tester", "implementation", "tests"] },
+      { id: "reviewer-security", title: "🔍 Agents 6–7: Reviewer & Security", tags: ["reviewer", "security", "OWASP", "code-review"] },
+      { id: "sre-docwriter", title: "📊 Agents 8–9: SRE & Document Writer", tags: ["sre", "observability", "documentation", "runbook"] },
+      { id: "constitution-generator", title: "🏛️ Agent 10: Constitution Generator", tags: ["constitution", "conventions", "architecture"] },
+      { id: "workflow", title: "🔄 The Orchestrated Workflow", tags: ["workflow", "process", "steps", "pipeline"] },
+      { id: "quality-gates", title: "🚦 Quality Gates", tags: ["gates", "quality", "approval"] },
+      { id: "getting-started", title: "🚀 Getting Started", tags: ["setup", "quickstart", "install"] },
+      { id: "resources", title: "📚 Resources", tags: ["docs", "links", "reference"] }
+    ];
+
+    // ---- State & rendering ----
+    const state = {
+      index: 0,
+      filtered: sectionConfig.map((_, i) => i), // indices
+    };
+
+    const els = {
+      toc: document.getElementById('toc'),
+      tocMobile: document.getElementById('tocMobile'),
+      prev: document.getElementById('prevBtn'),
+      next: document.getElementById('nextBtn'),
+      toggleSidebar: document.getElementById('toggleSidebar'),
+      themeToggle: document.getElementById('themeToggle'),
+      main: document.getElementById('main'),
+      sidebar: document.querySelector('nav.sidebar'),
+      sidebarOffcanvas: document.getElementById('sidebarOffcanvas')
+    };
+
+    function buildTOC(){
+      // Clear both TOC lists
+      els.toc.innerHTML = '';
+      els.tocMobile.innerHTML = '';
+      
+      state.filtered.forEach((idx) => {
+        const s = sectionConfig[idx];
+        
+        // Desktop sidebar
+        const liDesktop = document.createElement('li');
+        liDesktop.className = 'list-group-item';
+        const aDesktop = document.createElement('a');
+        aDesktop.href = `#${s.id}`;
+        aDesktop.textContent = s.title;
+        aDesktop.addEventListener('click', (e) => {
+          e.preventDefault();
+          navigateToId(s.id);
+          closeSidebar();
+        });
+        liDesktop.appendChild(aDesktop);
+        els.toc.appendChild(liDesktop);
+        
+        // Mobile offcanvas
+        const liMobile = document.createElement('li');
+        liMobile.className = 'list-group-item';
+        const aMobile = document.createElement('a');
+        aMobile.href = `#${s.id}`;
+        aMobile.textContent = s.title;
+        aMobile.addEventListener('click', (e) => {
+          e.preventDefault();
+          navigateToId(s.id);
+          closeSidebar();
+        });
+        liMobile.appendChild(aMobile);
+        els.tocMobile.appendChild(liMobile);
+      });
+      highlightActiveTOC();
+    }
+
+    function setActiveByIndex(i){
+      const ids = state.filtered.map(idx => sectionConfig[idx].id);
+      document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+      const id = ids[i];
+      const active = document.getElementById(id);
+      if (active){
+        active.classList.add('active');
+        active.setAttribute('tabindex', '-1');
+        active.focus({preventScroll:true});
+      }
+      updateControls();
+      highlightActiveTOC();
+      updateURLHash(id);
+    }
+
+    function updateControls(){
+      const count = state.filtered.length;
+      els.prev.disabled = state.index <= 0;
+      els.next.disabled = state.index >= count - 1;
+    }
+
+    function filterTOC(query){
+      const q = query.trim().toLowerCase();
+      state.filtered = sectionConfig
+        .map((s, i) => ({s, i}))
+        .filter(({s}) => s.title.toLowerCase().includes(q) || s.tags.some(t => t.toLowerCase().includes(q)))
+        .map(({i}) => i);
+
+      state.index = Math.min(state.index, Math.max(0, state.filtered.length - 1));
+      buildTOC();
+      setActiveByIndex(state.index);
+    }
+
+    function navigate(delta){
+      const count = state.filtered.length;
+      const nextIndex = Math.min(Math.max(state.index + delta, 0), count - 1);
+      if (nextIndex !== state.index){
+        state.index = nextIndex;
+        setActiveByIndex(state.index);
+        // Scroll content to top
+        const contentEl = document.querySelector('.content');
+        if (contentEl) contentEl.scrollTop = 0;
+      }
+    }
+
+    function navigateToId(id){
+      const idxInFiltered = state.filtered.findIndex(fi => sectionConfig[fi].id === id);
+      if (idxInFiltered !== -1){
+        state.index = idxInFiltered;
+        setActiveByIndex(state.index);
+        // Scroll content to top
+        const contentEl = document.querySelector('.content');
+        if (contentEl) contentEl.scrollTop = 0;
+      } else {
+        state.filtered = sectionConfig.map((_, i) => i);
+        buildTOC();
+        navigateToId(id);
+      }
+    }
+
+    function updateURLHash(id){
+      const url = new URL(window.location);
+      url.hash = id;
+      history.replaceState(null, '', url);
+    }
+
+    function highlightActiveTOC(){
+      const ids = state.filtered.map(idx => sectionConfig[idx].id);
+      const activeId = ids[state.index];
+      // Highlight desktop sidebar
+      els.toc.querySelectorAll('a').forEach(a => a.classList.toggle('active', a.getAttribute('href') === `#${activeId}`));
+      // Highlight mobile offcanvas
+      els.tocMobile.querySelectorAll('a').forEach(a => a.classList.toggle('active', a.getAttribute('href') === `#${activeId}`));
+    }
+
+    function openSidebar(){
+      const offcanvas = new bootstrap.Offcanvas(document.getElementById('sidebarOffcanvas'));
+      offcanvas.show();
+    }
+    function closeSidebar(){
+      const offcanvasElement = document.getElementById('sidebarOffcanvas');
+      const offcanvas = bootstrap.Offcanvas.getInstance(offcanvasElement);
+      if(offcanvas) offcanvas.hide();
+    }
+
+    // ---- Events ----
+    els.prev.addEventListener('click', () => navigate(-1));
+    els.next.addEventListener('click', () => navigate(1));
+
+    // Keyboard navigation
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') navigate(-1);
+      else if (e.key === 'ArrowRight') navigate(1);
+      else if (e.key === 'Escape') closeSidebar();
+    });
+
+    // Deep linking on load/hash change
+    window.addEventListener('hashchange', () => {
+      const id = location.hash.replace('#','');
+      if (id) navigateToId(id);
+    });
+
+    // Sidebar toggle (mobile)
+    els.toggleSidebar.addEventListener('click', () => {
+      openSidebar();
+    });
+
+    // Restore theme
+    (function(){
+      try {
+        const saved = localStorage.getItem('concepts-theme');
+        if (saved) { 
+          document.documentElement.setAttribute('data-theme', saved);
+          els.themeToggle.textContent = saved === 'light' ? '🌗' : '🌙';
+        }
+      } catch {}
+    })();
+
+    // Initial render
+    buildTOC();
+    
+    // Navigate to hash if present, otherwise show first section
+    const initialId = location.hash.replace('#','');
+    if (initialId){ 
+    navigateToId(initialId); 
+    } else {
+    setActiveByIndex(0);
+    // Scroll content to top on initial load
+    const contentEl = document.querySelector('.content');
+    if (contentEl) contentEl.scrollTop = 0;
+    }
+
+  </script>
+  <!-- Bootstrap JS -->
+  <script src="assets/scripts/bootstrap.bundle.min.js"></script>
+</body>
+</html>

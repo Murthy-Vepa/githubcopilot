@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GitHub Copilot Fundamentals Knowledge Check | MetLife Learning</title>
+  <style>
+    :root { --navy:#102042; --blue:#1d4ed8; --cyan:#0ea5e9; --green:#15803d; --red:#b91c1c; --ink:#1e293b; --muted:#64748b; --paper:#f0f4f8; --white:#fff; --line:#dbe4ee; --soft:#eff6ff; --display:Georgia,'Times New Roman',serif; --body:'Segoe UI',system-ui,sans-serif; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--paper); color:var(--ink); font:16px/1.6 var(--body); }
+    .page { width:min(900px,calc(100% - 32px)); margin:0 auto; padding:38px 0 60px; }
+    .hero { padding:36px 34px; border:1px solid #c7d8ed; border-radius:16px; background:linear-gradient(135deg,#dbeafe,#e0f2fe 55%,#dcfce7); }
+    .eyebrow { color:var(--blue); font-size:11px; font-weight:800; letter-spacing:1.8px; text-transform:uppercase; }
+    h1 { margin:14px 0 10px; color:var(--navy); font:700 clamp(38px,6vw,64px)/.98 var(--display); }
+    .hero p { max-width:700px; margin:0; color:#475569; }
+    .meta { display:flex; flex-wrap:wrap; gap:8px; margin-top:20px; }
+    .tag { padding:4px 10px; border:1px solid rgba(15,23,42,.12); border-radius:6px; background:rgba(255,255,255,.7); color:#475569; font-size:12px; }
+    .instructions { margin:24px 0 14px; padding:17px 19px; border-left:4px solid var(--cyan); background:var(--soft); }
+    form { display:grid; gap:16px; }
+    fieldset { margin:0; padding:20px 22px; border:1px solid var(--line); border-radius:10px; background:var(--white); }
+    legend { max-width:100%; padding:0 7px; color:var(--navy); font-weight:700; }
+    label { display:block; margin:9px 0; padding:9px 11px; border:1px solid #e5eaf0; border-radius:6px; color:var(--muted); cursor:pointer; }
+    label:hover { border-color:var(--cyan); background:#f8fbff; color:var(--ink); }
+    input { margin-right:8px; accent-color:var(--blue); }
+    button { padding:12px 18px; border:0; border-radius:7px; background:var(--navy); color:#fff; font:700 15px var(--body); cursor:pointer; }
+    button:hover { background:var(--blue); }
+    #result { margin-top:20px; padding:18px 20px; border-radius:8px; background:var(--white); border:1px solid var(--line); }
+    #result:empty { display:none; }
+    .pass { border-color:#86efac !important; background:#f0fdf4 !important; color:var(--green); }
+    .review { border-color:#fdba74 !important; background:#fff7ed !important; color:#9a3412; }
+    .answer-list { display:grid; gap:10px; margin-top:14px; }
+    .answer-item { padding:11px 13px; border-left:3px solid var(--line); background:#f8fafc; color:var(--muted); font-size:13px; }
+    .answer-item.correct { border-left-color:var(--green); }
+    .answer-item.incorrect { border-left-color:#f97316; }
+    .answer-item strong { color:var(--navy); }
+    .answer-label { display:block; margin-top:3px; color:var(--ink); }
+    a { color:var(--blue); }
+    @media (max-width:560px) { .page { width:min(100% - 20px,900px); padding-top:10px; } .hero { padding:28px 22px; } fieldset { padding:17px; } }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="hero">
+      <div class="eyebrow">GitHub Copilot Fundamentals</div>
+      <h1>Knowledge check</h1>
+      <p>Test the concepts behind effective GitHub Copilot use. Choose one answer for each question, then review the explanations.</p>
+      <div class="meta"><span class="tag">8 questions</span><span class="tag">Self-check</span><span class="tag">No score stored</span></div>
+    </header>
+
+    <div class="instructions"><strong>How to use this check:</strong> Answer from memory first. A strong result means you can explain the choice, not only recognize it.</div>
+
+    <form id="knowledge-check">
+      <fieldset><legend>1. What is the best starting point for a coding request?</legend><label><input type="radio" name="q1" value="a"> Ask for the largest possible implementation immediately</label><label><input type="radio" name="q1" value="b"> Provide the goal, relevant context, constraints, and expected outcome</label><label><input type="radio" name="q1" value="c"> Give only the desired programming language</label></fieldset>
+      <fieldset><legend>2. Why should generated code be reviewed?</legend><label><input type="radio" name="q2" value="a"> Copilot always produces invalid syntax</label><label><input type="radio" name="q2" value="b"> Review is unnecessary when the response sounds confident</label><label><input type="radio" name="q2" value="c"> Generated code can contain incorrect assumptions, defects, or security risks</label></fieldset>
+      <fieldset><legend>3. Which context is usually most useful for a focused change?</legend><label><input type="radio" name="q3" value="a"> The entire organization without a task boundary</label><label><input type="radio" name="q3" value="b"> The relevant files, nearby examples, requirements, and validation command</label><label><input type="radio" name="q3" value="c"> A long prompt unrelated to the repository</label></fieldset>
+      <fieldset><legend>4. When is a deeper-reasoning model a sensible choice?</legend><label><input type="radio" name="q4" value="a"> For every typo correction</label><label><input type="radio" name="q4" value="b"> When a task involves ambiguous tradeoffs, multi-step diagnosis, or architecture</label><label><input type="radio" name="q4" value="c"> Only when the response must be short</label></fieldset>
+      <fieldset><legend>5. What is a good validation signal for a code change?</legend><label><input type="radio" name="q5" value="a"> A successful test, lint, build, or other relevant check</label><label><input type="radio" name="q5" value="b"> The number of lines generated</label><label><input type="radio" name="q5" value="c"> How persuasive the explanation sounds</label></fieldset>
+      <fieldset><legend>6. What does responsible AI use require?</legend><label><input type="radio" name="q6" value="a"> Sharing sensitive information whenever it improves the prompt</label><label><input type="radio" name="q6" value="b"> Treating all generated output as approved for production</label><label><input type="radio" name="q6" value="c"> Following data, security, licensing, review, and organizational policies</label></fieldset>
+      <fieldset><legend>7. When should you consider changing models?</legend><label><input type="radio" name="q7" value="a"> When the current model is too slow, too shallow, too costly, or cannot handle the input</label><label><input type="radio" name="q7" value="b"> Whenever another model has a newer name</label><label><input type="radio" name="q7" value="c"> Never; one model should be used for every task</label></fieldset>
+      <fieldset><legend>8. What is the best way to improve a weak response?</legend><label><input type="radio" name="q8" value="a"> Repeat the same request without changes</label><label><input type="radio" name="q8" value="b"> Add evidence, clarify the desired result, narrow the task, and state constraints</label><label><input type="radio" name="q8" value="c"> Remove all context so the model has fewer choices</label></fieldset>
+      <button type="submit">Check my answers</button>
+    </form>
+    <div id="result" role="status" aria-live="polite"></div>
+  </main>
+  <script>
+    const answers = { q1: 'b', q2: 'c', q3: 'b', q4: 'b', q5: 'a', q6: 'c', q7: 'a', q8: 'b' };
+    const correctAnswers = {
+      q1: 'Provide the goal, relevant context, constraints, and expected outcome.',
+      q2: 'Generated code can contain incorrect assumptions, defects, or security risks.',
+      q3: 'The relevant files, nearby examples, requirements, and validation command.',
+      q4: 'When a task involves ambiguous tradeoffs, multi-step diagnosis, or architecture.',
+      q5: 'A successful test, lint, build, or other relevant check.',
+      q6: 'Following data, security, licensing, review, and organizational policies.',
+      q7: 'When the current model is too slow, too shallow, too costly, or cannot handle the input.',
+      q8: 'Add evidence, clarify the desired result, narrow the task, and state constraints.'
+    };
+    const explanations = {
+      q1: 'Effective requests provide enough context for a useful, bounded result.',
+      q2: 'Review catches incorrect assumptions, defects, security concerns, and policy issues.',
+      q3: 'Relevant repository evidence and a validation signal make the change easier to execute and verify.',
+      q4: 'Reasoning depth is most valuable when the task has ambiguity, dependencies, or meaningful tradeoffs.',
+      q5: 'A relevant executable check is stronger evidence than a fluent explanation.',
+      q6: 'Responsible use includes protecting data, reviewing output, and following organizational policies.',
+      q7: 'Choose a model based on task needs and observed results, not model names alone.',
+      q8: 'Specific evidence, constraints, and a narrower goal give the next response a better direction.'
+    };
+    document.getElementById('knowledge-check').addEventListener('submit', (event) => {
+      event.preventDefault();
+      let score = 0;
+      const review = Object.entries(answers).map(([question, answer], index) => {
+        const selected = document.querySelector(`input[name="${question}"]:checked`)?.value;
+        const isCorrect = selected === answer;
+        if (isCorrect) score += 1;
+        const selectedText = selected ? document.querySelector(`input[name="${question}"][value="${selected}"]`).parentElement.textContent.trim() : 'No answer selected.';
+        return `<div class="answer-item ${isCorrect ? 'correct' : 'incorrect'}"><strong>${index + 1}. ${isCorrect ? 'Correct' : 'Review'}</strong><span class="answer-label"><b>Your answer:</b> ${selectedText}</span>${isCorrect ? '' : `<span class="answer-label"><b>Correct answer:</b> ${correctAnswers[question]}</span>`}<span class="answer-label"><b>Why:</b> ${explanations[question]}</span></div>`;
+      }).join('');
+      const result = document.getElementById('result');
+      const level = score >= 7 ? 'pass' : 'review';
+      result.className = level;
+      result.innerHTML = `<strong>${score}/8 correct.</strong> ${score >= 7 ? 'You have a solid fundamentals baseline.' : 'Review the explanations and retry the questions you missed.'}<div class="answer-list">${review}</div>`;
+    });
+  </script>
+</body>
+</html>

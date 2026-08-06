@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Responsible AI with GitHub Copilot | MetLife Learning</title>
+<style>
+  :root {
+    --ink: #17212b; --muted: #5f6f7d; --paper: #f5f1e8; --paper-deep: #e9e1d3;
+    --white: #fffdf8; --navy: #102a43; --blue: #1769aa; --cyan: #0f9da8;
+    --coral: #e26d5a; --gold: #d9a441; --line: #d8d0c4;
+    --shadow: 0 18px 45px rgba(23,33,43,.10); --display: Georgia, 'Times New Roman', serif;
+    --body: 'Trebuchet MS', 'Segoe UI', sans-serif; --mono: 'Cascadia Code', Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--body); line-height: 1.6; }
+  a { color: inherit; }
+  .shell { display: grid; grid-template-columns: 260px minmax(0, 1fr); min-height: 100vh; }
+  .rail { position: sticky; top: 0; height: 100vh; overflow-y: auto; padding: 28px 20px; background: var(--navy); color: #d9e8f2; }
+  .rail-mark { color: #7ed6d1; font-size: 11px; font-weight: 800; letter-spacing: 1.8px; text-transform: uppercase; }
+  .rail h2 { margin: 8px 0 24px; color: #fffdf8; font: 700 24px/1.05 var(--display); }
+  .rail-label { margin: 25px 0 8px; color: #88a7ba; font-size: 10px; font-weight: 800; letter-spacing: 1.4px; text-transform: uppercase; }
+  .rail a { display: block; padding: 7px 9px; border-left: 2px solid transparent; color: #c4d6e0; font-size: 12px; text-decoration: none; }
+  .rail a:hover, .rail a:focus { border-left-color: #7ed6d1; background: rgba(255,255,255,.06); color: #fff; }
+  .rail-footer { margin-top: 30px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,.14); color: #88a7ba; font-size: 11px; }
+  main { min-width: 0; }
+  .content { width: min(1120px, calc(100% - 64px)); margin: 0 auto; padding: 48px 0 80px; }
+  .hero { position: relative; overflow: hidden; min-height: 390px; padding: 54px 58px; background: var(--navy); color: #fffdf8; box-shadow: var(--shadow); }
+  .hero::after { content: ''; position: absolute; width: 300px; height: 300px; right: -70px; bottom: -125px; border: 45px solid rgba(126,214,209,.32); border-radius: 50%; }
+  .hero::before { content: ''; position: absolute; width: 125px; height: 125px; right: 190px; top: -45px; border: 20px solid rgba(226,109,90,.6); transform: rotate(27deg); }
+  .eyebrow { position: relative; z-index: 1; color: #7ed6d1; font-size: 11px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; }
+  h1 { position: relative; z-index: 1; max-width: 780px; margin: 18px 0; color: #fffdf8; font: 700 clamp(44px, 7vw, 82px)/.95 var(--display); letter-spacing: -2px; }
+  .hero p { position: relative; z-index: 1; max-width: 700px; margin: 0; color: #d9e8f2; font-size: 17px; }
+  .hero-meta { position: relative; z-index: 1; display: flex; flex-wrap: wrap; gap: 10px; margin-top: 30px; }
+  .tag { display: inline-flex; padding: 7px 11px; border: 1px solid rgba(255,255,255,.22); color: #fffdf8; font-size: 11px; }
+  .section { margin-top: 34px; padding: 32px 36px; background: var(--white); border: 1px solid var(--line); box-shadow: 0 8px 26px rgba(23,33,43,.05); }
+  .section-head { display: flex; align-items: flex-start; gap: 18px; margin-bottom: 22px; }
+  .section-number { flex: 0 0 auto; color: var(--coral); font: 700 28px/1 var(--display); }
+  h2 { margin: 0; color: var(--navy); font: 700 30px/1.08 var(--display); }
+  h3 { margin: 25px 0 8px; color: var(--navy); font-size: 18px; }
+  h4 { margin: 18px 0 6px; color: var(--blue); font-size: 14px; letter-spacing: .3px; }
+  p { margin: 10px 0; }
+  .lede { color: var(--muted); font-size: 16px; }
+  .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+  .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .card { padding: 20px; background: #faf7f0; border: 1px solid var(--line); }
+  .card strong { display: block; margin-bottom: 5px; color: var(--navy); }
+  .card p, .card li { margin: 0; color: var(--muted); font-size: 14px; }
+  .card ul { margin: 0; padding-left: 18px; }
+  .callout { margin: 20px 0; padding: 17px 19px; border-left: 4px solid var(--cyan); background: #eaf6f4; }
+  .callout.warn { border-left-color: var(--coral); background: #fff0eb; }
+  .callout.gold { border-left-color: var(--gold); background: #fff8df; }
+  .callout strong { color: var(--navy); }
+  .principles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 22px 0; }
+  .risk-flow { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; margin: 22px 0; }
+  .principle { min-height: 150px; padding: 18px; color: #fffdf8; background: var(--navy); }
+  .principle:nth-child(2), .principle:nth-child(5) { background: var(--blue); }
+  .principle:nth-child(3) { background: var(--cyan); }
+  .principle:nth-child(4) { background: var(--coral); }
+  .principle:nth-child(6) { background: #7d5a26; }
+  .principle b { display: block; margin-bottom: 7px; font: 700 19px/1.1 var(--display); }
+  .principle span { display: block; color: rgba(255,255,255,.88); font-size: 13px; line-height: 1.45; }
+  .checklist { padding: 0; list-style: none; }
+  .checklist li { position: relative; padding: 7px 0 7px 28px; color: var(--muted); }
+  .checklist li::before { content: '□'; position: absolute; left: 0; color: var(--coral); font-size: 19px; line-height: 1.2; }
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { padding: 11px 12px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+  th { background: var(--navy); color: #fffdf8; font-size: 11px; letter-spacing: .5px; text-transform: uppercase; }
+  td { color: var(--muted); }
+  td:first-child { color: var(--navy); font-weight: 700; }
+  .lesson-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 26px; }
+  .lesson-nav a { padding: 7px 10px; border: 1px solid var(--line); color: var(--blue); font-size: 12px; text-decoration: none; }
+  .lesson-nav a:hover, .lesson-nav a:focus { border-color: var(--blue); background: #edf6fb; }
+  .prompt { position: relative; margin: 14px 0; padding: 19px 21px; background: #142d41; color: #d9e8f2; font: 13px/1.7 var(--mono); white-space: pre-wrap; }
+  .prompt::before { content: 'RESPONSIBLE AI CHECK'; position: absolute; right: 14px; top: 10px; color: #7ed6d1; font: 800 9px var(--body); letter-spacing: 1px; }
+  .source { margin-top: 34px; padding: 22px 26px; background: var(--paper-deep); color: var(--muted); font-size: 13px; }
+  .reveal { animation: rise .65s ease both; }
+  @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+  @media (max-width: 850px) {
+    .shell { display: block; }
+    .rail { position: relative; height: auto; }
+    .rail nav { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2px 12px; }
+    .rail-label { grid-column: 1 / -1; }
+    .content { width: min(100% - 28px, 720px); padding-top: 20px; }
+    .hero { padding: 38px 28px; }
+    .section { padding: 26px 22px; }
+    .principles, .grid.three, .risk-flow { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 560px) {
+    h1 { letter-spacing: -1px; }
+    .grid, .principles, .grid.three, .risk-flow { grid-template-columns: 1fr; }
+    .hero { min-height: 0; }
+  }
+  /* Fundamentals visual language */
+  body { background: #f0f4f8; color: #1e293b; font-family: 'Segoe UI', system-ui, sans-serif; }
+  .content { width: min(1100px, calc(100% - 64px)); padding: 42px 0 58px; }
+  .hero { min-height: 0; padding: 40px 38px 34px; background: linear-gradient(135deg, #dbeafe, #e0f2fe 55%, #dcfce7); color: #102042; border: 1px solid #c7d8ed; border-radius: 18px; box-shadow: 0 4px 24px rgba(10,22,40,.10); }
+  .hero::after { border-color: rgba(14,165,233,.20); }
+  .hero::before { border-color: rgba(245,158,11,.30); }
+  .eyebrow { color: #1d4ed8; }
+  h1 { color: #0a1628; font-family: Georgia, serif; letter-spacing: -.8px; }
+  .hero p { color: #475569; }
+  .hero-meta { margin-top: 20px; }
+  .tag { padding: 5px 11px; border: 1px solid rgba(15,23,42,.1); border-radius: 7px; background: rgba(255,255,255,.72); color: #475569; }
+  .section { margin-top: 28px; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px; background: #fff; box-shadow: 0 4px 16px rgba(10,22,40,.06); }
+  .section-number { color: #1d4ed8; }
+  h2, h3, h4 { color: #102042; }
+  .card { background: #f8fafc; border-color: #e2e8f0; }
+  .callout { background: #eff6ff; border-left-color: #0ea5e9; }
+  .callout.warn { background: #fff7ed; border-left-color: #f97316; }
+  .callout.gold { background: #fffbeb; border-left-color: #f59e0b; }
+  .source { background: #f1f5f9; }
+  .principle { background: #102042; }
+  .principle:nth-child(2), .principle:nth-child(5) { background: #1d4ed8; }
+  .principle:nth-child(3) { background: #0891b2; }
+  .principle:nth-child(4) { background: #c2410c; }
+  @media (max-width: 850px) { .content { width: min(100% - 28px, 720px); } }
+</style>
+</head>
+<body id="top">
+<div class="shell">
+  <aside class="rail">
+    <div class="rail-mark">MetLife Learning</div>
+    <h2>Responsible AI<br>with Copilot</h2>
+    <nav aria-label="Guide sections">
+      <div class="rail-label">Start here</div>
+      <a href="#orientation">Orientation</a>
+      <a href="#map">Course map</a>
+      <div class="rail-label">The course</div>
+      <a href="#risks">1. Mitigate AI risks</a>
+      <a href="#principles">2. Six principles</a>
+      <a href="#fairness">Fairness</a>
+      <a href="#reliability">Reliability and safety</a>
+      <a href="#privacy">Privacy and security</a>
+      <a href="#inclusiveness">Inclusiveness</a>
+      <a href="#transparency">Transparency</a>
+      <a href="#accountability">Accountability</a>
+      <a href="#assessment">3. Assessment</a>
+      <div class="rail-label">Apply it</div>
+      <a href="#playbook">Developer playbook</a>
+      <a href="#summary">Summary</a>
+    </nav>
+    <div class="rail-footer">Based on the Responsible AI with GitHub Copilot learning module<br><strong>Fundamentals</strong></div>
+  </aside>
+
+  <main>
+    <div class="content">
+      <header class="hero reveal">
+        <div class="eyebrow">GitHub Copilot Fundamentals</div>
+        <h1>Build with AI.<br>Stay responsible.</h1>
+        <p>A practical guide to using GitHub Copilot with care: recognize risk, design for people, verify generated code, and keep humans accountable for the systems they create and deploy.</p>
+        <div class="hero-meta">
+          <span class="tag">Beginner friendly</span>
+          <span class="tag">5 learning units</span>
+          <span class="tag">Six principles</span>
+          <span class="tag">Human oversight</span>
+        </div>
+      </header>
+
+      <section class="section reveal" id="orientation">
+        <div class="section-head"><div class="section-number">00</div><div><h2>Orientation</h2><p class="lede">Responsible AI is the discipline of keeping people, their goals, and their rights at the center of AI development and use.</p></div></div>
+        <div class="callout"><strong>The operating principle:</strong> GitHub Copilot can accelerate implementation, but acceleration does not transfer responsibility. Developers still need to understand the output, test it against project requirements, and make the final decisions about safety, privacy, fairness, and quality.</div>
+        <div class="grid three">
+          <div class="card"><strong>Use AI effectively</strong><p>Understand what Copilot can do, where it can help, and how its output fits the project.</p></div>
+          <div class="card"><strong>Mitigate risk</strong><p>Look for bias, security weaknesses, privacy violations, unreliable behavior, and unclear accountability.</p></div>
+          <div class="card"><strong>Build trust</strong><p>Make system behavior understandable, document decisions, and keep people involved in consequential choices.</p></div>
+        </div>
+        <div class="callout warn"><strong>Prerequisite:</strong> a basic understanding of generative AI. You do not need to be an AI researcher; you do need to understand that generated output is a proposal requiring review.</div>
+      </section>
+
+      <section class="section reveal" id="map">
+        <div class="section-head"><div class="section-number">01</div><div><h2>Course map</h2><p class="lede">The five-unit learning path moves from the purpose of Responsible AI to concrete principles and developer actions.</p></div></div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Unit</th><th>Focus</th><th>Leave with</th></tr></thead>
+          <tbody>
+            <tr><td>1. Introduction</td><td>Responsible use of AI in the context of GitHub Copilot.</td><td>Learning goals, risk awareness, and the role of human judgment.</td></tr>
+            <tr><td>2. Mitigate AI risks</td><td>Why AI can create opaque, biased, harmful, or privacy-impacting outcomes.</td><td>A governance mindset that combines transparency and oversight.</td></tr>
+            <tr><td>3. Six principles</td><td>Fairness, reliability and safety, privacy and security, inclusiveness, transparency, and accountability.</td><td>A practical lens for reviewing AI-assisted work.</td></tr>
+            <tr><td>4. Assessment</td><td>Check the purpose of Responsible AI and the meaning of each principle.</td><td>Evidence that you can recognize responsible practices.</td></tr>
+            <tr><td>5. Summary</td><td>Connect the principles to AI-generated code and project-specific requirements.</td><td>A repeatable Responsible AI review habit.</td></tr>
+          </tbody>
+        </table></div>
+      </section>
+
+      <section class="section reveal" id="risks">
+        <div class="section-head"><div class="section-number">02</div><div><h2>Mitigate AI risks</h2><p class="lede">AI creates opportunities for innovation and efficiency, but systems can also produce outcomes that are difficult to interpret, unfair, unsafe, or harmful.</p></div></div>
+        <div class="grid">
+          <div class="card"><strong>Opacity</strong><p>People may not understand why an AI system produced a recommendation or generated a particular result.</p></div>
+          <div class="card"><strong>Bias and unfair impact</strong><p>Data, models, or workflows can lead to different outcomes for people who should be treated similarly.</p></div>
+          <div class="card"><strong>Privacy violations</strong><p>Personal or sensitive information may be collected, exposed, retained, or used without appropriate consent.</p></div>
+          <div class="card"><strong>Operational harm</strong><p>Unreliable or manipulated systems can create physical, emotional, financial, security, or reputational harm.</p></div>
+        </div>
+        <h3>What Responsible AI means</h3>
+        <p>Responsible AI is an approach to developing, assessing, and deploying artificial intelligence in a safe, trustworthy, and ethical way. It guides decisions from the purpose of a system through the way people interact with it.</p>
+        <div class="flow risk-flow">
+          <div class="principle"><b>Govern</b><span>Define acceptable use, ownership, review, and escalation.</span></div>
+          <div class="principle"><b>Design</b><span>Keep people, context, accessibility, and likely impact in view.</span></div>
+          <div class="principle"><b>Test</b><span>Probe normal, unexpected, adversarial, and diverse scenarios.</span></div>
+          <div class="principle"><b>Monitor</b><span>Watch behavior after release and respond when risks change.</span></div>
+          <div class="principle"><b>Review</b><span>Use human judgment before accepting AI-generated code or decisions.</span></div>
+        </div>
+        <div class="callout gold"><strong>Risk reduction is layered:</strong> governance, transparency, testing, monitoring, and human oversight work together. No single control makes an AI system responsible by itself.</div>
+      </section>
+
+      <section class="section reveal" id="principles">
+        <div class="section-head"><div class="section-number">03</div><div><h2>The six principles</h2><p class="lede">Microsoft and GitHub identify six principles that guide the development and use of AI systems.</p></div></div>
+        <div class="principles">
+          <div class="principle"><b>Fairness</b><span>AI systems should treat all people fairly.</span></div>
+          <div class="principle"><b>Reliability and safety</b><span>AI systems should perform reliably and safely.</span></div>
+          <div class="principle"><b>Privacy and security</b><span>AI systems should be secure and respect privacy.</span></div>
+          <div class="principle"><b>Inclusiveness</b><span>AI systems should empower everyone and engage people.</span></div>
+          <div class="principle"><b>Transparency</b><span>AI systems should be understandable.</span></div>
+          <div class="principle"><b>Accountability</b><span>People should be accountable for AI systems.</span></div>
+        </div>
+      </section>
+
+      <section class="section reveal" id="fairness">
+        <div class="section-head"><div class="section-number">04</div><div><h2>Fairness</h2><p class="lede">AI systems should avoid differential impacts on similarly situated groups and should provide consistent treatment for people with comparable circumstances.</p></div></div>
+        <div class="grid">
+          <div class="card"><strong>Where to look</strong><p>Medical recommendations, loan decisions, employment systems, code-quality automation, and any workflow where a model influences access or opportunity.</p></div>
+          <div class="card"><strong>How to reduce bias</strong><ul><li>Review training and evaluation data.</li><li>Test with balanced demographic samples.</li><li>Monitor performance across user segments.</li><li>Provide controls to override unfair scores or recommendations.</li></ul></div>
+        </div>
+        <div class="callout"><strong>Developer question:</strong> Does this feature work comparably for the people who will use it, or could its data, assumptions, or interface disadvantage a group?</div>
+      </section>
+
+      <section class="section reveal" id="reliability">
+        <div class="section-head"><div class="section-number">05</div><div><h2>Reliability and safety</h2><p class="lede">AI systems should behave consistently as designed, respond safely to unexpected conditions, and resist harmful manipulation.</p></div></div>
+        <div class="grid three">
+          <div class="card"><strong>Robustness</strong><p>Test normal inputs, edge cases, malformed data, dependency failures, and adversarial behavior.</p></div>
+          <div class="card"><strong>Predictability</strong><p>Define expected behavior and verify that output does not vary in dangerous or unexplained ways.</p></div>
+          <div class="card"><strong>Harm reduction</strong><p>Consider physical, emotional, financial, security, and social consequences when things go wrong.</p></div>
+        </div>
+        <div class="callout warn"><strong>Copilot-specific practice:</strong> generated code can compile and still be unsafe. Run tests, inspect error paths, validate authorization, check dependencies, and review behavior outside the happy path.</div>
+      </section>
+
+      <section class="section reveal" id="privacy">
+        <div class="section-head"><div class="section-number">06</div><div><h2>Privacy and security</h2><p class="lede">AI systems should protect user privacy and data security throughout collection, processing, storage, access, and disposal.</p></div></div>
+        <div class="grid">
+          <div class="card"><strong>Collect intentionally</strong><p>Get permission before collecting personal data, explain how it will be used, and collect only what the system needs.</p></div>
+          <div class="card"><strong>Protect identities</strong><p>Use anonymization, pseudonymization, or aggregation where appropriate to reduce exposure of individual details.</p></div>
+          <div class="card"><strong>Protect data and keys</strong><p>Encrypt sensitive data in transit and at rest. Use controlled key storage, rotation, backup, and access review.</p></div>
+          <div class="card"><strong>Limit access</strong><p>Classify data and models by sensitivity, restrict employee access, and audit for unauthorized use.</p></div>
+        </div>
+        <div class="prompt">Before accepting AI-generated code, ask:
+- Does it send personal, confidential, or source-code data somewhere unexpected?
+- Are secrets kept out of source control and logs?
+- Is input validated and output safely handled?
+- Are authorization and data boundaries enforced on the server?
+- Is the data retention and deletion behavior clear?</div>
+      </section>
+
+      <section class="section reveal" id="inclusiveness">
+        <div class="section-head"><div class="section-number">07</div><div><h2>Inclusiveness</h2><p class="lede">AI systems should work for diverse people, be accessible, and empower communities that have historically been underrepresented or excluded.</p></div></div>
+        <div class="grid">
+          <div class="card"><strong>Design for diversity</strong><p>Seek input from different backgrounds and test whether the system works across relevant users, languages, regions, and contexts.</p></div>
+          <div class="card"><strong>Design for access</strong><p>Support screen readers, captions, voice control, keyboard navigation, alternative interaction modes, and limited connectivity where needed.</p></div>
+          <div class="card"><strong>Respect context</strong><p>Adapt language and interaction to local cultures and dialects instead of assuming one experience fits everyone.</p></div>
+          <div class="card"><strong>Check infrastructure barriers</strong><p>Consider users with limited devices, bandwidth, computing resources, or offline access.</p></div>
+        </div>
+        <div class="callout"><strong>Developer question:</strong> Who is missing from the design conversation, the test data, the accessibility review, or the assumptions encoded in this feature?</div>
+      </section>
+
+      <section class="section reveal" id="transparency">
+        <div class="section-head"><div class="section-number">08</div><div><h2>Transparency</h2><p class="lede">AI systems should be understandable. People need honest information about how a system operates, what it can do, and where it can fail.</p></div></div>
+        <div class="grid three">
+          <div class="card"><strong>Explain design choices</strong><p>Document why the system, model, data, and workflow were selected.</p></div>
+          <div class="card"><strong>State limitations</strong><p>Be clear about capabilities, uncertainty, unsupported situations, and known failure modes.</p></div>
+          <div class="card"><strong>Enable auditability</strong><p>Use logging, reporting, validation evidence, testing dashboards, and reviewable records.</p></div>
+        </div>
+        <div class="callout gold"><strong>Transparency supports the other principles:</strong> people cannot assess fairness, safety, privacy, inclusion, or accountability when the system's behavior and limitations are hidden.</div>
+      </section>
+
+      <section class="section reveal" id="accountability">
+        <div class="section-head"><div class="section-number">09</div><div><h2>Accountability</h2><p class="lede">People and organizations remain responsible for the AI systems they create, deploy, operate, and use.</p></div></div>
+        <div class="grid">
+          <div class="card"><strong>Assign ownership</strong><p>Know who approves use, reviews changes, monitors behavior, handles incidents, and makes escalation decisions.</p></div>
+          <div class="card"><strong>Monitor continuously</strong><p>System performance and risk can change after release as data, users, dependencies, and threats change.</p></div>
+          <div class="card"><strong>Keep human judgment</strong><p>Do not treat an AI recommendation or generated code change as self-justifying.</p></div>
+          <div class="card"><strong>Learn from harm</strong><p>Investigate failures, document lessons, mitigate recurrence, and communicate material impacts.</p></div>
+        </div>
+        <div class="callout warn"><strong>Accountability is not the same as blame:</strong> it is the practice of making responsibility, decision rights, evidence, and remediation visible.</div>
+      </section>
+
+      <section class="section reveal" id="assessment">
+        <div class="section-head"><div class="section-number">10</div><div><h2>Knowledge check</h2><p class="lede">Use these prompts to rehearse the concepts covered in the module assessment.</p></div></div>
+        <ul class="checklist">
+          <li>Can you explain that Responsible AI aims for safe, trustworthy, and ethical systems?</li>
+          <li>Can you name all six principles without substituting innovation for one of them?</li>
+          <li>Can you describe how balanced data, testing, debiasing, and monitoring help address unfairness?</li>
+          <li>Can you explain why transparency makes system operations and decisions understandable?</li>
+          <li>Can you identify project-specific conventions and requirements that AI-generated code must follow?</li>
+          <li>Can you explain why developers must closely scrutinize AI-generated code before accepting it?</li>
+        </ul>
+        <div class="callout"><strong>Best-answer pattern:</strong> Responsible AI is not about maximizing speed or replacing human decisions. It is about designing and using AI in ways that protect people, make risks visible, and keep appropriate human responsibility in the loop.</div>
+      </section>
+
+      <section class="section reveal" id="playbook">
+        <div class="section-head"><div class="section-number">11</div><div><h2>Developer playbook</h2><p class="lede">Turn the six principles into a lightweight review before you accept Copilot output or ship an AI-assisted feature.</p></div></div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Principle</th><th>Ask before accepting</th><th>Evidence to keep</th></tr></thead>
+          <tbody>
+            <tr><td>Fairness</td><td>Could the data, assumptions, or workflow disadvantage a group?</td><td>Segmented tests, data review, and remediation decisions.</td></tr>
+            <tr><td>Reliability and safety</td><td>What happens with bad input, failure, misuse, or unexpected conditions?</td><td>Tests, threat scenarios, error handling, and monitoring.</td></tr>
+            <tr><td>Privacy and security</td><td>What data and secrets are handled, and who can access them?</td><td>Data flow, access controls, retention, and security review.</td></tr>
+            <tr><td>Inclusiveness</td><td>Can diverse people access and benefit from this feature?</td><td>Accessibility checks, representative feedback, and language/context tests.</td></tr>
+            <tr><td>Transparency</td><td>Can users and maintainers understand capabilities and limitations?</td><td>Documentation, logs, explanations, and known limitations.</td></tr>
+            <tr><td>Accountability</td><td>Who owns the decision, the operation, and the response when it fails?</td><td>Named owners, approvals, incident paths, and review history.</td></tr>
+          </tbody>
+        </table></div>
+        <div class="prompt">Responsible AI review for [feature or change]
+Purpose: [who benefits and what decision or task is supported]
+Data: [what is collected, used, retained, or exposed]
+Risks: [fairness, safety, privacy, inclusion, transparency, accountability]
+Controls: [tests, access limits, human review, monitoring, documentation]
+Evidence: [what will prove the controls work]
+Owner: [who reviews, approves, monitors, and responds]</div>
+      </section>
+
+      <section class="section reveal" id="summary">
+        <div class="section-head"><div class="section-number">12</div><div><h2>Summary</h2><p class="lede">Responsible AI makes the benefits of GitHub Copilot more durable by pairing speed with care, evidence, and accountability.</p></div></div>
+        <div class="grid three">
+          <div class="card"><strong>Fairness and inclusion</strong><p>Design and test for people who differ in background, ability, language, context, and access.</p></div>
+          <div class="card"><strong>Safety and privacy</strong><p>Expect failure, protect data, constrain access, and validate the generated implementation.</p></div>
+          <div class="card"><strong>Transparency and ownership</strong><p>Document how the system works, state its limits, and name the people responsible for it.</p></div>
+        </div>
+        <div class="callout gold"><strong>Carry it forward:</strong> whenever Copilot helps create code, ask not only “does it work?” but also “for whom, under what conditions, with what data, and who remains accountable?”</div>
+        <div class="source">This local guide consolidates the Responsible AI with GitHub Copilot learning content into a single Fundamentals page. It is designed for internal learning and should be paired with your organization's current security, privacy, accessibility, and AI governance requirements.</div>
+      </section>
+    </div>
+  </main>
+</div>
+</body>
+</html>

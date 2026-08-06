@@ -1,0 +1,2840 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="data:image/svg+xml,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22&gt;&lt;text y=%22.9em%22 font-size=%2290%22&gt;🌱&lt;/text&gt;&lt;/svg&gt;">
+  <title>GitHub Spec Kit - In a Nutshell</title>
+  <meta name="description" content="A comprehensive guide to GitHub Spec Kit and Spec-Driven Development.">
+  <!-- Bootstrap CSS -->
+  <link href="assets/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    :root{
+      --bg: #ffffff;
+      --fg: #0f172a;
+      --muted: #64748b;
+      --accent: #3b82f6;
+      --accent-light: #dbeafe;
+      --border: #e2e8f0;
+      --sidebar-bg: #ffffff;
+      --sidebar-fg: #0f172a;
+      --code-bg: linear-gradient(90deg, rgba(59, 130, 246, 0.08) 0%, rgba(59, 130, 246, 0.12) 100%);
+      --focus: #10b981;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md: 0 4px 6px rgba(0,0,0,0.1), 0 2px 4px rgba(0,0,0,0.06);
+      --shadow-lg: 0 10px 20px rgba(0,0,0,0.12), 0 6px 6px rgba(0,0,0,0.08);
+      --gradient: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    }
+    
+    /* Bootstrap Gradient Utility Classes */
+    .bg-gradient-blue { background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%) !important; }
+    .bg-gradient-green { background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%) !important; }
+    .bg-gradient-yellow { background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%) !important; }
+    .bg-gradient-pink { background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%) !important; }
+    .bg-gradient-purple { background: linear-gradient(135deg, #e9d5ff 0%, #d8b4fe 100%) !important; }
+    .bg-gradient-teal { background: linear-gradient(135deg, #ccfbf1 0%, #99f6e4 100%) !important; }
+    .bg-gradient-blue-dark { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important; }
+    .bg-gradient-gray { background: linear-gradient(135deg, #64748b 0%, #475569 100%) !important; }
+    .bg-gradient-purple-dark { background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%) !important; }
+    .bg-gradient-teal-dark { background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%) !important; }
+    .bg-gradient-green-dark { background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important; }
+    .bg-gradient-red { background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%) !important; }
+    .bg-gradient-green-light { background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%) !important; }
+    .bg-gradient-blue-sky { background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%) !important; }
+    .bg-gradient-red-dark { background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%) !important; }
+    .bg-gradient-indigo { background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%) !important; }
+    .bg-gradient-green-medium { background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important; }
+    .bg-gradient-orange { background: linear-gradient(135deg, #f97316 0%, #ea580c 100%) !important; }
+    .bg-gradient-violet { background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%) !important; }
+    .bg-gradient-lime { background: linear-gradient(135deg, #84cc16 0%, #65a30d 100%) !important; }
+    .bg-gradient-sky { background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%) !important; }
+    
+    /* Apply theme colors to Bootstrap elements */
+    body { background-color: var(--bg); color: var(--fg); overflow: hidden; }
+    .navbar { background-color: var(--fg) !important; border-bottom: none !important; box-shadow: var(--shadow-md) !important; }
+    .navbar-brand { cursor: pointer; color: var(--bg) !important; font-weight: 600; letter-spacing: 0px; }
+    .navbar-toggler-icon { 
+      filter: invert(1);
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%2896, 165, 250, 0.9%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+    }
+    
+    .btn-outline-secondary { border-color: var(--border) !important; color: var(--fg) !important; }
+    .btn-outline-secondary:hover { background-color: var(--accent-light) !important; border-color: var(--accent) !important; color: var(--accent) !important; }
+    
+    /* Sidebar - Modern Design */
+    nav.sidebar { 
+      background: linear-gradient(180deg, #f3f4f6 0%, #e5e7eb 100%); 
+      border-right: 1px solid rgba(0, 0, 0, 0.05) !important;  
+      overflow-y: auto; 
+      box-shadow: 4px 0 16px rgba(0, 0, 0, 0.06);
+      padding-top: 0;
+    }
+    
+    .menu-header {  
+      background: linear-gradient(135deg, rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.1) 100%);
+      font-weight: bold; 
+      padding: 1.25rem 1.25rem; 
+      letter-spacing: 0px; 
+      font-size: 1.1rem;
+      position: relative;
+      overflow: hidden;
+      border: none;
+      border-bottom: 2px solid #a5aab3;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+      color: #0c346c;
+      text-shadow: none;
+      margin: 0;
+      text-transform: none;
+    }
+    .menu-header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+      transition: left 0.6s ease;
+    }
+    .menu-header:hover::before {
+      left: 100%;
+    }
+    .menu-header::after {
+      content: '📋';
+      position: absolute;
+      right: 1.5rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.3rem;
+      opacity: 0.9;
+      filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
+    }
+    
+    .toc { 
+      list-style: none; 
+      padding: 0rem 0; 
+      margin: 0; 
+      background: transparent;
+    }
+    .toc li { 
+      margin: 0; 
+    }
+    
+    /* Section grouping */
+    .toc li[data-group="overview"] { margin-bottom: 0.75rem; }
+    .toc li[data-group="solid"]:first-of-type { 
+      margin-top: 1rem; 
+      border-top: 2px solid rgba(59, 130, 246, 0.15);
+      padding-top: 1rem;
+    }
+    .toc li[data-group="other-principles"]:first-of-type { 
+      margin-top: 1rem; 
+      border-top: 2px solid rgba(16, 185, 129, 0.15);
+      padding-top: 1rem;
+    }
+    .toc li[data-group="resources"] { 
+      margin-top: 1rem; 
+      border-top: 2px solid rgba(100, 116, 139, 0.15);
+      padding-top: 1rem;
+    }
+    
+    .list-group-item { 
+      background: transparent; 
+      border-color: transparent; 
+      padding: 0; 
+      margin: 0.25rem 0.75rem; 
+      border-radius: 0rem;
+      transition: all 0.2s ease;
+    }
+    .list-group-item a { 
+      color: #1f2937; 
+      text-decoration: none; 
+      display: flex; 
+      flex-direction: column; 
+      align-items: flex-start; 
+      gap: 0.4rem; 
+      border-left: 3px solid transparent; 
+      padding: 0.85rem 1.25rem; 
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+      font-weight: 500; 
+      border-radius: 0rem;
+      font-size: 0.95rem;
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(90deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.1) 100%);
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+    .list-group-item a::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 4px;
+      background: linear-gradient(180deg, #3b82f6 0%, #2563eb 100%);
+      transform: scaleY(0);
+      transition: transform 0.3s ease;
+      border-radius: 0 0px 0px 0;
+    }
+    .list-group-item a::after {
+      content: '▶';
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%) scale(0.7);
+      font-size: 0.7rem;
+      color: #9ca3af;
+      opacity: 0;
+      transition: all 0.3s ease;
+    }
+    .list-group-item a:hover { 
+      background: linear-gradient(90deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.08) 100%); 
+      border-left-color: transparent;
+      color: #1e40af;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2), 0 2px 4px rgba(0, 0, 0, 0.08);
+      border-color: rgba(59, 130, 246, 0.2);
+      text-decoration: none;
+    }
+    .list-group-item a:hover::before {
+      transform: scaleY(1);
+    }
+    .list-group-item a:hover::after {
+      opacity: 1;
+      transform: translateY(-50%) scale(1);
+      color: #3b82f6;
+    }
+    .list-group-item a.active { 
+      background: linear-gradient(90deg, rgba(59, 130, 246, 0.22) 0%, rgba(59, 130, 246, 0.12) 100%); 
+      color: #1e40af; 
+      font-weight: 600; 
+      border-left-color: transparent;
+      box-shadow: 0 4px 16px rgba(59, 130, 246, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+      border-color: rgba(59, 130, 246, 0.3);
+    }
+    .list-group-item a.active::before {
+      transform: scaleY(1);
+      background: linear-gradient(180deg, #3b82f6 0%, #2563eb 100%);
+      width: 5px;
+      box-shadow: 0 0 8px rgba(59, 130, 246, 0.5);
+    }
+    .list-group-item a.active::after {
+      opacity: 1;
+      color: #2563eb;
+      transform: translateY(-50%) scale(1);
+    }
+    .list-group-item a.active:hover { 
+      background: linear-gradient(90deg, rgba(59, 130, 246, 0.28) 0%, rgba(59, 130, 246, 0.16) 100%); 
+      box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    }
+    
+    /* Sub-items tree connectors */
+    .list-group-sub-item a::before { 
+      content: '├─';
+      font-size: 0.85rem;
+      margin-right: 0.5rem;
+      color: #6b7280;
+      z-index: 1;
+      position: relative;
+    }
+    
+    /* Sub-items styling - similar to main items but smaller and indented */
+    .list-group-sub-item {
+      background: transparent; 
+      border-color: transparent; 
+      padding: 0px; 
+      margin: 0.2rem 0.75rem 0.2rem 1.5rem;
+      border-radius: 0rem;
+      transition: all 0.2s ease;
+      position: relative;
+      list-style-type: none;
+    }
+    .list-group-sub-item::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 4px;
+      background: linear-gradient(180deg, #3b82f6 0%, #2563eb 100%);
+      transform: scaleY(0);
+      transition: transform 0.3s ease;
+      border-radius: 0 0px 0px 0;
+      z-index: 1;
+    }
+    .list-group-sub-item a {
+      color: #1f2937; 
+      text-decoration: none; 
+      display: block;
+      border-left: 3px solid transparent; 
+      padding: 0.65rem 1rem 0.65rem 2.00rem;
+      transition: all 0.2s ease; 
+      font-weight: 500; 
+      border-radius: 0rem;
+      font-size: 0.8125rem;
+      line-height: 1.4;
+      position: relative;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.5);
+      border: 1px solid rgba(0, 0, 0, 0.04);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    }
+    
+    /* Sub-items hover and active states - same as main items */
+    .list-group-sub-item a::after {
+      content: '▶';
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%) scale(0.7);
+      font-size: 0.7rem;
+      color: #9ca3af;
+      opacity: 0;
+      transition: all 0.3s ease;
+    }
+    
+    .list-group-sub-item:hover::before {
+      transform: scaleY(1);
+    }
+    .list-group-sub-item a:hover { 
+      background: linear-gradient(90deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.08) 100%); 
+      border-left-color: transparent;
+      color: #1e40af;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2), 0 2px 4px rgba(0, 0, 0, 0.08);
+      border-color: rgba(59, 130, 246, 0.2);
+      text-decoration: none;
+    }
+    .list-group-sub-item a:hover::after {
+      opacity: 1;
+      transform: translateY(-50%) scale(1);
+      color: #3b82f6;
+    }
+    
+    .list-group-sub-item.active::before {
+      transform: scaleY(1);
+      width: 5px;
+      box-shadow: 0 0 8px rgba(59, 130, 246, 0.5);
+    }
+    .list-group-sub-item a.active { 
+      background: linear-gradient(90deg, rgba(59, 130, 246, 0.22) 0%, rgba(59, 130, 246, 0.12) 100%); 
+      color: #1e40af; 
+      font-weight: 600; 
+      border-left-color: transparent;
+      box-shadow: 0 4px 16px rgba(59, 130, 246, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+      border-color: rgba(59, 130, 246, 0.3);
+    }
+    .list-group-sub-item a.active::after {
+      opacity: 1;
+      color: #2563eb;
+      transform: translateY(-50%) scale(1);
+    }
+    .list-group-sub-item a.active:hover { 
+      background: linear-gradient(90deg, rgba(59, 130, 246, 0.28) 0%, rgba(59, 130, 246, 0.16) 100%); 
+      box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    }
+    
+    .list-group-item a::after {
+      content: '▶';
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%) scale(0.7);
+      font-size: 0.7rem;
+      color: #9ca3af;
+      opacity: 0;
+      transition: all 0.3s ease;
+    }
+    
+    .list-group-item a:hover { 
+      background: linear-gradient(90deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.08) 100%); 
+      border-left-color: transparent;
+      color: #1e40af;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2), 0 2px 4px rgba(0, 0, 0, 0.08);
+      border-color: rgba(59, 130, 246, 0.2);
+      text-decoration: none;
+    }
+    .list-group-item a:hover::before {
+      transform: scaleY(1);
+    }
+    .list-group-item a:hover::after {
+      opacity: 1;
+      transform: translateY(-50%) scale(1);
+      color: #3b82f6;
+    }
+    .list-group-item a.active { 
+      background: linear-gradient(90deg, rgba(59, 130, 246, 0.22) 0%, rgba(59, 130, 246, 0.12) 100%); 
+      color: #1e40af; 
+      font-weight: 600; 
+      border-left-color: transparent;
+      box-shadow: 0 4px 16px rgba(59, 130, 246, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+      border-color: rgba(59, 130, 246, 0.3);
+    }
+    .list-group-item a.active::after {
+      opacity: 1;
+      color: #2563eb;
+      transform: translateY(-50%) scale(1);
+    }
+    .list-group-item a.active:hover { 
+      background: linear-gradient(90deg, rgba(59, 130, 246, 0.28) 0%, rgba(59, 130, 246, 0.16) 100%); 
+      box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    }
+    
+    /* Badge styling */
+    .badge { font-size: 0.8rem; padding: 0.15rem 0.4rem; background: var(--accent-light); color: var(--accent); border: 1px solid var(--accent); font-weight: 600; border-radius: 0.25rem; font-style: normal; line-height: 1.2; opacity: 0.9; }
+    .badge { background: var(--accent); color: white; border: none; font-size: 0.6rem; padding: 0.25rem 0.5rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; display: inline-block; margin-top: 0.5rem; margin-right: 0.35rem; }
+    .list-group-item a:hover .badge { opacity: 1; background: var(--accent); color: white; }
+    .list-group-item a.active .badge { background: rgba(255, 255, 255, 0.3); color: white; border-color: rgba(255, 255, 255, 0.6); font-weight: 600; opacity: 1; }
+        
+    /* Content */
+    .content { width: 100%; max-width: 100%; margin: 0 auto; background: #ffffff; padding: 2rem; border-radius: 0.75rem; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); }
+    section { display: none !important; margin-bottom: 2rem; }
+    section.active { display: block !important; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    
+    h1 { font-size: 2rem; font-weight: 700; margin: 1rem 0 0.25rem 0; letter-spacing: -0.5px; color: var(--fg); display: block; border: none; }
+    h2 { font-size: 1.5rem; font-weight: 600; margin: 1.5rem 0 0.75rem 0; color: var(--fg); border-bottom: 2px solid var(--accent-light); padding-bottom: 0.5rem; }
+    h3 { font-size: 1.1rem; color: var(--accent); font-weight: 600; margin: 1rem 0 0.5rem 0; }
+    h4 { font-size: 0.8rem; color: var(--fg); font-weight: 600; margin: 0.75rem 0 0.4rem 0; }
+    p { margin: 1rem 0; line-height: 1.65; color: var(--fg); }
+    ul, ol { margin: 1rem 0; padding-left: 2rem; }
+    li { margin: 0.5rem 0; color: var(--fg); }
+    
+    code { background: var(--code-bg); border: 1px solid var(--border); padding: 0.2rem 0.5rem; font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', monospace; font-size: 0.9em; color: var(--accent); border-radius: 0.5rem; }
+    pre { background: var(--code-bg); border: 0px solid var(--border); padding: 1rem; border-radius: 0.5rem; overflow: auto; box-shadow: var(--shadow-sm); margin: 1rem 0; }
+    pre code { padding: 0; background: transparent; border: none; color: var(--fg); }
+    
+    .callout { border-left: 5px solid var(--accent); background: var(--accent-light); padding: 1rem 1.2rem; margin: 1.5rem 0; border-radius: 0.5rem; box-shadow: var(--shadow-sm); font-weight: 500; color: var(--fg); }
+    
+    /* Table styling */
+    .table { color: var(--fg); }
+    .table thead th { background: var(--accent-light); color: var(--accent); border-color: var(--border); font-weight: 600; }
+    .table tbody td { border-color: var(--border); }
+    .table-striped tbody tr:nth-of-type(odd) { background-color: rgba(0,0,0,0.02); }
+    .table-striped tbody tr:hover { background-color: var(--accent-light); }
+    
+    /* Controls/Pagination */
+    .controls { opacity: 0.5; position: fixed; bottom: 0.25rem; right: 1rem; width: auto; z-index: 1000; background: transparent; display: flex; align-items: center; justify-content: center; gap: 0rem; padding: 0; min-height: 40px; }
+    @media (max-width: 991px) {
+      .controls { bottom: 0.25rem; right: 1rem; }
+      .menu-header { color: var(--focus); }
+    }
+    .controls:hover { opacity: 1; }
+    
+    .page-indicator { color: var(--accent); font-weight: 600; font-size: 0.875rem; }
+    .btn-group .btn { margin: 0px 2px; padding: 0.2rem 0.5rem; background: var(--accent); color: white; border-color: var(--accent); font-size: 1rem; font-weight: bold; }
+    .btn-group .btn:hover { background: var(--accent); }
+    .btn-group .btn + .btn { margin-left: -1px; }
+    
+    /* Mobile/Offcanvas */
+    .offcanvas { background: var(--bg) !important; }
+    .offcanvas-header { border-bottom: 1px solid var(--border); }
+    .offcanvas-title { color: var(--fg); font-weight: 600; }
+    .btn-close { color: var(--fg); }
+    
+    /* Scrollbar */
+    nav.sidebar::-webkit-scrollbar { width: 6px; }
+    nav.sidebar::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.05); }
+    nav.sidebar::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.2); border-radius: 0px; }
+    nav.sidebar::-webkit-scrollbar-thumb:hover { background: rgba(0, 0, 0, 0.3); }
+    
+    /* Mermaid Diagrams */
+    .mermaid {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 0.5rem;
+      padding: 2rem;
+      margin: 1.5rem 0;
+      min-height: 400px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: visible;
+      position: relative;
+    }
+    .mermaid.rendered {
+      min-height: 0;
+    }
+    .mermaid svg {
+      max-width: 100%;
+      height: auto;
+      min-height: 300px;
+      transition: transform 0.3s ease;
+      transform-origin: center center;
+    }
+    .mermaid.zoomed {
+      overflow: auto;
+      cursor: grab;
+    }
+    .mermaid.zoomed:active {
+      cursor: grabbing;
+    }
+    .mermaid svg text {
+      font-size: 14px !important;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif !important;
+    }
+    
+    /* Mermaid title styling */
+    .mermaid svg text, .diagram-modal-content svg text {
+      font-size: 1rem !important;
+      font-weight: bold !important;
+      fill: var(--fg) !important;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif !important;
+    }
+
+    .mermaid svg *
+    {
+        color: #333;
+    }
+
+    .mermaid[data-processed="true"] {
+      min-height: 0;
+    }
+    
+    .mermaid svg {
+      max-width: 100%;
+      height: auto;
+      display: inline-block;
+    }
+    
+    /* Zoom controls */
+    .zoom-controls {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 10;
+      opacity: 0.5;
+      transition: opacity 0.3s ease;
+    }
+    .mermaid:hover .zoom-controls {
+      opacity: 1;
+    }
+    .zoom-btn {
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 0.25rem;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      transition: all 0.2s ease;
+    }
+    .zoom-btn:hover {
+      background: #2563eb;
+      transform: scale(1.1);
+    }
+
+    /* Modal for diagram zoom */
+    .diagram-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.95);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+    }
+    .diagram-modal.active {
+      display: flex;
+    }
+    .diagram-modal-content {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      background: white;
+      border-radius: 0;
+      padding: 3rem 3rem 3rem 3rem;
+      overflow: auto;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+    }
+    .diagram-modal-content svg {
+      max-width: 100%;
+      height: auto;
+    }
+    .modal-close {
+      position: fixed;
+      top: 1.5rem;
+      right: 1.5rem;
+      background: #ef4444;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+      transition: all 0.2s ease;
+      z-index: 10000;
+    }
+    .modal-close:hover {
+      background: #dc2626;
+      transform: scale(1.1);
+    }
+    .modal-zoom-controls {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      display: flex;
+      gap: 0.5rem;
+      z-index: 10000;
+      padding: 0rem;
+      border-radius: 0.4rem;
+    }
+    .modal-zoom-btn {
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 0.25rem;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      transition: all 0.2s ease;
+    }
+    .modal-zoom-btn:hover {
+      background: #2563eb;
+      transform: scale(1.1);
+    }
+    
+    /* Utilities */
+    .search { height: 0; overflow: hidden; padding: 0 !important; }
+    .search input { display: none; }
+    .min-vh-100 { min-height: 100vh; }
+    .skip-link { position: absolute; left: -9999px; top: auto; width: 1px; height: 1px; overflow: hidden; }
+    .skip-link:focus { position: static; width: auto; height: auto; padding: 0.4rem 0.6rem; background: var(--accent); color: white; border-radius: 0.4rem; }
+    
+    /* Override Bootstrap defaults for theme */
+    a { color: var(--accent); }
+    a:hover { color: var(--accent); text-decoration: underline; }
+    
+    /* Responsive - keep sidebar visible on desktop, offcanvas on mobile */
+    @media (max-width: 991px) {
+      nav.sidebar { display: none; }
+      #main { width: 100%; }
+      .row { --bs-gutter-x: 0; }
+    }
+    
+    /* Layout - prevent unnecessary scrolling */
+    html, body { height: 100%; margin: 0; }
+    #appContainer { display: flex; flex-direction: column; height: calc(100vh - 50px); }
+    #mainRow { flex: 1; overflow: hidden; display: flex; }
+    nav.sidebar { overflow-y: auto; max-height: 100%; position: relative; padding-bottom: 0px; }
+    #main { overflow: hidden; display: flex; flex-direction: column; height: 100%; -webkit-tap-highlight-color: transparent; outline: none; border: none; }
+    #main:focus { outline: none; }
+    .content { overflow-y: auto; flex: 1; width: 100%; min-height: 0; padding: 0rem 1.5rem 0rem 1.5rem; }
+    
+    /* Contact Info */
+    .contact-info {
+      font-weight: 400 !important;
+      padding: 0.5rem 0.75rem;
+      font-size: 0.75rem;
+      color: var(--accent-light);
+      margin: 0;
+      opacity: 0.5;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+    .contact-info:hover {
+      opacity: 0.9;
+      text-decoration: none;
+    }
+    @media (max-width: 991px) {
+      .navbar-brand {
+        font-size: 1rem !important;
+        flex: 1;
+      }
+      .contact-info {
+        font-size: 0.7rem;
+        padding: 0.25rem 0.5rem;
+      }
+    }
+    @media (max-width: 576px) {
+      .navbar-brand {
+        font-size: 0.9rem !important;
+      }
+      .contact-info {
+        font-size: 0.65rem;
+        padding: 0.2rem 0.4rem;
+      }
+    }
+
+    .list-style-none {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    /* JSON Syntax Highlighting */
+    pre code.language-json {
+      display: block;
+      white-space: pre;
+      font-family: 'Cascadia Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+    }
+
+    pre code.language-json .json-key {
+      color: #0451a5;
+      font-weight: 500;
+    }
+
+    pre code.language-json .json-string {
+      color: #a31515;
+    }
+
+    pre code.language-json .json-number {
+      color: #098658;
+    }
+
+    pre code.language-json .json-boolean {
+      color: #0000ff;
+      font-weight: 600;
+    }
+
+    pre code.language-json .json-null {
+      color: #0000ff;
+      font-weight: 600;
+    }
+
+    pre code.language-json .json-punctuation {
+      color: #333;
+    }
+
+    /* SQL Syntax Highlighting */
+    pre code.language-sql {
+      display: block;
+      white-space: pre;
+      font-family: 'Cascadia Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+    }
+
+    pre code.language-sql .sql-keyword {
+      color: #0000ff;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    pre code.language-sql .sql-string {
+      color: #a31515;
+    }
+
+    pre code.language-sql .sql-number {
+      color: #098658;
+    }
+
+    pre code.language-sql .sql-comment {
+      color: #008000;
+      font-style: italic;
+    }
+
+    pre code.language-sql .sql-function {
+      color: #795e26;
+      font-weight: 500;
+    }
+
+    pre code.language-sql .sql-operator {
+      color: #666;
+      font-weight: 500;
+    }
+
+    /* Language Label for Code Blocks */
+    pre[data-language]::before {
+      content: attr(data-language);
+      position: absolute;
+      top: 8px;
+      right: 12px;
+      font-size: 0.75em;
+      color: #6a737d;
+      text-transform: uppercase;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      background: var(--bg);
+      padding: 0.2rem 0.5rem;
+      border-radius: 0.25rem;
+      border: 1px solid var(--border);
+    }
+
+    /* Enhanced pre/code styling for syntax highlighted blocks */
+    pre.syntax-highlighted {
+      position: relative;
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      padding: 1.5rem 1rem 1rem 1rem;
+      border-radius: 0.5rem;
+      overflow-x: auto;
+      box-shadow: var(--shadow-sm);
+      margin: 1rem 0;
+    }
+
+    pre.syntax-highlighted code {
+      background: transparent;
+      padding: 0;
+      border: none;
+      color: var(--fg);
+      font-size: 0.875rem;
+      line-height: 1.6;
+    }
+
+    ul
+    {
+        list-style-type: none;
+    }
+  /* Document Footer */
+    .document-footer {
+      text-align: center;
+      padding: 20px;
+      background-color: #f8f9fa;
+      border-radius: 8px;
+      margin-top: 20px;
+    }
+    .document-footer p {
+      margin: 0;
+      font-size: 14px;
+      color: #6c757d;
+      line-height: 1.6;
+    }
+    .document-footer strong {
+      color: #495057;
+    }  
+  </style>
+  <!-- Mermaid.js for diagrams -->
+  <script src="assets/scripts/mermaid.min.js"></script>
+  <script>
+    // Initialize Mermaid with proper configuration
+    document.addEventListener('DOMContentLoaded', function() {
+
+      mermaid.initialize({
+        startOnLoad: false,
+        theme: 'base',
+        securityLevel: 'loose',
+        logLevel: 'error',
+        fontFamily: 'Segoe UI Semibold',
+        flowchart: {
+          useMaxWidth: true,
+          htmlLabels: true,
+          curve: 'basis',
+        },
+        sequence: {
+          useMaxWidth: false,
+          htmlLabels: true,
+          diagramMarginX: 50,
+          diagramMarginY: 10
+        }
+      });
+      
+      // Render all diagrams
+      renderMermaidDiagrams();
+    });
+    
+    async function renderMermaidDiagrams() {
+      const diagrams = document.querySelectorAll('.mermaid');
+      
+      for (let i = 0; i < diagrams.length; i++) {
+        const diagram = diagrams[i];
+        const code = diagram.textContent.trim();
+        
+        // Store original code
+        if (!diagram.hasAttribute('data-original-code')) {
+          diagram.setAttribute('data-original-code', code);
+        }
+        
+        try {
+          const { svg } = await mermaid.render('mermaid-diagram-' + i, code);
+          diagram.innerHTML = svg;
+          diagram.setAttribute('data-processed', 'true');
+          
+          // Add zoom controls
+          addZoomControls(diagram);
+        } catch (error) {
+          console.error('Mermaid rendering error for diagram ' + i + ':', error);
+          diagram.innerHTML = '<div class="text-danger p-3 border border-danger border-2 rounded">Error rendering diagram: ' + error.message + '</div>';
+        }
+      }
+    }
+    
+    // Add zoom controls to mermaid diagrams
+    function addZoomControls(diagram) {
+      const controls = document.createElement('div');
+      controls.className = 'zoom-controls';
+      controls.innerHTML = `
+        <button class="zoom-btn" data-action="expand" title="Expand View">⛶</button>
+      `;
+      
+      diagram.style.position = 'relative';
+      diagram.insertBefore(controls, diagram.firstChild);
+      
+      // Expand to modal
+      controls.addEventListener('click', (e) => {
+        const btn = e.target.closest('.zoom-btn');
+        if (!btn) return;
+        
+        openDiagramModal(diagram);
+      });
+    }
+
+    // Open diagram in modal
+    function openDiagramModal(diagram) {
+      // Create modal if it doesn't exist
+      let modal = document.getElementById('diagram-modal');
+      if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'diagram-modal';
+        modal.className = 'diagram-modal';
+        modal.innerHTML = `
+          <button class="modal-close" id="modal-close">×</button>
+          <div class="diagram-modal-content" id="modal-diagram-content"></div>
+          <div class="modal-zoom-controls">
+            <button class="modal-zoom-btn" data-action="zoom-in" title="Zoom In">+</button>
+            <button class="modal-zoom-btn" data-action="zoom-out" title="Zoom Out">−</button>
+            <button class="modal-zoom-btn" data-action="reset" title="Reset Zoom">⟲</button>
+          </div>
+        `;
+        document.body.appendChild(modal);
+        
+        // Close modal handlers
+        modal.querySelector('#modal-close').addEventListener('click', closeDiagramModal);
+        modal.addEventListener('click', (e) => {
+          if (e.target === modal) closeDiagramModal();
+        });
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && modal.classList.contains('active')) {
+            closeDiagramModal();
+          }
+        });
+        
+        // Zoom controls in modal
+        let scale = 1;
+        let translateX = 0;
+        let translateY = 0;
+        
+        modal.querySelector('.modal-zoom-controls').addEventListener('click', (e) => {
+          const btn = e.target.closest('.modal-zoom-btn');
+          if (!btn) return;
+          
+          const action = btn.dataset.action;
+          const svg = modal.querySelector('svg');
+          if (!svg) return;
+          
+          if (action === 'zoom-in') {
+            scale = Math.min(scale + 0.1, 5);
+          } else if (action === 'zoom-out') {
+            scale = Math.max(scale - 0.1, 0.5);
+          } else if (action === 'reset') {
+            scale = 1;
+            translateX = 0;
+            translateY = 0;
+          }
+          
+          svg.style.transform = `scale(${scale}) translate(${translateX / scale}px, ${translateY / scale}px)`;
+        });
+      }
+      
+      // Clone diagram content
+      const svg = diagram.querySelector('svg');
+      if (svg) {
+        const content = modal.querySelector('#modal-diagram-content');
+        content.innerHTML = '';
+        const clonedSvg = svg.cloneNode(true);
+        clonedSvg.style.transform = 'scale(1)';
+        clonedSvg.style.maxWidth = '100%';
+        clonedSvg.style.height = 'auto';
+        content.appendChild(clonedSvg);
+      }
+      
+      modal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeDiagramModal() {
+      const modal = document.getElementById('diagram-modal');
+      if (modal) {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    }
+    
+    // Re-render on theme change
+    window.rerenderMermaid = async function() {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      
+      mermaid.initialize({
+        startOnLoad: false,
+        theme: isDark ? 'base' : 'base',
+        securityLevel: 'loose',
+        flowchart: {
+          useMaxWidth: true,
+          htmlLabels: true,
+          curve: 'basis',
+        },
+        sequence: {
+          useMaxWidth: false,
+          htmlLabels: true,
+          diagramMarginX: 50,
+          diagramMarginY: 10
+        }
+      });
+      
+      const diagrams = document.querySelectorAll('.mermaid[data-processed="true"]');
+      for (let i = 0; i < diagrams.length; i++) {
+        const diagram = diagrams[i];
+        const code = diagram.getAttribute('data-original-code');
+        
+        if (code) {
+          try {
+            const { svg } = await mermaid.render('mermaid-diagram-rerender-' + i + '-' + Date.now(), code);
+            diagram.innerHTML = svg;
+          } catch (error) {
+            console.error('Mermaid re-rendering error:', error);
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg sticky-top" aria-label="Top bar">
+    <div class="container-fluid d-flex align-items-center">
+      <button class="navbar-toggler me-2" id="toggleSidebar" type="button" aria-label="Toggle sidebar">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <span class="navbar-brand mb-0 h1 me-auto">🌱 GitHub Spec Kit - In a Nutshell</span>
+      <span class="contact-info mb-0"></span>
+    </div>      
+  </nav>
+
+  <div id="appContainer">
+    <div class="row g-0" id="mainRow">
+      <nav class="col-lg-3 border-end sidebar" id="sidebar" aria-label="Table of contents">
+        <div class="menu-header py-2">Contents</div>
+        <ul class="list-group list-group-flush toc" id="toc"></ul>
+      </nav>
+
+      <main id="main" class="col-lg-9 d-flex flex-column" tabindex="-1">
+        <div class="content" id="content">
+        <section id="what-is-spec-kit" role="article">
+          <h1>📖 What is Spec Kit?</h1>
+          <span class="badge">intro</span>
+          <span class="badge">overview</span>
+          <p>Spec Kit is an <strong>open-source framework</strong> that enables <strong>Spec-Driven Development (SDD)</strong> by transforming rich, natural language specifications into executable workflows.</p>
+          
+          <h3>Key Features</h3>
+          <ul>
+            <li>Leverages advanced AI coding assistants to interpret specifications</li>
+            <li>Clarifies ambiguities through structured Q&A</li>
+            <li>Plans implementations and generates code automatically</li>
+            <li>Maintains traceability and version control throughout</li>
+          </ul>
+
+          <div class="callout">
+            <strong>Core Principle</strong><br />
+            Specifications become <strong>first-class citizens</strong> in development, not just documentation that gets discarded after coding begins.
+          </div>
+
+          <h2>Problems Solved</h2>
+          <span class="badge">challenges, benefits</span>
+          
+          <h3>Traditional Development Challenges</h3>
+          <ul>
+            <li>📝 Specifications often become <strong>outdated</strong> after coding begins</li>
+            <li>🎯 Gap between "what we want" and "what we build"</li>
+            <li>🎲 <strong>Vibe-coding:</strong> jumping directly to implementation without clear structure</li>
+            <li>💸 Technical debt from unclear requirements</li>
+            <li>🗣️ Miscommunication between stakeholders and developers</li>
+            <li>📊 Inconsistent quality and completeness of requirements</li>
+          </ul>
+
+          <h3>AI Development Challenges</h3>
+          <ul>
+            <li>⚡ Inefficient use of AI coding assistants without structured guidance</li>
+            <li>🤝 Limited collaboration between humans and AI in development</li>
+          </ul>
+
+          <h2>The Paradigm Shift</h2>
+            
+          <div class="callout">
+            <p class="red">❌ Old Way: Specifications → Discard → Code → Ship</p>
+            <p class="green">✅ New Way: Specifications → Executable → Implementation → Ship</p>
+          </div>
+        </section>
+
+        <section id="when-to-use-spec-kit" role="article">
+          <h1>✅ When to use (and not use) Spec Kit</h1>
+          <span class="badge">guidance</span>
+          <span class="badge">fit</span>
+          <span class="badge">anti-patterns</span>
+
+          <p>Spec Kit shines when the <strong>cost of misunderstanding</strong> is high and you want a reliable path from intent → plan → implementation.</p>
+
+          <h2>Great fit</h2>
+          <ul>
+            <li><strong>New features</strong> that touch multiple files/components (API + data model + UI + tests)</li>
+            <li><strong>Cross-team work</strong> where alignment and traceability matter (Product, Design, Engineering, Security)</li>
+            <li><strong>Brownfield enhancements</strong> where backward compatibility and regression risk are real</li>
+            <li><strong>Non-functional requirements</strong> you must not forget (performance, security, observability, reliability)</li>
+            <li><strong>Complex work you want to de-risk</strong> by clarifying assumptions before writing code</li>
+          </ul>
+
+          <h2>Not ideal</h2>
+          <ul>
+            <li><strong>Tiny one-file changes</strong> (formatting, small typo, trivial constant rename)</li>
+            <li><strong>Urgent hotfixes</strong> where speed matters more than process (you can write a spec after the incident)</li>
+            <li><strong>Exploratory spikes</strong> with no clear outcome yet (start with a lightweight hypothesis instead of a full spec)</li>
+            <li><strong>Highly constrained changes</strong> where the solution is already predetermined and the risk is low</li>
+          </ul>
+
+          <div class="callout">
+            <strong>Rule of thumb:</strong>
+            If you find yourself writing a long Slack thread to explain the change, it’s usually a good sign you should use Spec Kit.
+          </div>
+        </section>
+
+        <section id="spec-driven-dev" role="article">
+          <h1>🎯 Spec-Driven Development</h1>
+          <span class="badge">philosophy</span>
+          <span class="badge">methodology</span>
+          <p>Spec-Driven Development is a <strong>structured process</strong> that emphasizes three core principles:</p>
+
+          <h2>1. Intent-Driven Development</h2>
+          <ul>
+            <li>Define the <strong>"what"</strong> and <strong>"why"</strong> before the "how"</li>
+            <li>Focus on product scenarios, not technical implementation</li>
+            <li>Let AI interpret specifications and generate code</li>
+          </ul>
+
+          <h2>2. Rich Specification Creation</h2>
+          <ul>
+            <li>Use guardrails and organizational principles</li>
+            <li>Multi-step refinement process</li>
+            <li>Not one-shot prompt engineering</li>
+          </ul>
+
+          <h2>3. AI-Powered Execution</h2>
+          <ul>
+            <li>Heavy reliance on advanced AI model capabilities</li>
+            <li>Specifications become executable through AI agents</li>
+            <li>Technology-independent approach</li>
+          </ul>
+
+          <h2>Key Benefits</h2>
+          <ul>
+            <li>⚡ <strong>Faster Development:</strong> Reduce time from idea to implementation</li>
+            <li>✅ <strong>Higher Quality:</strong> Structured approach ensures completeness</li>
+            <li>💬 <strong>Better Communication:</strong> Clear specifications for all stakeholders</li>
+            <li>🔧 <strong>Technology Independence:</strong> Not tied to specific frameworks or languages</li>
+            <li>📚 <strong>Maintainability:</strong> Living documentation that stays current</li>
+          </ul>
+
+          <h2>Development Phases</h2>
+          <span class="badge">greenfield, brownfield</span>
+          <p>Spec Kit supports three distinct development scenarios:</p>
+
+          <h3>Development Phases Comparison</h3>
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Phase</th>
+                <th>Description</th>
+                <th>Use Cases</th>
+                <th>Example</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>1. Greenfield (0-to-1)</strong></td>
+                <td>Generate applications from scratch with high-level requirements</td>
+                <td>
+                  <ul>
+                    <li>Start with high-level requirements</li>
+                    <li>Build production-ready applications</li>
+                  </ul>
+                </td>
+                <td>Building a new task management system</td>
+              </tr>
+              <tr>
+                <td><strong>2. Brownfield (Iterative Enhancement)</strong></td>
+                <td>Add features to existing applications and modernize legacy systems</td>
+                <td>
+                  <ul>
+                    <li>Add features to existing applications</li>
+                    <li>Modernize legacy systems</li>
+                    <li>Adapt and evolve processes</li>
+                  </ul>
+                </td>
+                <td>Adding real-time collaboration to existing app</td>
+              </tr>
+              <tr>
+                <td><strong>3. Creative Exploration</strong></td>
+                <td>Explore diverse solutions in parallel with different technology stacks</td>
+                <td>
+                  <ul>
+                    <li>Explore diverse solutions in parallel</li>
+                    <li>Support multiple technology stacks</li>
+                    <li>Experiment with different UX patterns</li>
+                  </ul>
+                </td>
+                <td>Testing React vs Vue vs Vanilla JS implementations</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="architecture" role="article">
+          <h1>🏗️ Architecture & Components</h1>
+          <span class="badge">cli</span>
+          <span class="badge">agents</span>
+          <span class="badge">workflow</span>
+          <p>Spec Kit operationalizes Spec-Driven Development by turning rich specifications into executable workflows.</p>
+
+          <h2>Architecture Overview</h2>
+          <div class="mermaid">
+---
+title: Spec Kit Architecture
+---
+flowchart LR
+%%{init: {'themeVariables': { 'fontFamily': 'Segoe UI'}}}%%
+    USER[**Developer/Product Owner**]
+    CLI[**Specify CLI**]
+    
+    subgraph Repo[**Project Repo**]
+        CONFIG[**.github**
+                  /Agents, 
+                  /Prompts, 
+        **.specify**
+          /Memory,
+          /Scripts,
+          /Templates]
+        CONST[**Constitution**]
+        SPEC[**Specs/**]
+        ARTIFACTS[**checklists
+        plan
+        tasks**]
+        CODE[**source
+        tests**]
+    end
+
+    USER -->|Slash commands| CLI
+    CLI -->|Initialize| CONFIG
+    CLI -->|Execute agents| CONFIG
+    CONST & SPEC -->|Input| CONFIG
+    CONFIG -->|Generate| ARTIFACTS
+    CONFIG -->|Implement| CODE
+    Repo -->|Results| USER
+
+    classDef userStyle fill:#e1f5ff,stroke:#0078d4,stroke-width:2px;
+    classDef configStyle fill:#fff4e1,stroke:#d4a800,stroke-width:2px;
+    classDef artifactStyle fill:#e8f5e9,stroke:#4caf50,stroke-width:2px;
+    
+    class USER,CLI userStyle;
+    class CONFIG configStyle;
+    class CONST,SPEC,ARTIFACTS,CODE artifactStyle;
+          </div>
+
+          <h2>Core Components</h2>
+          
+          <h3>1. Specify CLI</h3>
+          <ul>
+            <li>Command-line tool that orchestrates the SDD flow end-to-end</li>
+            <li>System requirements checker for agent compatibility</li>
+            <li>Project scaffolding: initializes repo structure</li>
+            <li>Runs consistency and completeness validations</li>
+            <li>Provides safe handoff to selected AI agents</li>
+          </ul>
+
+          <h3>2. AI Agent Integration</h3>
+          <ul>
+            <li>Supports 19+ agent options (including Generic bring-your-own-agent mode)</li>
+            <li>Works with: GitHub Copilot, Claude Code, Gemini CLI, Cursor Agent, Codex, Windsurf, Kilo Code, Qoder CLI, Amazon Q, SHAI, IBM Bob, and more</li>
+            <li>The CLI passes structured context to agents</li>
+            <li>Agents return proposed changes for review</li>
+          </ul>
+        </section>
+
+        <section id="installation" role="article">
+          <h1>⚙️ Installation</h1>
+          <span class="badge">setup</span>
+          <span class="badge">prerequisites</span>          
+          <h2>Prerequisites</h2>
+          <ul>
+            <li>Python 3.11+</li>
+            <li>Git 2.20+</li>
+            <li>uv package manager (extremely fast Python package manager)</li>
+            <li>Supported AI coding agent</li>
+            <li>VS Code or Cursor (recommended)</li>
+          </ul>
+
+          <div class="callout">
+            <strong>Version Compatibility:</strong>
+            <ul>
+              <li>CLI and template versions evolve frequently—avoid hard-coding version pairs in internal docs</li>
+              <li>Always keep CLI and project templates in sync</li>
+              <li>Use <code>specify version</code> to view current CLI/template versions and <code>specify check</code> to validate tooling</li>
+            </ul>
+          </div>
+
+          <h3>Install uv (Windows PowerShell)</h3>
+          <pre><code><b>powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"</b></code></pre>
+
+          <h2>Option 1: Persistent Installation (Recommended)</h2>
+          <pre><code># Install globally with uv
+<b>uv tool install specify-cli --from git+https://github.com/github/spec-kit.git --native-tls</b>
+
+# Verify installation
+<b>specify version</b>
+
+GitHub Spec Kit - Spec-Driven Development Toolkit
+
+│         CLI Version    &lt;current-installed-version&gt;
+│    Template Version    &lt;current-latest-template&gt;
+│            Released    &lt;release-date&gt;
+│
+│              Python    &lt;python-version&gt;
+│            Platform    Windows
+│        Architecture    AMD64
+│          OS Version    &lt;os-version&gt;
+
+# Check system requirements
+<b>specify check</b>
+
+GitHub Spec Kit - Spec-Driven Development Toolkit
+
+│         CLI Version    &lt;current-installed-version&gt;
+│    Template Version    &lt;current-latest-template&gt;
+│            Released    &lt;release-date&gt;
+│
+│              Python    &lt;python-version&gt;
+│            Platform    Windows
+│        Architecture    AMD64
+│          OS Version    &lt;os-version&gt;
+
+          </code></pre>
+
+          <h2>Option 2: One-Time Usage</h2>
+          <pre><code># Run without installing
+<b>uvx --from git+https://github.com/github/spec-kit.git specify init my-project</b></code></pre>
+
+          <h2>Initialize a Project</h2>
+          <pre><code># Initialize with GitHub Copilot / Claude / Gemini
+<b>specify init demo-project --ai copilot | claude | gemini --script ps</b>
+
+# Initialize with Cursor Agent
+<b>specify init demo-project --ai cursor-agent --script ps</b>
+
+# Initialize with a generic/unsupported agent
+<b>specify init demo-project --ai generic --ai-commands-dir .myagent/commands/</b>
+
+# Initialize in current directory
+<b>specify init . --ai copilot | claude | gemini</b>
+
+# Skip git initialization
+<b>specify init demo-project --ai copilot --no-git</b>
+
+# Enable debug output
+<b>specify init demo-project --ai copilot --debug</b>
+
+# Force merge into current (non-empty) directory without confirmation
+<b>specify init . --force --ai copilot</b></code></pre>
+
+<h3>About Script Types</h3>
+          <p>Spec Kit provides scripts in two formats for cross-platform compatibility:</p>
+          <ul>
+            <li><strong>Bash scripts (.sh)</strong> - For Linux, macOS, WSL. Located in <code>.specify/scripts/bash/</code></li>
+            <li><strong>PowerShell scripts (.ps1)</strong> - For Windows (native) and cross-platform. Located in <code>.specify/scripts/powershell/</code></li>
+          </ul>
+          <p>By default:</p>
+          <ul>
+            <li>Windows defaults to PowerShell scripts (<code>--script ps</code>)</li>
+            <li>Linux/macOS defaults to Bash scripts (<code>--script sh</code>)</li>
+          </ul>
+          <p>You can explicitly choose script type during initialization:</p>
+          <pre><code># Force PowerShell scripts (cross-platform)
+<b>specify init my-project --ai copilot --script ps</b>
+
+# Force Bash scripts (Linux/macOS/WSL)
+<b>specify init my-project --ai copilot --script sh</b></code></pre>
+
+<h2>Configuration</h2>
+          <p>Specify your preferred AI agent during initialization:</p>
+          <pre><code># GitHub Copilot
+specify init my-project --ai copilot
+
+# Claude
+specify init my-project --ai claude
+
+# Cursor Agent
+specify init my-project --ai cursor-agent
+
+# Qoder CLI
+specify init my-project --ai qodercli</code></pre>
+
+          <h2>Optional: Install AI Skills</h2>
+          <pre><code># Install Prompt.MD templates as agent skills during init
+specify init my-project --ai copilot --ai-skills
+
+# Or in current directory
+specify init --here --ai gemini --ai-skills</code></pre>
+
+          <h2>Extension Commands</h2>
+          <pre><code># List installed extensions
+specify extension list
+
+# Search extension catalog
+specify extension search jira
+
+# Install extension
+specify extension add jira
+
+# Get details for an extension
+specify extension info jira</code></pre>
+
+          <h2>Agent-Specific Features</h2>
+          <ul>
+            <li>🎯 <strong>Context Awareness</strong>: All agents receive project structure and artifact state</li>
+            <li>🔄 <strong>Workflow Continuity</strong>: Agents maintain conversation history across sessions</li>
+            <li>📝 <strong>Spec Interpretation</strong>: Natural language specs translated into actionable tasks</li>
+            <li>✅ <strong>Validation Support</strong>: Automated testing and verification workflows</li>
+          </ul>
+
+          <div class="callout">
+            <strong>💡 Tip:</strong> You can switch agents mid-project by updating your configuration. All artifacts remain compatible across agents.
+          </div>
+        </section>
+
+        <section id="workflow" role="article">
+          <h1>🔄 Development Workflow</h1>
+          <span class="badge">process</span>
+          <span class="badge">steps</span>
+          <span class="badge">quickstart</span>
+          <span class="badge">commands</span>
+          <p>The Spec-Driven Development workflow transforms high-level specifications into executable code through a structured sequence of phases, powered by slash commands in your AI agent.</p>
+
+          <div class="callout">
+            <strong>Prerequisites:</strong>
+            <ul>
+              <li>You are in a new or existing git repo folder</li>
+              <li>You have <code>specify</code> CLI installed</li>
+              <li>You have an AI agent configured (Copilot, Claude, etc.)</li>
+            </ul>
+          </div>
+
+          <h2>Available Commands</h2>
+          <p>After running <code>specify init</code>, your AI coding agent will have access to <strong>9 slash commands</strong>:</p>
+
+          <h3>Core Workflow Commands</h3>
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th width="30%">Command</th>
+                <th>Purpose</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>/speckit.constitution</code></td>
+                <td>Create project governing principles and development guidelines</td>
+              </tr>
+              <tr>
+                <td><code>/speckit.specify</code></td>
+                <td>Define what you want to build (requirements and user stories)</td>
+              </tr>
+              <tr>
+                <td><code>/speckit.plan</code></td>
+                <td>Create technical implementation plan with architecture</td>
+              </tr>
+              <tr>
+                <td><code>/speckit.tasks</code></td>
+                <td>Generate actionable task list with acceptance criteria</td>
+              </tr>
+              <tr>
+                <td><code>/speckit.implement</code></td>
+                <td>Execute all tasks to build the feature</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h3>Optional Enhancement Commands</h3>
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th width="30%">Command</th>
+                <th>Purpose</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>/speckit.clarify</code></td>
+                <td>Structured clarification workflow for underspecified requirements</td>
+              </tr>
+              <tr>
+                <td><code>/speckit.analyze</code></td>
+                <td>Cross-artifact consistency & coverage analysis</td>
+              </tr>
+              <tr>
+                <td><code>/speckit.checklist</code></td>
+                <td>Generate custom quality checklists for validation</td>
+              </tr>
+              <tr>
+                <td><code>/speckit.taskstoissues</code></td>
+                <td>Convert tasks from tasks.md into GitHub Issues automatically</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h2>End-to-End Workflow</h2>
+          <p>Follow this sequence to go from idea → spec → plan → tasks → code with a clean artifact trail:</p>
+
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th width="5%">Step</th>
+                <th width="20%">Phase</th>
+                <th width="35%">Command & Output</th>
+                <th width="40%">Key Activities</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>0</strong></td>
+                <td><strong>INITIALIZE</strong></td>
+                <td>
+                  <code>specify init . --ai copilot</code><br />
+                  <small>Creates: <code>.github/agents/</code>, <code>.specify/</code></small>
+                </td>
+                <td>
+                  <ul>
+                    <li>Scaffold project structure</li>
+                    <li>Configure AI agent integration</li>
+                    <li>Set up templates and scripts</li>
+                  </ul>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>1</strong></td>
+                <td><strong>CONSTITUTE</strong></td>
+                <td>
+                  <code>/speckit.constitution</code><br />
+                  <small>Writes: <code>.specify/memory/constitution.md</code></small>
+                </td>
+                <td>
+                  <ul>
+                    <li>Vision & Core Objectives</li>
+                    <li>Non-negotiables (quality, security)</li>
+                    <li>Coding standards & principles</li>
+                  </ul>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>2</strong></td>
+                <td><strong>SPECIFY</strong></td>
+                <td>
+                  <code>/speckit.specify</code><br />
+                  <small>Writes: <code>specs/001-feature/spec.md</code></small>
+                </td>
+                <td>
+                  <ul>
+                    <li>Functional Requirements</li>
+                    <li>User Stories & Scenarios</li>
+                    <li>Data Models & API Contracts</li>
+                    <li>Acceptance Criteria</li>
+                  </ul>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>3</strong></td>
+                <td><strong>CLARIFY</strong><br /><em>(Optional)</em></td>
+                <td>
+                  <code>/speckit.clarify</code><br />
+                  <small>Writes: <code>specs/001-feature/clarifications/*.md</code></small>
+                </td>
+                <td>
+                  <ul>
+                    <li>Ask Questions</li>
+                    <li>Make Decisions</li>
+                    <li>Document Tradeoffs</li>
+                    <li>Resolve Ambiguities</li>
+                  </ul>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>4</strong></td>
+                <td><strong>PLAN</strong></td>
+                <td>
+                  <code>/speckit.plan</code><br />
+                  <small>Writes: <code>specs/001-feature/plan.md</code><br />
+                  (+ architecture, contracts, data models)</small>
+                </td>
+                <td>
+                  <ul>
+                    <li>Technical Architecture</li>
+                    <li>Implementation Phases</li>
+                    <li>Tech Stack Selection</li>
+                    <li>Testing Strategy</li>
+                    <li>Risk Assessment</li>
+                  </ul>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>5</strong></td>
+                <td><strong>TASKS</strong></td>
+                <td>
+                  <code>/speckit.tasks</code><br />
+                  <small>Writes: <code>specs/001-feature/tasks.md</code></small>
+                </td>
+                <td>
+                  <ul>
+                    <li>Actionable Task List</li>
+                    <li>Acceptance Criteria per Task</li>
+                    <li>Dependencies & Ordering</li>
+                    <li>Time Estimates</li>
+                  </ul>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>6</strong></td>
+                <td><strong>ANALYZE</strong><br /><em>(Optional)</em></td>
+                <td>
+                  <code>/speckit.analyze</code><br />
+                  <small>Writes: <code>specs/001-feature/ANALYSIS_REPORT.md</code></small>
+                </td>
+                <td>
+                  <ul>
+                    <li>Feasibility Check</li>
+                    <li>Risk Assessment</li>
+                    <li>Gap Analysis</li>
+                    <li>Validate Against Checklist</li>
+                    <li><em>→ If issues found, refine and return to PLAN</em></li>
+                  </ul>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>7</strong></td>
+                <td><strong>IMPLEMENT</strong></td>
+                <td>
+                  <code>/speckit.implement</code><br />
+                  <small>Writes: <code>src/**</code>, <code>tests/**</code></small>
+                </td>
+                <td>
+                  <ul>
+                    <li>Execute Tasks</li>
+                    <li>Write Code & Tests</li>
+                    <li>Deploy Changes</li>
+                    <li>Verify Checklist Completion</li>
+                  </ul>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="callout">
+            <strong>💡 Workflow Tips:</strong>
+            <ul>
+              <li>If output looks generic, add more constraints (data model hints, non-functional requirements, examples) to the spec and rerun <code>/speckit.clarify</code> → <code>/speckit.plan</code></li>
+              <li>Use <code>/speckit.checklist</code> after SPECIFY to generate validation criteria that carry through the workflow</li>
+              <li>Run <code>/speckit.analyze</code> before IMPLEMENT to catch issues early and validate consistency</li>
+              <li>After generating tasks, use <code>/speckit.taskstoissues</code> to automatically create GitHub Issues for team tracking</li>
+              <li>Extensions can add domain-specific commands (e.g., JIRA integration, custom workflows)</li>
+            </ul>
+          </div>
+
+          <h2>Workflow Sequence</h2>
+          <div class="mermaid">
+sequenceDiagram
+  title Developer Workflow
+%%{init: {'theme': 'base', 'themeVariables': {'fontSize': '14', 'fontFamily': 'Segoe UI'}, 'sequence':{ 'actorMargin': 50, 'boxMargin': 10, 'boxTextMargin': 10}}}%%
+  participant U as User
+  participant C as Specify CLI
+  participant A as AI Agent
+  participant R as Repo
+
+  U->>C: initialize + check environment
+  C->>R: scaffold constitution/spec templates
+  U->>C: /speckit.specify (requirements)
+  C->>A: provide spec + constraints
+  A-->>C: ask clarifications
+  C-->>U: surface questions
+  U->>C: answers via /speckit.clarify
+  C->>A: updated context (spec+clarifications)
+  A-->>C: technical plan + tasks
+  C->>R: write Plan.md + Tasks.md
+  U->>C: /speckit.implement
+  C->>A: execute guarded code generation
+  A-->>C: proposed diffs
+  C->>R: apply changes to Repo src/** and tests/**
+  R-->>U: updated artifacts + code
+          </div>
+
+          <div class="callout">
+            <strong>Key Workflow Insights</strong>
+            <ul>
+              <li><b>Sequential Flow:</b> Each step builds upon the previous one, ensuring comprehensive project planning</li>
+              <li><strong>Validation Gate:</strong> The ANALYZE step includes a decision point to ensure quality before implementation</li>
+              <li><strong>Iterative Refinement:</strong> If analysis reveals issues, the workflow loops back to PLAN for adjustments</li>
+              <li><strong>Clear Deliverables:</strong> Each step has specific outputs that feed into subsequent stages</li>
+            </ul>
+          </div>
+        </section>
+
+        <section id="artifacts" role="article">
+          <h1>📦 Artifact Lifecycle</h1>
+          <span class="badge">files</span>
+          <span class="badge">structure</span>
+          <p>Understanding where Spec Kit stores different types of project artifacts:</p>
+          <h2>Project Structure Diagram</h2>
+          <div class="mermaid">
+---
+title: Spec Kit Project Structure
+---
+flowchart LR
+%%{init: {'themeVariables': { 'fontFamily': 'Segoe UI'}}}%%
+    subgraph **project/**
+        GH[**.github/**]
+        SPECIFY[**.specify/**]
+        VSCODE[**.vscode/**]
+    end
+
+    GH --> AGENTS[**agents/**]
+    GH --> PROMPTS[**prompts/**]
+    AGENTS -->|Workflow Phase Agents| AGENT_FILES
+    PROMPTS -->|Prompt Templates| PROMPT_FILES
+
+    AGENT_FILES["speckit.constitution.agent.md
+    speckit.specify.agent.md
+    speckit.clarify.agent.md
+    speckit.plan.agent.md
+    speckit.tasks.agent.md
+    speckit.analyze.agent.md
+    speckit.implement.agent.md
+    speckit.checklist.agent.md
+    speckit.taskstoissues.agent.md"]
+    PROMPT_FILES["speckit.constitution.prompt.md <br> speckit.specify.prompt.md <br> speckit.clarify.prompt.md <br> speckit.plan.prompt.md <br> speckit.tasks.prompt.md <br>  speckit.analyze.prompt.md <br>  speckit.implement.prompt.md <br> speckit.checklist.prompt.md <br> speckit.taskstoissues.prompt.md"]
+
+    SPECIFY --> MEMORY[**memory/**]
+    SPECIFY --> SCRIPTS[**scripts/**]
+    SPECIFY --> TEMPLATES[**templates/**]
+
+    MEMORY --> CONSTITUTION[constitution.md]
+    SCRIPTS --> BASH[**bash/**]
+    SCRIPTS --> POWERSHELL[**powershell/**]
+    BASH --> SH_FILES["check-prerequisites.sh
+    common.sh
+    create-new-feature.sh
+    setup-plan.sh
+    update-agent-context.sh"]
+    POWERSHELL --> PS_FILES["check-prerequisites.ps1
+    common.ps1
+    create-new-feature.ps1
+    setup-plan.ps1
+    update-agent-context.ps1"]
+    TEMPLATES --> TEMPLATE_FILES["agent-file-template.md
+    checklist-template.md
+    plan-template.md
+    spec-template.md
+    tasks-template.md"]
+
+    VSCODE --> SETTINGS[settings.json]
+
+    classDef folder fill:#e1f5ff,stroke:#0078d4,stroke-width:2px;
+    classDef file fill:#fff4e1,stroke:#d4a800,stroke-width:1px;
+    class GH,SPECIFY,VSCODE,AGENTS,PROMPTS,MEMORY,SCRIPTS,TEMPLATES,BASH,POWERSHELL folder;
+    class AGENT_FILES,PROMPT_FILES,CONSTITUTION,SH_FILES,PS_FILES,TEMPLATE_FILES,SETTINGS file;
+          </div>
+            <table class="table table-striped">
+            <thead>
+              <tr>
+              <th>Artifact</th>
+              <th>Location</th>
+              <th>Source</th>
+              <th>Purpose</th>
+              </tr>
+            </thead>
+            <tbody>
+               <tr>
+              <td><strong>Agent Definitions</strong></td>
+              <td><code>.github/agents/*.agent.md</code></td>
+              <td>Auto-generated by CLI</td>
+              <td>9 files defining AI assistant behavior for each workflow phase (constitution, specify, clarify, plan, tasks, analyze, implement, checklist, taskstoissues)</td>
+              </tr>
+              <tr>
+              <td><strong>Prompts</strong></td>
+              <td><code>.github/prompts/*.prompt.md</code></td>
+              <td>Auto-generated by CLI</td>
+              <td>9 files containing instructions passed to AI assistants for the workflow commands</td>
+              </tr>
+              <tr>
+              <td><strong>Templates</strong></td>
+              <td><code>.specify/templates/*.md</code></td>
+              <td>Auto-generated by CLI</td>
+              <td>5 templates ensuring consistent format across artifacts</td>
+              </tr>
+              <tr>
+              <td><strong>Constitution</strong></td>
+              <td><code>.specify/memory/constitution.md</code></td>
+              <td>Generated by <code>/speckit.constitution</code></td>
+              <td>Sets project vision, non-negotiables, coding standards, quality bars</td>
+              </tr>              
+              <tr>
+              <td><strong>Specifications</strong></td>
+              <td><code>specs/**feature-branch-name**/spec.md</code></td>
+              <td>Generated by <code>/speckit.specify</code></td>
+              <td>Describes <em>what</em> to build in natural language with detailed requirements</td>
+              </tr>
+              <tr>
+              <td><strong>Clarifications</strong></td>
+              <td><code>specs/**feature-branch-name**/clarifications/*.md</code></td>
+              <td>Generated by <code>/speckit.clarify</code></td>
+              <td>Captures Q&A between AI agents and stakeholders</td>
+              </tr>
+              <tr>
+              <td><strong>Plan</strong></td>
+              <td><code>specs/**feature-branch-name**/plan.md</code></td>
+              <td>Generated by <code>/speckit.plan</code></td>
+              <td>Technical design: architecture, data models, APIs, implementation phases</td>
+              </tr>
+              <tr>
+              <td><strong>Tasks</strong></td>
+              <td><code>specs/**feature-branch-name**/tasks.md</code></td>
+              <td>Generated by <code>/speckit.tasks</code></td>
+              <td>Granular implementation steps with acceptance criteria and estimates</td>
+              </tr>
+              <tr>
+              <td><strong>Code</strong></td>
+              <td><code>src/**</code></td>
+              <td>Generated by <code>/speckit.implement</code></td>
+              <td>Implementation tied back to specs via comments and traceability</td>
+              </tr>
+            </tbody>
+            </table>
+        </section>
+
+        <section id="live-demo" role="article">
+          <h1>🚀 Live Demo: Building a TODO Application</h1>
+          <span class="badge">todo</span>
+          <span class="badge">greenfield engineering</span>
+          <span class="badge">walkthrough</span>
+          <p>This comprehensive guide demonstrates the complete Spec Kit workflow from initial concept to implementation, using a <strong>ToDo Application</strong> as our live demo project.</p>
+
+          <h2>Prerequisites for This Demo</h2>
+          <div class="callout">
+            <strong>Before starting, ensure you have:</strong>
+            <ul>
+              <li>✅ Spec Kit CLI installed (<code>specify check</code>)</li>
+              <li>✅ Project initialized (<code>specify init todoapp --ai copilot</code>)</li>
+              <li>✅ AI coding assistant configured (GitHub Copilot, Claude, etc.)</li>
+              <li>✅ Git repository initialized</li>
+              <li>✅ .NET 8 SDK installed (for this demo)</li>
+              <li>✅ Azure account with Cosmos DB access (optional for local testing)</li>
+            </ul>
+          </div>
+
+          <h2>Command flow used in this demo</h2>
+          <p>This walkthrough follows the same end-to-end flow described in <strong>Quickstart</strong> and <strong>Development Workflow</strong>: <code>constitution → specify → clarify → plan → tasks → analyze → implement</code>.</p>
+
+          <h2>Step 1: CONSTITUTE - Define the Project</h2>
+          <h3>Command: <code>/speckit.constitution</code></h3>
+          <p><strong>Purpose:</strong> Establish the foundational concept and high-level goals for the project.</p>
+          
+          <h4>Guidelines:</h4>
+          <ul>
+            <li>Focus on the core idea and objectives</li>
+            <li>Highlight key features and benefits</li>
+            <li>Define the target audience and success criteria</li>
+            <li>Optionally provide Technology Choices at this stage</li>
+            <li>Prepare for detailed specification in the next phase</li>
+            <li>Output a structured constitution document</li>
+          </ul>
+
+          <h4>Input:</h4>
+          <div class="callout">
+            <code>/speckit.constitution</code> Create principles focused on 
+- 1. API-First Architecture
+- 2. Cloud-Native Design
+- 3. Test-Driven Development
+- 4. Security by Design
+- 5. Observability & Monitoring  
+and Technology Choices
+          </div>
+
+          <h4>Spec Kit Output:</h4>
+          <pre><code>In todoapp
+
+.specify/memory/constitution.md</code></pre>
+
+          <h2>Step 2: SPECIFY - Create Detailed Specifications</h2>
+          <h3>Command: <code>/speckit.specify</code></h3>
+          <p><strong>Purpose:</strong> Transform the constitution into detailed, actionable specifications covering functional requirements, technical architecture, and constraints.</p>
+
+          <h4>Guidelines:</h4>
+          <ul>
+            <li>Break down high-level goals into specific features and requirements</li>
+            <li>Define data models, API endpoints, and interactions</li>
+            <li>Include non-functional requirements (performance, security, scalability)</li>
+            <li>Document constraints and assumptions</li>
+            <li>Prepare for clarification of ambiguities in the next phase</li>
+          </ul>
+
+          <h4>Input:</h4>
+          <div class="callout">
+          <code>/speckit.specify</code> Build a feature for creating and managing todo items
+          </div>
+
+          <p><strong>Optional additions:</strong></p>
+          <ul>
+            <li>Functional requirements for task management (CRUD operations, filtering, sorting)</li>
+            <li>Data models for TaskItem, CreateTaskDto, UpdateTaskDto, and TaskPriority enum with validation rules</li>
+            <li>API endpoint definitions (routes, methods, request/response schemas)</li>
+            <li>Non-functional requirements: performance, scalability, security, testability (unit tests with xUnit, Moq, FluentAssertions, >80% coverage)</li>
+            <li>Constraints and assumptions (single user for MVP, no authentication, partition key strategy)</li>
+          </ul>
+
+          <h4>Spec Kit Output:</h4>
+          <pre><code>In ToDoApp Project
+
+specs\001-todo-management\spec.md</code></pre>
+
+          <h2>Step 3: CLARIFY - Resolve Ambiguities</h2>
+          <h3>Command: <code>/speckit.clarify</code></h3>
+          <p><strong>Purpose:</strong> Identify unclear aspects and ask questions to ensure complete understanding before planning.</p>
+
+          <h4>Guidelines:</h4>
+          <ul>
+            <li>Review the specifications for ambiguities or missing information</li>
+            <li>Formulate specific questions to clarify requirements</li>
+            <li>Provide recommendations for decisions on unclear points</li>
+            <li>Prepare for finalizing specifications in the next phase</li>
+          </ul>
+
+          <h4>Input (Optional):</h4>
+          <div class="callout">
+            <code>/speckit.clarify</code> Review the detailed specifications for the ToDo Web API project. Identify any ambiguities, missing information, or areas requiring clarification. Formulate a list of specific questions that need to be answered to ensure a complete understanding of the requirements and constraints.
+          </div>
+
+          <h4>Spec Kit Output:</h4>
+          <p><em>NA - We need to clarify any questions before proceeding to planning.</em></p>
+
+          <h2>Step 4: PLAN - Create Overall Project Plan</h2>
+          <h3>Command: <code>/speckit.plan</code></h3>
+          <p><strong>Purpose:</strong> Generate a comprehensive implementation plan with architecture, phases, and dependencies.</p>
+
+          <h4>Guidelines:</h4>
+          <ul>
+            <li>Focus on high-level architecture and development phases</li>
+            <li>Include timelines, milestones, and risk management strategies</li>
+            <li>Define technology setup and project structure</li>
+            <li>Ensure the plan is actionable and ready for task breakdown</li>
+            <li>Consider non-functional requirements and deployment strategies</li>
+            <li>Incorporate feedback from the CLARIFY phase</li>
+            <li>Output a structured project plan document</li>
+          </ul>
+
+          <h4>Input:</h4>
+          <div class="callout">
+            <code>/speckit.plan</code> Create an implementation plan for the todo management app using .NET 8 ASP.NET Core Web API with Azure Cosmos DB for NoSQL. Include Architecture, Database, Implementation Details, Testing, Infrastructue etc along with plan.
+          </div>
+
+          <p><strong>Good to include Technical Details here:</strong></p>
+          <ul>
+            <li>An architecture overview diagram illustrating components and interactions</li>
+            <li>A breakdown of development phases with timelines and milestones</li>
+            <li>Technology setup requirements for local development and Azure resources - .NET 8 Web API, Cosmos DB</li>
+            <li>A proposed project structure with directories and key files</li>
+            <li>Risk management strategies and mitigation plans</li>
+            <li>A definition of done for each phase and overall project completion</li>
+          </ul>
+
+          <h4>Spec Kit Output:</h4>
+          <pre><code>In ToDoApp Project
+
+specs\001-todo-management\ARCHITECTURE.md
+specs\001-todo-management\plan.md
+specs\001-todo-management\contracts\openapi.yaml
+specs\001-todo-management\data-model.md
+specs\001-todo-management\quickstart.md</code></pre>
+          <h2>Step 5: TASKS - Break Down Into Actionable Items</h2>
+          <h3>Command: <code>/speckit.tasks</code></h3>
+          <p><strong>Purpose:</strong> Decompose the project plan into specific, manageable tasks with criteria and estimates.</p>
+
+          <h4>Guidelines:</h4>
+          <ul>
+            <li>Break down each phase of the plan into discrete tasks</li>
+            <li>Define clear acceptance criteria for each task</li>
+            <li>Estimate the time required for each task</li>
+            <li>Identify dependencies between tasks</li>
+          </ul>
+
+          <h4>Input (Optional):</h4>
+          <div class="callout">
+            <code>/speckit.tasks</code> Based on the implementation plan for the ToDo Web API project, break down the work into a comprehensive list of actionable tasks. Each task should include:
+            <ul>
+              <li>A clear title and description</li>
+              <li>Acceptance criteria defining when the task is considered complete</li>
+              <li>Estimated time to complete</li>
+              <li>Dependencies on other tasks</li>
+            </ul>
+          </div>
+
+          <h4>Spec Kit Output:</h4>
+          <pre><code>In demo-project
+
+specs\001-todo-api-core\tasks.md</code></pre>
+
+          <h2>Step 6: ANALYZE - Evaluate the Plan</h2>
+          <h3>Command: <code>/speckit.analyze</code></h3>
+          <p><strong>Purpose:</strong> Review the specifications, plan, and tasks for feasibility, completeness, risks, and potential improvements.</p>
+
+          <h4>Guidelines:</h4>
+          <ul>
+            <li>Assess technical, resource, and cost feasibility</li>
+            <li>Evaluate completeness against requirements</li>
+            <li>Identify risks and mitigation strategies</li>
+            <li>Analyze architecture for strengths and weaknesses</li>
+          </ul>
+
+          <h4>Input:</h4>
+          <div class="callout">
+            <code>/speckit.analyze</code> Conduct a thorough analysis of the ToDo Web API project plan and tasks. Evaluate:
+            <ul>
+              <li><strong>Feasibility:</strong> technical, resource, cost</li>
+              <li><strong>Completeness:</strong> coverage of requirements, gaps</li>
+              <li><strong>Risks:</strong> identification, assessment, mitigation</li>
+              <li><strong>Architecture:</strong> strengths, weaknesses, improvements</li>
+            </ul>
+            Provide a comprehensive report with findings, recommendations, and a final verdict on whether to approve the plan for implementation or require revisions.
+          </div>
+
+          <h4>Spec Kit Output:</h4>
+          <pre><code>In demo-project
+
+specs\001-todo-api-core\ANALYSIS_REPORT.md</code></pre>
+
+          <h2>Step 7: IMPLEMENT - Execute the Tasks</h2>
+          <h3>Command: <code>/speckit.implement</code></h3>
+          <p><strong>Purpose:</strong> Execute the planned tasks, build the solution, and deliver the working application.</p>
+
+          <h4>Guidelines:</h4>
+          <ul>
+            <li>Follow the task list and acceptance criteria closely</li>
+            <li>Maintain code quality and best practices</li>
+            <li>Document progress and any deviations from the plan</li>
+            <li>Prepare for deployment and handoff</li>
+            <li>Output a completed project with all deliverables</li>
+            <li>Ensure testing and documentation are finalized</li>
+            <li>Prepare for production deployment</li>
+          </ul>
+
+          <h4>Input:</h4>
+          <div class="callout">
+            <code>/speckit.implement</code> Execute the implementation of the ToDo Application project based on the approved plan and task list. Follow the defined tasks, ensuring each is completed according to its acceptance criteria. Maintain high code quality and best practices throughout development. Document progress, challenges, and any deviations from the original plan. Prepare the final deliverables, including the working application, tests, and documentation, ready for deployment and handoff.
+          </div>
+
+          <h4>Spec Kit Output:</h4>
+          <pre><code>In ToDoApp Project
+src/TodoManagement.Api/*
+src/tests/*
+</code></pre>
+
+          <h2>Key Takeaways</h2>
+          <div>
+            <ul>
+              <li>✅ <strong>Spec Kit provides structure</strong> to complex software projects</li>
+              <li>✅ <strong>Each command builds upon the previous</strong> - constitution informs specification, specification informs planning, etc.</li>
+              <li>✅ <strong>Analysis before implementation</strong> prevents costly mistakes</li>
+              <li>✅ <strong>Clear tasks with acceptance criteria</strong> ensure quality and completeness</li>
+              <li>✅ <strong>Azure cloud services</strong> enable scalable, professional solutions</li>
+              <li>✅ <strong>.NET 8 and Cosmos DB</strong> provide a modern, performant tech stack</li>
+            </ul>
+          </div>
+
+          <h2>Next Steps</h2>
+          <ol>
+            <li>Follow this guide to implement your own ToDo API</li>
+            <li>Adapt the Spec Kit workflow to other projects</li>
+            <li>Customize specifications based on unique requirements</li>
+            <li>Add authentication and multi-user support</li>
+            <li>Build frontend clients (React, Angular, mobile apps) to consume the API</li>
+            <li>Iterate and improve based on user feedback</li>
+          </ol>
+
+          <div class="callout">
+            <strong>This workflow ensures systematic, high-quality development from idea to production! 🚀</strong>
+          </div>
+        </section>
+
+        <section id="live-demo-enhancements" role="article">
+          <h1>✨ Live Demo - TODO App - Enhancements</h1>
+          <span class="badge">enhancements</span>
+          <span class="badge">brownfield engineering</span>
+          <span class="badge">evolution</span>
+          
+          <p>Now that the TODO App has been built and deployed, let's explore how Spec Kit handles brownfield engineering—enhancing and evolving existing applications with new features while maintaining quality and consistency.</p>
+          <strong>Scenario:</strong>
+          <div class="callout">
+             The TODO App is successful and users are requesting new features: priority levels, due dates, categories, and search functionality. We'll use Spec Kit to systematically add these enhancements.
+          </div>
+
+          <h2>Brownfield vs. Greenfield Development</h2>
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Aspect</th>
+                <th>Greenfield (Previous Demo)</th>
+                <th>Brownfield (This Demo)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Starting Point</strong></td>
+                <td>Empty project, clean slate</td>
+                <td>Existing codebase with established patterns</td>
+              </tr>
+              <tr>
+                <td><strong>Constraints</strong></td>
+                <td>Technology choices, architecture design</td>
+                <td>Must integrate with existing code, maintain backward compatibility</td>
+              </tr>
+              <tr>
+                <td><strong>Risks</strong></td>
+                <td>Wrong architecture choices</td>
+                <td>Breaking existing functionality, technical debt accumulation</td>
+              </tr>
+              <tr>
+                <td><strong>Testing Focus</strong></td>
+                <td>New feature testing</td>
+                <td>Regression testing + new feature testing</td>
+              </tr>
+              <tr>
+                <td><strong>Documentation</strong></td>
+                <td>Create from scratch</td>
+                <td>Update existing docs, migration guides</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h2>Enhancement Feature: Priority and Due Dates</h2>
+          <p>Let's walk through adding priority levels and due dates to our TODO items using the Spec Kit workflow for existing projects.</p>
+
+          <h3>Step 1: Analyze Existing Codebase</h3>
+          <h4>Command: <code>/speckit.analyze</code></h4>
+          <p><strong>Purpose:</strong> Understand the current architecture, data models, and API structure before making changes.</p>
+
+          <h4>Input:</h4>
+          <div class="callout">
+            <code>/speckit.analyze</code> Analyze the existing TODO App codebase. Review the current TodoItem model, API endpoints, data access patterns, and Cosmos DB schema. Identify integration points for adding priority levels (High, Medium, Low) and due dates to TODO items. Consider backward compatibility and migration requirements for existing data.
+          </div>
+
+            <h4>Spec Kit Output:</h4>
+            <p>The analysis command reviews your existing codebase and generates a detailed report identifying:</p>
+            <ul>
+            <li>Current data models and their properties</li>
+            <li>Existing API endpoints and their contracts</li>
+            <li>Integration points where changes need to be made</li>
+            <li>Migration considerations for backward compatibility</li>
+            </ul>
+            <div class="callout">
+            <strong>Example Analysis Report:</strong> The TodoItem model currently has Id, Title, IsCompleted, and CreatedAt properties. To add priority and due dates, we'll need to modify TodoItem.cs, update TodoService operations, adjust API DTOs, and add validation logic—all while maintaining backward compatibility with existing data.
+            </div>
+
+          <h3>Step 2: Create Enhancement Specification</h3>
+          <h4>Command: <code>/speckit.specify</code></h4>
+
+          <h4>Input:</h4>
+          <div class="callout">
+            <code>/speckit.specify</code> Create a specification for enhancing the TODO App with priority levels and due dates. The feature should allow users to assign a priority (High, Medium, Low) and optional due date to each TODO item. Ensure backward compatibility with existing TODO items that don't have these fields. Include sorting and filtering capabilities by priority and due date.
+          </div>
+
+
+          <h4>Spec Kit Output:</h4>
+          <p>The specification command generates a detailed requirements document that defines the enhancement:</p>
+          <ul>
+          <li>Functional requirements for priority levels and due dates</li>
+          <li>API endpoint modifications and new query parameters</li>
+          <li>Data model changes with validation rules</li>
+          <li>Backward compatibility requirements</li>
+          <li>Success criteria for the enhancement</li>
+          </ul>
+          
+          <pre><code>Generated file:
+    specs/002-priority-due-dates/spec.md
+
+    This specification document includes:
+    - Feature overview and objectives
+    - Detailed functional requirements for priority (High/Medium/Low)
+    - Optional due date field with validation
+    - API enhancements (filtering, sorting, overdue detection)
+    - Backward compatibility guarantees
+    - Non-functional requirements (performance, migration)
+    - Clear success criteria for implementation
+    </code></pre>
+
+          <div class="callout">
+          <strong>Key Output:</strong> A comprehensive specification document that serves as the single source of truth for the enhancement. This document will guide all subsequent phases (clarification, planning, implementation) and ensure alignment between stakeholders and developers.
+          </div>
+
+          <h3>Step 3: Impact Analysis</h3>
+          <h4>Command: <code>/speckit.analyze</code></h4>
+          <p><strong>Purpose:</strong> Perform impact analysis to identify all affected components, potential breaking changes, database migration requirements, API versioning needs, and testing requirements.</p>
+
+          <h4>Input:</h4>
+          <div class="callout">
+            <code>/speckit.analyze</code> Focus on impact analysis: Identify all affected components for adding priority and due dates. Assess potential breaking changes, database migration requirements, API versioning needs, testing scope, and deployment strategy. Consider backward compatibility with existing clients and impact on existing TodoItems without these fields.
+          </div>
+
+          <h4>Spec Kit Output:</h4>
+            <p>The impact analysis command evaluates all affected components, potential breaking changes, and migration requirements:</p>
+            <ul>
+              <li>Component impact assessment (models, services, controllers, DTOs, tests)</li>
+              <li>Breaking change analysis (risk level and mitigation strategies)</li>
+              <li>Migration strategy for existing data (Cosmos DB schema handling)</li>
+              <li>Testing requirements (regression, integration, performance)</li>
+              <li>Deployment strategy (blue-green deployment approach)</li>
+              <li>Rollback plan for safe recovery if issues arise</li>
+            </ul>
+
+            <div class="callout">
+              <strong>Example Impact Analysis:</strong> Adding priority and due dates is LOW RISK because all changes are additive. Existing TodoItems without these fields will use default values (Medium priority, null due date). No schema migration required in Cosmos DB. Backward compatibility maintained with existing clients. Blue-green deployment ensures safe rollout with quick rollback capability.
+            </div>
+
+          <h3>Step 4: Create Implementation Plan</h3>
+          <h4>Command: <code>/speckit.plan</code></h4>
+
+          <h4>Input:</h4>
+          <div class="callout">
+            <code>/speckit.plan</code> Create a detailed implementation plan for adding priority and due dates to the TODO App. Break down the work into phases, identify dependencies, estimate effort, and define acceptance criteria for each task. Include testing strategy and rollback procedures.
+          </div>
+
+          <h4>Spec Kit Output:</h4>
+          <p>The plan command generates a detailed, phased implementation approach with tasks, timelines, and dependencies:</p>
+          <ul>
+            <li>Phase 1: Data Model Updates (2-3 hours) - TodoItem enhancements, DTOs, validation</li>
+            <li>Phase 2: Service Layer Updates (3-4 hours) - Filtering, sorting, query optimization</li>
+            <li>Phase 3: API Controller Updates (2-3 hours) - Endpoints, parameters, documentation</li>
+            <li>Phase 4: Testing (3-4 hours) - Unit, integration, and regression tests</li>
+            <li>Phase 5: Documentation (1-2 hours) - API docs, user guides, migration notes</li>
+            <li>Phase 6: Deployment (1 hour) - Staging and production rollout</li>
+          </ul>
+
+          <div class="callout">
+            <strong>Total Estimated Effort:</strong> 12-17 hours with clear dependencies, acceptance criteria for each task, and risk mitigation strategies. The plan ensures backward compatibility, comprehensive testing, and safe deployment.
+          </div>
+
+          <h3>Step 5: Execute Implementation</h3>
+          <h4>Command: <code>/speckit.implement</code></h4>
+
+          <h4>Input:</h4>
+          <div class="callout">
+            <code>/speckit.implement</code> Execute the implementation plan for adding priority and due dates to the TODO App. Follow the defined phases and tasks, ensuring each acceptance criterion is met. Update existing code carefully to maintain backward compatibility. Write comprehensive tests to verify both new features and existing functionality. Document all changes and prepare deployment artifacts.
+          </div>
+
+            <h4>Spec Kit Output:</h4>
+            <p>The implement command executes the planned tasks in phases, generating code, tests, and documentation:</p>
+            <pre><code>Generated files in ToDoApp Project:
+
+      src/TodoManagement.Api/Models/Priority.cs
+      src/TodoManagement.Api/Models/TodoItem.cs (updated)
+      src/TodoManagement.Api/DTOs/CreateTodoDto.cs (updated)
+      src/TodoManagement.Api/DTOs/UpdateTodoDto.cs (updated)
+      src/TodoManagement.Api/Services/TodoService.cs (updated)
+      src/TodoManagement.Api/Controllers/TodoController.cs (updated)
+
+      tests/TodoManagement.Tests/Unit/PriorityTests.cs
+      tests/TodoManagement.Tests/Unit/TodoItemValidationTests.cs
+      tests/TodoManagement.Tests/Integration/PriorityFilteringTests.cs
+      tests/TodoManagement.Tests/Integration/DueDateTests.cs
+
+      docs/API.md (updated)
+      docs/MIGRATION.md (new)
+      docs/USER_GUIDE.md (updated)
+
+      ✅ All 127 unit tests passing (98% coverage)
+      ✅ All 34 integration tests passing
+      ✅ Zero regressions detected
+      ✅ API documentation updated
+      ✅ Ready for deployment
+      </code></pre>
+
+            <div class="callout">
+            <strong>Implementation Success:</strong> Priority and due date features fully implemented with comprehensive tests, updated documentation, and backward compatibility maintained. The enhancement is production-ready.
+            </div>
+
+          <h2>Key Brownfield Engineering Practices</h2>
+          <div>
+            <ul>
+              <li>🔍 <strong>Thorough Analysis:</strong> Understand existing architecture before making changes</li>
+              <li>🔄 <strong>Backward Compatibility:</strong> Ensure existing functionality continues to work</li>
+              <li>📊 <strong>Impact Assessment:</strong> Identify all affected components and potential risks</li>
+              <li>🧪 <strong>Regression Testing:</strong> Verify no existing features are broken</li>
+              <li>🎯 <strong>Incremental Changes:</strong> Add features gradually rather than large rewrites</li>
+              <li>📚 <strong>Documentation Updates:</strong> Keep docs in sync with code changes</li>
+              <li>🚀 <strong>Safe Deployment:</strong> Use strategies like blue-green for risk mitigation</li>
+              <li>🔙 <strong>Rollback Plans:</strong> Always have a way to revert changes quickly</li>
+            </ul>
+          </div>
+
+          <h2>Benefits of Using Spec Kit for Enhancements</h2>
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Benefit</th>
+                <th>Description</th>
+                <th>Impact</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Structured Analysis</strong></td>
+                <td>Forces thorough review of existing code before changes</td>
+                <td>Reduces risk of breaking changes</td>
+              </tr>
+              <tr>
+                <td><strong>Impact Visibility</strong></td>
+                <td>Identifies all affected components upfront</td>
+                <td>Better planning and resource allocation</td>
+              </tr>
+              <tr>
+                <td><strong>Consistent Process</strong></td>
+                <td>Same workflow for greenfield and brownfield projects</td>
+                <td>Team productivity and quality consistency</td>
+              </tr>
+              <tr>
+                <td><strong>Risk Management</strong></td>
+                <td>Early identification of potential issues</td>
+                <td>Fewer production incidents</td>
+              </tr>
+              <tr>
+                <td><strong>Documentation Trail</strong></td>
+                <td>Complete history of enhancement decisions</td>
+                <td>Better knowledge transfer and maintenance</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h2>Common Brownfield Challenges Addressed</h2>
+          <ol>
+            <li><strong>Technical Debt:</strong> Spec Kit's analysis phase helps identify and document existing technical debt that needs addressing</li>
+            <li><strong>Hidden Dependencies:</strong> Impact analysis reveals unexpected component coupling</li>
+            <li><strong>Breaking Changes:</strong> Specification phase explicitly considers backward compatibility requirements</li>
+            <li><strong>Testing Gaps:</strong> Planning phase ensures comprehensive regression and new feature testing</li>
+            <li><strong>Deployment Risks:</strong> Implementation plan includes safe deployment strategies and rollback procedures</li>
+            <li><strong>Knowledge Loss:</strong> Complete documentation trail preserves enhancement rationale for future maintainers</li>
+          </ol>
+
+          <h2>Next Enhancement Ideas</h2>
+          <p>Continue evolving the TODO App using Spec Kit for these brownfield scenarios:</p>
+          <ul>
+            <li>🏷️ <strong>Categories/Tags:</strong> Add tag system for organizing todos (multi-value fields)</li>
+            <li>🔔 <strong>Notifications:</strong> Integrate Azure Service Bus for due date reminders</li>
+            <li>👥 <strong>Collaboration:</strong> Add multi-user support with shared todos</li>
+            <li>📱 <strong>Mobile Sync:</strong> Add offline support with conflict resolution</li>
+            <li>🔍 <strong>Search:</strong> Implement full-text search using Azure Cognitive Search</li>
+            <li>📈 <strong>Analytics:</strong> Add Application Insights for usage tracking</li>
+            <li>🔐 <strong>Advanced Security:</strong> Implement row-level security and data encryption</li>
+          </ul>
+
+          <div class="callout">
+            <strong>Spec Kit Excellence:</strong> Whether starting fresh (greenfield) or enhancing existing systems (brownfield), Spec Kit provides a consistent, rigorous approach that ensures quality, maintainability, and successful delivery! 🎯
+          </div>
+        </section>
+
+        <section id="upgrade" role="article">
+          <h1>🔧 Spec Kit Upgrade</h1>
+          <span class="badge">maintenance</span>
+          <span class="badge">updates</span>
+          
+          <p>Keep your Spec Kit installation up-to-date to access new features, bug fixes, and updated slash commands. This guide covers upgrading both the CLI tool and project files.</p>
+
+          <h2>Quick Reference</h2>
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>What to Upgrade</th>
+                <th>Command</th>
+                <th>Purpose</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>CLI Tool Only</td>
+                <td><code>uv tool install specify-cli --force --from git+https://github.com/github/spec-kit.git</code></td>
+                <td>Get latest CLI features without touching project files</td>
+              </tr>
+              <tr>
+                <td>Project Files</td>
+                <td><code>specify init --here --force --ai &lt;your-agent&gt;</code></td>
+                <td>Update slash commands, templates, and scripts</td>
+              </tr>
+              <tr>
+                <td>Both</td>
+                <td>Run CLI upgrade, then project update</td>
+                <td>Recommended for major version updates</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h2>Part 1: Upgrade the CLI Tool</h2>
+          <p>The CLI tool (<code>specify</code>) is separate from your project files. Upgrade it to get the latest features and bug fixes.</p>
+
+          <h3>If you installed with <code>uv tool install</code></h3>
+          <pre><code>uv tool install specify-cli --force --from git+https://github.com/github/spec-kit.git</code></pre>
+
+          <h3>If you use one-shot <code>uvx</code> commands</h3>
+          <p>No upgrade needed—<code>uvx</code> always fetches the latest version. Just run your commands as normal:</p>
+          <pre><code>uvx --from git+https://github.com/github/spec-kit.git specify init --here --ai copilot</code></pre>
+
+          <h3>Verify the upgrade</h3>
+          <pre><code>specify check</code></pre>
+          <p>This shows installed tools and confirms the CLI is working.</p>
+
+          <h2>Part 2: Updating Project Files</h2>
+          
+          <h3>What gets updated?</h3>
+          <p>Running <code>specify init --here --force</code> will update:</p>
+          <ul>
+            <li>✅ Slash command files (<code>.claude/commands/</code>, <code>.github/prompts/</code>, etc.)</li>
+            <li>✅ Script files (<code>.specify/scripts/</code>)</li>
+            <li>✅ Template files (<code>.specify/templates/</code>)</li>
+            <li>✅ Shared memory files (<code>.specify/memory/</code>) - ⚠️ See warnings below</li>
+          </ul>
+
+          <h3>What stays safe?</h3>
+          <p>These files are never touched by the upgrade:</p>
+          <ul>
+            <li>✅ Your specifications (<code>specs/001-my-feature/spec.md</code>, etc.) - CONFIRMED SAFE</li>
+            <li>✅ Your implementation plans (<code>specs/001-my-feature/plan.md</code>, <code>tasks.md</code>, etc.) - CONFIRMED SAFE</li>
+            <li>✅ Your source code - CONFIRMED SAFE</li>
+            <li>✅ Your git history - CONFIRMED SAFE</li>
+          </ul>
+          <p>The <code>specs/</code> directory is completely excluded from template packages and will never be modified during upgrades.</p>
+
+          <h3>Update command</h3>
+          <p>Run this inside your project directory:</p>
+          <pre><code>specify init --here --force --ai &lt;your-agent&gt;</code></pre>
+          <p>Replace <code>&lt;your-agent&gt;</code> with your AI assistant (copilot, claude, cursor, etc.)</p>
+
+          <h3>Understanding the <code>--force</code> flag</h3>
+          <p>Without <code>--force</code>, the CLI warns you and asks for confirmation. With <code>--force</code>, it proceeds immediately.</p>
+          <div class="callout">
+            <strong>Important:</strong> Your <code>specs/</code> directory is always safe. The <code>--force</code> flag only affects template files (commands, scripts, templates, memory). Your feature specifications, plans, and tasks in <code>specs/</code> are never included in upgrade packages.
+          </div>
+
+          <h2>⚠️ Important Warnings</h2>
+
+          <h3>1. Constitution file will be overwritten</h3>
+          <p><strong>Known issue:</strong> <code>specify init --here --force</code> currently overwrites <code>.specify/memory/constitution.md</code> with the default template, erasing any customizations.</p>
+          <p><strong>Workaround:</strong></p>
+          <pre><code># 1. Back up your constitution before upgrading
+cp .specify/memory/constitution.md .specify/memory/constitution-backup.md
+
+# 2. Run the upgrade
+specify init --here --force --ai copilot
+
+# 3. Restore your customized constitution
+mv .specify/memory/constitution-backup.md .specify/memory/constitution.md</code></pre>
+          <p>Or use git to restore it:</p>
+          <pre><code># After upgrade, restore from git history
+git restore .specify/memory/constitution.md</code></pre>
+
+          <h3>2. Custom template modifications</h3>
+          <p>If you customized any templates in <code>.specify/templates/</code>, the upgrade will overwrite them. Back them up first:</p>
+          <pre><code># Back up custom templates
+cp -r .specify/templates .specify/templates-backup
+
+# After upgrade, merge your changes back manually</code></pre>
+
+          <h3>3. Duplicate commands warning</h3>
+          <p>If you previously initialized with a different agent (e.g., claude) and now run with a new agent (e.g., copilot), you may get duplicate command files in different directories. Clean up manually if needed:</p>
+          <pre><code># Check for duplicates
+ls .claude/commands/
+ls .github/prompts/
+
+# Remove old agent files if switching permanently
+rm -rf .claude/  # If switching from Claude to Copilot</code></pre>
+
+          <h2>Rolling Back an Upgrade</h2>
+          <p>If an upgrade causes issues, you can rollback to a previous version.</p>
+
+          <h3>Rollback CLI Tool</h3>
+          <pre><code># Install specific version
+uv tool install specify-cli --force --from git+https://github.com/github/spec-kit.git@v0.0.21
+
+# Or reinstall from a specific tag
+uv tool install specify-cli --force --from git+https://github.com/github/spec-kit.git@release-0.0.21</code></pre>
+
+          <h3>Rollback Project Files</h3>
+          <pre><code># Use git to restore previous version
+git restore .github/ .specify/
+
+# Or revert to a specific commit
+git log --oneline -- .github/ .specify/
+git checkout &lt;commit-hash&gt; -- .github/ .specify/</code></pre>
+
+          <div class="callout">
+            <strong>💡 Tip:</strong> Always commit your changes before upgrading so you can easily rollback if needed.
+          </div>
+
+          <h2>Version Compatibility</h2>
+          <p>Spec Kit follows semantic versioning for major releases. The CLI and project files are designed to be compatible within the same major version.</p>
+          <div class="callout">
+            <strong>Best practice:</strong> Keep both CLI and project files in sync by upgrading both together during major version changes.
+          </div>
+
+          <h2>Next Steps After Upgrading</h2>
+          <ul>
+            <li><strong>Test new slash commands:</strong> Run <code>/speckit.constitution</code> or another command to verify everything works</li>
+            <li><strong>Review release notes:</strong> Check <a href="https://github.com/github/spec-kit/releases" target="_blank" rel="noopener">GitHub Releases</a> for new features and breaking changes</li>
+            <li><strong>Update workflows:</strong> If new commands were added, update your team's development workflows</li>
+            <li><strong>Check documentation:</strong> Visit <a href="https://github.github.io/spec-kit/" target="_blank" rel="noopener">github.io/spec-kit</a> for updated guides</li>
+          </ul>
+        </section>
+
+        <section id="resources" role="article">
+          <h1>📚 Resources</h1>
+          <span class="badge">docs</span>
+          <span class="badge">community</span>
+          
+          <h2>Official Resources</h2>
+          <ul class="list-style-none">
+            <li>🌐 <a href="https://github.com/github/spec-kit" target="_blank" rel="noopener">GitHub Repository</a></li>
+            <li>🏠 <a href="https://speckit.org/" target="_blank" rel="noopener">Official Website</a></li>
+            <li>📺 <a href="https://www.youtube.com/watch?v=a9eR1xsfvHg" target="_blank" rel="noopener">Video Overview</a></li>
+            <li>📖 <a href="https://github.com/github/spec-kit/blob/main/spec-driven.md" target="_blank" rel="noopener">Complete Methodology</a></li>
+            <li>💬 <a href="https://github.com/github/spec-kit/discussions" target="_blank" rel="noopener">Community Discussions</a></li>
+            <li>📚 <a href="https://github.github.io/spec-kit/" target="_blank" rel="noopener">Documentation</a></li>
+          </ul>
+
+          <h2>Learning Resources</h2>
+          <ul class="list-style-none">
+            <li>📺 <a href="https://www.youtube.com/@githubspeckit" target="_blank" rel="noopener">Video Tutorials</a></li>
+            <li>📝 <a href="https://github.com/github/spec-kit/tree/main/examples" target="_blank" rel="noopener">Example Projects</a></li>
+            <li>🎓 <a href="https://github.com/github/spec-kit/wiki" target="_blank" rel="noopener">Best Practices Guide</a></li>
+            <li>🤝 <a href="https://github.com/github/spec-kit/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener">Contributing Guide</a></li>
+          </ul>
+
+          <h2>Community</h2>
+          <ul class="list-style-none">
+            <li>💬 <a href="https://github.com/github/spec-kit/discussions" target="_blank" rel="noopener">GitHub Discussions</a></li>
+            <li>🐦 <a href="https://twitter.com/githubspeckit" target="_blank" rel="noopener">Twitter Updates</a></li>
+            <li>📧 <a href="mailto:speckit@github.com">Email Support</a></li>
+          </ul>
+
+          <h2>Common Issues & Solutions</h2>
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Issue</th>
+                <th>Cause</th>
+                <th>Solution</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Command not found</td>
+                <td>Agent files not loaded</td>
+                <td>Run <code>specify init --here --force</code></td>
+              </tr>
+              <tr>
+                <td>AI returns generic response</td>
+                <td>Insufficient context</td>
+                <td>Update constitution, add more spec details</td>
+              </tr>
+              <tr>
+                <td>Plan/tasks incomplete</td>
+                <td>Ambiguous requirements</td>
+                <td>Run <code>/speckit.clarify</code> first</td>
+              </tr>
+              <tr>
+                <td>Implementation fails</td>
+                <td>Missing dependencies</td>
+                <td>Check <code>plan.md</code> prerequisites</td>
+              </tr>
+              <tr>
+                <td>Upgrade overwrites files</td>
+                <td>No backup before upgrade</td>
+                <td>Use git to restore, see rollback section</td>
+              </tr>
+              <tr>
+                <td>Duplicate command files</td>
+                <td>Switching between agents</td>
+                <td>Clean up old agent directories manually</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h2>Key Takeaways</h2>
+          <div class="callout">
+            <ol>
+              <li><strong>Spec-Driven Development</strong> transforms specifications into executable artifacts</li>
+              <li><strong>Spec Kit provides structured methodology</strong> and tooling for AI-assisted development</li>
+              <li><strong>Works with 19+ AI agents</strong> - GitHub Copilot, Claude Code, Gemini CLI, Cursor Agent, Qwen Code, opencode, Codex CLI, Windsurf, Kilo Code, Auggie CLI, CodeBuddy, Qoder CLI, Roo Code, Amazon Q Developer CLI, Amp, SHAI, Antigravity, IBM Bob, and Generic (bring-your-own-agent) mode</li>
+              <li><strong>Supports multiple development phases</strong> - greenfield, exploration, brownfield</li>
+              <li><strong>Technology independent</strong> - not tied to specific frameworks or languages</li>
+              <li><strong>Installation is straightforward</strong> using uv and specify CLI</li>
+              <li><strong>Extension system</strong> allows modular packages for enhanced functionality (search, add, list, remove extensions)</li>
+              <li><strong>AI Skills support</strong> - install commands as agent-native skills using --ai-skills flag</li>
+              <li><strong>Always backup before upgrades</strong> - constitution and custom templates may be overwritten</li>
+              <li><strong>Use git for version control</strong> - makes rollbacks simple and safe</li>
+            </ol>
+          </div>
+
+          <h2>Getting Help</h2>
+          <ul class="list-style-none">
+            <li>🐛 <a href="https://github.com/github/spec-kit/issues/new" target="_blank" rel="noopener">Report Issues</a></li>
+            <li>💡 <a href="https://github.com/github/spec-kit/discussions" target="_blank" rel="noopener">Ask Questions</a></li>
+            <li>📧 <a href="https://github.com/github/spec-kit/blob/main/SUPPORT.md" target="_blank" rel="noopener">Support Guide</a></li>
+          </ul>
+
+          <hr />
+          <div class="document-footer">
+            <p>
+              <strong>Last Updated:</strong> March 2026 | 
+              <strong>Curated by:</strong> Murthy Vepa with ❤️ | <strong>Powered by:</strong> GitHub Copilot
+            </p>
+          </div>  
+        </section>
+        </div>
+      </main>
+    </div>
+    
+    <nav class="controls" role="navigation" aria-label="Pagination">
+      <div class="btn-group" role="group">
+        <button class="btn btn-outline-info btn-sm" id="prevBtn" title="Previous" aria-label="Previous concept">&nbsp;&lt;&nbsp;</button>
+        <button class="btn btn-outline-info btn-sm" id="nextBtn" title="Next" aria-label="Next concept">&nbsp;&gt;&nbsp;</button>
+      </div>
+    </nav>
+  </div>  <div class="offcanvas offcanvas-start" tabindex="-1" id="sidebarOffcanvas" aria-labelledby="sidebarLabel">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title" id="sidebarLabel">Contents</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body p-0">
+      <ul class="list-group list-group-flush w-100" id="tocMobile"></ul>
+    </div>
+  </div>
+
+  <script>
+    // ---- Configuration ----
+    const sectionConfig = [
+      { id: "what-is-spec-kit", title: "📖 What is Spec Kit?", tags: ["intro", "overview"] },
+      { id: "when-to-use-spec-kit", title: "✅ When to use (and not use) Spec Kit", tags: ["guidance", "fit", "anti-patterns"] },
+      { id: "spec-driven-dev", title: "🎯 Spec-Driven Development", tags: ["philosophy", "methodology"] },
+      { id: "architecture", title: "🏗️ Architecture", tags: ["cli", "agents", "workflow"] },
+      { id: "installation", title: "⚙️ Installation", tags: ["setup", "prerequisites"] },
+      { id: "workflow", title: "🔄 Development Workflow", tags: ["process", "steps", "quickstart", "fast lane"] },
+      { id: "artifacts", title: "📦 Artifact Lifecycle", tags: ["files", "structure"] },
+      { id: "live-demo", title: "🚀 Demo - TODO App - New", tags: ["todo", "example", "walkthrough", "greenfield"] },
+      { id: "live-demo-enhancements", title: "✨ Demo - TODO App - Enhancements", tags: ["todo", "enhancements", "brownfield", "evolution"] },
+      { id: "upgrade", title: "🔧 Spec Kit Upgrade", tags: ["maintenance", "updates"] },
+      { id: "resources", title: "📚 Resources", tags: ["docs", "community"] }
+    ];
+
+    // ---- State & rendering ----
+    const state = {
+      index: 0,
+      filtered: sectionConfig.map((_, i) => i), // indices
+    };
+
+    const els = {
+      toc: document.getElementById('toc'),
+      tocMobile: document.getElementById('tocMobile'),
+      prev: document.getElementById('prevBtn'),
+      next: document.getElementById('nextBtn'),
+      toggleSidebar: document.getElementById('toggleSidebar'),
+      themeToggle: document.getElementById('themeToggle'),
+      main: document.getElementById('main'),
+      sidebar: document.querySelector('nav.sidebar'),
+      sidebarOffcanvas: document.getElementById('sidebarOffcanvas')
+    };
+
+    function buildTOC(){
+      // Clear both TOC lists
+      els.toc.innerHTML = '';
+      els.tocMobile.innerHTML = '';
+      
+      state.filtered.forEach((idx) => {
+        const s = sectionConfig[idx];
+        
+        // Desktop sidebar
+        const liDesktop = document.createElement('li');
+        liDesktop.className = 'list-group-item';
+        const aDesktop = document.createElement('a');
+        aDesktop.href = `#${s.id}`;
+        aDesktop.textContent = s.title;
+        aDesktop.addEventListener('click', (e) => {
+          e.preventDefault();
+          navigateToId(s.id);
+          closeSidebar();
+        });
+        liDesktop.appendChild(aDesktop);
+        els.toc.appendChild(liDesktop);
+        
+        // Mobile offcanvas
+        const liMobile = document.createElement('li');
+        liMobile.className = 'list-group-item';
+        const aMobile = document.createElement('a');
+        aMobile.href = `#${s.id}`;
+        aMobile.textContent = s.title;
+        aMobile.addEventListener('click', (e) => {
+          e.preventDefault();
+          navigateToId(s.id);
+          closeSidebar();
+        });
+        liMobile.appendChild(aMobile);
+        els.tocMobile.appendChild(liMobile);
+      });
+      highlightActiveTOC();
+    }
+
+    function setActiveByIndex(i){
+      const ids = state.filtered.map(idx => sectionConfig[idx].id);
+      document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+      const id = ids[i];
+      const active = document.getElementById(id);
+      if (active){
+        active.classList.add('active');
+        active.setAttribute('tabindex', '-1');
+        active.focus({preventScroll:true});
+      }
+      updateControls();
+      highlightActiveTOC();
+      updateURLHash(id);
+    }
+
+    function updateControls(){
+      const count = state.filtered.length;
+      els.prev.disabled = state.index <= 0;
+      els.next.disabled = state.index >= count - 1;
+    }
+
+    function filterTOC(query){
+      const q = query.trim().toLowerCase();
+      state.filtered = sectionConfig
+        .map((s, i) => ({s, i}))
+        .filter(({s}) => s.title.toLowerCase().includes(q) || s.tags.some(t => t.toLowerCase().includes(q)))
+        .map(({i}) => i);
+
+      state.index = Math.min(state.index, Math.max(0, state.filtered.length - 1));
+      buildTOC();
+      setActiveByIndex(state.index);
+    }
+
+    function navigate(delta){
+      const count = state.filtered.length;
+      const nextIndex = Math.min(Math.max(state.index + delta, 0), count - 1);
+      if (nextIndex !== state.index){
+        state.index = nextIndex;
+        setActiveByIndex(state.index);
+        // Scroll content to top
+        const contentEl = document.querySelector('.content');
+        if (contentEl) contentEl.scrollTop = 0;
+      }
+    }
+
+    function navigateToId(id){
+      const idxInFiltered = state.filtered.findIndex(fi => sectionConfig[fi].id === id);
+      if (idxInFiltered !== -1){
+        state.index = idxInFiltered;
+        setActiveByIndex(state.index);
+        // Scroll content to top
+        const contentEl = document.querySelector('.content');
+        if (contentEl) contentEl.scrollTop = 0;
+      } else {
+        state.filtered = sectionConfig.map((_, i) => i);
+        buildTOC();
+        navigateToId(id);
+      }
+    }
+
+    function updateURLHash(id){
+      const url = new URL(window.location);
+      url.hash = id;
+      history.replaceState(null, '', url);
+    }
+
+    function highlightActiveTOC(){
+      const ids = state.filtered.map(idx => sectionConfig[idx].id);
+      const activeId = ids[state.index];
+      // Highlight desktop sidebar
+      els.toc.querySelectorAll('a').forEach(a => a.classList.toggle('active', a.getAttribute('href') === `#${activeId}`));
+      // Highlight mobile offcanvas
+      els.tocMobile.querySelectorAll('a').forEach(a => a.classList.toggle('active', a.getAttribute('href') === `#${activeId}`));
+    }
+
+    function openSidebar(){
+      const offcanvas = new bootstrap.Offcanvas(document.getElementById('sidebarOffcanvas'));
+      offcanvas.show();
+    }
+    function closeSidebar(){
+      const offcanvasElement = document.getElementById('sidebarOffcanvas');
+      const offcanvas = bootstrap.Offcanvas.getInstance(offcanvasElement);
+      if(offcanvas) offcanvas.hide();
+    }
+
+    // ---- Events ----
+    els.prev.addEventListener('click', () => navigate(-1));
+    els.next.addEventListener('click', () => navigate(1));
+
+    // Keyboard navigation
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') navigate(-1);
+      else if (e.key === 'ArrowRight') navigate(1);
+      else if (e.key === 'Escape') closeSidebar();
+    });
+
+    // Deep linking on load/hash change
+    window.addEventListener('hashchange', () => {
+      const id = location.hash.replace('#','');
+      if (id) navigateToId(id);
+    });
+
+    // Sidebar toggle (mobile)
+    els.toggleSidebar.addEventListener('click', () => {
+      openSidebar();
+    });
+
+    // Restore theme
+    (function(){
+      try {
+        const saved = localStorage.getItem('concepts-theme');
+        if (saved) { 
+          document.documentElement.setAttribute('data-theme', saved);
+          els.themeToggle.textContent = saved === 'light' ? '🌗' : '🌙';
+        }
+      } catch {}
+    })();
+
+    // Initial render
+    buildTOC();
+    
+    // Navigate to hash if present, otherwise show first section
+    const initialId = location.hash.replace('#','');
+    if (initialId){ 
+    navigateToId(initialId); 
+    } else {
+    setActiveByIndex(0);
+    // Scroll content to top on initial load
+    const contentEl = document.querySelector('.content');
+    if (contentEl) contentEl.scrollTop = 0;
+    }
+
+  </script>
+  <!-- Bootstrap JS -->
+  <script src="assets/scripts/bootstrap.bundle.min.js"></script>
+</body>
+</html>
