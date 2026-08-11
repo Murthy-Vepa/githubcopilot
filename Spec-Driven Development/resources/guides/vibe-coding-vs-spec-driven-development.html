@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="A practical guide to choosing between AI-assisted development, Spec-Driven Development, and a hybrid workflow.">
+  <title>AI-Assisted Development vs Spec-Driven Development</title>
+  <style>
+    :root {
+      --ink: #182432;
+      --navy: #10253d;
+      --navy-2: #193a58;
+      --teal: #087b79;
+      --mint: #e6f5ef;
+      --coral: #d95d39;
+      --peach: #fff0e9;
+      --blue: #236da8;
+      --sky: #e9f3fb;
+      --muted: #5e6d7d;
+      --line: #d6e0e7;
+      --paper: #f5f7f6;
+      --white: #ffffff;
+      --shadow: 0 14px 34px rgba(16, 37, 61, .10);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+      line-height: 1.55;
+    }
+    a { color: var(--blue); }
+    .page { max-width: 1240px; margin: 0 auto; padding: 26px; }
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 48px 52px 42px;
+      border: 1px solid #bcd3d8;
+      border-radius: 22px;
+      background: linear-gradient(125deg, #dff2ed 0%, #f5fbfa 52%, #fff0e9 100%);
+      box-shadow: var(--shadow);
+    }
+    .hero::before {
+      content: "";
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      right: -85px;
+      top: -150px;
+      border: 45px solid rgba(8, 123, 121, .14);
+      border-radius: 50%;
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      width: 150px;
+      height: 150px;
+      right: 150px;
+      bottom: -105px;
+      background: rgba(217, 93, 57, .13);
+      transform: rotate(26deg);
+    }
+    .eyebrow, .kicker {
+      position: relative;
+      z-index: 1;
+      color: var(--teal);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 1.8px;
+      text-transform: uppercase;
+    }
+    h1, h2, h3 { font-family: Georgia, "Times New Roman", serif; }
+    h1 {
+      position: relative;
+      z-index: 1;
+      max-width: 880px;
+      margin: 12px 0 14px;
+      color: var(--navy);
+      font-size: clamp(38px, 6vw, 72px);
+      line-height: 1.01;
+      letter-spacing: -.7px;
+    }
+    .hero p { position: relative; z-index: 1; max-width: 780px; margin: 0; color: #40566c; font-size: 18px; }
+    .meta { position: relative; z-index: 1; display: flex; flex-wrap: wrap; gap: 9px; margin-top: 27px; }
+    .meta span { padding: 7px 12px; border: 1px solid #b7ccd0; border-radius: 999px; background: rgba(255,255,255,.62); color: #35526a; font-size: 12px; font-weight: 800; }
+
+    .section { margin-top: 34px; }
+    .section-gap { margin-top: 15px; }
+    .section-head { display: flex; align-items: center; gap: 14px; margin-bottom: 15px; }
+    .section-head h2 { margin: 0; color: var(--navy); font-size: 25px; }
+    .section-head::after { content: ""; height: 2px; flex: 1; background: linear-gradient(90deg, var(--line), transparent); }
+    .lede { max-width: 850px; margin: 0 0 17px; color: var(--muted); font-size: 16px; }
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+    .grid.two { grid-template-columns: 1.15fr .85fr; }
+    .card { padding: 21px; border: 1px solid var(--line); border-radius: 14px; background: var(--white); box-shadow: 0 6px 18px rgba(16,37,61,.05); }
+    .card h3 { margin: 0 0 9px; color: var(--navy-2); font-size: 19px; line-height: 1.15; }
+    .card p { margin: 0 0 11px; color: var(--muted); font-size: 13px; }
+    .card p:last-child { margin-bottom: 0; }
+    ul, ol { margin: 0; padding-left: 19px; }
+    li { margin-bottom: 8px; color: var(--muted); font-size: 13px; }
+    li:last-child { margin-bottom: 0; }
+    strong { color: var(--navy-2); }
+
+    .tldr { display: grid; grid-template-columns: 1.1fr .9fr; gap: 15px; }
+    .tldr-main { padding: 25px; border-left: 6px solid var(--coral); border-radius: 0 14px 14px 0; background: var(--peach); }
+    .tldr-main h2 { margin: 0 0 9px; color: #8d351f; font-size: 25px; }
+    .tldr-main p { max-width: 740px; margin: 0; color: #704838; font-size: 15px; }
+    .signal { padding: 23px; border-radius: 14px; background: var(--navy); color: var(--white); }
+    .signal .kicker { color: #89dbcb; }
+    .signal h3 { margin: 8px 0; color: var(--white); font-size: 20px; }
+    .signal p { margin: 0; color: #d5e4ed; font-size: 13px; }
+
+    .flow { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 15px 0 7px; }
+    .flow span { padding: 9px 11px; border-radius: 8px; background: var(--sky); color: var(--blue); font-size: 12px; font-weight: 800; }
+    .flow b { color: var(--coral); font-size: 16px; }
+    .accent-vibe { border-top: 5px solid var(--coral); }
+    .accent-sdd { border-top: 5px solid var(--teal); }
+    .accent-hybrid { border-top: 5px solid var(--blue); }
+    .tag { display: inline-block; margin-bottom: 10px; color: var(--coral); font-size: 11px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; }
+    .accent-sdd .tag { color: var(--teal); }
+    .accent-hybrid .tag { color: var(--blue); }
+
+    .comparison { width: 100%; border-collapse: collapse; overflow: hidden; border: 1px solid var(--line); border-radius: 14px; background: var(--white); box-shadow: 0 6px 18px rgba(16,37,61,.05); font-size: 13px; }
+    .comparison th { padding: 13px 15px; background: var(--navy); color: var(--white); text-align: left; font-size: 11px; letter-spacing: .7px; text-transform: uppercase; }
+    .comparison th:nth-child(2) { background: #a9482e; }
+    .comparison th:nth-child(3) { background: #076966; }
+    .comparison td { padding: 13px 15px; border-top: 1px solid var(--line); vertical-align: top; color: var(--muted); }
+    .comparison td:first-child { width: 19%; color: var(--navy-2); font-weight: 800; }
+    .comparison td:nth-child(2) { background: #fffaf8; }
+    .comparison td:nth-child(3) { background: #f7fcfa; }
+
+    .timeline { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; counter-reset: phase; }
+    .timeline article { position: relative; min-height: 190px; padding: 22px 19px 18px; border-top: 5px solid var(--blue); background: var(--white); }
+    .timeline article + article { border-left: 1px solid var(--line); }
+    .timeline article:nth-child(2) { border-top-color: var(--teal); }
+    .timeline article:nth-child(3) { border-top-color: var(--coral); }
+    .timeline article:nth-child(4) { border-top-color: var(--navy); }
+    .timeline article::before { counter-increment: phase; content: "0" counter(phase); display: block; margin-bottom: 17px; color: var(--muted); font-size: 11px; font-weight: 800; letter-spacing: 1px; }
+    .timeline h3 { margin: 0 0 7px; color: var(--navy-2); font-size: 18px; }
+    .timeline p { margin: 0; color: var(--muted); font-size: 13px; }
+
+    .wall { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+    .wall-card { padding: 22px; border-radius: 14px; }
+    .wall-card h3 { margin: 0 0 8px; font-size: 21px; }
+    .wall-card p { margin: 0 0 12px; font-size: 13px; }
+    .wall-card.euphoria { background: var(--mint); border: 1px solid #c2e1d5; }
+    .wall-card.euphoria h3, .wall-card.euphoria p { color: #17675d; }
+    .wall-card.decline { background: var(--peach); border: 1px solid #f0c9b8; }
+    .wall-card.decline h3, .wall-card.decline p { color: #8d351f; }
+    .bar { display: flex; height: 10px; margin: 14px 0 9px; overflow: hidden; border-radius: 999px; background: #dfe8e5; }
+    .bar span:nth-child(1) { width: 25%; background: var(--teal); }
+    .bar span:nth-child(2) { width: 25%; background: #8cb8aa; }
+    .bar span:nth-child(3) { width: 25%; background: #e39a79; }
+    .bar span:nth-child(4) { width: 25%; background: var(--coral); }
+    .legend { display: flex; flex-wrap: wrap; gap: 8px 14px; color: var(--muted); font-size: 11px; }
+
+    .callout { padding: 20px 22px; border-left: 5px solid var(--blue); border-radius: 0 13px 13px 0; background: var(--sky); }
+    .callout strong { color: var(--navy-2); }
+    .callout p { margin: 5px 0 0; color: var(--muted); font-size: 13px; }
+    .transition-list { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 15px; }
+    .transition-list div { padding: 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--white); }
+    .transition-list b { display: block; margin-bottom: 5px; color: var(--coral); font-size: 12px; }
+    .transition-list span { color: var(--muted); font-size: 12px; }
+
+    .matrix-wrap { overflow-x: auto; }
+    .matrix { width: 100%; min-width: 720px; border-collapse: collapse; border: 1px solid var(--line); background: var(--white); font-size: 13px; }
+    .matrix th { padding: 12px 14px; background: #e8eff2; color: var(--navy-2); text-align: left; font-size: 11px; letter-spacing: .6px; text-transform: uppercase; }
+    .matrix td { padding: 12px 14px; border-top: 1px solid var(--line); color: var(--muted); }
+    .matrix td:first-child { color: var(--navy-2); font-weight: 800; }
+    .yes { color: var(--teal) !important; font-weight: 800; }
+    .caution { color: var(--coral) !important; font-weight: 800; }
+
+    .sources { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+    .sources a { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 800; }
+    .sources p { margin: 0; color: var(--muted); font-size: 12px; }
+    footer { display: flex; justify-content: space-between; gap: 16px; margin-top: 34px; padding: 18px 2px 5px; border-top: 1px solid var(--line); color: var(--muted); font-size: 11px; }
+
+    @media (max-width: 900px) {
+      .grid, .timeline, .transition-list { grid-template-columns: repeat(2, 1fr); }
+      .timeline article:nth-child(3) { border-left: 0; }
+      .tldr, .wall, .sources { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 620px) {
+      .page { padding: 14px; }
+      .hero { padding: 32px 24px; border-radius: 15px; }
+      .hero p { font-size: 15px; }
+      .grid, .grid.two, .timeline, .transition-list { grid-template-columns: 1fr; }
+      .timeline article + article { border-left: 0; border-top: 1px solid var(--line); }
+      .timeline article { min-height: 0; }
+      footer { flex-direction: column; }
+    }
+    @media print {
+      body { background: #fff; }
+      .page { max-width: none; padding: 0; }
+      .hero, .card, .comparison, .matrix, .wall-card { box-shadow: none; }
+      .section { margin-top: 19px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="hero">
+      <div class="eyebrow">GitHub Copilot and Spec-Driven Development / Fundamentals and Enablement</div>
+      <h1>AI-Assisted Development vs Spec-Driven Development</h1>
+      <p>Two ends of the AI-assisted engineering spectrum, and the practical hybrid that lets teams explore quickly without allowing production systems to become undocumented.</p>
+      <div class="meta"><span>Decision guide</span><span>Audience: engineering teams and delivery partners</span><span>Use: Week 2 enablement</span></div>
+    </header>
+
+    <section class="section" id="tldr">
+      <div class="tldr">
+        <div class="tldr-main"><h2>The short version</h2><p>AI-Assisted Development uses a prompt, generate, iterate loop to maximize discovery speed. Spec-Driven Development uses specify, plan, implement, verify to maximize maintainability and alignment. The practical synthesis is structured exploration: use AI-assisted development to discover the problem, then turn the discovery into a living, version-controlled specification before production deployment.</p></div>
+        <div class="signal"><div class="kicker">Decision signal</div><h3>Speed is not the only variable.</h3><p>Choose the method based on the cost of miscoordination: broken integrations, security failures, compliance gaps, unclear ownership, and future maintenance are all part of delivery cost.</p></div>
+      </div>
+    </section>
+
+    <section class="section" id="why">
+      <div class="section-head"><h2>Why teams face a methodology decision</h2></div>
+      <p class="lede">AI-assisted development is already normal. The important engineering question is how much specification discipline a particular context requires.</p>
+      <div class="grid two">
+        <article class="card"><h3>The productivity signal</h3><p>AI tools can compress the time between an idea and a working prototype. A controlled GitHub study reported developers completing defined tasks 55% faster on average, and practitioners have demonstrated complete functional applications in hours.</p><p>That speed is valuable when the goal is learning, exploration, or a bounded internal tool.</p></article>
+        <article class="card"><h3>The maintenance signal</h3><p>GitClear's 211-million-line study reported that refactoring activity fell roughly 60% from 2021 to 2024 while copy-paste instances rose approximately 48%. The study also reported rising code churn and duplication as AI adoption expanded.</p><p>These signals do not mean AI coding is inherently bad. They show why teams need explicit mechanisms for preserving architecture, rationale, and traceability.</p></article>
+      </div>
+      <div class="callout section-gap"><strong>Engineering principle:</strong><p>Individual AI productivity does not automatically become organizational transformation. Shared context, durable decisions, review checkpoints, and governance are what turn generated output into an engineering system.</p></div>
+    </section>
+
+    <section class="section" id="vibe">
+      <div class="section-head"><h2>What is AI-assisted development?</h2></div>
+      <div class="grid two">
+        <article class="card accent-vibe"><span class="tag">Explore quickly</span><h3>Prompt, generate, iterate</h3><p>AI-Assisted Development is an AI-assisted approach in which the developer guides an AI agent through natural-language prompts rather than writing every line directly. Andrej Karpathy coined the term in February 2025; Google Cloud describes the workflow as one where the developer's primary role shifts from writing code line by line to guiding an AI assistant.</p><div class="flow"><span>Prompt</span><b>-></b><span>Generate</span><b>-></b><span>Iterate</span></div><p>The defining distinction is the degree of code inspection. In its purest form, the developer accepts output without reading every line and acts more as an orchestrator than as the author of each implementation detail.</p></article>
+        <article class="card"><h3>A three-phase example</h3><ol><li><strong>Prompt:</strong> "Build a real-time notification system with WebSocket support."</li><li><strong>Generate:</strong> the agent produces scaffolding and a full module implementation.</li><li><strong>Iterate:</strong> conversational follow-ups add validation, error handling, or a user interface.</li></ol><p class="section-gap">Karpathy positioned AI-assisted development for throwaway or weekend projects. That boundary matters: the original idea was not an enterprise production methodology.</p></article>
+      </div>
+    </section>
+
+    <section class="section" id="sdd">
+      <div class="section-head"><h2>What is Spec-Driven Development?</h2></div>
+      <div class="grid two">
+        <article class="card accent-sdd"><span class="tag">Constrain before building</span><h3>Specify, plan, implement, verify</h3><p>SDD makes a formal, machine-readable specification the authoritative source of truth. Implementation, tests, and documentation are derived from an explicit contract rather than an ephemeral chat prompt.</p><div class="flow"><span>Specify</span><b>-></b><span>Plan</span><b>-></b><span>Implement</span><b>-></b><span>Verify</span></div><p>The developer reviews focused changes against a known target instead of reviewing a large code dump and deciding whether it merely looks right.</p></article>
+        <article class="card"><h3>Four phases and outputs</h3><div class="table-wrap"><table class="comparison"><thead><tr><th>Phase</th><th>Purpose</th><th>Output</th></tr></thead><tbody><tr><td>Specify</td><td>Define requirements as contracts.</td><td>Markdown specs, schemas, interfaces.</td></tr><tr><td>Plan</td><td>Separate design from implementation.</td><td>Architecture decisions, dependencies, data flow.</td></tr><tr><td>Implement</td><td>Execute against validated requirements.</td><td>Code changes linked to requirements.</td></tr><tr><td>Verify</td><td>Confirm alignment between intent and output.</td><td>Tests, checks, and review evidence.</td></tr></tbody></table></div></article>
+      </div>
+      <div class="callout section-gap"><strong>SDD builds on established practice:</strong><p>Design by Contract, Model-Driven Engineering, and formal methods all treat explicit intent and constraints as a foundation for reliable implementation. Modern SDD adds AI as the implementation engine while humans retain responsibility for the specification and decisions.</p></div>
+    </section>
+
+    <section class="section" id="comparison">
+      <div class="section-head"><h2>Compare the operating models</h2></div>
+      <div class="table-wrap"><table class="comparison"><thead><tr><th>Factor</th><th>AI-Assisted Development</th><th>Spec-Driven Development</th></tr></thead><tbody>
+        <tr><td>Primary loop</td><td>Prompt -> code -> patch</td><td>Specification -> design -> task plan -> implementation -> verification</td></tr>
+        <tr><td>Strength</td><td>Fast learning and visible prototypes</td><td>Predictable change and durable shared understanding</td></tr>
+        <tr><td>Developer role</td><td>Orchestrate, steer, and inspect selectively</td><td>Define intent, approve design, and review evidence</td></tr>
+        <tr><td>Source of truth</td><td>Conversation and current code</td><td>Version-controlled specification linked to code and tests</td></tr>
+        <tr><td>Best fit</td><td>Prototypes, hackathons, solo projects, internal tools, learning</td><td>Production systems, regulated work, multi-team dependencies, ongoing maintenance</td></tr>
+        <tr><td>Main risk</td><td>Hidden assumptions, duplication, drift, and chat history that cannot be maintained</td><td>Documentation drift, over-specification, analysis paralysis, and missing rationale</td></tr>
+        <tr><td>Time profile</td><td>Lower upfront cost, potentially higher later maintenance cost</td><td>Higher upfront cost, lower coordination cost over time</td></tr>
+      </tbody></table></div>
+    </section>
+
+    <section class="section" id="works">
+      <div class="section-head"><h2>When AI-assisted development works</h2></div>
+      <p class="lede">AI-Assisted Development creates measurable value when speed outweighs long-term maintainability and failure is acceptable or easily reversible.</p>
+      <div class="grid">
+        <article class="card"><h3>Prototyping and exploration</h3><p>Use it to test a user interaction, compare frameworks, explore an API, or answer a technical question before committing to a production design.</p></article>
+        <article class="card"><h3>MVPs and hackathons</h3><p>Teams can generate screens and basic business logic in hours. The goal is learning and validation, not necessarily a durable system.</p></article>
+        <article class="card"><h3>Solo tools and learning</h3><p>AI-Assisted Development is useful for scripts, dashboards, personal automation, and unfamiliar frameworks where the code can remain small and bounded.</p></article>
+      </div>
+      <div class="callout section-gap"><strong>Critical success condition:</strong><p>Professional AI-assisted development still requires active oversight. Generated code can be buggy, insecure, or misaligned with maintenance goals. Use tests, review, and clear boundaries even when a formal specification is not justified.</p></div>
+    </section>
+
+    <section class="section" id="fails">
+      <div class="section-head"><h2>When AI-assisted development fails</h2></div>
+      <div class="wall">
+        <article class="wall-card euphoria"><h3>The three-month wall</h3><p>Practitioners describe a common decay pattern: rapid feature shipping gives way to integration friction, then debugging of legacy AI output consumes the time that made the approach attractive.</p><div class="bar"><span></span><span></span><span></span><span></span></div><div class="legend"><span>Months 1-3: euphoria</span><span>4-9: plateau</span><span>10-15: decline</span><span>16-18: stall</span></div></article>
+        <article class="wall-card decline"><h3>Compounding technical debt</h3><p>Separate research has documented large increases in duplication because models generate self-contained snippets rather than consistently discovering existing abstractions. More output can therefore create less coherence.</p><p><strong>Mechanism:</strong> every local shortcut increases the cost of the next change.</p></article>
+      </div>
+      <div class="grid section-gap">
+        <article class="card"><h3>Requirements drift</h3><p>Conversational prompts do not automatically preserve the relationship between requirements, middleware, integrations, and tests. When requirements evolve, teams can lose the ability to trace what is connected to what.</p></article>
+        <article class="card"><h3>Spaghetti chat history</h3><p>Long threads blur what was planned, what failed, and what actually shipped. Multiple agents or branches can silently operate from slightly different versions of the requirements.</p></article>
+        <article class="card"><h3>Loss of system understanding</h3><p>When developers accept output without inspecting it, the team may ship code that works locally but violates implicit ordering, security, performance, or architectural assumptions.</p></article>
+      </div>
+    </section>
+
+    <section class="section" id="sdd-works">
+      <div class="section-head"><h2>When SDD works</h2></div>
+      <p class="lede">SDD delivers compounding returns when the cost of miscoordination is higher than the cost of writing and maintaining specifications.</p>
+      <div class="grid">
+        <article class="card accent-sdd"><h3>Production systems</h3><p>Specifications provide a reviewable contract between human intent and AI-generated implementation, so future changes retain context.</p></article>
+        <article class="card accent-sdd"><h3>Complex dependencies</h3><p>Upfront constraints counteract architectural drift when a change can ripple through multiple services, data stores, or teams.</p></article>
+        <article class="card accent-sdd"><h3>Regulated work</h3><p>Specifications and traceability become compliance evidence. Teams can show what was intended, what changed, what was checked, and who approved it.</p></article>
+      </div>
+      <div class="grid two section-gap">
+        <article class="card"><h3>Multi-team coordination</h3><p>A shared specification gives teams a common vocabulary and a shorter feedback loop. It exposes assumptions before they become integration defects.</p></article>
+        <article class="card"><h3>The real limitations</h3><ul><li><strong>Documentation drift:</strong> code changes faster than the spec.</li><li><strong>Over-specification:</strong> large natural-language specs can be ambiguous.</li><li><strong>Analysis paralysis:</strong> teams can delay delivery while seeking perfect completeness.</li><li><strong>Missing rationale:</strong> a spec that says what but not why loses future value.</li></ul></article>
+      </div>
+    </section>
+
+    <section class="section" id="hybrid">
+      <div class="section-head"><h2>The synthesis: structured exploration with living specs</h2></div>
+      <p class="lede">The most practical approach is not to choose one mode forever. Teams can explore conversationally, then formalize what they learn before the work becomes shared, risky, or production-bound.</p>
+      <div class="timeline">
+        <article><h3>Explore</h3><p>Use prompts and small experiments to discover user needs, technical options, and unknowns.</p></article>
+        <article><h3>Formalize</h3><p>Write the discovered requirements, constraints, decisions, and acceptance evidence into a version-controlled living spec.</p></article>
+        <article><h3>Build</h3><p>Use the specification to create the design, plan, tasks, implementation, and tests.</p></article>
+        <article><h3>Verify</h3><p>Review changes against the living spec, update it when intent changes, and preserve the rationale.</p></article>
+      </div>
+      <div class="callout section-gap"><strong>Living spec:</strong><p>When requirements change, update the version-controlled specification rather than relying on a prompt thread to carry the decision. The spec becomes the coordination layer for people, agents, code, and tests.</p></div>
+      <div class="transition-list">
+        <div><b>Context drift</b><span>The AI fixes one issue but breaks several files it did not understand.</span></div>
+        <div><b>Regression patterns</b><span>New features stop respecting existing design patterns.</span></div>
+        <div><b>Team expansion</b><span>More than one person needs to understand and change the system.</span></div>
+        <div><b>Production intent</b><span>Users, business processes, or compliance obligations will depend on the result.</span></div>
+      </div>
+    </section>
+
+    <section class="section" id="context">
+      <div class="section-head"><h2>Why context is the core skill</h2></div>
+      <div class="grid two">
+        <article class="card"><h3>Context is no longer a byproduct</h3><p>Traditional development built understanding through repeated hands-on work. AI-assisted development can produce large changes before a developer has built that understanding. Teams therefore need new habits for retaining assumptions, architecture, conventions, and rationale.</p><p>Living specifications, linked evidence, and review checkpoints make context navigable rather than hidden in individual conversations.</p></article>
+        <article class="card"><h3>Platform example: Augment Cosmos</h3><p>Augment Cosmos is an example of a platform approach to shared agent context. Its positioning describes shared filesystems, tenant memory, governed workflows, and a Context Engine designed to process very large codebases.</p><p>This is an optional platform example, not a prerequisite for SDD. The underlying capability teams need is durable shared context: agents and people should work from the same current state, conventions, decisions, and evidence.</p></article>
+      </div>
+    </section>
+
+    <section class="section" id="matrix">
+      <div class="section-head"><h2>Decision matrix</h2></div>
+      <p class="lede">Ask one question: does the cost of miscoordination exceed the cost of coordination through specifications?</p>
+      <div class="matrix-wrap"><table class="matrix"><thead><tr><th>Factor</th><th>Lean toward AI-assisted development</th><th>Lean toward SDD</th></tr></thead><tbody>
+        <tr><td>Timeline</td><td class="yes">Prototype or short-lived experiment</td><td class="caution">Production planned beyond the prototype phase</td></tr>
+        <tr><td>Team size</td><td class="yes">Solo or two to three developers</td><td class="caution">Multiple contributors or teams</td></tr>
+        <tr><td>Codebase maturity</td><td class="yes">New, disposable, or experimental</td><td class="caution">Existing production system</td></tr>
+        <tr><td>Regulation</td><td class="yes">None or minimal</td><td class="caution">Compliance, audit, or contractual obligations</td></tr>
+        <tr><td>Risk tolerance</td><td class="yes">Failure is acceptable and reversible</td><td class="caution">Predictable behavior is required</td></tr>
+        <tr><td>Security criticality</td><td class="yes">Low-risk internal use</td><td class="caution">User data, financial systems, identity, or sensitive operations</td></tr>
+        <tr><td>Coordination</td><td class="yes">Self-directed and bounded</td><td class="caution">Shared dependencies, external stakeholders, or long maintenance horizon</td></tr>
+      </tbody></table></div>
+      <div class="callout section-gap"><strong>Most real projects are mixed.</strong><p>Use the matrix as a diagnostic tool. A project can begin in exploration mode, then move to SDD when the team crosses a transition signal. The transition should be recorded as an intentional engineering decision.</p></div>
+    </section>
+
+
+    <section class="section" id="sources">
+      <div class="section-head"><h2>Further reading and evidence notes</h2></div>
+      <div class="sources">
+        <article class="card"><a href="https://www.cnbc.com/2025/03/06/95percent-of-code-at-some-startups-in-y-combinator-is-ai-generated-ceo-says.html" target="_blank" rel="noopener">CNBC: YC W25 AI-generated code context</a><p>The reported statistic is a startup-timescale signal. It should not be treated as a direct benchmark for enterprise systems with years of maintenance and regulatory obligations.</p></article>
+        <article class="card"><a href="https://www.gitclear.com/ai_assistant_code_quality_2025_research" target="_blank" rel="noopener">GitClear: AI coding and code quality research</a><p>The 211-million-line study is useful context for discussing refactoring, copy-paste behavior, code churn, and duplication. Review the original methodology before using figures in formal governance material.</p></article>
+        <article class="card"><a href="https://martinfowler.com/articles/exploring-gen-ai/sdd-3rd-party.html" target="_blank" rel="noopener">Martin Fowler: SDD and third-party approaches</a><p>Provides a useful survey of emerging Spec-Driven Development approaches and the distinction between conversational generation and specification-led workflows.</p></article>
+        <article class="card"><a href="https://kiro.dev/docs/specs/" target="_blank" rel="noopener">Kiro: living specifications</a><p>Illustrates a dual-mode approach in which teams can use conversational exploration and specification-led development across the same workflow.</p></article>
+      </div>
+    </section>
+
+    <footer><span>Fundamentals and Enablement / AI-Assisted Development vs Spec-Driven Development</span><span><a href="week-2-training-and-enablement.html">Week 2 guide</a> | <a href="../Foundations%20%26%20Standards/week-1-foundations-and-standards.html">Week 1 guide</a></span></footer>
+  </main>
+</body>
+</html>
