@@ -62,6 +62,7 @@
     .card .topics strong { color: var(--accent, var(--cyan)); }
     ul { margin: 0; padding-left: 17px; } li + li { margin-top: 6px; }
     .callout { margin-top: 14px; padding: 17px 20px; border-left: 5px solid var(--accent, var(--cyan)); background: rgba(255,255,255,.72); color: var(--navy); font-size: 16px; line-height: 1.38; }
+    .architecture-callout { margin-top: 60px; }
     .callout small { display: block; margin-top: 9px; color: var(--muted); font-size: 12px; }
     .flow { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 6px; }
     .flow-item { min-height: 150px; padding: 15px; border-top: 5px solid var(--accent); background: rgba(255,255,255,.84); box-shadow: 0 9px 22px rgba(7,26,56,.08); }
@@ -110,7 +111,7 @@
 </head>
 <body>
   <div class="deck">
-    <div class="topbar"><span class="brand">GitHub Copilot Fundamentals</span><span class="counter" id="counter">01 / 11</span></div>
+    <div class="topbar"><span class="brand">GitHub Copilot Fundamentals</span><span class="counter" id="counter">01 / 12</span></div>
     <main class="slides">
       <section class="slide active welcome-slide accent-blue" data-title="Welcome">
         <div class="logo-lockup"><img src="assets/images/GitHub_Copilot_Logo.png" alt="GitHub Copilot"></div>
@@ -123,33 +124,33 @@
 
       <section class="slide accent-cyan" data-title="Introduction">
         <div class="eyebrow">01 / Introduction</div>
-        <h2>Copilot is a development partner, not an automatic approval system.</h2>
-        <p class="lede">GitHub Copilot helps you explore, explain, draft, transform, test, and review. The developer still supplies intent, context, judgment, and accountability.</p>
+        <h2>Copilot accelerates the work. You own the outcome.</h2>
+        <p class="lede">The best results come from a simple partnership: you set the direction, Copilot expands the options, and you verify what ships.</p>
         <div class="grid three">
-          <article class="card"><h3>Understand</h3><p>Learn what Copilot can do, where it gets context, and how its responses are produced.</p></article>
-          <article class="card"><h3>Interact</h3><p>Choose the right interaction for the work: inline suggestions, chat, agentic tasks, CLI, or SDK.</p></article>
-          <article class="card"><h3>Verify</h3><p>Review generated output with tests, documentation, security checks, and domain expertise.</p></article>
+          <article class="card"><h3>1 / Direct</h3><p>State the outcome, constraints, and evidence Copilot should use.</p></article>
+          <article class="card"><h3>2 / Collaborate</h3><p>Choose the surface that fits: completion, chat, agent, CLI, or SDK.</p></article>
+          <article class="card"><h3>3 / Prove</h3><p>Review the diff, run checks, and compare behavior with the requirement.</p></article>
         </div>
-        <div class="callout"><strong>Learning objectives:</strong><small>by the end, you can choose the right Copilot surface, provide useful context, select a model for the task, and evaluate the result before it becomes part of the product.</small></div>
-        <div><a class="resource-link" href="Fundamentals/resources/posters/GitHub%20Copilot%20Fundamentals%20-%20Light%20-%20Landscape.png" target="_blank">Fundamentals ↗</a> | <a class="resource-link" href="InaNutshell/GitHub Copilot - In a Nutshell.html" target="_blank">GitHub Copilot - In a Nutshell ↗</a></div>
+        <div class="callout"><strong>By the end:</strong><small>you can choose the right Copilot surface, provide useful context, select a model for the task, and evaluate the result before it becomes part of the product.</small></div>
+        <div><a class="resource-link" href="Fundamentals/resources/posters/github-copilot-fundamentals-light-landscape.png" target="_blank">Fundamentals ↗</a> | <a class="resource-link" href="InaNutshell/GitHub Copilot - In a Nutshell.html" target="_blank">GitHub Copilot - In a Nutshell ↗</a></div>
       </section>
 
       <section class="slide accent-blue" data-title="Concepts">
         <div class="eyebrow">02 / Concepts</div>
-        <h2>The core ideas behind Copilot.</h2>
+        <h2>Every Copilot result follows the same loop.</h2>
         <div class="flow">
-          <article class="flow-item accent-cyan"><div class="flow-number">01</div><h3>Prompt</h3><p>Your request, question, code, or task description establishes intent.</p></article>
-          <article class="flow-item accent-blue"><div class="flow-number">02</div><h3>Context</h3><p>Relevant files, symbols, instructions, history, and tools shape the request.</p></article>
-          <article class="flow-item accent-teal"><div class="flow-number">03</div><h3>Model</h3><p>An LLM predicts a useful response from the information it receives.</p></article>
-          <article class="flow-item accent-orange"><div class="flow-number">04</div><h3>Verification</h3><p>You inspect, test, refine, and decide whether the result is fit for purpose.</p></article>
+          <article class="flow-item accent-cyan"><div class="flow-number">01</div><h3>Intent</h3><p>What outcome are we trying to create?</p></article>
+          <article class="flow-item accent-blue"><div class="flow-number">02</div><h3>Context</h3><p>What facts, files, and rules change the answer?</p></article>
+          <article class="flow-item accent-teal"><div class="flow-number">03</div><h3>Generation</h3><p>What option, explanation, or change does the model propose?</p></article>
+          <article class="flow-item accent-orange"><div class="flow-number">04</div><h3>Evidence</h3><p>What test or review proves it is fit for purpose?</p></article>
         </div>
-        <div class="callout"><strong>Useful mental model:</strong><small>Copilot does not know your intent automatically. Better context reduces ambiguity; verification turns a plausible response into trusted work.</small></div>
-        <div><a class="resource-link" href="Fundamentals/resources/posters/GitHub%20Copilot%20Concepts%20-%20Light%20-%20Landscape.png" target="_blank">Concepts ↗</a> | <a class="resource-link" href="Fundamentals/resources/posters/GitHub%20Copilot%20Concepts,%20Architecture%20-%20Light%20-%20Landscape.png" target="_blank">Concepts &amp; Architecture ↗</a></div>
+        <div class="callout"><strong>Remember:</strong><small>Copilot can generate a plausible answer without understanding your intent. Context reduces ambiguity; verification creates trust.</small></div>
+        <div><a class="resource-link" href="Fundamentals/resources/posters/github-copilot-concepts-light-landscape.png" target="_blank">Concepts ↗</a> | <a class="resource-link" href="Fundamentals/resources/posters/github-copilot-concepts,-architecture-light-landscape.png" target="_blank">Concepts &amp; Architecture ↗</a></div>
       </section>
 
       <section class="slide accent-teal" data-title="Architecture">
         <div class="eyebrow">03 / Architecture</div>
-        <h2>How a Copilot request becomes a useful result.</h2>
+        <h2>Copilot connects your intent to code, context, and tools.</h2>
         <div class="architecture-diagram" role="img" aria-label="GitHub Copilot architecture: developer surfaces send intent to Copilot orchestration, which combines context and tools, calls model services, and returns explanations, code changes, or actions.">
           <article class="diagram-node accent-blue"><div class="diagram-kicker">Entry points</div><h3>Developer surfaces</h3><p>VS Code, GitHub.com, CLI, or an application using the SDK.</p></article>
           <div class="diagram-arrow" aria-hidden="true">&rarr;</div>
@@ -162,109 +163,109 @@
             <article class="diagram-node accent-orange"><div class="diagram-kicker">Actions</div><h3>Tools</h3><p>Edits, tests, MCP</p></article>
           </div>
         </div>
-        <div class="callout" style="margin-top: 60px;"><strong>Response loop:</strong><small>the model proposes an answer; Copilot returns an explanation, code change, or tool action to the developer for inspection and verification.</small></div>
-        <div><a class="resource-link" href="Fundamentals/resources/posters/GitHub%20Copilot%20Concepts,%20Architecture%20-%20Light%20-%20Landscape.png" target="_blank">Concepts & Architecture ↗</a> | <a class="resource-link" href="Fundamentals/resources/posters/GitHub%20Copilot%20Architecture%20-%20Light%20-%20Landscape.png" target="_blank">Architecture ↗</a></div>
+        <div class="callout architecture-callout"><strong>The human checkpoint:</strong><small>Copilot may explain, edit, or act. You decide what is allowed, inspect the result, and verify the behavior.</small></div>
+        <div><a class="resource-link" href="Fundamentals/resources/posters/github-copilot-concepts,-architecture-light-landscape.png" target="_blank">Concepts & Architecture ↗</a> | <a class="resource-link" href="Fundamentals/resources/posters/github-copilot-architecture-light-landscape.png" target="_blank">Architecture ↗</a></div>
       </section>
 
       <section class="slide accent-orange" data-title="AI Models">
         <div class="eyebrow">04 / AI Models</div>
-        <h2>Model choice changes the shape of the answer.</h2>
+        <h2>Choose the model for the job, not the hype.</h2>
         <div class="model-table">
-          <div class="model-row accent-blue"><strong>Fast and economical</strong><span>Good for straightforward edits, explanations, and short transformations.</span><span><strong>Choose this for:</strong> renaming a variable or explaining a small function.</span><em>Speed</em></div>
-          <div class="model-row accent-cyan"><strong>Balanced generalist</strong><span>A practical default for everyday coding, reasoning, and conversational work.</span><span><strong>Choose this for:</strong> implementing a normal feature or writing tests.</span><em>Coverage</em></div>
-          <div class="model-row accent-teal"><strong>Deep reasoning</strong><span>Useful for architecture, debugging, multi-step analysis, and difficult trade-offs.</span><span><strong>Choose this for:</strong> diagnosing a complex failure or comparing designs.</span><em>Depth</em></div>
-          <div class="model-row accent-orange"><strong>Specialized capability</strong><span>Choose a model or mode optimized for a particular language, task, or workflow.</span><span><strong>Choose this for:</strong> language-specific or workflow-specific work.</span><em>Fit</em></div>
+          <div class="model-row accent-blue"><strong>Fast and economical</strong><span>Quick answers for bounded, familiar work.</span><span><strong>Example:</strong> rename a variable or explain a small function.</span><em>Speed</em></div>
+          <div class="model-row accent-cyan"><strong>Balanced generalist</strong><span>The everyday default for coding and conversation.</span><span><strong>Example:</strong> implement a feature or write its tests.</span><em>Coverage</em></div>
+          <div class="model-row accent-teal"><strong>Deep reasoning</strong><span>More deliberate analysis for ambiguity and trade-offs.</span><span><strong>Example:</strong> diagnose a complex failure or compare designs.</span><em>Depth</em></div>
+          <div class="model-row accent-orange"><strong>Specialized capability</strong><span>Optimized for a specific language, task, or workflow.</span><span><strong>Example:</strong> use a domain-specific tool or mode.</span><em>Fit</em></div>
         </div>
-        <div class="callout"><strong>Selection principle:</strong><small>match model capability to task complexity. A larger model is not automatically a better answer for every request.</small></div>
-        <div><a class="resource-link" href="Fundamentals/resources/posters/AI%20Models%20-%20Light%20-%20Landscape.png" target="_blank">AI Models ↗</a> | <a class="resource-link" href="Fundamentals/resources/posters/GitHub%20Copilot%20LLM%20Models%20-%20Light%20-%20Landscape.png" target="_blank">AI Models in GitHub Copilot ↗</a> | <a class="resource-link" href="Fundamentals/resources/posters/LLM%20Token%20Economics%20-%20Light%20-%20Landscape.png" target="_blank">LLM Tokenomics ↗</a> | <a class="resource-link" href="Fundamentals/resources/guides/ai-model-comparison.html" target="_blank">AI Model Comparison Guide ↗</a></div>
+        <div class="callout"><strong>Selection rule:</strong><small>start with the least costly model likely to succeed. Move up when the task needs more reasoning, context, or reliability.</small></div>
+        <div><a class="resource-link" href="Fundamentals/resources/posters/ai-models-light-landscape.png" target="_blank">AI Models ↗</a> | <a class="resource-link" href="Fundamentals/resources/posters/github-copilot-llm-models-light-landscape.png" target="_blank">AI Models in GitHub Copilot ↗</a> | <a class="resource-link" href="Fundamentals/resources/posters/llm-token-economics-light-landscape.png" target="_blank">LLM Tokenomics ↗</a> | <a class="resource-link" href="Fundamentals/resources/guides/ai-model-comparison.html" target="_blank">AI Model Comparison Guide ↗</a></div>
       </section>
 
       <section class="slide accent-cyan" data-title="Context and Prompts">
         <div class="eyebrow">05 / Context and prompts</div>
-        <h2>Good prompts are clear. Good context makes them useful.</h2>
+        <h2>Prompt for the outcome. Curate the context.</h2>
         <div class="grid two">
-          <article class="card"><h3>State the task</h3><ul><li>Name the outcome and audience.</li><li>Identify the files, symbols, or behavior involved.</li><li>Describe constraints, conventions, and edge cases.</li></ul></article>
-          <article class="card"><h3>Shape the response</h3><ul><li>Ask for a plan before implementation when risk is high.</li><li>Request tests, alternatives, and assumptions.</li><li>Refine in small turns instead of writing one giant prompt.</li></ul></article>
+          <article class="card"><h3>Make intent explicit</h3><ul><li>Desired outcome and audience</li><li>Relevant files, symbols, or behavior</li><li>Constraints, conventions, and edge cases</li></ul></article>
+          <article class="card"><h3>Make proof explicit</h3><ul><li>Ask for a plan when risk is high</li><li>Request tests, assumptions, and trade-offs</li><li>Iterate in small, reviewable turns</li></ul></article>
         </div>
         <div class="prompt-example accent-cyan"><div class="prompt-example-item"><span class="prompt-example-label">Too broad</span><p>Add authentication.</p></div><div class="prompt-example-item"><span class="prompt-example-label">More useful</span><p>Add role-based authentication to the existing API. Use the current middleware pattern, preserve anonymous health checks, cover invalid credentials, and add tests for each role.</p></div></div>
-        <div class="callout"><strong>Context is a design decision:</strong><small>include the information that changes the answer, while keeping sensitive or irrelevant material out of the conversation.</small></div>
+        <div class="callout"><strong>Context is a design decision:</strong><small>include what changes the answer; exclude sensitive, stale, and irrelevant material.</small></div>
         <div><a class="resource-link" href="InaNutshell/Prompt Engineering - In a Nutshell.html" target="_blank">Prompt Engineering - In a Nutshell ↗</a> | <a class="resource-link" href="InaNutshell/Context Engineering - In a Nutshell.html" target="_blank">Context Engineering - In a Nutshell ↗</a></div>
       </section>
 
       <section class="slide accent-blue" data-title="Inline Completions">
         <div class="eyebrow">06 / Inline completions</div>
-        <h2>Small suggestions can create large momentum.</h2>
+        <h2>Inline completion is best for the next small step.</h2>
         <div class="grid three">
-          <article class="card"><h3>Predict</h3><p>Continue the code, comment, test, or configuration you have started.</p></article>
-          <article class="card"><h3>Steer</h3><p>Use names, comments, surrounding code, and small edits to guide the next suggestion.</p></article>
-          <article class="card"><h3>Inspect</h3><p>Accept, reject, or move through alternatives. A suggestion is a draft, not a decision.</p></article>
+          <article class="card"><h3>Start</h3><p>Write the shape of the code, test, comment, or configuration you want.</p></article>
+          <article class="card"><h3>Steer</h3><p>Use names, comments, nearby patterns, and small edits to guide the next suggestion.</p></article>
+          <article class="card"><h3>Decide</h3><p>Accept, reject, or compare alternatives. Every suggestion is still a draft.</p></article>
         </div>
-        <div class="callout"><strong>Best fit:</strong><small>low-friction work where the surrounding code provides strong context, such as boilerplate, familiar patterns, and test scaffolding.</small></div>
-        <div><a class="resource-link" href="Fundamentals/resources/posters/GitHub%20Copilot%20Inline%20Completions%20-%20Light%20-%20Landscape.png" target="_blank">GitHub Copilot Inline Completions ↗</a></div>
+        <div class="callout"><strong>Best fit:</strong><small>repeatable work where the surrounding code already provides strong context: boilerplate, familiar patterns, and test scaffolding.</small></div>
+        <div><a class="resource-link" href="Fundamentals/resources/posters/github-copilot-inline-completions-light-landscape.png" target="_blank">GitHub Copilot Inline Completions ↗</a></div>
       </section>
 
       <section class="slide accent-teal" data-title="Chat and modes">
         <div class="eyebrow">07 / Chat and modes</div>
-        <h2>Use conversation when the work needs explanation, planning, or action.</h2>
+        <h2>Match the mode to the level of agency you need.</h2>
         <div class="grid three">
-          <article class="card"><h3>Ask</h3><p>Explain unfamiliar code, compare approaches, or answer a focused question.</p></article>
-          <article class="card"><h3>Plan</h3><p>Break a change into steps, surface assumptions, and agree on a direction before editing.</p></article>
-          <article class="card"><h3>Act</h3><p>Let an agent work across files and tools, with checkpoints and review at meaningful boundaries.</p></article>
+          <article class="card"><h3>Ask / Understand</h3><p>Explain code, compare approaches, or answer one focused question.</p></article>
+          <article class="card"><h3>Plan / Align</h3><p>Break down the change, surface assumptions, and agree before editing.</p></article>
+          <article class="card"><h3>Act / Execute</h3><p>Delegate a scoped multi-file task with approvals and review checkpoints.</p></article>
         </div>
-        <div class="callout"><strong>Choose the least powerful mode that fits the job:</strong><small><strong>Ask</strong> for understanding. <strong>Plan</strong> before a risky change. <strong>Act</strong> when a scoped, multi-file task has clear acceptance criteria and review checkpoints.</small></div>
-        <div><a class="resource-link" href="Fundamentals/resources/posters/GitHub%20Copilot%20Chat%20and%20Modes%20-%20Light%20-%20Landscape.png" target="_blank">GitHub Copilot Chat and Modes ↗</a></div>
+        <div class="callout"><strong>Agency rule:</strong><small><strong>Ask</strong> for understanding. <strong>Plan</strong> before risk. <strong>Act</strong> only when scope, acceptance criteria, and review checkpoints are clear.</small></div>
+        <div><a class="resource-link" href="Fundamentals/resources/posters/github-copilot-chat-and-modes-light-landscape.png" target="_blank">GitHub Copilot Chat and Modes ↗</a></div>
       </section>
 
       <section class="slide accent-orange" data-title="Copilot CLI">
         <div class="eyebrow">08 / Copilot CLI</div>
-        <h2>Bring Copilot into the terminal and the repository workflow.</h2>
+        <h2>Use the terminal when the workflow is already there.</h2>
         <div class="terminal"><div><span class="prompt">$ copilot</span></div><div class="comment"># Explore a task in the repository</div><div><span class="prompt">&gt;</span> Explain how this service handles retries</div><div><span class="prompt">&gt;</span> Propose tests for the failure path</div><div><span class="prompt">&gt;</span> Review the diff for unintended changes</div></div>
-        <div class="grid two tight-grid"><article class="card"><h3>Why it fits</h3><p>Terminal-native work keeps repository navigation, version control, scripts, and Copilot close together.</p></article><article class="card"><h3>Keep control</h3><p>Inspect proposed commands and changes before execution, especially when tools can mutate the workspace.</p></article></div>
-        <div><a class="resource-link" href="InaNutshell/GitHub Copilot CLI - In a Nutshell.html" target="_blank">GitHub Copilot CLI - In a Nutshell ↗</a> | <a class="resource-link" href="Fundamentals/resources/posters/GitHub%20Copilot%20CLI%20-%20Light%20-%20Landscape.png" target="_blank">GitHub Copilot CLI ↗</a></div>
+        <div class="grid two tight-grid"><article class="card"><h3>Why it fits</h3><p>Navigate, inspect, script, version, and ask questions without leaving the repository workflow.</p></article><article class="card"><h3>Safety gate</h3><p>Read proposed commands and diffs before execution, especially when tools can mutate the workspace.</p></article></div>
+        <div><a class="resource-link" href="InaNutshell/GitHub Copilot CLI - In a Nutshell.html" target="_blank">GitHub Copilot CLI - In a Nutshell ↗</a> | <a class="resource-link" href="Fundamentals/resources/posters/github-copilot-cli-light-landscape.png" target="_blank">GitHub Copilot CLI ↗</a></div>
       </section>
 
       <section class="slide accent-cyan" data-title="Copilot SDK">
         <div class="eyebrow">09 / Copilot SDK</div>
-        <h2>Embed Copilot capabilities inside your own application.</h2>
+        <h2>The SDK turns Copilot into a governed product capability.</h2>
         <div class="grid three">
-          <article class="card"><h3>Connect</h3><p>Start a session from an application and provide the task-specific context it needs.</p></article>
-          <article class="card"><h3>Orchestrate</h3><p>Compose prompts, tools, approvals, and application logic around the model interaction.</p></article>
-          <article class="card"><h3>Productize</h3><p>Turn a useful workflow into a governed experience with clear boundaries and observability.</p></article>
+          <article class="card"><h3>Connect</h3><p>Start a session and supply task-specific context.</p></article>
+          <article class="card"><h3>Orchestrate</h3><p>Combine prompts, tools, approvals, and application logic.</p></article>
+          <article class="card"><h3>Govern</h3><p>Define permissions, failure behavior, observability, and data handling.</p></article>
         </div>
-        <div class="callout"><strong>SDK mindset:</strong><small>you are designing a product workflow, not simply adding a chat box. Define permissions, failure behavior, human approval, and data handling.</small></div>
-        <div><a class="resource-link" href="InaNutshell/GitHub Copilot SDK - In a Nutshell.html" target="_blank">GitHub Copilot SDK - In a Nutshell ↗</a> | <a class="resource-link" href="Fundamentals/resources/posters/GitHub%20Copilot%20SDK%20-%20Light%20-%20Landscape.png" target="_blank">GitHub Copilot SDK ↗</a></div>
+        <div class="callout"><strong>SDK mindset:</strong><small>you are designing a product workflow, not adding a chat box. Make permissions, approvals, failure behavior, and data handling explicit.</small></div>
+        <div><a class="resource-link" href="InaNutshell/GitHub Copilot SDK - In a Nutshell.html" target="_blank">GitHub Copilot SDK - In a Nutshell ↗</a> | <a class="resource-link" href="Fundamentals/resources/posters/github-copilot-sdk-light-landscape.png" target="_blank">GitHub Copilot SDK ↗</a></div>
       </section>
 
       <section class="slide accent-blue" data-title="Responsible use">
         <div class="eyebrow">10 / Responsible use</div>
-        <h2>Trust is built through reviewable evidence.</h2>
+        <h2>Do not ship confidence. Ship evidence.</h2>
         <div class="grid three">
-          <article class="card"><h3>Check the output</h3><ul><li>Run tests and inspect the diff.</li><li>Check security, privacy, licensing, and dependency implications.</li><li>Compare behavior with requirements and acceptance criteria.</li></ul></article>
-          <article class="card"><h3>Keep ownership visible</h3><ul><li>Understand the code you ship.</li><li>Record important assumptions and decisions.</li><li>Escalate uncertainty instead of hiding it behind fluent text.</li></ul></article>
-          <article class="card"><h3>Know the limits</h3><ul><li>Copilot does not guarantee correctness.</li><li>It does not automatically understand business intent.</li><li>It does not replace testing, review, or code ownership.</li></ul></article>
+          <article class="card"><h3>Verify behavior</h3><ul><li>Run tests and inspect the diff</li><li>Check requirements and acceptance criteria</li><li>Test important edge cases</li></ul></article>
+          <article class="card"><h3>Review risk</h3><ul><li>Check security, privacy, licensing, and dependencies</li><li>Confirm data handling and permissions</li><li>Escalate uncertainty</li></ul></article>
+          <article class="card"><h3>Own the result</h3><ul><li>Understand the code you ship</li><li>Record assumptions and decisions</li><li>Keep human accountability visible</li></ul></article>
         </div>
-        <div class="callout"><strong>Responsible AI is a workflow:</strong><small>the quality bar belongs to the team, even when Copilot accelerates the work.</small></div>
-        <div><a class="resource-link" href="Fundamentals/resources/guides/responsible-ai-guide.html" target="_blank">Responsible AI Guide ↗</a> | <a class="resource-link" href="Fundamentals/resources/posters/Responsible%20AI%20-%20Light%20-%20Landscape.png" target="_blank">Responsible AI ↗</a> | <a class="resource-link" href="Fundamentals/resources/posters/MetLife%20Responsible%20AI%20-%20Light%20-%20Landscape.png" target="_blank">MetLife Responsible AI ↗</a></div>
+        <div class="callout"><strong>Quality bar:</strong><small>Copilot can accelerate production; only your workflow can establish whether the result is trustworthy.</small></div>
+        <div><a class="resource-link" href="Fundamentals/resources/guides/responsible-ai-guide.html" target="_blank">Responsible AI Guide ↗</a> | <a class="resource-link" href="Fundamentals/resources/posters/responsible-ai-light-landscape.png" target="_blank">Responsible AI ↗</a> | <a class="resource-link" href="Fundamentals/resources/posters/metlife-responsible-ai-light-landscape.png" target="_blank">MetLife Responsible AI ↗</a></div>
       </section>
 
       <section class="slide accent-teal" data-title="Next steps">
         <div class="eyebrow">11 / Next steps</div>
-        <h2>Turn the fundamentals into a repeatable working habit.</h2>
-        <p class="lede">Use one small task to practice the complete loop: define intent, provide context, choose the right Copilot surface, review the result, and verify the change.</p>
+        <h2>Make the loop your default way of working.</h2>
+        <p class="lede">Start with one low-risk task. Practice the full loop, capture the evidence, and improve the next task.</p>
         <div class="grid three">
           <article class="card accent-blue">
             <h3>1. Practice</h3>
-            <p>Complete the lab exercises and compare Copilot's output with your repository's actual conventions.</p>
+            <p>Run a small task and compare the output with your repository's actual conventions.</p>
             <a class="resource-link" href="Fundamentals/resources/exercises/lab-exercises.html" target="_blank">Open the lab &rarr;</a>
           </article>
           <article class="card accent-cyan">
             <h3>2. Apply</h3>
-            <p>Use the cheat sheet during a real task. Start with a narrow change and keep the diff easy to review.</p>
+            <p>Use a narrow change, keep the diff reviewable, and record the verification result.</p>
             <a class="resource-link" href="Fundamentals/resources/cheatsheets/github-copilot-cheat-sheet.html" target="_blank">Open the cheat sheet &rarr;</a>
           </article>
           <article class="card accent-orange">
             <h3>3. Customize</h3>
-            <p>Once the workflow is familiar, add instructions, prompts, skills, or tools that encode team context.</p>
+            <p>Encode the team context that made the task easier: instructions, prompts, skills, or tools.</p>
             <a class="resource-link" href="github-copilot-customization.html" target="_blank">Continue to customization &rarr;</a>
           </article>
         </div>

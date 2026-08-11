@@ -35,7 +35,7 @@
 </head>
 <body>
   <div class="deck">
-    <div class="topbar"><span class="brand">GitHub Copilot Customization</span><span class="counter" id="counter">01 / 14</span></div>
+    <div class="topbar"><span class="brand">GitHub Copilot Customization</span><span class="counter" id="counter">01 / 15</span></div>
     <main class="slides">
       <section class="slide active welcome-slide accent-blue" data-title="Welcome">
         <div class="logo-lockup"><img src="assets/images/GitHub_Copilot_Logo.png" alt="GitHub Copilot"></div>
@@ -49,150 +49,164 @@
       <section class="slide accent-cyan" data-title="Introduction">
         <div class="eyebrow">01 / Introduction</div>
         <h2>Customization turns a general assistant into a team-aware collaborator.</h2>
-        <p class="lede">The goal is not to add configuration everywhere. It is to make important context repeatable, useful behavior discoverable, and permissions explicit.</p>
+        <p class="lede">The goal is simple: make the right context repeatable, useful behavior discoverable, and permissions explicit.</p>
         <div class="grid three">
-          <article class="card"><h3>Reduce repetition</h3><p>Capture conventions and recurring guidance once so every conversation starts closer to the team standard.</p></article>
-          <article class="card"><h3>Improve consistency</h3><p>Give Copilot stable instructions, reusable skills, and role-specific behaviors for common work.</p></article>
-          <article class="card"><h3>Extend carefully</h3><p>Connect tools and external systems only where the workflow benefits from controlled, reviewable access.</p></article>
+          <article class="card"><h3>Capture once</h3><p>Turn recurring conventions into guidance the whole team can reuse.</p></article>
+          <article class="card"><h3>Behave consistently</h3><p>Give Copilot stable instructions, skills, and roles for common work.</p></article>
+          <article class="card"><h3>Extend safely</h3><p>Connect tools only when access is controlled, reviewable, and worth governing.</p></article>
         </div>
-        <div class="callout"><strong>Customization outcome:</strong><small>the team can explain why Copilot behaves a certain way, where that behavior is defined, and how it should be changed.</small></div>
-        <div><a class="resource-link" href="Customization/resources/posters/GitHub%20Copilot%20Customization%20-%20Light%20-%20Landscape.png" target="_blank">GitHub Copilot Customization ↗</a> | <a class="resource-link" href="InaNutshell/GitHub Copilot Customization - In a Nutshell.html" target="_blank">GitHub Copilot Customization - In a Nutshell ↗</a></div>
+        <div class="callout"><strong>Customization outcome:</strong><small>the team can explain why Copilot behaves a certain way, where that behavior is defined, and how to change it.</small></div>
+        <div><a class="resource-link" href="Customization/resources/posters/github-copilot-customization-light-landscape.png" target="_blank">GitHub Copilot Customization ↗</a> | <a class="resource-link" href="InaNutshell/GitHub Copilot Customization - In a Nutshell.html" target="_blank">GitHub Copilot Customization - In a Nutshell ↗</a></div>
       </section>
 
       <section class="slide accent-blue" data-title="Concepts">
         <div class="eyebrow">02 / Concepts</div>
-        <h2>Customization is a context pipeline.</h2>
+        <h2>Every customization answers four design questions.</h2>
         <div class="flow">
-          <article class="flow-item accent-cyan"><div class="flow-number">01</div><h3>Intent</h3><p>What outcome is the person or workflow trying to achieve?</p></article>
-          <article class="flow-item accent-blue"><div class="flow-number">02</div><h3>Guidance</h3><p>What rules, conventions, and reusable knowledge should shape the response?</p></article>
-          <article class="flow-item accent-teal"><div class="flow-number">03</div><h3>Capability</h3><p>What agent behavior, skill, or tool can help complete the work?</p></article>
-          <article class="flow-item accent-orange"><div class="flow-number">04</div><h3>Control</h3><p>What approvals, boundaries, and verification steps keep the workflow trustworthy?</p></article>
+          <article class="flow-item accent-cyan"><div class="flow-number">01</div><h3>Intent</h3><p>What outcome should improve?</p></article>
+          <article class="flow-item accent-blue"><div class="flow-number">02</div><h3>Guidance</h3><p>What rules and knowledge shape the answer?</p></article>
+          <article class="flow-item accent-teal"><div class="flow-number">03</div><h3>Capability</h3><p>What skill, agent, or tool can help?</p></article>
+          <article class="flow-item accent-orange"><div class="flow-number">04</div><h3>Control</h3><p>What boundary makes the workflow trustworthy?</p></article>
         </div>
         <div class="callout"><strong>Design principle:</strong><small>add the smallest customization that reliably improves the outcome. More configuration is not the same as better context.</small></div>
-        <div><a class="resource-link" href="Customization/resources/guides/copilot-customization-guide.html" target="_blank">Customization Guide ↗</a> | <a class="resource-link" href="Customization/resources/cheatsheets/github-copilot-customization-cheat-sheet.html" target="_blank">Customization Cheat Sheet ↗</a></div>
+        <div><a class="resource-link" href="Customization/resources/guides/copilot-customization-guide.html" target="_blank">Customization Guide ↗</a> | <a class="resource-link" href="Customization/resources/cheatsheets/github-copilot-customization-cheat-sheet.html" target="_blank">Customization Cheat Sheet ↗</a> | <a class="resource-link" href="Customization/resources/labs/github-copilot-customization-lab.html" target="_blank">Customization Lab ↗</a></div>
       </section>
 
       <section class="slide accent-teal" data-title="Customization architecture">
         <div class="eyebrow">03 / Architecture</div>
-        <h2>Place guidance at the narrowest useful boundary.</h2>
+        <h2>Put guidance where it belongs.</h2>
         <div class="layers">
-          <div class="layer accent-blue"><strong>Personal</strong><span>Prompts, preferences, and working notes that help one person move faster.</span></div>
-          <div class="layer accent-cyan"><strong>Repository</strong><span>Instructions and conventions that should travel with a codebase and apply to contributors.</span></div>
-          <div class="layer accent-teal"><strong>Workflow</strong><span>Skills, agents, hooks, and tools that implement a repeatable team activity.</span></div>
-          <div class="layer accent-orange"><strong>Organization</strong><span>Policies, security expectations, and shared standards that establish the quality boundary.</span></div>
+          <div class="layer accent-blue"><strong>Personal</strong><span>Preferences and working notes for one person's workflow.</span></div>
+          <div class="layer accent-cyan"><strong>Repository</strong><span>Instructions and conventions that travel with the codebase.</span></div>
+          <div class="layer accent-teal"><strong>Workflow</strong><span>Skills, agents, hooks, and tools for a repeatable team activity.</span></div>
+          <div class="layer accent-orange"><strong>Organization</strong><span>Policies and standards that establish the quality boundary.</span></div>
         </div>
         <div class="callout"><strong>Placement test:</strong><small>if guidance is useful in one repository, keep it local; if it defines a shared policy, make the broader ownership visible.</small></div>
-        <div><a class="resource-link" href="Customization/resources/posters/GitHub%20Copilot%20Customization%20Placement%20-%20Light%20-%20Landscape.png" target="_blank">GitHub Copilot Customization Placement ↗</a> | <a class="resource-link" href="Customization/resources/posters/GitHub%20Copilot%20Customization%20Architecture%20-%20Light%20-%20Landscape.png" target="_blank">GitHub Copilot Customization Architecture ↗</a></div>
+        <div><a class="resource-link" href="Customization/resources/posters/github-copilot-customization-placement-light-landscape.png" target="_blank">GitHub Copilot Customization Placement ↗</a> | <a class="resource-link" href="Customization/resources/posters/github-copilot-customization-architecture-light-landscape.png" target="_blank">GitHub Copilot Customization Architecture ↗</a></div>
       </section>
 
       <section class="slide accent-orange" data-title="Agents">
         <div class="eyebrow">04 / Agents</div>
-        <h2>Agents give Copilot a role, a mission, and a way to work.</h2>
+        <h2>An agent is a role with a mission and a reviewable method.</h2>
         <div class="grid three">
-          <article class="card"><h3>Role</h3><p>Define who the agent is for and what kind of expertise it brings to the task.</p></article>
-          <article class="card"><h3>Mission</h3><p>State the outcome, boundaries, expected artifacts, and conditions for success.</p></article>
-          <article class="card"><h3>Method</h3><p>Describe the workflow, tools, approvals, and verification steps the agent should follow.</p></article>
+          <article class="card"><h3>Role</h3><p>Who is this agent for, and what expertise does it bring?</p></article>
+          <article class="card"><h3>Mission</h3><p>What outcome, boundaries, artifacts, and success conditions are expected?</p></article>
+          <article class="card"><h3>Method</h3><p>What steps, tools, approvals, and checks must it follow?</p></article>
         </div>
-        <div class="callout"><strong>A useful agent is opinionated:</strong><small>it narrows the work enough to produce consistent results without hiding important decisions from the person responsible.</small></div>
-        <div><a class="resource-link" href="Customization/resources/posters/GitHub%20Copilot%20Agents%20-%20Light%20-%20Landscape.png" target="_blank">GitHub Copilot Agents ↗</a> | <a class="resource-link" href="Customization/resources/exercises/github-copilot-customization-agents-lab-exercises.html" target="_blank">Agents Lab Exercises ↗</a> | <a class="resource-link" href="InaNutshell/GitHub Copilot Agents - In a Nutshell.html" target="_blank">GitHub Copilot Agents - In a Nutshell ↗</a></div>
+        <div class="callout"><strong>Agent design rule:</strong><small>be opinionated about the workflow, transparent about decisions, and bounded about permissions.</small></div>
+        <div><a class="resource-link" href="Customization/resources/posters/github-copilot-agents-light-landscape.png" target="_blank">GitHub Copilot Agents ↗</a> | <a class="resource-link" href="Customization/resources/exercises/github-copilot-customization-agents-lab-exercises.html" target="_blank">Agents Lab Exercises ↗</a> | <a class="resource-link" href="Customization/resources/guides/github-copilot-custom-agent-guide.html" target="_blank">GitHub Copilot Custom Agent Guide ↗</a> | <a class="resource-link" href="InaNutshell/GitHub Copilot Agents - In a Nutshell.html" target="_blank">GitHub Copilot Agents - In a Nutshell ↗</a></div>
       </section>
 
       <section class="slide accent-cyan" data-title="Skills">
         <div class="eyebrow">05 / Skills</div>
-        <h2>Skills package repeatable expertise for a task.</h2>
+        <h2>Skills turn expertise into a reusable move.</h2>
         <div class="grid two">
-          <article class="card"><h3>What a skill contains</h3><ul><li>A focused capability or procedure.</li><li>Inputs, outputs, and useful examples.</li><li>Quality checks and failure conditions.</li></ul></article>
-          <article class="card"><h3>When skills help</h3><ul><li>The task repeats across projects or people.</li><li>The process has domain-specific steps.</li><li>The result benefits from a consistent format.</li></ul></article>
+          <article class="card"><h3>Package the expertise</h3><ul><li>One focused procedure</li><li>Clear inputs and outputs</li><li>Examples and failure conditions</li></ul></article>
+          <article class="card"><h3>Reach for a skill when</h3><ul><li>The task repeats</li><li>The process is domain-specific</li><li>The result needs a consistent format</li></ul></article>
         </div>
         <div class="callout"><strong>Keep skills composable:</strong><small>one skill should make one kind of work easier to invoke, understand, and verify rather than becoming a hidden handbook for everything.</small></div>
-        <div><a class="resource-link" href="Customization/resources/posters/GitHub%20Copilot%20Skills%20-%20Light%20-%20Landscape.png" target="_blank">GitHub Copilot Skills ↗</a> | <a class="resource-link" href="Customization/resources/guides/agent-skills-guide.html" target="_blank">Agent Skills Guide ↗</a> | <a class="resource-link" href="Customization/resources/exercises/github-copilot-customization-skills-lab-exercises.html" target="_blank">Skills Lab Exercises ↗</a> | <a class="resource-link" href="Customization/resources/posters/GitHub%20Copilot%20Prompts%20vs%20Instructions%20vs%20Skills%20-%20Light%20-%20Landscape.png" target="_blank">Prompts vs Instructions vs Skills ↗</a></div>
+        <div><a class="resource-link" href="Customization/resources/posters/github-copilot-skills-light-landscape.png" target="_blank">GitHub Copilot Skills ↗</a> | <a class="resource-link" href="Customization/resources/guides/agent-skills-guide.html" target="_blank">Agent Skills Guide ↗</a> | <a class="resource-link" href="Customization/resources/exercises/github-copilot-customization-skills-lab-exercises.html" target="_blank">Skills Lab Exercises ↗</a> | <a class="resource-link" href="Customization/resources/posters/github-copilot-prompts-vs-instructions-vs-skills-light-landscape.png" target="_blank">Prompts vs Instructions vs Skills ↗</a></div>
       </section>
 
       <section class="slide accent-blue" data-title="Instructions">
         <div class="eyebrow">06 / Instructions</div>
-        <h2>Instructions are durable guidance for how Copilot should work here.</h2>
+        <h2>Instructions make the local rules visible.</h2>
         <div class="code"><div><span class="key">applyTo:</span> <span class="value">"**/*.ts"</span></div><div><span class="key">purpose:</span> <span class="value">"Keep service boundaries explicit."</span></div><div><span class="key">rules:</span></div><div>&nbsp; - Prefer existing repository helpers.</div><div>&nbsp; - Add tests for changed behavior.</div><div>&nbsp; - Do not expose secrets in logs.</div><div class="comment"># Guidance should be specific enough to act on.</div></div>
-        <div class="callout"><strong>Strong instructions are observable:</strong><small>someone reviewing the output can tell whether the guidance was followed and can locate the source when it was not.</small></div>
-        <div><a class="resource-link" href="Customization/resources/posters/GitHub%20Copilot%20Instructions%20-%20Light%20-%20Landscape.png" target="_blank">GitHub Copilot Instructions ↗</a> | <a class="resource-link" href="Customization/resources/exercises/github-copilot-customization-instructions-lab-exercises.html" target="_blank">Instructions Lab Exercises ↗</a> | <a class="resource-link" href="Customization/resources/posters/GitHub%20Copilot%20Prompts%20vs%20Instructions%20vs%20Skills%20-%20Light%20-%20Landscape.png" target="_blank">Prompts vs Instructions vs Skills ↗</a></div>
+        <div class="callout"><strong>Instruction test:</strong><small>a reviewer can tell whether the rule was followed and can find the source when it was not.</small></div>
+        <div><a class="resource-link" href="Customization/resources/posters/github-copilot-instructions-light-landscape.png" target="_blank">GitHub Copilot Instructions ↗</a> | <a class="resource-link" href="Customization/resources/exercises/github-copilot-customization-instructions-lab-exercises.html" target="_blank">Instructions Lab Exercises ↗</a> | <a class="resource-link" href="Customization/resources/posters/github-copilot-prompts-vs-instructions-vs-skills-light-landscape.png" target="_blank">Prompts vs Instructions vs Skills ↗</a></div>
       </section>
 
       <section class="slide accent-teal" data-title="Prompts">
         <div class="eyebrow">07 / Prompts</div>
-        <h2>Prompts are the live interface between intent and action.</h2>
+        <h2>Prompts turn intent into a useful next move.</h2>
         <div class="grid three">
-          <article class="card"><h3>Frame</h3><p>Name the role, goal, audience, constraints, and relevant context.</p></article>
-          <article class="card"><h3>Sequence</h3><p>Ask for a plan, implementation, review, or explanation in the order that reduces uncertainty.</p></article>
-          <article class="card"><h3>Evaluate</h3><p>Request tests, assumptions, alternatives, and a clear statement of limitations.</p></article>
+          <article class="card"><h3>Frame</h3><p>State the role, goal, audience, constraints, and context.</p></article>
+          <article class="card"><h3>Sequence</h3><p>Ask for the plan, change, review, or explanation that reduces uncertainty.</p></article>
+          <article class="card"><h3>Evaluate</h3><p>Request tests, assumptions, alternatives, and limitations.</p></article>
         </div>
-        <div class="callout"><strong>Prompt engineering is interaction design:</strong><small>the best prompt is not the longest one. It is the one that makes the desired decision and evidence easy to produce.</small></div>
-        <div><a class="resource-link" href="Customization/resources/posters/GitHub%20Copilot%20Prompts%20-%20Light%20-%20Landscape.png" target="_blank">GitHub Copilot Prompts ↗</a> | <a class="resource-link" href="Customization/resources/exercises/github-copilot-customization-prompts-lab-exercises.html" target="_blank">Prompts Lab Exercises ↗</a> | <a class="resource-link" href="Customization/resources/posters/GitHub%20Copilot%20Prompts%20vs%20Instructions%20vs%20Skills%20-%20Light%20-%20Landscape.png" target="_blank">Prompts vs Instructions vs Skills ↗</a></div>
+        <div class="callout"><strong>Prompt rule:</strong><small>the best prompt is not the longest one. It makes the desired decision and evidence easy to produce.</small></div>
+        <div><a class="resource-link" href="Customization/resources/posters/github-copilot-prompts-light-landscape.png" target="_blank">GitHub Copilot Prompts ↗</a> | <a class="resource-link" href="Customization/resources/exercises/github-copilot-customization-prompts-lab-exercises.html" target="_blank">Prompts Lab Exercises ↗</a> | <a class="resource-link" href="Customization/resources/posters/github-copilot-prompts-vs-instructions-vs-skills-light-landscape.png" target="_blank">Prompts vs Instructions vs Skills ↗</a></div>
       </section>
 
       <section class="slide accent-orange" data-title="Hooks">
         <div class="eyebrow">08 / Hooks</div>
-        <h2>Hooks make important workflow moments visible and enforceable.</h2>
+        <h2>Hooks turn workflow boundaries into checks.</h2>
         <div class="grid three">
-          <article class="card"><h3>Before</h3><p>Validate inputs, permissions, context, or a proposed plan before work begins.</p></article>
-          <article class="card"><h3>During</h3><p>Observe tool use, capture state, or apply a controlled policy at a meaningful transition.</p></article>
-          <article class="card"><h3>After</h3><p>Run checks, summarize evidence, record telemetry, or request human review before completion.</p></article>
+          <article class="card"><h3>Before</h3><p>Check inputs, permissions, context, and the proposed plan.</p></article>
+          <article class="card"><h3>During</h3><p>Observe tool use, capture state, or enforce policy at a transition.</p></article>
+          <article class="card"><h3>After</h3><p>Run checks, record evidence, and request review before completion.</p></article>
         </div>
-        <div class="callout"><strong>Use hooks for guardrails, not decoration:</strong><small>an automated check should protect a real boundary, and its failure should tell the person what to do next.</small></div>
-        <div><a class="resource-link" href="Customization/resources/posters/GitHub%20Copilot%20Hooks%20-%20Light%20-%20Landscape.png" target="_blank">GitHub Copilot Hooks ↗</a> | <a class="resource-link" href="Customization/resources/guides/copilot-hooks-guide.html" target="_blank">Copilot Hooks Guide ↗</a> | <a class="resource-link" href="Customization/resources/exercises/github-copilot-customization-hooks-lab-exercises.html" target="_blank">Hooks Lab Exercises ↗</a></div>
+        <div class="callout"><strong>Hook test:</strong><small>the check protects a real boundary, and failure tells the person what to do next.</small></div>
+        <div><a class="resource-link" href="Customization/resources/posters/github-copilot-hooks-light-landscape.png" target="_blank">GitHub Copilot Hooks ↗</a> | <a class="resource-link" href="Customization/resources/guides/copilot-hooks-guide.html" target="_blank">Copilot Hooks Guide ↗</a> | <a class="resource-link" href="Customization/resources/exercises/github-copilot-customization-hooks-lab-exercises.html" target="_blank">Hooks Lab Exercises ↗</a></div>
       </section>
 
       <section class="slide accent-blue" data-title="Agent Debug Logs">
         <div class="eyebrow">09 / Agent observability</div>
-        <h2>Agent Debug Logs turn an opaque run into an inspectable workflow.</h2>
+        <h2>Observability turns “it failed” into a fixable question.</h2>
         <div class="grid three">
-          <article class="card"><h3>Trace the run</h3><p>Capture the session, prompt, context, tool calls, decisions, and returned results that shaped the outcome.</p></article>
-          <article class="card"><h3>Diagnose the gap</h3><p>Use the record to distinguish missing context, unclear instructions, tool failures, permission issues, and model behavior.</p></article>
-          <article class="card"><h3>Improve the system</h3><p>Turn recurring failures into better prompts, instructions, skills, hooks, tests, or tool contracts.</p></article>
+          <article class="card"><h3>Trace</h3><p>See the prompt, context, tools, decisions, and returned result.</p></article>
+          <article class="card"><h3>Diagnose</h3><p>Separate missing context from unclear guidance, tool failure, or permission issues.</p></article>
+          <article class="card"><h3>Improve</h3><p>Turn recurring failures into better guidance, tests, hooks, or tool contracts.</p></article>
         </div>
         <div class="callout"><strong>Debug logs are evidence, not a substitute for judgment:</strong><small>protect sensitive data, control access to session records, and use the trace to improve a reproducible workflow.</small></div>
-        <div><a class="resource-link" href="Customization/resources/guides/agent-observability-guide.html" target="_blank">Agent Observability Guide ↗</a> | <a class="resource-link" href="Customization/resources/posters/GitHub%20Copilot%20Agent%20Observability%20-%20Light%20-%20Landscape.png" target="_blank">GitHub Copilot Agent Observability ↗</a></div>
+        <div><a class="resource-link" href="Customization/resources/guides/agent-observability-guide.html" target="_blank">Agent Observability Guide ↗</a> | <a class="resource-link" href="Customization/resources/posters/github-copilot-agent-observability-light-landscape.png" target="_blank">GitHub Copilot Agent Observability ↗</a></div>
       </section>
 
       <section class="slide accent-cyan" data-title="MCP Servers">
         <div class="eyebrow">10 / MCP servers</div>
-        <h2>Model Context Protocol gives tools a discoverable contract.</h2>
+        <h2>MCP makes tool access discoverable, consistent, and governable.</h2>
         <div class="layers">
-          <div class="layer accent-blue"><strong>Client</strong><span>Copilot or an application decides when a tool is relevant and starts the interaction.</span></div>
-          <div class="layer accent-cyan"><strong>Server</strong><span>Publishes tools, resources, and prompts through a consistent protocol boundary.</span></div>
-          <div class="layer accent-teal"><strong>System</strong><span>Performs the approved operation against a repository, service, database, or other system.</span></div>
-          <div class="layer accent-orange"><strong>Approval</strong><span>Applies identity, permissions, data boundaries, confirmation, and audit expectations.</span></div>
+          <div class="layer accent-blue"><strong>Client</strong><span>Chooses when a tool is relevant and starts the interaction.</span></div>
+          <div class="layer accent-cyan"><strong>Server</strong><span>Publishes tools, resources, and prompts through one protocol boundary.</span></div>
+          <div class="layer accent-teal"><strong>System</strong><span>Performs the approved operation against the target system.</span></div>
+          <div class="layer accent-orange"><strong>Approval</strong><span>Applies identity, permissions, confirmation, and audit expectations.</span></div>
         </div>
         <div class="callout"><strong>MCP is an integration boundary:</strong><small>treat every exposed tool as an API with a clear contract, least privilege, safe failure behavior, and an owner.</small></div>
-        <div><a class="resource-link" href="Customization/resources/posters/GitHub%20Copilot%20MCP%20Server%20-%20Light%20-%20Landscape.png" target="_blank">GitHub Copilot MCP Server ↗</a> | <a class="resource-link" href="Customization/resources/guides/mcp-server-guide.html" target="_blank">MCP Server Guide ↗</a> | <a class="resource-link" href="InaNutshell/Model%20Context%20Protocol%20-%20In%20a%20Nutshell.html" target="_blank">Model Context Protocol - In a Nutshell ↗</a></div>
+        <div><a class="resource-link" href="Customization/resources/posters/github-copilot-mcp-server-light-landscape.png" target="_blank">GitHub Copilot MCP Server ↗</a> | <a class="resource-link" href="Customization/resources/guides/mcp-server-guide.html" target="_blank">MCP Server Guide ↗</a> | <a class="resource-link" href="InaNutshell/Model%20Context%20Protocol%20-%20In%20a%20Nutshell.html" target="_blank">Model Context Protocol - In a Nutshell ↗</a></div>
       </section>
 
       <section class="slide accent-orange" data-title="Plugins">
         <div class="eyebrow">11 / Plugins</div>
-        <h2>Plugins package capabilities so teams can extend Copilot consistently.</h2>
+        <h2>Plugins package a workflow so teams can extend Copilot consistently.</h2>
         <div class="grid three">
-          <article class="card"><h3>Package</h3><p>Bundle agents, Skills, instructions, prompts, hooks, and tools around a recognizable workflow.</p></article>
-          <article class="card"><h3>Compose</h3><p>Combine reusable capabilities without forcing every project to rebuild the same integration from scratch.</p></article>
-          <article class="card"><h3>Govern</h3><p>Make ownership, permissions, dependencies, support expectations, and change review visible.</p></article>
+          <article class="card"><h3>Package</h3><p>Bundle the capabilities that support one recognizable workflow.</p></article>
+          <article class="card"><h3>Compose</h3><p>Reuse the integration instead of rebuilding it for every project.</p></article>
+          <article class="card"><h3>Govern</h3><p>Make ownership, permissions, dependencies, and change review visible.</p></article>
         </div>
         <div class="callout"><strong>A plugin is a product boundary:</strong><small>give it a clear audience, a narrow purpose, documented setup, safe defaults, and a versioning or retirement plan.</small></div>
-        <div><a class="resource-link" href="Customization/resources/posters/GitHub%20Copilot%20Plugins%20and%20Integrations%20-%20Light%20-%20Landscape.png" target="_blank">GitHub Copilot Plugins and Integrations ↗</a> | <a class="resource-link" href="Customization/resources/exercises/github-copilot-customization-plugins-lab-exercises.html" target="_blank">Plugins Lab Exercises ↗</a></div>
+        <div><a class="resource-link" href="Customization/resources/posters/github-copilot-plugins-and-integrations-light-landscape.png" target="_blank">GitHub Copilot Plugins and Integrations ↗</a> | <a class="resource-link" href="Customization/resources/exercises/github-copilot-customization-plugins-lab-exercises.html" target="_blank">Plugins Lab Exercises ↗</a></div>
+      </section>
+
+      <section class="slide accent-cyan" data-title="Agentic Workflows">
+        <div class="eyebrow">13 / Agentic Workflows</div>
+        <h2>Agentic Workflows bring bounded AI reasoning into GitHub Actions.</h2>
+        <p class="lede">Write the intent in Markdown, compile the workflow, and let an agent interpret repository context inside explicit permissions and Safe Outputs.</p>
+        <div class="flow">
+          <article class="flow-item accent-blue"><div class="flow-number">01</div><h3>Author</h3><p>Define the goal, evidence, stop conditions, and output.</p></article>
+          <article class="flow-item accent-cyan"><div class="flow-number">02</div><h3>Compile</h3><p>Run <strong>gh aw compile --strict</strong> and review the lock file.</p></article>
+          <article class="flow-item accent-teal"><div class="flow-number">03</div><h3>Interpret</h3><p>Evaluate repository state with approved context and tools.</p></article>
+          <article class="flow-item accent-orange"><div class="flow-number">04</div><h3>Release safely</h3><p>Use bounded Safe Outputs instead of unrestricted writes.</p></article>
+        </div>
+        <div class="callout"><strong>Automation rule:</strong><small>let the agent interpret and propose; let permissions, allowlists, Safe Outputs, and human review control what becomes real.</small></div>
+        <div><a class="resource-link" href="Customization/resources/posters/github-agentic-workflows-light-landscape.png" target="_blank">GitHub Agentic Workflows ↗</a> | <a class="resource-link" href="Customization/resources/guides/agentic-workflow-guide.html" target="_blank">Agentic Workflow Guide ↗</a> | <a class="resource-link" href="Customization/resources/exercises/agentic-workflows-repo-analyzer-lab.html" target="_blank">Agentic Workflows Repo Analyzer Lab ↗</a></div>
       </section>
 
       <section class="slide accent-teal" data-title="Design and governance">
-        <div class="eyebrow">12 / Design and governance</div>
-        <h2>Customization should be easy to discover, safe to change, and simple to review.</h2>
+        <div class="eyebrow">14 / Design and governance</div>
+        <h2>Good customization is discoverable, testable, and governed.</h2>
         <div class="grid three">
-          <article class="card"><h3>Discoverable</h3><p>Use clear names, ownership, scope, and documentation so people know when a customization applies.</p></article>
-          <article class="card"><h3>Testable</h3><p>Exercise the behavior with representative tasks and confirm that the output follows the intended guidance.</p></article>
-          <article class="card"><h3>Governed</h3><p>Define permissions, sensitive-data handling, change review, and rollback for tools and automation.</p></article>
+          <article class="card"><h3>Discoverable</h3><p>Clear name, owner, scope, and documentation.</p></article>
+          <article class="card"><h3>Testable</h3><p>Representative tasks prove the guidance changes behavior.</p></article>
+          <article class="card"><h3>Governed</h3><p>Permissions, data handling, review, and rollback are explicit.</p></article>
         </div>
         <div class="callout"><strong>Quality bar:</strong><small>customization should reduce uncertainty for the team, not move complexity into a place nobody can see.</small></div>
-        <div><a class="resource-link" href="Customization/resources/posters/GitHub%20Copilot%20Customization%20Design%20and%20Governance%20-%20Light%20-%20Landscape.png" target="_blank">GitHub Copilot Customization Design and Governance ↗</a> | <a class="resource-link" href="Customization/resources/posters/GitHub%20Copilot%20Customization%20Placement%20-%20Light%20-%20Landscape.png" target="_blank">GitHub Copilot Customization Placement ↗</a></div>
+        <div><a class="resource-link" href="Customization/resources/posters/github-copilot-customization-design-and-governance-light-landscape.png" target="_blank">GitHub Copilot Customization Design and Governance ↗</a> | <a class="resource-link" href="Customization/resources/posters/github-copilot-customization-placement-light-landscape.png" target="_blank">GitHub Copilot Customization Placement ↗</a></div>
       </section>
 
       <section class="slide accent-orange" data-title="Next steps">
-        <div class="eyebrow">13 / Next steps</div>
-        <h2>Start with one repeated workflow and make its context explicit.</h2>
-        <p class="lede">Choose a task the team performs often. Capture the guidance, test a small skill or instruction, add an agent only when the role is clear, and introduce tools or hooks when the boundary is worth governing.</p>
+        <div class="eyebrow">15 / Next steps</div>
+        <h2>Start with one repeated workflow.</h2>
+        <p class="lede">Capture its context, test the smallest useful customization, and add more capability only when the workflow earns it.</p>
         <div class="title-mark"><span></span><span></span><span></span><span></span></div>
         <div class="date-line"><a class="next-link" href="github-copilot-ai-assisted-development.html">Next: AI-Assisted Development &rarr;</a></div>
       </section>

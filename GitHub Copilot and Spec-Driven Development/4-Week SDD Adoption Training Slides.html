@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Four-week training presentation for GitHub Copilot and Spec-Driven Development adoption.">
+  <title>Four-Week SDD Adoption Training</title>
+  <style>
+    :root {
+      --ink: #17253d;
+      --muted: #64748b;
+      --paper: #f5f8fb;
+      --white: #ffffff;
+      --line: #dbe5ee;
+      --navy: #0b2a4a;
+      --blue: #1769aa;
+      --cyan: #0d8d9d;
+      --teal: #168574;
+      --purple: #7045a7;
+      --orange: #c86b17;
+      --shadow: 0 24px 70px rgba(22, 55, 87, .12);
+      --display: Georgia, "Times New Roman", serif;
+      --body: "Trebuchet MS", "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { min-height: 100%; }
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: var(--body);
+    }
+    button { font: inherit; }
+    .deck {
+      min-height: 100vh;
+      position: relative;
+      isolation: isolate;
+      background:
+        radial-gradient(circle at 9% 12%, rgba(13, 141, 157, .10), transparent 22rem),
+        radial-gradient(circle at 92% 88%, rgba(112, 69, 167, .08), transparent 25rem),
+        var(--paper);
+    }
+    .deck::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: .34;
+      background-image: linear-gradient(rgba(23,37,61,.025) 1px, transparent 1px), linear-gradient(90deg, rgba(23,37,61,.025) 1px, transparent 1px);
+      background-size: 36px 36px;
+      -webkit-mask-image: linear-gradient(to bottom, black, transparent 82%);
+      mask-image: linear-gradient(to bottom, black, transparent 82%);
+      z-index: -1;
+    }
+    .topbar {
+      position: fixed;
+      inset: 0 0 auto;
+      z-index: 5;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px clamp(20px, 4vw, 60px);
+      color: var(--muted);
+      font-size: 11px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+    .brand { color: var(--navy); font-weight: 900; }
+    .counter { font-variant-numeric: tabular-nums; }
+    .slides { min-height: 100vh; position: relative; }
+    .slide {
+      display: none;
+      width: min(1240px, 100%);
+      min-height: 100vh;
+      margin: 0 auto;
+      padding: clamp(86px, 10vh, 130px) clamp(24px, 7vw, 104px) 105px;
+      animation: enter .48s ease both;
+    }
+    .slide.active { display: flex; flex-direction: column; justify-content: center; }
+    @keyframes enter { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+    .eyebrow { color: var(--accent, var(--cyan)); font-size: 12px; font-weight: 900; letter-spacing: .17em; text-transform: uppercase; }
+    .accent-blue { --accent: var(--blue); }
+    .accent-cyan { --accent: var(--cyan); }
+    .accent-teal { --accent: var(--teal); }
+    .accent-purple { --accent: var(--purple); }
+    .accent-orange { --accent: var(--orange); }
+    h1, h2, h3, p { margin-top: 0; }
+    h1, h2 { font-family: var(--display); font-weight: 700; letter-spacing: -.025em; }
+    h1 { max-width: 940px; margin: 18px 0 22px; color: var(--navy); font-size: clamp(48px, 8vw, 102px); line-height: .94; }
+    h2 { max-width: 850px; margin: 13px 0 34px; color: var(--navy); font-size: clamp(38px, 5.5vw, 70px); line-height: .98; }
+    h3 { margin-bottom: 9px; color: var(--navy); font-size: 18px; line-height: 1.1; }
+    .lede { max-width: 720px; color: #53677d; font-size: clamp(16px, 1.7vw, 21px); line-height: 1.48; }
+    .date-line { margin-top: 26px; color: var(--muted); font-size: 13px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+    .title-mark { display: flex; gap: 8px; margin-top: 34px; }
+    .title-mark span { display: block; width: 58px; height: 8px; border-radius: 99px; }
+    .title-mark span:nth-child(1) { background: var(--blue); }
+    .title-mark span:nth-child(2) { background: var(--cyan); }
+    .title-mark span:nth-child(3) { background: var(--purple); }
+    .title-mark span:nth-child(4) { background: var(--orange); }
+    .section-intro { max-width: 680px; margin-top: -16px; color: var(--muted); font-size: 16px; }
+    .grid { display: grid; gap: 16px; }
+    .grid.three { grid-template-columns: repeat(3, 1fr); }
+    .grid.two { grid-template-columns: repeat(2, 1fr); }
+    .card {
+      position: relative;
+      padding: 23px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(255,255,255,.82);
+      box-shadow: 0 9px 24px rgba(22, 55, 87, .055);
+    }
+    .card::before { content: ""; display: block; width: 34px; height: 4px; margin-bottom: 22px; border-radius: 99px; background: var(--accent, var(--cyan)); }
+    .card p, .card li { color: var(--muted); font-size: 14px; line-height: 1.5; }
+    .card p { margin-bottom: 0; }
+    ul { margin: 0; padding-left: 18px; }
+    li + li { margin-top: 8px; }
+    .arc { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 18px; }
+    .arc-item { min-height: 245px; padding: 18px; border-top: 6px solid var(--accent); background: rgba(255,255,255,.82); box-shadow: var(--shadow); }
+    .arc-number { color: var(--accent); font-family: var(--display); font-size: 44px; line-height: 1; }
+    .arc-item h3 { margin-top: 24px; }
+    .arc-item p { color: var(--muted); font-size: 13px; line-height: 1.45; }
+    .flow { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 22px; }
+    .flow span { padding: 11px 15px; border: 1px solid #c8d8e5; border-radius: 8px; background: var(--white); color: var(--navy); font-size: 13px; font-weight: 800; }
+    .flow i { color: var(--cyan); font-style: normal; font-size: 18px; }
+    .callout { margin-top: 18px; padding: 23px 26px; border-left: 5px solid var(--accent, var(--cyan)); background: rgba(255,255,255,.72); color: var(--navy); font-size: 18px; line-height: 1.42; }
+    .callout small { display: block; margin-top: 9px; color: var(--muted); font-size: 12px; }
+    .resource-links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+    .resource-links a { padding: 10px 13px; border: 1px solid #bfd0dd; border-radius: 7px; background: var(--white); color: var(--navy); font-size: 12px; font-weight: 800; text-decoration: none; }
+    .resource-links a:hover, .resource-links a:focus-visible { border-color: var(--cyan); color: var(--cyan); outline: none; }
+    .week-label { display: inline-flex; align-items: center; gap: 9px; color: var(--accent); font-size: 12px; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; }
+    .week-label::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: currentColor; }
+    .split { display: grid; grid-template-columns: 1.05fr .95fr; gap: clamp(24px, 5vw, 72px); align-items: center; }
+    .number-list { display: grid; gap: 14px; }
+    .number-item { display: grid; grid-template-columns: 42px 1fr; gap: 13px; align-items: start; }
+    .number-item b { display: grid; width: 38px; height: 38px; place-items: center; border-radius: 50%; background: var(--accent); color: white; font-size: 14px; }
+    .number-item p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.45; }
+    .metric { display: flex; align-items: end; justify-content: space-between; gap: 18px; padding: 17px 0; border-bottom: 1px solid var(--line); }
+    .metric:last-child { border-bottom: 0; }
+    .metric strong { color: var(--navy); font-size: 14px; }
+    .metric b { color: var(--accent); font-family: var(--display); font-size: 28px; }
+    .footer-note { margin-top: auto; padding-top: 28px; color: var(--muted); font-size: 12px; }
+    .controls { position: fixed; right: clamp(18px, 4vw, 60px); bottom: 24px; z-index: 6; display: flex; align-items: center; gap: 8px; }
+    .control, .overview-toggle {
+      display: grid; place-items: center; min-width: 38px; height: 38px; padding: 0 11px; border: 1px solid #bfd0dd; border-radius: 8px; background: rgba(255,255,255,.88); color: var(--navy); cursor: pointer; box-shadow: 0 5px 18px rgba(22,55,87,.08); font-weight: 900;
+    }
+    .control:hover, .control:focus-visible, .overview-toggle:hover, .overview-toggle:focus-visible { border-color: var(--cyan); color: var(--cyan); outline: none; }
+    .progress { position: fixed; right: 0; bottom: 0; left: 0; z-index: 5; height: 4px; background: #dfe8ef; }
+    .progress span { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--blue), var(--cyan), var(--purple), var(--orange)); transition: width .35s ease; }
+    .overview {
+      position: fixed; inset: 0; z-index: 10; display: none; padding: 8vh 7vw; overflow: auto; background: rgba(245,248,251,.96); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+    }
+    .overview.open { display: block; animation: enter .25s ease both; }
+    .overview-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 26px; }
+    .overview h2 { margin: 0; font-size: 38px; }
+    .thumbs { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+    .thumb { min-height: 120px; padding: 16px; border: 1px solid var(--line); border-top: 5px solid var(--accent); background: var(--white); color: var(--navy); text-align: left; cursor: pointer; }
+    .thumb:hover, .thumb:focus-visible { transform: translateY(-3px); box-shadow: var(--shadow); outline: none; }
+    .thumb small { display: block; margin-bottom: 18px; color: var(--accent); font-weight: 900; }
+    .thumb strong { font-family: var(--display); font-size: 18px; }
+    @media (max-width: 800px) {
+      .slide { padding-bottom: 100px; }
+      .grid.three, .grid.two, .arc, .split { grid-template-columns: 1fr; }
+      .arc { gap: 10px; }
+      .arc-item { min-height: 0; }
+      .flow span { font-size: 12px; }
+      h1 { font-size: clamp(44px, 13vw, 72px); }
+      h2 { font-size: clamp(36px, 10vw, 54px); }
+    }
+    @media (max-width: 520px) {
+      .topbar { padding: 14px 18px; }
+      .slide { padding: 78px 19px 98px; }
+      .card { padding: 18px; }
+      .controls { right: 18px; bottom: 17px; }
+      .lede { font-size: 16px; }
+    }
+    @media print {
+      body { overflow: visible; background: white; }
+      .deck { background: white; }
+      .topbar, .controls, .progress, .overview { display: none !important; }
+      .slide, .slide.active { display: flex; min-height: 100vh; page-break-after: always; }
+    }
+  </style>
+</head>
+<body>
+  <main class="deck" id="deck">
+    <header class="topbar">
+      <span class="brand">GitHub Copilot + Spec-Driven Development</span>
+      <span class="counter" id="counter">01 / 13</span>
+    </header>
+
+    <section class="slides" aria-live="polite">
+      <article class="slide active accent-cyan" data-title="The four-week adoption program">
+        <div class="eyebrow">Organization enablement | July 27 - August 28, 2026</div>
+        <h1>Make AI-assisted delivery<br>intentional.</h1>
+        <p class="lede">A four-week rollout for GitHub Copilot and Spec-Driven Development using SDD - Agent Squad.</p>
+        <div class="title-mark" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+        <p class="date-line">From shared standards to a repeatable team operating model</p>
+      </article>
+
+      <article class="slide accent-blue" data-title="The program arc">
+        <div class="eyebrow">01 / Program arc</div>
+        <h2>Four weeks.<br>One connected trail.</h2>
+        <p class="section-intro">The rollout moves from clarity, to capability, to real work, to a durable operating rhythm.</p>
+        <div class="arc">
+          <div class="arc-item accent-blue"><div class="arc-number">01</div><h3>Set the standard</h3><p>Agree on intent, guardrails, templates, readiness, and support.</p></div>
+          <div class="arc-item accent-cyan"><div class="arc-number">02</div><h3>Prepare every team</h3><p>Build the mental model, configure tools, and practice the workflow.</p></div>
+          <div class="arc-item accent-purple"><div class="arc-number">03</div><h3>Practice on real work</h3><p>Complete one bounded story with coaching, review, and evidence.</p></div>
+          <div class="arc-item accent-orange"><div class="arc-number">04</div><h3>Make it routine</h3><p>Embed SDD in ceremonies, quality gates, ownership, and reporting.</p></div>
+        </div>
+      </article>
+
+      <article class="slide accent-teal" data-title="What success looks like">
+        <div class="eyebrow">02 / Shared outcomes</div>
+        <h2>From prompt to process.<br>From output to evidence.</h2>
+        <div class="grid three">
+          <div class="card accent-blue"><h3>Consistent delivery</h3><p>Teams use a shared sequence: problem, specification, plan, tasks, implementation, tests, review, and evidence.</p></div>
+          <div class="card accent-cyan"><h3>Human accountability</h3><p>People remain accountable for requirements, design, security, testing, acceptance, and release decisions.</p></div>
+          <div class="card accent-purple"><h3>Traceable learning</h3><p>Artifacts stay connected so another developer can understand what changed, why it changed, and what was checked.</p></div>
+        </div>
+        <div class="callout accent-teal">Copilot and agents support the engineering system. They do not replace problem definition, judgment, testing, or review.<small>Operating principle for every week</small></div>
+      </article>
+
+      <article class="slide accent-blue" data-title="Week 1: Foundations and standards">
+        <div class="week-label accent-blue">Week 1 | July 27 - July 31</div>
+        <h2>Set the standard.</h2>
+        <div class="split">
+          <div><p class="lede">Give every participating team a shared operating model before tools and workflows are introduced at scale.</p><div class="flow"><span>Intent</span><i>→</i><span>Requirements</span><i>→</i><span>Specification</span><i>→</i><span>Review points</span></div></div>
+          <div class="card accent-blue"><h3>By Friday</h3><ul><li>SDD process and expectations are approved.</li><li>Required use and exceptions are documented.</li><li>Templates and traceability expectations are published.</li><li>Support channels and office hours are active.</li></ul></div>
+        </div>
+      </article>
+
+      <article class="slide accent-blue" data-title="Week 1: Readiness gate">
+        <div class="eyebrow">Week 1 / Working sessions</div>
+        <h2>Start with a usable story,<br>not a code request.</h2>
+        <div class="grid two">
+          <div class="card accent-blue"><h3>Working exercise</h3><p>Turn a vague request such as “improve the claims search experience” into a problem statement with users, outcomes, constraints, risks, data considerations, and acceptance evidence.</p></div>
+          <div class="card accent-teal"><h3>Readiness gate</h3><ul><li>Participants can access required tools and repositories.</li><li>The selected story is low-risk and bounded.</li><li>The team can explain SDD stages and review points.</li><li>No unresolved security or data-handling blocker remains.</li></ul></div>
+        </div>
+        <div class="footer-note">Deliverables: team charter, problem statement, readiness checklist, and open questions.</div>
+      </article>
+
+      <article class="slide accent-cyan" data-title="Week 2: Foundations and enablement">
+        <div class="week-label accent-cyan">Week 2 | August 3 - August 7</div>
+        <h2>Build the foundation.</h2>
+        <div class="split">
+          <div><p class="lede">Give teams more preparation time across Fundamentals, AI-Assisted Development, Copilot Agents, and SDD concepts before introducing focused Spec Kit work.</p><div class="callout accent-cyan">Participants should leave Week 2 confident, curious, and ready to ask better questions in Week 3.</div></div>
+          <div class="number-list">
+            <div class="number-item"><b class="accent-cyan">1</b><p><strong>Learn the fundamentals.</strong><br>Build a responsible Copilot mental model and understand quality boundaries.</p></div>
+            <div class="number-item"><b class="accent-cyan">2</b><p><strong>Practice AI-Assisted Development.</strong><br>Turn ideas into bounded requirements, prompts, and useful small experiments.</p></div>
+            <div class="number-item"><b class="accent-cyan">3</b><p><strong>Explore agents and SDD.</strong><br>Understand delegation, review checkpoints, and the path from intent to evidence.</p></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="slide accent-cyan" data-title="Week 2: Preparation lab">
+        <div class="eyebrow">Week 2 / Preparation lab</div>
+        <h2>Prepare the story<br>before the stages.</h2>
+        <div class="grid three">
+          <div class="card accent-cyan"><h3>Clarify the outcome</h3><p>Use Copilot to identify missing information, stakeholders, constraints, and the user outcome behind the request.</p></div>
+          <div class="card accent-teal"><h3>Bound the slice</h3><p>Choose a small story that can support a focused Spec Kit walkthrough without becoming a full delivery sprint.</p></div>
+          <div class="card accent-blue"><h3>Check readiness</h3><p>Confirm access, support paths, SDD vocabulary, and the questions the team wants to answer in Week 3.</p></div>
+        </div>
+        <div class="footer-note">Readiness signal: each participant can use the approved tools and explain the purpose of the Week 3 Spec Kit workshop.</div>
+      </article>
+
+      <article class="slide accent-purple" data-title="Week 3: GitHub Spec Kit and Agent Squad">
+        <div class="week-label accent-purple">Week 3 | August 10 - August 14</div>
+        <h2>Explore the path<br>before operationalizing it.</h2>
+        <div class="split">
+          <div><p class="lede">Spend only one to two days on GitHub Spec Kit stages, then introduce the SDD - Agent Squad roles, handoffs, examples, and questions that Week 4 will operationalize.</p><div class="flow"><span>Intent</span><i>→</i><span>Specify</span><i>→</i><span>Plan</span><i>→</i><span>Handoff</span><i>→</i><span>Review</span></div></div>
+          <div class="card accent-purple"><h3>Focused workshop outcomes</h3><ul><li>Map the Spec Kit stages to the team's SDD workflow.</li><li>Review a specification and plan for assumptions, constraints, and scope.</li><li>Explore Agent Squad roles, inputs, outputs, and checkpoints.</li><li>Capture questions for the Week 4 operating review.</li></ul></div>
+        </div>
+      </article>
+
+      <article class="slide accent-purple" data-title="Week 3: Agent Squad session">
+        <div class="eyebrow">Week 3 / Agent Squad session</div>
+        <h2>Make the roles<br>easy to understand.</h2>
+        <div class="grid two">
+          <div class="card accent-purple"><h3>Days 3-5</h3><ul><li>Meet the SDD - Agent Squad specialist roles and responsibilities.</li><li>Trace inputs, outputs, handoffs, checkpoints, and escalation paths.</li><li>Walk through representative team scenarios and human approvals.</li><li>Capture blockers, exceptions, and operating questions.</li></ul></div>
+          <div class="card accent-orange"><h3>Ready for Week 4</h3><ul><li>Team understands the Agent Squad model without treating it as fully operational.</li><li>Spec Kit scope stayed within one to two focused days.</li><li>Operating-model questions have owners and next actions.</li><li>Teams are ready to define ceremonies, quality gates, and ownership.</li></ul></div>
+        </div>
+      </article>
+
+      <article class="slide accent-orange" data-title="Week 4: Team adoption">
+        <div class="week-label accent-orange">Week 4 | August 17 - August 28</div>
+        <h2>Make it routine.</h2>
+        <div class="split">
+          <div><p class="lede">Make SDD - Agent Squad dependable by embedding the workflow in ceremonies, quality gates, ownership, support, and measurable improvement.</p><div class="callout accent-orange">Operationalization is the minimum shared structure that makes AI-assisted work understandable, reviewable, and repeatable.</div></div>
+          <div class="number-list">
+            <div class="number-item"><b class="accent-orange">1</b><p><strong>Put SDD in the calendar.</strong><br>Map artifacts and decisions to refinement, planning, stand-ups, demos, and retrospectives.</p></div>
+            <div class="number-item"><b class="accent-orange">2</b><p><strong>Coordinate specialist work.</strong><br>Clarify Agent Squad roles, handoffs, checkpoints, and escalation paths.</p></div>
+            <div class="number-item"><b class="accent-orange">3</b><p><strong>Measure the practice.</strong><br>Choose useful adoption, quality, flow, and support signals.</p></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="slide accent-orange" data-title="Week 4: Governance and metrics">
+        <div class="eyebrow">Week 4 / Operating review</div>
+        <h2>Govern without<br>creating noise.</h2>
+        <div class="grid two">
+          <div class="card accent-orange"><h3>Quality gates</h3><ul><li>Requirements are clear and reviewable.</li><li>Security, privacy, accessibility, and testing checks are defined.</li><li>Exceptions are explicit, justified, owned, and time-bound.</li><li>Humans remain accountable for design and release decisions.</li></ul></div>
+          <div class="card accent-teal"><h3>Useful measures</h3><div class="metric"><strong>Teams with an SDD owner</strong><b>100%</b></div><div class="metric"><strong>Stories with connected evidence</strong><b>100%</b></div><div class="metric"><strong>Support issues with an action</strong><b>Tracked</b></div></div>
+        </div>
+      </article>
+
+      <article class="slide accent-teal" data-title="The team operating model">
+        <div class="eyebrow">03 / The operating model</div>
+        <h2>Keep the workflow<br>visible at every stage.</h2>
+        <div class="grid three">
+          <div class="card accent-blue"><h3>Before work starts</h3><ul><li>Problem and outcome are clear.</li><li>Stakeholders, constraints, and risks are known.</li><li>Story meets the team's definition of ready.</li></ul></div>
+          <div class="card accent-purple"><h3>While work is in progress</h3><ul><li>Artifacts stay linked as the plan changes.</li><li>Agent output is reviewed at checkpoints.</li><li>Tests and security checks shape implementation.</li></ul></div>
+          <div class="card accent-orange"><h3>Before work is accepted</h3><ul><li>Acceptance evidence is complete.</li><li>Known limitations are recorded.</li><li>Lessons feed back into team practice.</li></ul></div>
+        </div>
+      </article>
+
+      <article class="slide accent-cyan" data-title="Closeout and next 30 days">
+        <div class="eyebrow">04 / Closeout</div>
+        <h2>Leave the rollout<br>stronger than it started.</h2>
+        <div class="grid two">
+          <div class="card accent-cyan"><h3>By August 28</h3><ul><li>Team SDD playbook is published.</li><li>Agent Squad operating agreement is active.</li><li>Metrics have an owner, cadence, baseline, and action threshold.</li><li>Community of practice and support model are scheduled.</li></ul></div>
+          <div class="card accent-blue"><h3>Next 30 days</h3><ul><li>Review adoption evidence and recurring blockers.</li><li>Refresh templates from real team learning.</li><li>Retire measures that do not lead to action.</li><li>Share patterns across teams and delivery partners.</li></ul></div>
+        </div>
+        <div class="callout accent-cyan">The destination is not “more AI.” It is a clearer, more traceable, more responsible way to deliver.</div>
+        <div class="resource-links" aria-label="Training resources">
+          <a href="Foundations%20%26%20Standards/week-1-foundations-and-standards.html">Week 1 guide</a>
+          <a href="Training%20%26%20Enablement/week-2-training-and-enablement.html">Week 2 guide</a>
+          <a href="Developer%20Adoption/week-3-developer-adoption.html">Week 3 guide</a>
+          <a href="Team%20Adoption%20%26%20Operationalization/week-4-team-adoption-and-operationalization.html">Week 4 guide</a>
+          <a href="Spec-Driven%20Development%20Rollout%20Roadmap.html">Full roadmap</a>
+        </div>
+      </article>
+    </section>
+
+    <nav class="controls" aria-label="Presentation controls">
+      <button class="overview-toggle" id="overview-toggle" type="button" aria-haspopup="dialog">Overview</button>
+      <button class="control" id="previous" type="button" aria-label="Previous slide" title="Previous slide">←</button>
+      <button class="control" id="next" type="button" aria-label="Next slide" title="Next slide">→</button>
+    </nav>
+    <div class="progress" aria-hidden="true"><span id="progress-bar"></span></div>
+
+    <aside class="overview" id="overview" aria-label="Slide overview" aria-hidden="true">
+      <div class="overview-head"><h2>Slide overview</h2><button class="control" id="overview-close" type="button" aria-label="Close slide overview">×</button></div>
+      <div class="thumbs" id="thumbs"></div>
+    </aside>
+  </main>
+
+  <script>
+    (() => {
+      const slides = [...document.querySelectorAll('.slide')];
+      const counter = document.getElementById('counter');
+      const progressBar = document.getElementById('progress-bar');
+      const overview = document.getElementById('overview');
+      const thumbs = document.getElementById('thumbs');
+      let current = 0;
+      let touchStartX = 0;
+
+      slides.forEach((slide, index) => {
+        const thumb = document.createElement('button');
+        thumb.className = 'thumb';
+        thumb.type = 'button';
+        thumb.style.setProperty('--accent', getComputedStyle(slide).getPropertyValue('--accent'));
+        thumb.innerHTML = `<small>${String(index + 1).padStart(2, '0')}</small><strong>${slide.dataset.title}</strong>`;
+        thumb.addEventListener('click', () => { show(index); closeOverview(); });
+        thumbs.appendChild(thumb);
+      });
+
+      function show(index) {
+        current = Math.max(0, Math.min(index, slides.length - 1));
+        slides.forEach((slide, slideIndex) => slide.classList.toggle('active', slideIndex === current));
+        counter.textContent = `${String(current + 1).padStart(2, '0')} / ${String(slides.length).padStart(2, '0')}`;
+        progressBar.style.width = `${((current + 1) / slides.length) * 100}%`;
+        document.title = `${slides[current].dataset.title} | SDD Adoption Training`;
+      }
+      function next() { show(current + 1); }
+      function previous() { show(current - 1); }
+      function closeOverview() { overview.classList.remove('open'); overview.setAttribute('aria-hidden', 'true'); }
+      function toggleOverview() {
+        const open = overview.classList.toggle('open');
+        overview.setAttribute('aria-hidden', String(!open));
+        if (open) document.getElementById('overview-close').focus();
+      }
+
+      document.getElementById('next').addEventListener('click', next);
+      document.getElementById('previous').addEventListener('click', previous);
+      document.getElementById('overview-toggle').addEventListener('click', toggleOverview);
+      document.getElementById('overview-close').addEventListener('click', closeOverview);
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'ArrowRight' || event.key === 'PageDown' || event.key === ' ') { event.preventDefault(); next(); }
+        if (event.key === 'ArrowLeft' || event.key === 'PageUp') { event.preventDefault(); previous(); }
+        if (event.key === 'Home') show(0);
+        if (event.key === 'End') show(slides.length - 1);
+        if (event.key === 'Escape') closeOverview();
+      });
+      document.getElementById('deck').addEventListener('touchstart', (event) => { touchStartX = event.changedTouches[0].screenX; }, { passive: true });
+      document.getElementById('deck').addEventListener('touchend', (event) => {
+        const distance = event.changedTouches[0].screenX - touchStartX;
+        if (Math.abs(distance) > 50) distance < 0 ? next() : previous();
+      }, { passive: true });
+      show(0);
+    })();
+  </script>
+</body>
+</html>
+
+

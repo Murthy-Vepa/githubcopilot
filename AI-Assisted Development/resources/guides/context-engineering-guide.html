@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="A practical guide to context engineering for GitHub Copilot and AI-assisted development.">
+<title>Context Engineering Field Guide | MetLife Learning</title>
+<style>
+  :root {
+    --ink: #17212b;
+    --muted: #5f6f7d;
+    --paper: #f1f3ee;
+    --paper-deep: #dfe8df;
+    --white: #fffefa;
+    --navy: #183b3f;
+    --green: #287d63;
+    --teal: #0f9da8;
+    --blue: #1769aa;
+    --coral: #e26d5a;
+    --gold: #d9a441;
+    --line: #cbd8d0;
+    --display: Georgia, 'Times New Roman', serif;
+    --body: 'Trebuchet MS', 'Segoe UI', sans-serif;
+    --mono: 'Cascadia Code', Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--body); line-height: 1.6; }
+  a { color: inherit; }
+  .shell { display: grid; grid-template-columns: 260px minmax(0, 1fr); min-height: 100vh; }
+  .rail { position: sticky; top: 0; height: 100vh; overflow-y: auto; padding: 28px 20px; background: var(--navy); color: #d9e8e2; }
+  .rail-mark { color: #8dd9c2; font-size: 11px; font-weight: 800; letter-spacing: 1.8px; text-transform: uppercase; }
+  .rail h2 { margin: 8px 0 24px; color: #fffefa; font: 700 25px/1.05 var(--display); }
+  .rail-label { margin: 25px 0 8px; color: #92b5ad; font-size: 10px; font-weight: 800; letter-spacing: 1.4px; text-transform: uppercase; }
+  .rail a { display: block; padding: 7px 9px; border-left: 2px solid transparent; color: #c6d9d4; font-size: 12px; text-decoration: none; }
+  .rail a:hover, .rail a:focus { border-left-color: #8dd9c2; background: rgba(255,255,255,.06); color: #fff; }
+  .rail-footer { margin-top: 30px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,.14); color: #92b5ad; font-size: 11px; }
+  main { min-width: 0; }
+  .content { width: min(1120px, calc(100% - 64px)); margin: 0 auto; padding: 48px 0 80px; }
+  .hero { position: relative; overflow: hidden; min-height: 420px; padding: 54px 58px; background: var(--navy); color: #fffefa; box-shadow: 0 18px 45px rgba(24,59,63,.14); }
+  .hero::before { content: ''; position: absolute; width: 360px; height: 360px; right: -130px; bottom: -150px; border: 55px solid rgba(141,217,194,.27); border-radius: 50%; }
+  .hero::after { content: ''; position: absolute; width: 118px; height: 118px; right: 180px; top: -42px; border: 19px solid rgba(226,109,90,.7); transform: rotate(28deg); }
+  .eyebrow { position: relative; z-index: 1; color: #8dd9c2; font-size: 11px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; }
+  h1 { position: relative; z-index: 1; max-width: 760px; margin: 18px 0 19px; font: 700 clamp(44px, 7vw, 82px)/.95 var(--display); letter-spacing: -2px; }
+  .hero p { position: relative; z-index: 1; max-width: 700px; margin: 0; color: #d9e8e2; font-size: 17px; }
+  .hero-meta { position: relative; z-index: 1; display: flex; flex-wrap: wrap; gap: 10px; margin-top: 30px; }
+  .tag { display: inline-flex; padding: 7px 11px; border: 1px solid rgba(255,255,255,.23); color: #fffefa; font-size: 11px; }
+  .section { margin-top: 34px; padding: 32px 36px; background: var(--white); border: 1px solid var(--line); box-shadow: 0 8px 26px rgba(24,59,63,.06); }
+  .section-head { display: flex; align-items: flex-start; gap: 18px; margin-bottom: 22px; }
+  .section-number { flex: 0 0 auto; color: var(--coral); font: 700 28px/1 var(--display); }
+  h2 { margin: 0; color: var(--navy); font: 700 30px/1.08 var(--display); }
+  h3 { margin: 25px 0 8px; color: var(--navy); font-size: 18px; }
+  p { margin: 10px 0; }
+  .lede { color: var(--muted); font-size: 16px; }
+  .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+  .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .card { padding: 20px; background: #f5f8f3; border: 1px solid var(--line); }
+  .card strong { display: block; margin-bottom: 5px; color: var(--navy); }
+  .card p { margin: 0; color: var(--muted); font-size: 14px; }
+  .callout { margin: 20px 0; padding: 17px 19px; border-left: 4px solid var(--teal); background: #eaf6f4; }
+  .callout.warn { border-left-color: var(--coral); background: #fff0eb; }
+  .callout.gold { border-left-color: var(--gold); background: #fff8df; }
+  .callout strong { color: var(--navy); }
+  .layers { display: grid; gap: 8px; margin: 20px 0; }
+  .layer { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 16px; padding: 14px 16px; border-left: 5px solid var(--green); background: #edf7f0; }
+  .layer:nth-child(2) { border-left-color: var(--teal); background: #eaf6f4; }
+  .layer:nth-child(3) { border-left-color: var(--blue); background: #eef5fa; }
+  .layer:nth-child(4) { border-left-color: var(--gold); background: #fff8df; }
+  .layer:nth-child(5) { border-left-color: var(--coral); background: #fff0eb; }
+  .layer b { color: var(--navy); font-size: 13px; }
+  .layer span { color: var(--muted); font-size: 14px; }
+  .flow { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: 22px 0; }
+  .flow-step { min-height: 112px; padding: 14px 12px; background: var(--navy); color: #fffefa; }
+  .flow-step:nth-child(2), .flow-step:nth-child(4) { background: var(--green); }
+  .flow-step:nth-child(3) { background: var(--teal); }
+  .flow-step:nth-child(5) { background: var(--coral); }
+  .flow-step b { display: block; margin-bottom: 5px; font-size: 12px; }
+  .flow-step span { display: block; color: rgba(255,255,255,.86); font-size: 12px; }
+  .prompt { position: relative; margin: 14px 0; padding: 19px 21px; background: #173b3f; color: #d9e8e2; font: 13px/1.7 var(--mono); white-space: pre-wrap; overflow-x: auto; }
+  .prompt::before { content: 'WORKING SET'; position: absolute; right: 14px; top: 10px; color: #8dd9c2; font: 800 9px var(--body); letter-spacing: 1px; }
+  .checklist { padding: 0; list-style: none; }
+  .checklist li { position: relative; padding: 7px 0 7px 28px; color: var(--muted); }
+  .checklist li::before { content: '[]'; position: absolute; left: 0; color: var(--coral); font: 700 14px var(--mono); line-height: 1.7; }
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { padding: 11px 12px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+  th { background: var(--navy); color: #fffefa; font-size: 11px; letter-spacing: .5px; text-transform: uppercase; }
+  td { color: var(--muted); }
+  td:first-child { color: var(--navy); font-weight: 700; }
+  .source { margin-top: 34px; padding: 22px 26px; background: var(--paper-deep); color: var(--muted); font-size: 13px; }
+  .source a { color: var(--blue); font-weight: 700; }
+  .top { display: inline-block; margin-top: 18px; color: var(--blue); font-size: 12px; font-weight: 700; text-decoration: none; }
+  .reveal { animation: rise .65s ease both; }
+  @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+  @media (max-width: 850px) {
+    .shell { display: block; }
+    .rail { position: relative; height: auto; }
+    .rail nav { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2px 12px; }
+    .rail-label { grid-column: 1 / -1; }
+    .content { width: min(100% - 28px, 720px); padding-top: 20px; }
+    .hero { padding: 38px 28px; }
+    .section { padding: 26px 22px; }
+    .flow, .grid.three { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 560px) {
+    h1 { letter-spacing: -1px; }
+    .grid, .flow, .grid.three { grid-template-columns: 1fr; }
+    .layer { grid-template-columns: 1fr; gap: 3px; }
+    .hero { min-height: 0; }
+  }
+</style>
+</head>
+<body id="top">
+<div class="shell">
+  <aside class="rail">
+    <div class="rail-mark">MetLife Learning</div>
+    <h2>Context Engineering<br>Field Guide</h2>
+    <nav aria-label="Guide sections">
+      <div class="rail-label">Start here</div>
+      <a href="#orientation">Orientation</a>
+      <a href="#layers">Context layers</a>
+      <div class="rail-label">Build the working set</div>
+      <a href="#process">The process</a>
+      <a href="#sources">Source quality</a>
+      <a href="#copilot">Copilot context</a>
+      <a href="#failures">Common failures</a>
+      <div class="rail-label">Apply it</div>
+      <a href="#evaluation">Evaluation gates</a>
+      <a href="#playbook">Team playbook</a>
+    </nav>
+    <div class="rail-footer">A practical companion for AI-assisted development<br><strong>Curate the context. Improve the decision.</strong></div>
+  </aside>
+
+  <main>
+    <div class="content">
+      <header class="hero reveal">
+        <div class="eyebrow">AI-Assisted Development / Context Engineering</div>
+        <h1>Give the model<br>the right world.</h1>
+        <p>A practical guide to assembling the instructions, files, history, examples, tools, and evidence that help AI coding systems reason about the task in front of them.</p>
+        <div class="hero-meta">
+          <span class="tag">Beginner friendly</span>
+          <span class="tag">GitHub Copilot ready</span>
+          <span class="tag">Repository-aware</span>
+          <span class="tag">Trust and relevance focused</span>
+        </div>
+      </header>
+
+      <section class="section reveal" id="orientation">
+        <div class="section-head"><div class="section-number">00</div><div><h2>Orientation</h2><p class="lede">Context engineering is the deliberate design of the information available to an AI system at the moment it must make a decision.</p></div></div>
+        <div class="callout"><strong>The operating principle:</strong> model quality depends on more than the model. A strong model with stale, noisy, or incomplete context can still produce a weak answer. Curate the working set before asking for a decision.</div>
+        <div class="grid three">
+          <div class="card"><strong>Relevant</strong><p>Include information that changes the answer, not everything that happens to be nearby.</p></div>
+          <div class="card"><strong>Current</strong><p>Prefer the active implementation, current instructions, and recent decisions over stale examples.</p></div>
+          <div class="card"><strong>Trusted</strong><p>Separate authoritative project facts from guesses, generated text, and unverified external material.</p></div>
+        </div>
+      </section>
+
+      <section class="section reveal" id="layers">
+        <div class="section-head"><div class="section-number">01</div><div><h2>Context layers</h2><p class="lede">Different information answers different questions. Assemble only the layers needed for the decision at hand.</p></div></div>
+        <div class="layers">
+          <div class="layer"><b>Task intent</b><span>What outcome is needed, for whom, and why does it matter?</span></div>
+          <div class="layer"><b>Repository rules</b><span>What instructions, architecture boundaries, APIs, conventions, and commands govern the work?</span></div>
+          <div class="layer"><b>Local evidence</b><span>Which files, symbols, tests, errors, history, and examples control the behavior?</span></div>
+          <div class="layer"><b>Tools and state</b><span>What tools, environment details, dependencies, permissions, and current runtime state are available?</span></div>
+          <div class="layer"><b>Feedback</b><span>What did the last attempt reveal, and which check could confirm or disconfirm the next move?</span></div>
+        </div>
+        <div class="prompt">Context packet for a bug fix:
+
+Goal: stop duplicate order creation when the client retries a timed-out request.
+Rules: preserve the public API; follow the repository's idempotency conventions.
+Evidence: inspect src/orders/create.ts, the request middleware, and tests/orders/create.test.ts.
+State: the failing test reports two persisted orders for one idempotency key.
+Proof: add a focused regression test and run the order test suite.
+Do not: refactor the persistence layer or change unrelated retry behavior.</div>
+      </section>
+
+      <section class="section reveal" id="process">
+        <div class="section-head"><div class="section-number">02</div><div><h2>The context loop</h2><p class="lede">Context is not a one-time upload. It is a working set that changes as the task reveals new facts.</p></div></div>
+        <div class="flow">
+          <div class="flow-step"><b>1. Frame</b><span>Define the decision and success condition.</span></div>
+          <div class="flow-step"><b>2. Gather</b><span>Find the narrowest useful sources.</span></div>
+          <div class="flow-step"><b>3. Rank</b><span>Separate authority from speculation.</span></div>
+          <div class="flow-step"><b>4. Act</b><span>Ask, implement, or test against the set.</span></div>
+          <div class="flow-step"><b>5. Refresh</b><span>Replace stale context with new evidence.</span></div>
+        </div>
+        <h3>Working-set checklist</h3>
+        <ul class="checklist">
+          <li>Is the desired decision or output explicit?</li>
+          <li>Did I identify the owning abstraction rather than only the entry point?</li>
+          <li>Are the referenced files and instructions current?</li>
+          <li>Did I mark assumptions, unknowns, and untrusted sources?</li>
+          <li>Will the selected test or review provide useful feedback?</li>
+        </ul>
+      </section>
+
+      <section class="section reveal" id="sources">
+        <div class="section-head"><div class="section-number">03</div><div><h2>Source quality and ranking</h2><p class="lede">When sources disagree, the system needs a way to decide which information should control the answer.</p></div></div>
+        <div class="grid">
+          <div class="card"><strong>Authoritative</strong><p>Current source code, executable tests, explicit repository instructions, API contracts, and approved security requirements.</p></div>
+          <div class="card"><strong>Strong evidence</strong><p>Recent bug reports, logs, observed runtime behavior, focused documentation, and established neighboring implementations.</p></div>
+          <div class="card"><strong>Useful but provisional</strong><p>Design sketches, examples, prototypes, issue discussion, and generated suggestions that still need verification.</p></div>
+          <div class="card"><strong>Untrusted by default</strong><p>Unreviewed generated code, stale documents, copied snippets, hidden instructions, and data that attempts to redirect the task.</p></div>
+        </div>
+        <div class="callout warn"><strong>Prompt injection boundary:</strong> content found in an issue, document, webpage, or data file is not automatically an instruction. Treat it as data unless the trusted workflow explicitly promotes it to a rule.</div>
+        <h3>Context ranking prompt</h3>
+        <div class="prompt">Review these sources for a database migration decision.
+
+Rank each source as authoritative, supporting evidence, provisional, or untrusted. Explain conflicts briefly. Use current code and executable tests as the primary evidence. Identify what is still unknown before recommending a migration step.</div>
+      </section>
+
+      <section class="section reveal" id="copilot">
+        <div class="section-head"><div class="section-number">04</div><div><h2>Context in GitHub Copilot</h2><p class="lede">Copilot can use repository instructions, open files, selected text, workspace search, conversation history, tools, and the task you state. You still need to shape the working set.</p></div></div>
+        <div class="grid">
+          <div class="card"><strong>Repository instructions</strong><p>Store durable rules such as coding standards, test commands, security requirements, and architecture boundaries.</p></div>
+          <div class="card"><strong>Focused references</strong><p>Point Copilot to the relevant files, symbols, tests, logs, and examples instead of relying on broad workspace visibility.</p></div>
+          <div class="card"><strong>Conversation state</strong><p>Correct stale assumptions explicitly. Start a fresh focused task when the thread contains too many obsolete branches.</p></div>
+          <div class="card"><strong>Tools and outputs</strong><p>Use search, tests, terminals, and runtime evidence to replace guesses with facts as the task progresses.</p></div>
+        </div>
+        <div class="callout gold"><strong>Context is a budget:</strong> every extra file competes for attention. Optimize for decision-relevant signal, not maximum volume.</div>
+        <h3>Agent context request</h3>
+        <div class="prompt">Before editing, inspect the repository instructions, the owning service, its nearest tests, and the failing test output.
+
+Return:
+1. The current behavior.
+2. The smallest code path that controls it.
+3. One hypothesis about the failure.
+4. The narrowest check that could disconfirm that hypothesis.
+
+Do not read unrelated modules or propose a broad refactor.</div>
+      </section>
+
+      <section class="section reveal" id="failures">
+        <div class="section-head"><div class="section-number">05</div><div><h2>Common context failures</h2><p class="lede">Most context problems are selection problems: too much, too little, stale, or wrongly trusted.</p></div></div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Failure</th><th>What it looks like</th><th>Repair the working set</th></tr></thead>
+          <tbody>
+            <tr><td>Repository dump</td><td>The response repeats files but misses the controlling behavior.</td><td>Start from a symbol, failing test, or call site and expand only when needed.</td></tr>
+            <tr><td>Stale context</td><td>The answer follows an old API, design, or instruction.</td><td>Prefer current code and tests; label historical material clearly.</td></tr>
+            <tr><td>Missing negative space</td><td>The tool implements the happy path but violates non-goals.</td><td>State what must not change, what must not be retried, and which risks matter.</td></tr>
+            <tr><td>Authority confusion</td><td>A comment or issue overrides an executable contract without evidence.</td><td>Rank sources and resolve conflicts explicitly before acting.</td></tr>
+            <tr><td>Thread overload</td><td>Old assumptions and abandoned approaches steer the next answer.</td><td>Summarize verified facts, discard stale branches, or start a focused thread.</td></tr>
+            <tr><td>Context without proof</td><td>The response is plausible but no check can validate it.</td><td>Attach a test, command, review criterion, or observable behavior to the task.</td></tr>
+          </tbody>
+        </table></div>
+      </section>
+
+      <section class="section reveal" id="evaluation">
+        <div class="section-head"><div class="section-number">06</div><div><h2>Evaluation gates</h2><p class="lede">A context packet is good when it helps produce a correct decision, not merely a confident answer.</p></div></div>
+        <div class="grid three">
+          <div class="card"><strong>Coverage</strong><p>Does the working set include the requirements, owner, constraints, and relevant edge cases?</p></div>
+          <div class="card"><strong>Authority</strong><p>Are the most important sources current, trusted, and clearly ranked?</p></div>
+          <div class="card"><strong>Economy</strong><p>Can irrelevant files and stale history be removed without changing the decision?</p></div>
+        </div>
+        <div class="callout"><strong>Refresh after every meaningful change:</strong> a new test result, implementation decision, or runtime observation can change which sources deserve attention.</div>
+        <h3>Context review prompt</h3>
+        <div class="prompt">Audit the proposed context for this task.
+
+List:
+- missing information that could change the implementation,
+- stale or conflicting sources,
+- untrusted content that should remain data,
+- irrelevant material that should be removed,
+- the validation evidence needed before completion.
+
+Do not solve the task yet. Improve the working set first.</div>
+      </section>
+
+      <section class="section reveal" id="playbook">
+        <div class="section-head"><div class="section-number">07</div><div><h2>Team playbook</h2><p class="lede">Context engineering becomes a team capability when useful context is made durable, discoverable, and testable.</p></div></div>
+        <div class="grid">
+          <div class="card"><strong>Make rules discoverable</strong><p>Keep repository instructions close to the code and explain which rules are global versus local.</p></div>
+          <div class="card"><strong>Capture decisions</strong><p>Record architecture choices, API contracts, constraints, and rejected alternatives where future work can find them.</p></div>
+          <div class="card"><strong>Prefer executable truth</strong><p>Use tests, schemas, checks, and runtime observations to keep context grounded in behavior.</p></div>
+          <div class="card"><strong>Prune aggressively</strong><p>Delete stale examples and update guides when the implementation or workflow changes.</p></div>
+        </div>
+        <div class="callout"><strong>Context engineering maturity:</strong> begin with focused file selection, then build trusted instructions, retrieval patterns, reusable context packets, automated checks, and durable specifications.</div>
+        <div class="source">Related resources: <a href="../../../InaNutshell/Context%20Engineering%20-%20In%20a%20Nutshell.html">Context Engineering - In a Nutshell</a> and <a href="../posters/context-engineering-light-landscape.png" target="_blank" rel="noreferrer noopener">Context Engineering poster</a>.</div>
+        <a class="top" href="#top">Back to top</a>
+      </section>
+    </div>
+  </main>
+</div>
+</body>
+</html>

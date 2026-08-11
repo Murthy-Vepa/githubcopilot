@@ -64,7 +64,7 @@
     .section-intro { color: var(--muted); font-size: 15px; line-height: 1.65; margin-top: 9px; max-width: 760px; }
     .path-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
     .path-step { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); display: flex; flex-direction: column; min-height: 205px; overflow: visible; position: relative; transition: transform .2s, box-shadow .2s; }
-    .path-step:hover { box-shadow: 0 12px 40px rgba(10,22,40,.15); transform: translateY(-2px); }
+    .path-step:hover { box-shadow: 0 12px 40px rgba(10,22,40,.15); }
     .path-step:has(.path-resource-dropdown[open]) { z-index: 20; }
     .path-step-top { border-bottom: 1px solid var(--line); border-radius: var(--radius) var(--radius) 0 0; padding: 24px 24px 18px; position: relative; }
     .path-category-icon { align-items: center; background: rgba(255,255,255,.72); border: 1px solid rgba(255,255,255,.85); border-radius: 10px; display: flex; font-size: 22px; height: 42px; justify-content: center; position: absolute; right: 24px; top: 20px; width: 42px; }
@@ -123,7 +123,7 @@
     .category-modal-formats { background: #f3f7fa; border-right: 1px solid var(--line); padding: 20px 12px; }
     .category-modal-label { align-items: center; color: var(--muted); display: flex; font-size: 10px; font-weight: 800; justify-content: space-between; letter-spacing: 1.4px; margin: 0 10px 9px; text-transform: uppercase; }
     .category-modal-total { color: var(--sky); font-size: 11px; letter-spacing: 0; }
-    .category-modal-format { align-items: center; background: transparent; border: 0; border-left: 3px solid transparent; border-radius: 6px; color: var(--muted); cursor: pointer; display: flex; font-size: 13px; gap: 9px; padding: 9px 10px; text-align: left; width: 100%; font-weight: bold; transition: all .15s; }
+    .category-modal-format { align-items: center; background: transparent; border: 0; border-left: 3px solid transparent; border-radius: 6px; color: var(--muted); cursor: pointer; display: flex; font-size: 13px; gap: 9px; padding: 8px 10px; text-align: left; width: 100%; font-weight: bold; transition: all .15s; }
     .category-modal-format:hover { background: #e6f1f7; color: var(--navy-2); }
     .category-modal-format.selected { background: white; border-left-color: var(--sky); box-shadow: 0 2px 8px rgba(10,22,40,.07); color: var(--navy-2); font-weight: bold; }
     .category-modal-format-count { color: var(--sky); font-size: 11px; font-weight: 700; margin-left: auto; }

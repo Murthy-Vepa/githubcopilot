@@ -49,150 +49,150 @@
 
       <section class="slide accent-cyan" data-title="Introduction">
         <div class="eyebrow">01 / Introduction</div>
-        <h2>AI-Assisted Development changes the shape of software work.</h2>
-        <p class="lede">The developer remains responsible for the problem, decisions, and quality. AI helps explore options, express intent, produce drafts, and shorten feedback loops.</p>
+        <h2>AI changes how software work gets done.</h2>
+        <p class="lede">The developer still owns the problem, decisions, and quality. AI helps move from intent to evidence faster.</p>
         <div class="grid three">
-          <article class="card"><h3>Think in outcomes</h3><p>Describe the behavior, constraints, and evidence that define a good result.</p></article>
-          <article class="card"><h3>Work in loops</h3><p>Ask, inspect, refine, test, and repeat instead of treating the first response as the answer.</p></article>
-          <article class="card"><h3>Keep ownership</h3><p>Review generated code, protect sensitive data, and make the final engineering judgment.</p></article>
+          <article class="card"><h3>Start with outcomes</h3><p>Define behavior, constraints, and what “good” looks like.</p></article>
+          <article class="card"><h3>Work in loops</h3><p>Ask, inspect, refine, test, and repeat.</p></article>
+          <article class="card"><h3>Keep ownership</h3><p>Review the result and make the engineering judgment.</p></article>
         </div>
-        <div class="callout"><strong>The shift:</strong><small>from code as the only interface to intent, context, conversation, and verification as part of the development process.</small></div>
+        <div class="callout"><strong>The shift:</strong><small>intent + context + conversation + verification become part of the development process.</small></div>
       </section>
 
       <section class="slide accent-blue" data-title="Concepts">
         <div class="eyebrow">02 / Concepts</div>
-        <h2>Effective AI-assisted work is a four-part loop.</h2>
+        <h2>Good AI-assisted work is a loop, not a single prompt.</h2>
         <div class="flow">
-          <article class="flow-item accent-cyan"><div class="flow-number">01</div><h3>Intent</h3><p>What problem should change, for whom, and why?</p></article>
-          <article class="flow-item accent-blue"><div class="flow-number">02</div><h3>Context</h3><p>What code, constraints, decisions, and examples matter?</p></article>
-          <article class="flow-item accent-teal"><div class="flow-number">03</div><h3>Generation</h3><p>What draft, option, explanation, or transformation can AI produce?</p></article>
-          <article class="flow-item accent-orange"><div class="flow-number">04</div><h3>Evidence</h3><p>What tests, review, and runtime signals show that it works?</p></article>
+          <article class="flow-item accent-cyan"><div class="flow-number">01</div><h3>Intent</h3><p>Name the problem, user, and outcome.</p></article>
+          <article class="flow-item accent-blue"><div class="flow-number">02</div><h3>Context</h3><p>Supply the code, constraints, and examples that matter.</p></article>
+          <article class="flow-item accent-teal"><div class="flow-number">03</div><h3>Generation</h3><p>Use AI to draft, compare, explain, or transform.</p></article>
+          <article class="flow-item accent-orange"><div class="flow-number">04</div><h3>Evidence</h3><p>Test, review, and observe the result.</p></article>
         </div>
-        <div class="callout"><strong>Working rule:</strong><small>the quality of the loop matters more than the length of the prompt or the speed of generation.</small></div>
+        <div class="callout"><strong>Working rule:</strong><small>the quality of the loop matters more than prompt length or generation speed.</small></div>
       </section>
 
       <section class="slide accent-orange" data-title="Vibe Coding">
         <div class="eyebrow">03 / Vibe Coding</div>
-        <h2>“Vibe Coding” is the industry buzzword for an informal AI-assisted style.</h2>
-        <p class="lede">It describes moving quickly from an idea to working software through conversational prompting and iterative generation. It can be useful for exploration, but speed without verification creates hidden cost.</p>
+        <h2>Vibe coding is useful for exploration. It is not a quality strategy.</h2>
+        <p class="lede">Move quickly from idea to draft, then add structure as the work becomes real.</p>
         <div class="spectrum">
-          <article class="spectrum-item accent-orange"><strong>Explore</strong><span>Try an idea, sketch a UI, or learn an unfamiliar API.</span></article>
-          <article class="spectrum-item accent-cyan"><strong>Shape</strong><span>Clarify behavior, constraints, and the intended user experience.</span></article>
-          <article class="spectrum-item accent-blue"><strong>Specify</strong><span>Make requirements, tasks, and acceptance criteria explicit.</span></article>
-          <article class="spectrum-item accent-teal"><strong>Prove</strong><span>Test, review, observe, and document the result.</span></article>
+          <article class="spectrum-item accent-orange"><strong>Explore</strong><span>Try the idea. Sketch the shape.</span></article>
+          <article class="spectrum-item accent-cyan"><strong>Shape</strong><span>Clarify behavior and constraints.</span></article>
+          <article class="spectrum-item accent-blue"><strong>Specify</strong><span>Make requirements and acceptance criteria explicit.</span></article>
+          <article class="spectrum-item accent-teal"><strong>Prove</strong><span>Test, review, observe, and document.</span></article>
         </div>
-        <div class="callout"><strong>Use the buzzword carefully:</strong><small>exploration can be informal; production changes still need engineering discipline and accountability.</small></div>
+        <div class="callout"><strong>Boundary:</strong><small>exploration can be informal; production changes still need discipline and accountability.</small></div>
         <a class="resource-link" href="AI-Assisted Development/resources/guides/vibe-coding-guide.html">Open: AI-Assisted Development Guide &rarr;</a>
       </section>
 
       <section class="slide accent-cyan" data-title="Prompt Engineering">
         <div class="eyebrow">04 / Prompt Engineering</div>
-        <h2>Prompt engineering makes intent easier for an AI system to act on.</h2>
+        <h2>Make your intent easy to act on.</h2>
         <div class="grid three">
-          <article class="card"><h3>Frame</h3><p>Name the role, outcome, audience, constraints, and relevant files or systems.</p></article>
-          <article class="card"><h3>Sequence</h3><p>Ask for a plan before implementation when the problem has meaningful uncertainty.</p></article>
-          <article class="card"><h3>Specify evidence</h3><p>Request tests, assumptions, edge cases, tradeoffs, and a concise change summary.</p></article>
+          <article class="card"><h3>Frame</h3><p>Role. Outcome. Audience. Constraints. Relevant context.</p></article>
+          <article class="card"><h3>Sequence</h3><p>Plan first when uncertainty is meaningful.</p></article>
+          <article class="card"><h3>Specify evidence</h3><p>Ask for tests, assumptions, edge cases, and tradeoffs.</p></article>
         </div>
-        <div class="callout"><strong>A good prompt creates a reviewable response:</strong><small>the person receiving the output should know what changed, why it changed, and how to check it.</small></div>
+        <div class="callout"><strong>Prompt test:</strong><small>the response makes clear what changed, why it changed, and how to check it.</small></div>
         <a class="resource-link" href="InaNutshell/Prompt Engineering - In a Nutshell.html">Open: Prompt Engineering - In a Nutshell &rarr;</a>
       </section>
 
       <section class="slide accent-teal" data-title="Context Engineering">
         <div class="eyebrow">05 / Context Engineering</div>
-        <h2>Context engineering is the deliberate selection and shaping of information.</h2>
+        <h2>Context is a design decision.</h2>
         <div class="layers">
-          <div class="layer accent-blue"><strong>Relevant code</strong><span>Provide the owning module, neighboring implementation, interfaces, and tests.</span></div>
-          <div class="layer accent-cyan"><strong>Constraints</strong><span>State conventions, compatibility requirements, security rules, and non-goals.</span></div>
-          <div class="layer accent-teal"><strong>Examples</strong><span>Show a nearby pattern, representative input, expected output, or prior decision.</span></div>
-          <div class="layer accent-orange"><strong>Noise control</strong><span>Exclude stale guidance, unrelated files, secrets, and conflicting sources.</span></div>
+          <div class="layer accent-blue"><strong>Relevant code</strong><span>Start with the owner, neighbors, interfaces, and tests.</span></div>
+          <div class="layer accent-cyan"><strong>Constraints</strong><span>State conventions, compatibility, security, and non-goals.</span></div>
+          <div class="layer accent-teal"><strong>Examples</strong><span>Show a nearby pattern, input, output, or prior decision.</span></div>
+          <div class="layer accent-orange"><strong>Noise control</strong><span>Exclude stale guidance, secrets, and conflicting sources.</span></div>
         </div>
-        <div class="callout"><strong>More context is not always better:</strong><small>use the smallest context set that allows the model to make a useful, defensible decision.</small></div>
+        <div class="callout"><strong>Context rule:</strong><small>use the smallest context set that supports a useful, defensible decision.</small></div>
         <a class="resource-link" href="InaNutshell/Context Engineering - In a Nutshell.html">Open: Context Engineering - In a Nutshell &rarr;</a>
       </section>
 
       <section class="slide accent-blue" data-title="AI-assisted workflow">
         <div class="eyebrow">06 / Workflow</div>
-        <h2>Make the development loop explicit.</h2>
+        <h2>Keep inspection close to generation.</h2>
         <div class="grid two">
-          <article class="card"><h3>Before generation</h3><ul><li>Clarify the desired behavior.</li><li>Locate the owning code and tests.</li><li>Choose the right mode and model.</li></ul></article>
-          <article class="card"><h3>After generation</h3><ul><li>Inspect the diff and assumptions.</li><li>Run focused tests and checks.</li><li>Refine the request using what you learned.</li></ul></article>
+          <article class="card"><h3>Before generation</h3><ul><li>Clarify the behavior.</li><li>Locate the owner and tests.</li><li>Choose the mode and model.</li></ul></article>
+          <article class="card"><h3>After generation</h3><ul><li>Inspect the diff.</li><li>Run focused checks.</li><li>Refine using what you learned.</li></ul></article>
         </div>
-        <div class="callout"><strong>Use AI to compress feedback loops, not remove them.</strong><small>Fast generation only helps when inspection and validation stay close to the change.</small></div>
+        <div class="callout"><strong>Workflow rule:</strong><small>use AI to compress feedback loops, not remove them.</small></div>
       </section>
 
       <section class="slide accent-orange" data-title="Modes of collaboration">
         <div class="eyebrow">07 / Collaboration modes</div>
-        <h2>Choose the level of autonomy that matches the risk.</h2>
+        <h2>Match autonomy to risk.</h2>
         <div class="spectrum">
-          <article class="spectrum-item accent-cyan"><strong>Ask</strong><span>Explain, compare, teach, or investigate without changing files.</span></article>
-          <article class="spectrum-item accent-blue"><strong>Suggest</strong><span>Draft code or edits for a person to inspect and apply.</span></article>
-          <article class="spectrum-item accent-teal"><strong>Pair</strong><span>Work through a bounded change with frequent review and tests.</span></article>
-          <article class="spectrum-item accent-orange"><strong>Delegate</strong><span>Let an agent execute a defined workflow with explicit boundaries.</span></article>
+          <article class="spectrum-item accent-cyan"><strong>Ask</strong><span>Explain, compare, teach, investigate.</span></article>
+          <article class="spectrum-item accent-blue"><strong>Suggest</strong><span>Draft an edit for a person to inspect.</span></article>
+          <article class="spectrum-item accent-teal"><strong>Pair</strong><span>Execute a bounded change with frequent review.</span></article>
+          <article class="spectrum-item accent-orange"><strong>Delegate</strong><span>Run a defined workflow inside explicit boundaries.</span></article>
         </div>
-        <div class="callout"><strong>Risk should determine autonomy:</strong><small>the more consequential the change, the clearer the approvals, ownership, and evidence should be.</small></div>
+        <div class="callout"><strong>Risk rule:</strong><small>as consequence increases, approvals, ownership, and evidence must become clearer.</small></div>
       </section>
 
       <section class="slide accent-cyan" data-title="Verification">
         <div class="eyebrow">08 / Verification</div>
         <h2>Generated code is a draft until evidence says otherwise.</h2>
         <div class="grid three">
-          <article class="card"><h3>Read</h3><p>Check the diff, control flow, dependencies, error handling, and data boundaries.</p></article>
-          <article class="card"><h3>Run</h3><p>Use focused tests first, then lint, typecheck, build, integration, or runtime checks as appropriate.</p></article>
-          <article class="card"><h3>Review</h3><p>Ask whether the change solves the actual problem and fits the repository's design.</p></article>
+          <article class="card"><h3>Read</h3><p>Diff. Control flow. Dependencies. Errors. Data boundaries.</p></article>
+          <article class="card"><h3>Run</h3><p>Start focused; expand to build, integration, or runtime checks.</p></article>
+          <article class="card"><h3>Review</h3><p>Does it solve the real problem and fit the repository?</p></article>
         </div>
-        <div class="callout"><strong>Verification is part of prompting:</strong><small>asking for tests and assumptions up front gives the review a shape before the code exists.</small></div>
+        <div class="callout"><strong>Verification is part of prompting:</strong><small>ask for tests and assumptions before the code exists.</small></div>
       </section>
 
       <section class="slide accent-teal" data-title="Spec-Driven Development">
         <div class="eyebrow">09 / From exploration to specification</div>
-        <h2>When the work matters, turn conversation into a shared specification.</h2>
+        <h2>When the work matters, turn conversation into a specification.</h2>
         <div class="layers">
-          <div class="layer accent-cyan"><strong>Discover</strong><span>Explore the problem, users, constraints, and possible approaches with AI.</span></div>
-          <div class="layer accent-blue"><strong>Specify</strong><span>Record the behavior, scenarios, acceptance criteria, and non-functional needs.</span></div>
-          <div class="layer accent-teal"><strong>Plan</strong><span>Break the work into tasks with dependencies, ownership, and quality gates.</span></div>
-          <div class="layer accent-orange"><strong>Implement</strong><span>Use AI assistance within the agreed boundaries, then validate against the specification.</span></div>
+          <div class="layer accent-cyan"><strong>Discover</strong><span>Explore users, constraints, and possible approaches.</span></div>
+          <div class="layer accent-blue"><strong>Specify</strong><span>Record behavior, scenarios, and acceptance criteria.</span></div>
+          <div class="layer accent-teal"><strong>Plan</strong><span>Break the work into owned tasks and quality gates.</span></div>
+          <div class="layer accent-orange"><strong>Implement</strong><span>Build inside the agreed boundaries; validate against the spec.</span></div>
         </div>
-        <div class="callout"><strong>AI-Assisted Development and Spec-Driven Development are complementary:</strong><small>exploration helps find the path; specifications help the team travel it consistently.</small></div>
+        <div class="callout"><strong>Complementary strengths:</strong><small>AI helps find the path; specifications help the team travel it consistently.</small></div>
         <a class="resource-link" href="GitHub Copilot and Spec-Driven Development/Fundamentals & Enablement/vibe-coding-vs-spec-driven-development.html">Open: AI-Assisted Development vs Spec-Driven Development &rarr;</a>
       </section>
 
       <section class="slide accent-blue" data-title="Team practices">
         <div class="eyebrow">10 / Team practices</div>
-        <h2>Make AI-assisted work legible to the team.</h2>
+        <h2>Make AI-assisted work legible.</h2>
         <div class="grid three">
-          <article class="card"><h3>Share patterns</h3><p>Keep useful prompts, examples, instructions, and decisions close to the project.</p></article>
-          <article class="card"><h3>Review outcomes</h3><p>Review generated changes with the same technical and security standards as any other change.</p></article>
-          <article class="card"><h3>Improve the system</h3><p>When a workflow repeats, improve the context or automation instead of relying on memory.</p></article>
+          <article class="card"><h3>Share patterns</h3><p>Keep useful prompts, examples, and decisions with the project.</p></article>
+          <article class="card"><h3>Review outcomes</h3><p>Apply the same technical and security bar as any change.</p></article>
+          <article class="card"><h3>Improve the system</h3><p>Turn repeated work into better context or automation.</p></article>
         </div>
-        <div class="callout"><strong>Team maturity appears in the workflow:</strong><small>people can explain how AI was used, what was checked, and where the next improvement belongs.</small></div>
+        <div class="callout"><strong>Team maturity test:</strong><small>people can explain how AI was used, what was checked, and what should improve next.</small></div>
       </section>
 
       <section class="slide accent-orange" data-title="Responsible use">
         <div class="eyebrow">11 / Responsible use</div>
-        <h2>Keep human judgment at the boundary of consequence.</h2>
+        <h2>Keep human judgment where consequences begin.</h2>
         <div class="grid two">
-          <article class="card"><h3>Protect</h3><ul><li>Do not expose secrets or unnecessary sensitive data.</li><li>Respect licensing, privacy, security, and access controls.</li><li>Use least privilege for tools and automation.</li></ul></article>
-          <article class="card"><h3>Account</h3><ul><li>Verify behavior before shipping.</li><li>Record important assumptions and decisions.</li><li>Escalate uncertain or high-impact outcomes.</li></ul></article>
+          <article class="card"><h3>Protect</h3><ul><li>No secrets or unnecessary sensitive data.</li><li>Respect licensing, privacy, security, and access.</li><li>Use least privilege.</li></ul></article>
+          <article class="card"><h3>Account</h3><ul><li>Verify before shipping.</li><li>Record assumptions and decisions.</li><li>Escalate uncertain or high-impact outcomes.</li></ul></article>
         </div>
-        <div class="callout"><strong>Responsible use is practical engineering:</strong><small>clear boundaries and evidence make AI assistance safer, easier to review, and easier to improve.</small></div>
+        <div class="callout"><strong>Safety is practical engineering:</strong><small>clear boundaries and evidence make AI assistance safer and easier to improve.</small></div>
       </section>
 
       <section class="slide accent-cyan" data-title="Practice path">
         <div class="eyebrow">12 / Practice path</div>
-        <h2>Build the habit in progressively larger loops.</h2>
+        <h2>Build the habit in larger loops.</h2>
         <div class="flow">
-          <article class="flow-item accent-cyan"><div class="flow-number">01</div><h3>Small task</h3><p>Use Copilot to explain or transform a bounded piece of code.</p></article>
-          <article class="flow-item accent-blue"><div class="flow-number">02</div><h3>Feature</h3><p>Provide context, ask for a plan, implement, and test a focused change.</p></article>
-          <article class="flow-item accent-teal"><div class="flow-number">03</div><h3>Workflow</h3><p>Capture the repeated guidance and improve the team pattern.</p></article>
-          <article class="flow-item accent-orange"><div class="flow-number">04</div><h3>Specification</h3><p>Use shared requirements and quality gates for consequential work.</p></article>
+          <article class="flow-item accent-cyan"><div class="flow-number">01</div><h3>Small task</h3><p>Explain or transform a bounded piece of code.</p></article>
+          <article class="flow-item accent-blue"><div class="flow-number">02</div><h3>Feature</h3><p>Context → plan → implementation → tests.</p></article>
+          <article class="flow-item accent-teal"><div class="flow-number">03</div><h3>Workflow</h3><p>Capture repeated guidance and improve the pattern.</p></article>
+          <article class="flow-item accent-orange"><div class="flow-number">04</div><h3>Specification</h3><p>Use shared requirements and quality gates.</p></article>
         </div>
         <a class="resource-link" href="AI-Assisted Development/resources/exercises/lab-exercises.html">Open: AI-Assisted Development and Spec-Driven Development Lab &rarr;</a>
       </section>
 
       <section class="slide accent-orange" data-title="Next steps">
         <div class="eyebrow">13 / Next steps</div>
-        <h2>Start with one real workflow and make the loop visible.</h2>
-        <p class="lede">Choose a task the team performs often. Define its intent, provide the right context, use AI to explore or implement, and leave evidence that another person can review.</p>
+        <h2>Start with one real workflow.</h2>
+        <p class="lede">Define its intent. Provide the right context. Use AI to explore or implement. Leave evidence another person can review.</p>
         <div class="title-mark"><span></span><span></span><span></span><span></span></div>
         <div class="date-line"><a class="next-link" href="spec-driven-development.html">Next: Spec-Driven Development (GitHub Speck Kit & Agent Squad) &rarr;</a></div>
       </section>

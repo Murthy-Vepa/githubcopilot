@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Week 1 training guide for GitHub Copilot and Spec-Driven Development foundations and standards.">
+  <title>Week 1 | Foundations and Standards</title>
+  <style>
+    :root { --ink:#17253d; --navy:#071a38; --blue:#1359b5; --cyan:#0d9db2; --teal:#118b83; --paper:#f4f7fa; --white:#fff; --muted:#617086; --line:#d8e1eb; --wash:#eaf4fb; --shadow:0 12px 28px rgba(7,26,56,.09); }
+    * { box-sizing:border-box; } html { scroll-behavior:smooth; } body { margin:0; background:var(--paper); color:var(--ink); font-family:"Segoe UI",sans-serif; line-height:1.5; }
+    a { color:var(--blue); } .page { max-width:1180px; margin:0 auto; padding:28px; }
+    .hero { position:relative; overflow:hidden; padding:44px 46px; border-radius:20px; background:linear-gradient(120deg,var(--navy),#123e76 72%,#0d9db2); color:var(--white); box-shadow:var(--shadow); }
+    .hero:after { content:""; position:absolute; width:310px; height:310px; border:48px solid rgba(255,255,255,.12); border-radius:50%; right:-110px; top:-145px; }
+    .eyebrow,.kicker { position:relative; z-index:1; color:#7de5df; font-size:11px; font-weight:800; letter-spacing:1.8px; text-transform:uppercase; }
+    h1 { position:relative; z-index:1; max-width:760px; margin:12px 0 12px; font-family:Georgia,"Times New Roman",serif; font-size:clamp(34px,5vw,60px); line-height:1.03; }
+    .hero p { position:relative; z-index:1; max-width:720px; margin:0 0 24px; color:#d5e5f5; font-size:17px; }
+    .meta { position:relative; z-index:1; display:flex; flex-wrap:wrap; gap:9px; } .meta span { padding:7px 12px; border:1px solid rgba(255,255,255,.24); border-radius:999px; background:rgba(255,255,255,.08); font-size:12px; font-weight:700; }
+    .section { margin-top:28px; } .section-head { display:flex; align-items:center; gap:14px; margin-bottom:14px; } h2 { margin:0; color:#0e2d5c; font-size:22px; } .section-head:after { content:""; height:2px; flex:1; background:linear-gradient(90deg,var(--line),transparent); }
+    .grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; } .grid.two { grid-template-columns:1.2fr .8fr; }
+    .card { padding:20px; border:1px solid var(--line); border-radius:13px; background:var(--white); box-shadow:0 5px 16px rgba(7,26,56,.05); } .card h3 { margin:0 0 8px; color:#0e2d5c; font-size:16px; } .card p { margin:0; color:var(--muted); font-size:13px; } ul { margin:0; padding-left:18px; } li { margin-bottom:8px; color:var(--muted); font-size:13px; }
+    .table-wrap { overflow-x:auto; } .table-wrap { overflow-x:auto; } .agenda { width:100%; border-collapse:collapse; background:var(--white); border:1px solid var(--line); border-radius:13px; overflow:hidden; box-shadow:0 5px 16px rgba(7,26,56,.05); font-size:13px; } th { padding:11px 13px; background:var(--navy); color:var(--white); text-align:left; font-size:11px; letter-spacing:.6px; text-transform:uppercase; } td { padding:12px 13px; border-top:1px solid var(--line); vertical-align:top; color:var(--muted); } td:first-child { width:19%; color:#0e2d5c; font-weight:800; white-space:nowrap; }
+    .callout { padding:18px 20px; border-left:5px solid var(--cyan); background:var(--wash); border-radius:0 12px 12px 0; } .callout strong { color:#0e2d5c; } .callout p { margin:5px 0 0; color:var(--muted); font-size:13px; }
+    .links a { display:block; margin:8px 0; font-size:13px; font-weight:700; } .checklist li::marker { color:var(--teal); } footer { display:flex; justify-content:space-between; gap:16px; margin-top:30px; padding:18px 2px 4px; border-top:1px solid var(--line); color:var(--muted); font-size:11px; }
+    @media(max-width:850px) { .grid,.grid.two { grid-template-columns:1fr; } } @media(max-width:600px) { .page{padding:14px}.hero{padding:30px 24px;border-radius:14px}.hero p{font-size:15px}footer{flex-direction:column}td:first-child{white-space:normal} }
+    .hero { background: linear-gradient(120deg, #eaf4ff, #f4fbff 68%, #e4f8f5); color: var(--ink); border: 1px solid #c9dceb; }
+    .hero:after { border-color: rgba(13,157,178,.14); }
+    .hero p { color: #425873; }
+    .eyebrow, .kicker { color: #087b79; }
+    .meta span { border-color: #b9d0e2; background: rgba(255,255,255,.58); color: #294866; }
+    th { background: #eaf4ff; color: #0e2d5c; }
+
+    @media print { body{background:#fff}.page{max-width:none;padding:0}.hero,.card,.table-wrap{overflow-x:auto}.table-wrap{overflow-x:auto}.agenda{box-shadow:none}.section{margin-top:17px} }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="hero">
+      <div class="eyebrow">GitHub Copilot and Spec-Driven Development / Week 1</div>
+      <h1>Foundations and Standards</h1>
+      <p>Give every participating team a shared operating model for responsible GitHub Copilot use and Spec-Driven Development before tools and workflows are introduced at scale.</p>
+      <div class="meta"><span>Week 1</span><span>Audience: all participants and team leads</span><span>Format: orientation, working sessions, setup clinic</span></div>
+    </header>
+
+    <section class="section"><div class="section-head"><h2>Week at a glance</h2></div><div class="grid">
+      <article class="card"><div class="kicker">Purpose</div><h3>Align the organization</h3><p>Make the reason for adopting Copilot and SDD explicit: faster learning and delivery with stronger intent, review, traceability, and human accountability.</p></article>
+      <article class="card"><div class="kicker">By Friday</div><h3>Leave with a standard</h3><p>Each team understands the minimum workflow, knows where to find approved templates, and has a named owner for readiness and support.</p></article>
+      <article class="card"><div class="kicker">Proof of readiness</div><h3>One usable starting point</h3><p>A team charter, a sample problem statement, an initial specification, and a completed access and repository checklist.</p></article>
+    </div></section>
+
+    <section class="section"><div class="section-head"><h2>Learning outcomes</h2></div><div class="grid"><article class="card"><h3>Explain the model</h3><ul><li>Describe the difference between AI-assisted development, prompting, agents, and SDD.</li><li>Explain why specifications precede plans, tasks, implementation, and tests.</li><li>Identify where human review remains mandatory.</li></ul></article><article class="card"><h3>Use the guardrails</h3><ul><li>Apply approved data-handling and responsible-use expectations.</li><li>Recognize sensitive information, unsupported output, and over-trust risks.</li><li>Use the escalation path for access, security, and quality concerns.</li></ul></article><article class="card"><h3>Prepare the team</h3><ul><li>Confirm GitHub, Copilot, repository, and collaboration access.</li><li>Choose a low-risk representative story for Week 3.</li><li>Agree on a team owner and a definition of ready.</li></ul></article></div></section>
+
+    <section class="section"><div class="section-head"><h2>Suggested agenda</h2></div><div class="table-wrap"><table class="agenda"><thead><tr><th>Session</th><th>Focus</th><th>Working activity</th><th>Evidence produced</th></tr></thead><tbody>
+      <tr><td>Monday / Launch</td><td>Why Copilot and SDD</td><td>Review the rollout outcomes, the six-module learning path, and the expectations for the four weeks.</td><td>Participant baseline and team roster.</td></tr>
+      <tr><td>Tuesday / Standards</td><td>SDD operating model</td><td>Walk through intent, requirements, specification, plan, tasks, implementation, tests, review, and evidence.</td><td>Draft team workflow and exception questions.</td></tr>
+      <tr><td>Wednesday / Responsible use</td><td>Safety and accountability</td><td>Work through examples involving sensitive data, generated code, licensing, security, testing, and human approval.</td><td>Team guardrail checklist.</td></tr>
+      <tr><td>Thursday / Readiness clinic</td><td>Access and repository setup</td><td>Validate access, extensions, repository conventions, issue tracking, branch protections, and support channels.</td><td>Completed readiness checklist.</td></tr>
+      <tr><td>Friday / Commitment</td><td>Choose the first story</td><td>Write a concise problem statement, draft requirements and an initial specification outline, then identify the stakeholders, constraints, risks, and acceptance evidence.</td><td>Candidate story, team charter, and Week 2 handoff.</td></tr>
+    </tbody></table></div></section>
+
+    <section class="section"><div class="section-head"><h2>The Week 1 decisions</h2></div><div class="grid two">
+      <article class="card"><div class="kicker">Decision 01</div><h3>Approve the SDD operating model</h3><p>Agree that delivery begins with intent and a problem statement, not a code request. The minimum path is:</p><ol><li>Intent and problem statement</li><li>Requirements and acceptance criteria</li><li>Specification and constraints</li><li>Implementation plan and task breakdown</li><li>Implementation, tests, review, and evidence</li></ol><p>For each stage, name the responsible role, the reviewer, the required artifact, and the point at which work may proceed.</p></article>
+      <article class="card"><div class="kicker">Decision 02</div><h3>Make accountability explicit</h3><p>Copilot and agents may help explore, draft, transform, and check work. They do not approve requirements, architecture, security decisions, test adequacy, acceptance, or release.</p><ul><li>A product or business owner confirms the outcome and priority.</li><li>A delivery or technical owner confirms feasibility and design.</li><li>Reviewers validate security, privacy, accessibility, testing, and operational impact.</li><li>The release owner accepts the final evidence and known limitations.</li></ul></article>
+    </div></section>
+
+    <section class="section"><div class="section-head"><h2>When SDD is required</h2></div><div class="grid">
+      <article class="card"><h3>Required</h3><p>Use the complete SDD path for work that changes business behavior or carries meaningful risk.</p><ul><li>New features, services, or user journeys</li><li>Material changes to existing behavior or integrations</li><li>Customer-facing, regulated, security, privacy, or compliance work</li><li>Changes involving sensitive data, authorization, or production operations</li><li>Cross-team work with significant dependencies or architectural impact</li></ul></article>
+      <article class="card"><h3>Scaled SDD</h3><p>Use the same intent, requirements, review, and evidence principles with fewer artifacts when the change is small and low risk.</p><ul><li>Small enhancements with clear acceptance criteria</li><li>Routine maintenance with limited behavior change</li><li>Internal tooling changes with an identified owner and test evidence</li></ul><p>The team records which artifacts were combined and why.</p></article>
+      <article class="card"><h3>Exception candidates</h3><p>An exception is a controlled decision, not an absence of process.</p><ul><li>Emergency production remediation</li><li>Minor typo, documentation, or formatting changes</li><li>Routine configuration or dependency updates with established checks</li><li>Time-critical operational actions where delay creates greater risk</li></ul><p>Post-incident documentation and retrospective traceability may still be required.</p></article>
+    </div></section>
+
+    <section class="section"><div class="section-head"><h2>Exception record</h2></div><div class="grid two">
+      <article class="card"><h3>Record before bypassing the standard</h3><p>Use an exception record in the issue, change ticket, or approved repository location. Keep it short enough to complete during delivery.</p><ul><li>Work item and requesting team</li><li>SDD stage or artifact being skipped or combined</li><li>Reason and urgency</li><li>Risk introduced and compensating checks</li><li>Named approver and accountable owner</li><li>Expiry date, follow-up action, or retrospective review</li></ul></article>
+      <article class="card"><h3>Approval rule</h3><p>Exceptions must be visible, justified, owned, and time-bound. An emergency exception may be approved after the change, but the approver and follow-up deadline must still be recorded.</p><div class="callout"><strong>Escalate when:</strong><p>the change affects sensitive data, security controls, customer commitments, regulatory obligations, or a shared production dependency.</p></div></article>
+    </div></section>
+
+    <section class="section"><div class="section-head"><h2>Approved artifact set</h2></div><div class="table-wrap"><table class="agenda"><thead><tr><th>Artifact</th><th>Purpose</th><th>Minimum contents</th><th>Approval signal</th></tr></thead><tbody>
+      <tr><td>Problem statement</td><td>Describe the outcome before proposing a solution.</td><td>User, problem, desired outcome, scope, stakeholders, constraints, assumptions, risks.</td><td>Owner agrees the problem and outcome are correctly understood.</td></tr>
+      <tr><td>Requirements</td><td>Define what must be true for the outcome to be acceptable.</td><td>Functional requirements, acceptance criteria, non-functional needs, exclusions, dependencies.</td><td>Business and technical reviewers confirm clarity and testability.</td></tr>
+      <tr><td>Specification</td><td>Explain the intended behavior and design boundaries.</td><td>Scenarios, interfaces, data behavior, error handling, security, accessibility, observability.</td><td>Design owner confirms feasibility and identified risks.</td></tr>
+      <tr><td>Plan</td><td>Show how the specification will be implemented safely.</td><td>Approach, affected components, sequence, migrations, test strategy, rollout and rollback.</td><td>Technical reviewer accepts scope, dependencies, and risk controls.</td></tr>
+      <tr><td>Tasks</td><td>Turn the approved plan into executable work.</td><td>Small tasks, owner, dependency, linked requirement, completion evidence.</td><td>Tasks are ready for delivery without hidden design decisions.</td></tr>
+      <tr><td>Evidence</td><td>Make acceptance and learning reviewable.</td><td>Tests, review links, screenshots or logs where relevant, security checks, known limitations.</td><td>Release or acceptance owner confirms the evidence is sufficient.</td></tr>
+    </tbody></table></div></section>
+
+    <section class="section"><div class="section-head"><h2>Traceability and quality gates</h2></div><div class="grid two">
+      <article class="card"><h3>Connect every decision</h3><p>Each artifact should link to the item before it and the evidence after it:</p><div class="trace-flow"><span>REQ-###</span><b>-></b><span>SPEC-###</span><b>-></b><span>PLAN-###</span><b>-></b><span>TASK-###</span><b>-></b><span>PR / TEST</span></div><p>Use the team's approved issue, pull request, document, or folder convention. The identifier matters less than making the relationship easy to follow.</p></article>
+      <article class="card"><h3>Pause at the gates</h3><ul><li><strong>Intent gate:</strong> the problem and outcome are understood.</li><li><strong>Requirements gate:</strong> acceptance criteria are clear and testable.</li><li><strong>Specification gate:</strong> design, risks, and constraints are reviewed.</li><li><strong>Plan gate:</strong> tasks, dependencies, and test approach are credible.</li><li><strong>Acceptance gate:</strong> implementation, tests, review, and limitations are evidenced.</li></ul></article>
+    </div></section>
+
+    <section class="section"><div class="section-head"><h2>Definition of Ready and Definition of Done</h2></div><div class="grid two">
+      <article class="card"><div class="kicker">DoR / Before work starts</div><h3>A team may start when</h3><ul class="checklist"><li>The user, problem, and intended outcome are clear.</li><li>Scope, exclusions, stakeholders, assumptions, and dependencies are recorded.</li><li>Requirements have testable acceptance criteria.</li><li>Security, privacy, accessibility, data, and operational concerns have been considered.</li><li>The work has an owner, priority, and appropriate SDD path.</li><li>Required approvals or an explicit approved exception are present.</li></ul></article>
+      <article class="card"><div class="kicker">DoD / Before acceptance</div><h3>A team may call it done when</h3><ul class="checklist"><li>Implementation satisfies the approved requirements and specification.</li><li>Automated or manual tests provide evidence for the acceptance criteria.</li><li>Code review and required security, privacy, accessibility, and quality checks are complete.</li><li>Traceability links connect requirements to tasks, changes, tests, and evidence.</li><li>Documentation, monitoring, rollout, and rollback needs are addressed.</li><li>Known limitations, exceptions, and follow-up work are recorded and owned.</li></ul></article>
+    </div></section>
+
+    <section class="section"><div class="section-head"><h2>Hands-on exercise</h2></div><div class="grid two"><article class="card"><h3>Turn a vague request into a responsible starting point</h3><p>Take a real or representative request such as “improve the claims search experience.” Record the user, outcome, business constraints, non-functional concerns, data considerations, dependencies, and what would make the result acceptable. Do not ask Copilot to write code yet. The goal is to establish enough context for a useful specification.</p></article><article class="card"><h3>Completion checklist</h3><ul class="checklist"><li>Problem and outcome are stated in plain language.</li><li>Stakeholders and assumptions are named.</li><li>Security, privacy, accessibility, and operational concerns are listed.</li><li>Team agrees what evidence will be reviewed.</li></ul></article></div></section>
+
+    <section class="section"><div class="callout"><strong>Facilitator emphasis</strong><p>Week 1 is successful when teams understand that Copilot is part of an engineering system, not a substitute for problem definition, design judgment, testing, or accountability. Keep the examples concrete and let teams surface exceptions early.</p></div></section>
+
+    <section class="section"><div class="section-head"><h2>Required deliverables and readiness gate</h2></div><div class="grid two"><article class="card"><h3>Submit by Friday</h3><ul><li>Team charter with owner, participants, support channel, and selected story.</li><li>Approved SDD workflow with required-use and exception rules.</li><li>Published requirements, specification, plan, task, exception, and evidence templates.</li><li>Traceability convention and DoR / DoD checklists.</li><li>One-page problem statement, draft requirements, and initial specification outline.</li><li>Completed access and repository readiness checklist.</li><li>Open questions or exception requests for the enablement team.</li></ul></article><article class="card"><h3>Ready for Week 2 when</h3><ul><li>All participants can access the required tools, repositories, and support channels.</li><li>The selected story is low-risk and small enough for guided practice.</li><li>The team can explain the SDD stages, review points, and human accountability.</li><li>The team knows when to use full SDD, scaled SDD, or an exception.</li><li>The team can show how a requirement will connect to implementation and evidence.</li><li>No unresolved security or data-handling blocker remains.</li></ul></article></div></section>
+
+    <section class="section"><div class="section-head"><h2>Continue learning</h2></div><div class="card links"><a href="../../Fundamentals/onepagers/one-pager.html">Fundamentals one-pager</a><a href="../../Fundamentals/guides/responsible-ai-guide.html">Responsible AI guide</a><a href="../../AI-Assisted Development/resources/guides/vibe-coding-guide.html">AI-Assisted Development and Spec-Driven Development guide</a><a href="../SDD & Agent Squad Rollout Roadmap - One Pager.html">Back to rollout roadmap</a></div></section>
+    <footer></footer>
+  </main>
+</body>
+</html>
+

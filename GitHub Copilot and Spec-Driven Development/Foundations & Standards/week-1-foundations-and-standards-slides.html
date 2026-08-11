@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Week 1 slide presentation for GitHub Copilot adoption and Spec-Driven Development foundations and standards.">
+  <title>Foundations and Standards</title>
+  <style>
+    :root {
+      --ink: #17253d;
+      --navy: #071a38;
+      --blue: #1359b5;
+      --cyan: #0d9db2;
+      --teal: #118b83;
+      --orange: #c66b1b;
+      --paper: #f4f7fa;
+      --white: #fff;
+      --muted: #617086;
+      --line: #d8e1eb;
+      --wash: #eaf4fb;
+      --display: "Segoe UI", Georgia, "Times New Roman", serif;
+      --body: "Segoe UI Semibold", "Trebuchet MS", "Segoe UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html, body { min-height: 100%; }
+    body { margin: 0; overflow: hidden; background: var(--paper); color: var(--ink); font-family: var(--body); }
+    button { font: inherit; }
+    .deck { min-height: 100vh; position: relative; isolation: isolate; background: radial-gradient(circle at 10% 12%, rgba(13,157,178,.12), transparent 23rem), radial-gradient(circle at 92% 88%, rgba(198,107,27,.09), transparent 22rem), var(--paper); }
+    .deck::before { content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: .34; background-image: linear-gradient(rgba(23,37,61,.025) 1px, transparent 1px), linear-gradient(90deg, rgba(23,37,61,.025) 1px, transparent 1px); background-size: 36px 36px; -webkit-mask-image: linear-gradient(to bottom, black, transparent 85%); mask-image: linear-gradient(to bottom, black, transparent 85%); }
+    .topbar { position: fixed; inset: 0 0 auto; z-index: 5; display: flex; justify-content: space-between; padding: 18px clamp(20px, 4vw, 60px); color: var(--muted); font-size: 11px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+    .brand { color: var(--navy); }
+    .counter { font-variant-numeric: tabular-nums; }
+    .slides { min-height: 100vh; position: relative; }
+    .slide { display: none; width: min(1240px, 100%); min-height: 100vh; max-height: 100vh; margin: 0 auto; padding: clamp(74px, 8vh, 104px) clamp(24px, 7vw, 104px) 92px; overflow-y: auto; animation: enter .45s ease both; }
+    .slide.active { display: flex; flex-direction: column; justify-content: center; }
+    @keyframes enter { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+    .eyebrow { color: var(--accent, var(--cyan)); font-size: 12px; font-weight: 900; letter-spacing: .17em; text-transform: uppercase; }
+    .accent-blue { --accent: var(--blue); } .accent-cyan { --accent: var(--cyan); } .accent-teal { --accent: var(--teal); } .accent-orange { --accent: var(--orange); }
+    h1, h2, h3, p { margin-top: 0; }
+    h1, h2 { font-family: var(--display); font-weight: 700; letter-spacing: -.025em; }
+    h1 { max-width: 950px; margin: 14px 0 18px; color: var(--navy); font-size: clamp(42px, 6.2vw, 78px); line-height: .98; }
+    h2 { max-width: 900px; margin: 11px 0 24px; color: var(--navy); font-size: clamp(32px, 4.2vw, 56px); line-height: 1.02; }
+    h3 { margin-bottom: 8px; color: var(--navy); font-size: 16px; line-height: 1.15; }
+    .lede { max-width: 730px; color: #53677d; font-size: clamp(16px, 1.7vw, 21px); line-height: 1.48; }
+    .date-line { margin-top: 24px; color: var(--muted); font-size: 13px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+    .title-mark { display: flex; gap: 8px; margin-top: 34px; }
+    .title-mark span { width: 58px; height: 8px; border-radius: 99px; }
+    .title-mark span:nth-child(1) { background: var(--blue); } .title-mark span:nth-child(2) { background: var(--cyan); } .title-mark span:nth-child(3) { background: var(--teal); } .title-mark span:nth-child(4) { background: var(--orange); }
+    .grid { display: grid; gap: 12px; } .grid.two { grid-template-columns: repeat(2, 1fr); } .grid.three { grid-template-columns: repeat(3, 1fr); }
+    .card { position: relative; padding: 18px; border: 1px solid var(--line); border-radius: 12px; background: rgba(255,255,255,.84); box-shadow: 0 7px 18px rgba(22,55,87,.05); }
+    .card::before { content: ""; display: block; width: 30px; height: 4px; margin-bottom: 14px; border-radius: 99px; background: var(--accent, var(--cyan)); }
+    .card p, .card li { color: var(--muted); font-size: 13px; line-height: 1.42; } .card p { margin-bottom: 0; }
+    ul { margin: 0; padding-left: 17px; } li + li { margin-top: 6px; }
+    .flow { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 16px; }
+    .flow span { padding: 9px 12px; border: 1px solid #c8d8e5; border-radius: 8px; background: var(--white); color: var(--navy); font-size: 12px; font-weight: 800; }
+    .flow i { color: var(--cyan); font-style: normal; font-size: 18px; }
+    .callout { margin-top: 14px; padding: 17px 20px; border-left: 5px solid var(--accent, var(--cyan)); background: rgba(255,255,255,.72); color: var(--navy); font-size: 16px; line-height: 1.38; }
+    .callout small { display: block; margin-top: 9px; color: var(--muted); font-size: 12px; }
+    .arc { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 14px; }
+    .arc-item { min-height: 178px; padding: 15px; border-top: 5px solid var(--accent); background: rgba(255,255,255,.84); box-shadow: 0 9px 22px rgba(7,26,56,.08); }
+    .arc-cyan { --accent: var(--cyan); } .arc-blue { --accent: var(--blue); } .arc-teal { --accent: var(--teal); } .arc-orange { --accent: var(--orange); }
+    .arc-number { color: var(--accent); font-family: var(--display); font-size: 38px; line-height: 1; } .arc-item h3 { margin-top: 16px; } .arc-item p { color: var(--muted); font-size: 12px; line-height: 1.4; }
+    .artifact { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+    .artifact span { padding: 13px 15px; border-left: 4px solid var(--accent); background: var(--white); color: var(--navy); font-size: 13px; font-weight: 800; }
+    .artifact-cyan { --accent: var(--cyan); } .artifact-blue { --accent: var(--blue); } .artifact-teal { --accent: var(--teal); } .artifact-orange { --accent: var(--orange); }
+    .top-gap { margin-top: 18px; }
+    .gate { display: grid; grid-template-columns: 48px 1fr; gap: 14px; align-items: start; padding: 15px 0; border-bottom: 1px solid var(--line); } .gate:last-child { border-bottom: 0; } .gate b { display: grid; width: 40px; height: 40px; place-items: center; border-radius: 50%; background: var(--accent); color: white; font-size: 14px; } .gate p { margin: 0; color: var(--muted); font-size: 14px; }
+    .controls { position: fixed; right: clamp(18px, 4vw, 60px); bottom: 24px; z-index: 6; display: flex; gap: 8px; }
+    .control, .overview-toggle { display: grid; place-items: center; min-width: 38px; height: 38px; padding: 0 11px; border: 1px solid #bfd0dd; border-radius: 8px; background: rgba(255,255,255,.9); color: var(--navy); cursor: pointer; box-shadow: 0 5px 18px rgba(22,55,87,.08); font-weight: 900; }
+    .control:hover, .control:focus-visible, .overview-toggle:hover, .overview-toggle:focus-visible { border-color: var(--cyan); color: var(--cyan); outline: none; }
+    .progress { position: fixed; right: 0; bottom: 0; left: 0; z-index: 5; height: 4px; background: #dfe8ef; } .progress span { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--blue), var(--cyan), var(--teal), var(--orange)); transition: width .35s ease; }
+    .overview { position: fixed; inset: 0; z-index: 10; display: none; padding: 8vh 7vw; overflow: auto; background: rgba(245,248,251,.96); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
+    .overview.open { display: block; animation: enter .25s ease both; } .overview-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 26px; } .overview h2 { margin: 0; font-size: 38px; }
+    .thumbs { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; } .thumb { min-height: 120px; padding: 16px; border: 1px solid var(--line); border-top: 5px solid var(--accent); background: var(--white); color: var(--navy); text-align: left; cursor: pointer; } .thumb:hover, .thumb:focus-visible { transform: translateY(-3px); box-shadow: 0 12px 28px rgba(7,26,56,.09); outline: none; } .thumb small { display: block; margin-bottom: 18px; color: var(--accent); font-weight: 900; } .thumb strong { font-family: var(--display); font-size: 18px; }
+    @media (max-width: 800px) { .grid.two, .grid.three, .arc, .artifact { grid-template-columns: 1fr; } .arc { gap: 10px; } .arc-item { min-height: 0; } h1 { font-size: clamp(40px, 11vw, 62px); } h2 { font-size: clamp(30px, 8vw, 46px); } }
+    @media (max-height: 800px) and (min-width: 801px) { .slide { padding-top: 68px; padding-bottom: 82px; } h1 { font-size: clamp(40px, 5.6vw, 68px); } h2 { font-size: clamp(30px, 3.8vw, 48px); margin-bottom: 18px; } .card { padding: 15px; } .card::before { margin-bottom: 10px; } .card p, .card li { font-size: 12px; } .callout { padding: 13px 16px; font-size: 14px; } }
+    @media (max-width: 520px) { .topbar { padding: 14px 18px; } .slide { padding: 72px 19px 94px; } .card { padding: 16px; } .controls { right: 18px; bottom: 17px; } .lede { font-size: 16px; } }
+    @media print { body { overflow: visible; background: white; } .deck { background: white; } .slide { display: flex !important; min-height: 100vh; page-break-after: always; } .topbar, .controls, .progress, .overview { display: none !important; } }
+  </style>
+</head>
+<body>
+  <div class="deck">
+    <div class="topbar"><span class="brand">GitHub Copilot / SDD</span><span class="counter" id="counter">01 / 15</span></div>
+    <main class="slides">
+      <section class="slide active accent-cyan" data-title="Foundations and standards">
+        <div class="eyebrow">Week 1 / Setting the foundation</div>
+        <h1>From AI enthusiasm to an accountable way of working.</h1>
+        <p class="lede">Establish the intent, standards, and shared language that make GitHub Copilot adoption useful, responsible, and repeatable.</p>
+        <div class="title-mark"><span></span><span></span><span></span><span></span></div>
+        <div class="date-line">AI adoption + Spec-Driven Development</div>
+      </section>
+
+      <section class="slide accent-blue" data-title="Why this week matters">
+        <div class="eyebrow">01 / Adoption intent</div>
+        <h2>Adoption is a change in the system, not a new shortcut.</h2>
+        <div class="grid three">
+          <article class="card"><h3>Faster learning</h3><p>Use Copilot to explore, explain, draft, transform, and test while keeping engineering judgment in the loop.</p></article>
+          <article class="card"><h3>Better delivery</h3><p>Start with a clear outcome and constraints so generated work is connected to a real problem.</p></article>
+          <article class="card"><h3>Stronger trust</h3><p>Make review, evidence, ownership, and known limitations visible before work reaches customers.</p></article>
+        </div>
+        <div class="callout"><strong>Intent:</strong> increase capability without lowering the quality bar.</div>
+      </section>
+
+      <section class="slide accent-teal" data-title="The mindset shift">
+        <div class="eyebrow">02 / Mindset shift</div>
+        <h2>Move from “generate code” to “shape and verify outcomes.”</h2>
+        <div class="grid two">
+          <article class="card"><h3>Old instinct</h3><ul><li>Begin with a code request.</li><li>Trust a plausible answer too quickly.</li><li>Discover requirements during implementation.</li><li>Treat review as a final inspection.</li></ul></article>
+          <article class="card"><h3>Operating expectation</h3><ul><li>Begin with intent and a problem statement.</li><li>Ask for evidence, alternatives, and limitations.</li><li>Make requirements and constraints explicit.</li><li>Review decisions at the point they matter.</li></ul></article>
+        </div>
+        <div class="callout"><strong>Human accountability remains constant:</strong> Copilot can assist with work; accountable people approve it.</div>
+      </section>
+
+      <section class="slide accent-orange" data-title="Course structure">
+        <div class="eyebrow">03 / Course structure</div>
+        <h2>Four weeks, one adoption arc.</h2>
+        <div class="arc">
+          <article class="arc-item arc-cyan"><div class="arc-number">01</div><h3>Foundation</h3><p>Agree the SDD process, standards, guardrails, templates, and readiness expectations.</p></article>
+          <article class="arc-item arc-blue"><div class="arc-number">02</div><h3>Enablement</h3><p>Build practical Copilot fluency through prompts, context, tools, and responsible-use practice.</p></article>
+          <article class="arc-item arc-teal"><div class="arc-number">03</div><h3>Developer adoption</h3><p>Apply the workflow to a representative story with guided implementation and evidence.</p></article>
+          <article class="arc-item arc-orange"><div class="arc-number">04</div><h3>Operationalize</h3><p>Turn learning into team habits, measures, support, and continuous improvement.</p></article>
+        </div>
+      </section>
+
+      <section class="slide accent-cyan" data-title="The SDD operating model">
+        <div class="eyebrow">04 / Intent to evidence</div>
+        <h2>Every stage answers a different question.</h2>
+        <div class="flow"><span>Intent</span><i>-></i><span>Requirements</span><i>-></i><span>Specification</span><i>-></i><span>Plan</span><i>-></i><span>Tasks</span><i>-></i><span>Implementation</span><i>-></i><span>Tests + review</span><i>-></i><span>Evidence</span></div>
+        <div class="grid two top-gap">
+          <article class="card"><h3>Intent makes the why visible</h3><p>State the user, problem, desired outcome, scope, stakeholders, constraints, assumptions, and risks before proposing a solution.</p></article>
+          <article class="card"><h3>Evidence makes the result trustworthy</h3><p>Connect implementation to requirements through tests, review links, checks, known limitations, and acceptance ownership.</p></article>
+        </div>
+      </section>
+
+      <section class="slide accent-blue" data-title="When SDD is required">
+        <div class="eyebrow">05 / Required-use standard</div>
+        <h2>Use the complete SDD path when change or risk is meaningful.</h2>
+        <div class="grid two">
+          <article class="card"><h3>Full SDD is required for</h3><ul><li>New features, services, or user journeys.</li><li>Material behavior or integration changes.</li><li>Customer-facing, regulated, security, privacy, or compliance work.</li><li>Sensitive data, authorization, or production operations.</li><li>Cross-team or architecturally significant work.</li></ul></article>
+          <article class="card"><h3>The decision rule</h3><p>When uncertainty, impact, or reversibility is low, use the full path. The owner records the decision and the evidence expected at each gate.</p><div class="callout"><strong>Default:</strong><small>When in doubt, use SDD and ask the accountable reviewer to scale it deliberately.</small></div></article>
+        </div>
+      </section>
+
+      <section class="slide accent-teal" data-title="Scaled SDD and exceptions">
+        <div class="eyebrow">06 / Proportionate control</div>
+        <h2>Scale the paperwork, never the accountability.</h2>
+        <div class="grid three">
+          <article class="card"><h3>Scaled SDD</h3><p>For small, low-risk work, combine artifacts while retaining intent, acceptance, review, ownership, and evidence.</p></article>
+          <article class="card"><h3>Exception candidates</h3><p>Emergency remediation, minor documentation changes, routine updates with established checks, or time-critical operations.</p></article>
+          <article class="card"><h3>Still required</h3><p>Record what was skipped or combined, why, the risk, compensating checks, approver, owner, and follow-up date.</p></article>
+        </div>
+        <div class="callout"><strong>An exception is a controlled decision, not an absence of process.</strong></div>
+      </section>
+
+      <section class="slide accent-orange" data-title="Document exceptions">
+        <div class="eyebrow">07 / Exception record</div>
+        <h2>Make the deviation visible, justified, and time-bound.</h2>
+        <div class="grid two">
+          <article class="card"><h3>Minimum record</h3><ul><li>Work item and requesting team.</li><li>Stage or artifact skipped or combined.</li><li>Reason and urgency.</li><li>Risk introduced and compensating checks.</li><li>Named approver and accountable owner.</li><li>Expiry date, follow-up action, or retrospective review.</li></ul></article>
+          <article class="card"><h3>Escalate when the change affects</h3><ul><li>Sensitive data or security controls.</li><li>Customer commitments or regulatory obligations.</li><li>A shared production dependency.</li></ul><div class="callout"><strong>Emergency rule:</strong><small>Approval may follow the change, but the approver and follow-up deadline must still be recorded.</small></div></article>
+        </div>
+      </section>
+
+      <section class="slide accent-cyan" data-title="Approve the artifact set">
+        <div class="eyebrow">08 / Standards approval</div>
+        <h2>Approve the templates before asking teams to use them.</h2>
+        <div class="artifact">
+          <span class="artifact-cyan">Problem statement: outcome before solution</span>
+          <span class="artifact-blue">Requirements: what must be true</span>
+          <span class="artifact-teal">Specification: behavior and boundaries</span>
+          <span class="artifact-orange">Plan: safe implementation approach</span>
+          <span class="artifact-blue">Tasks: executable, linked work</span>
+          <span class="artifact-cyan">Evidence: tests, review, and limitations</span>
+        </div>
+        <div class="callout"><strong>Approval signal:</strong><small>Business, technical, security, and delivery owners know what each artifact is for, what “good” looks like, and who can approve it.</small></div>
+      </section>
+
+      <section class="slide accent-blue" data-title="Traceability">
+        <div class="eyebrow">09 / Follow the decision trail</div>
+        <h2>Traceability turns a collection of files into a defensible delivery story.</h2>
+        <div class="flow"><span>REQ-###</span><i>-></i><span>SPEC-###</span><i>-></i><span>PLAN-###</span><i>-></i><span>TASK-###</span><i>-></i><span>PR / TEST</span></div>
+        <div class="grid two top-gap">
+          <article class="card"><h3>Every link should answer</h3><p>Which requirement does this change satisfy? Which design decision shaped it? Which task delivered it? Which test or review proves it?</p></article>
+          <article class="card"><h3>Use local conventions</h3><p>The identifier format matters less than making relationships easy to follow in the approved issue, repository, pull request, or document system.</p></article>
+        </div>
+      </section>
+
+      <section class="slide accent-teal" data-title="Quality gates">
+        <div class="eyebrow">10 / Pause points</div>
+        <h2>Move forward when the next decision is ready to be made.</h2>
+        <div class="grid two">
+          <article class="card">
+            <div class="gate"><b>1</b><p><strong>Intent:</strong> problem, outcome, and stakeholders are understood.</p></div>
+            <div class="gate"><b>2</b><p><strong>Requirements:</strong> acceptance criteria are clear and testable.</p></div>
+            <div class="gate"><b>3</b><p><strong>Specification:</strong> design, risks, and constraints are reviewed.</p></div>
+          </article>
+          <article class="card">
+            <div class="gate"><b>4</b><p><strong>Plan:</strong> tasks, dependencies, and test approach are credible.</p></div>
+            <div class="gate"><b>5</b><p><strong>Acceptance:</strong> implementation, tests, review, and limitations are evidenced.</p></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="slide accent-orange" data-title="Definition of Ready">
+        <div class="eyebrow">11 / DoR</div>
+        <h2>Ready means the team can begin without inventing the problem.</h2>
+        <div class="grid two">
+          <article class="card"><h3>Before work starts</h3><ul><li>User, problem, and intended outcome are clear.</li><li>Scope, exclusions, stakeholders, assumptions, and dependencies are recorded.</li><li>Requirements have testable acceptance criteria.</li><li>Security, privacy, accessibility, data, and operational concerns are considered.</li><li>Owner, priority, and SDD path are explicit.</li><li>Approvals or an approved exception are present.</li></ul></article>
+          <article class="card"><h3>DoR is a quality decision</h3><p>It protects delivery time by making ambiguity visible before implementation begins. A task can be urgent without being ready; urgency should trigger an explicit exception, not hidden assumptions.</p></article>
+        </div>
+      </section>
+
+      <section class="slide accent-cyan" data-title="Definition of Done">
+        <div class="eyebrow">12 / DoD</div>
+        <h2>Done means the result is accepted, evidenced, and owned.</h2>
+        <div class="grid two">
+          <article class="card"><h3>Before acceptance</h3><ul><li>Implementation satisfies the approved requirements and specification.</li><li>Tests provide evidence for acceptance criteria.</li><li>Code review and required security, privacy, accessibility, and quality checks are complete.</li><li>Traceability links connect requirements to changes, tests, and evidence.</li><li>Documentation, monitoring, rollout, and rollback needs are addressed.</li></ul></article>
+          <article class="card"><h3>Close the loop</h3><ul><li>Known limitations are recorded and owned.</li><li>Exceptions have a follow-up date or closure decision.</li><li>The acceptance or release owner confirms the evidence is sufficient.</li></ul><div class="callout"><strong>Copilot does not declare done.</strong><small>People review the evidence and accept the remaining risk.</small></div></article>
+        </div>
+      </section>
+
+      <section class="slide accent-blue" data-title="Week 1 readiness">
+        <div class="eyebrow">13 / Commit to the standard</div>
+        <h2>Very soon, each team should have a usable starting point.</h2>
+        <div class="grid three">
+          <article class="card"><h3>Approved workflow</h3><p>Required-use rules, scaled SDD guidance, exception record, quality gates, and named owners.</p></article>
+          <article class="card"><h3>Approved templates</h3><p>Problem statement, requirements, specification, plan, tasks, evidence, traceability, DoR, and DoD.</p></article>
+          <article class="card"><h3>First candidate story</h3><p>Low-risk problem statement, draft requirements, initial specification outline, and access readiness.</p></article>
+        </div>
+        <div class="callout"><strong>Foundation for the team:</strong><small>this week provides the shared information and standards for Spec-Driven Development. Next week begins with GitHub Copilot Fundamentals.</small></div>
+      </section>
+
+      <section class="slide accent-teal" data-title="The commitment">
+        <div class="eyebrow">14 / Close</div>
+        <h2>Use AI to extend judgment, not to replace it.</h2>
+        <p class="lede">The standard is simple to state and serious to practice: define the outcome, make the decisions visible, review the work, and leave evidence that another person can trust.</p>
+        <div class="title-mark"><span></span><span></span><span></span><span></span></div>
+        <div class="date-line">Next: enablement, tools, and guided practice</div>
+      </section>
+    </main>
+    <div class="controls">
+      <button class="control" id="prev" type="button" aria-label="Previous slide" title="Previous slide">&larr;</button>
+      <button class="overview-toggle" id="overviewToggle" type="button" aria-expanded="false" aria-controls="overview">Overview</button>
+      <button class="control" id="next" type="button" aria-label="Next slide" title="Next slide">&rarr;</button>
+    </div>
+    <div class="progress" aria-hidden="true"><span id="progress"></span></div>
+    <aside class="overview" id="overview" aria-hidden="true">
+      <div class="overview-head"><h2>Week 1 deck</h2><button class="control" id="closeOverview" type="button" aria-label="Close overview">&times;</button></div>
+      <div class="thumbs" id="thumbs"></div>
+    </aside>
+  </div>
+  <script>
+    const slides = [...document.querySelectorAll('.slide')];
+    const counter = document.querySelector('#counter');
+    const progress = document.querySelector('#progress');
+    const overview = document.querySelector('#overview');
+    const overviewToggle = document.querySelector('#overviewToggle');
+    const thumbs = document.querySelector('#thumbs');
+    let current = 0;
+
+    function show(index) {
+      current = Math.max(0, Math.min(index, slides.length - 1));
+      slides.forEach((slide, slideIndex) => slide.classList.toggle('active', slideIndex === current));
+      counter.textContent = `${String(current + 1).padStart(2, '0')} / ${String(slides.length).padStart(2, '0')}`;
+      progress.style.width = `${((current + 1) / slides.length) * 100}%`;
+      document.querySelector('#prev').disabled = current === 0;
+      document.querySelector('#next').disabled = current === slides.length - 1;
+    }
+
+    function setOverview(open) {
+      overview.classList.toggle('open', open);
+      overview.setAttribute('aria-hidden', String(!open));
+      overviewToggle.setAttribute('aria-expanded', String(open));
+      if (open) document.querySelector('.thumb:focus')?.focus();
+    }
+
+    slides.forEach((slide, index) => {
+      const thumb = document.createElement('button');
+      thumb.type = 'button';
+      thumb.className = `thumb ${slide.className.match(/accent-\\w+/)?.[0] || 'accent-cyan'}`;
+      thumb.innerHTML = `<small>${String(index + 1).padStart(2, '0')}</small><strong>${slide.dataset.title}</strong>`;
+      thumb.addEventListener('click', () => { show(index); setOverview(false); });
+      thumbs.appendChild(thumb);
+    });
+
+    document.querySelector('#prev').addEventListener('click', () => show(current - 1));
+    document.querySelector('#next').addEventListener('click', () => show(current + 1));
+    overviewToggle.addEventListener('click', () => setOverview(!overview.classList.contains('open')));
+    document.querySelector('#closeOverview').addEventListener('click', () => setOverview(false));
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape') setOverview(false);
+      if (overview.classList.contains('open')) return;
+      if (['ArrowRight', 'PageDown', ' '].includes(event.key)) { event.preventDefault(); show(current + 1); }
+      if (['ArrowLeft', 'PageUp'].includes(event.key)) { event.preventDefault(); show(current - 1); }
+      if (event.key === 'Home') { event.preventDefault(); show(0); }
+      if (event.key === 'End') { event.preventDefault(); show(slides.length - 1); }
+    });
+    show(0);
+  </script>
+</body>
+</html>
