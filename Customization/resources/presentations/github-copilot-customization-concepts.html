@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="A slide presentation explaining GitHub Copilot customization concepts: agents, skills, instructions, prompts, hooks, MCP, and packaging.">
+  <title>GitHub Copilot Customization Concepts</title>
+  <style>
+    :root {
+      --ink: #17253d; --navy: #071a38; --muted: #617086; --paper: #f4f7fa;
+      --white: #fff; --line: #d8e1eb; --blue: #1359b5; --cyan: #0d9db2;
+      --teal: #118b83; --orange: #c66b1b; --purple: #7045a7;
+      --display: Georgia, "Times New Roman", serif;
+      --body: "Trebuchet MS", "Segoe UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html, body { min-height: 100%; }
+    body { margin: 0; overflow: hidden; background: var(--paper); color: var(--ink); font-family: var(--body); }
+    button { font: inherit; }
+    .deck { min-height: 100vh; position: relative; isolation: isolate; background: radial-gradient(circle at 8% 12%, rgba(13,157,178,.12), transparent 24rem), radial-gradient(circle at 92% 88%, rgba(198,107,27,.1), transparent 24rem), var(--paper); }
+    .deck::before { content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: .33; background-image: linear-gradient(rgba(23,37,61,.025) 1px, transparent 1px), linear-gradient(90deg, rgba(23,37,61,.025) 1px, transparent 1px); background-size: 36px 36px; -webkit-mask-image: linear-gradient(to bottom, black, transparent 84%); mask-image: linear-gradient(to bottom, black, transparent 84%); }
+    .topbar { position: fixed; inset: 0 0 auto; z-index: 5; display: flex; justify-content: space-between; padding: 18px clamp(20px, 4vw, 60px); color: var(--muted); font-size: 11px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+    .brand { color: var(--navy); }
+    .counter { font-variant-numeric: tabular-nums; }
+    .slides { min-height: 100vh; position: relative; }
+    .slide { display: none; width: min(1240px, 100%); min-height: 100vh; max-height: 100vh; margin: 0 auto; padding: clamp(78px, 9vh, 112px) clamp(24px, 7vw, 104px) 96px; overflow: hidden; animation: enter .45s ease both; }
+    .slide.active { display: flex; flex-direction: column; justify-content: center; background: rgba(255,255,255,.58); }
+    @keyframes enter { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+    .eyebrow { color: var(--accent, var(--cyan)); font-size: 12px; font-weight: 900; letter-spacing: .17em; text-transform: uppercase; }
+    .accent-blue { --accent: var(--blue); } .accent-cyan { --accent: var(--cyan); } .accent-teal { --accent: var(--teal); } .accent-orange { --accent: var(--orange); } .accent-purple { --accent: var(--purple); }
+    h1, h2, h3, p { margin-top: 0; }
+    h1, h2 { font-family: var(--display); font-weight: 700; letter-spacing: -.025em; }
+    h1 { max-width: 920px; margin: 16px 0 20px; color: var(--navy); font-size: clamp(46px, 7vw, 88px); line-height: .95; }
+    h2 { max-width: 900px; margin: 12px 0 24px; color: var(--navy); font-size: clamp(36px, 5vw, 66px); line-height: .98; }
+    h3 { margin-bottom: 8px; color: var(--navy); font-size: 17px; line-height: 1.12; }
+    .lede { max-width: 760px; color: #53677d; font-size: clamp(17px, 1.8vw, 22px); line-height: 1.48; }
+    .title-mark { display: flex; gap: 8px; margin-top: 34px; }
+    .title-mark span { display: block; width: 58px; height: 8px; border-radius: 99px; }
+    .title-mark span:nth-child(1) { background: var(--blue); } .title-mark span:nth-child(2) { background: var(--cyan); } .title-mark span:nth-child(3) { background: var(--purple); } .title-mark span:nth-child(4) { background: var(--orange); }
+    .grid { display: grid; gap: 14px; } .grid.two { grid-template-columns: repeat(2, 1fr); } .grid.three { grid-template-columns: repeat(3, 1fr); }
+    .card { position: relative; padding: 20px; border: 1px solid var(--line); border-radius: 12px; background: rgba(255,255,255,.86); box-shadow: 0 8px 22px rgba(22,55,87,.055); }
+    .card::before { content: ""; display: block; width: 32px; height: 4px; margin-bottom: 16px; border-radius: 99px; background: var(--accent, var(--cyan)); }
+    .card p, .card li { color: var(--muted); font-size: 13px; line-height: 1.45; } .card p { margin-bottom: 0; }
+    ul { margin: 0; padding-left: 18px; } li + li { margin-top: 7px; }
+    .callout { margin-top: 16px; padding: 17px 21px; border-left: 5px solid var(--accent, var(--cyan)); background: rgba(255,255,255,.72); color: var(--navy); font-size: 16px; line-height: 1.4; }
+    .callout small { display: block; margin-top: 8px; color: var(--muted); font-size: 12px; }
+    .flow { display: flex; flex-wrap: wrap; align-items: center; gap: 9px; margin-top: 20px; }
+    .flow span { padding: 10px 13px; border: 1px solid #bfd0dd; border-radius: 8px; background: var(--white); color: var(--navy); font-size: 12px; font-weight: 800; }
+    .flow i { color: var(--cyan); font-style: normal; font-size: 18px; }
+    .feature { min-height: 190px; }
+    .feature .tag { display: inline-block; margin-bottom: 14px; color: var(--accent); font: 900 12px/1 var(--body); letter-spacing: .1em; text-transform: uppercase; }
+    .feature code, .path { color: var(--navy); font: 12px/1.4 Consolas, "Cascadia Code", monospace; }
+    .decision { display: grid; grid-template-columns: 1.1fr .9fr; gap: 18px; align-items: stretch; }
+    .decision .question { display: flex; flex-direction: column; justify-content: center; padding: 24px; border: 1px solid var(--line); background: var(--navy); color: white; }
+    .decision .question h3 { color: white; font-family: var(--display); font-size: 28px; }
+    .decision .question p { color: #cbd5e1; font-size: 14px; line-height: 1.5; }
+    .decision .answer { padding: 15px 18px; border-bottom: 1px solid var(--line); }
+    .decision .answer:last-child { border-bottom: 0; }
+    .answer strong { display: block; color: var(--accent); font-size: 14px; }
+    .answer span { color: var(--muted); font-size: 12px; }
+    .package { display: grid; grid-template-columns: .85fr 1.15fr; gap: 18px; align-items: stretch; }
+    .tree { padding: 22px; border: 1px solid #cad7e3; background: #0f1d31; color: #dbeafe; font: 13px/1.75 Consolas, "Cascadia Code", monospace; white-space: pre; overflow: auto; }
+    .package-list { display: grid; gap: 10px; }
+    .package-list div { padding: 14px 16px; border-left: 4px solid var(--accent); background: rgba(255,255,255,.84); }
+    .package-list strong { display: block; color: var(--navy); font-size: 14px; }
+    .package-list span { color: var(--muted); font-size: 12px; line-height: 1.4; }
+    .checklist { display: grid; grid-template-columns: repeat(2, 1fr); gap: 11px 24px; margin-top: 8px; }
+    .checklist div { padding: 12px 14px 12px 38px; position: relative; border-bottom: 1px solid var(--line); color: var(--muted); font-size: 13px; line-height: 1.4; }
+    .checklist div::before { content: "✓"; position: absolute; left: 5px; color: var(--teal); font-size: 18px; font-weight: 900; }
+    .controls { position: fixed; right: clamp(18px, 4vw, 60px); bottom: 24px; z-index: 6; display: flex; gap: 8px; }
+    .control, .overview-toggle { display: grid; place-items: center; min-width: 38px; height: 38px; padding: 0 11px; border: 1px solid #bfd0dd; border-radius: 8px; background: rgba(255,255,255,.9); color: var(--navy); cursor: pointer; box-shadow: 0 5px 18px rgba(22,55,87,.08); font-weight: 900; }
+    .control:hover, .control:focus-visible, .overview-toggle:hover, .overview-toggle:focus-visible { border-color: var(--cyan); color: var(--cyan); outline: none; }
+    .progress { position: fixed; right: 0; bottom: 0; left: 0; z-index: 5; height: 4px; background: #dfe8ef; } .progress span { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--blue), var(--cyan), var(--purple), var(--orange)); transition: width .35s ease; }
+    .overview { position: fixed; inset: 0; z-index: 10; display: none; padding: 8vh 7vw; overflow: auto; background: rgba(245,248,251,.96); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
+    .overview.open { display: block; animation: enter .25s ease both; }
+    .overview-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 26px; }
+    .overview h2 { margin: 0; font-size: 38px; }
+    .thumbs { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+    .thumb { min-height: 120px; padding: 16px; border: 1px solid var(--line); border-top: 5px solid var(--accent); background: var(--white); color: var(--navy); text-align: left; cursor: pointer; }
+    .thumb:hover, .thumb:focus-visible { transform: translateY(-3px); box-shadow: 0 12px 28px rgba(7,26,56,.09); outline: none; }
+    .thumb small { display: block; margin-bottom: 18px; color: var(--accent); font-weight: 900; } .thumb strong { font-family: var(--display); font-size: 18px; }
+    @media (max-width: 800px) { .grid.two, .grid.three, .decision, .package { grid-template-columns: 1fr; } .feature { min-height: 0; } .checklist { grid-template-columns: 1fr; } h1 { font-size: clamp(42px, 12vw, 70px); } h2 { font-size: clamp(34px, 9vw, 54px); } }
+    @media (max-height: 800px) and (min-width: 801px) { .slide { padding-top: 68px; padding-bottom: 82px; } h1 { font-size: clamp(42px, 6vw, 72px); } h2 { font-size: clamp(34px, 4.3vw, 54px); margin-bottom: 18px; } .card { padding: 15px; } .card::before { margin-bottom: 10px; } .card p, .card li { font-size: 12px; } .callout { padding: 13px 16px; font-size: 14px; } }
+    @media (max-width: 520px) { .topbar { padding: 14px 18px; } .slide { padding: 72px 19px 94px; } .card { padding: 16px; } .controls { right: 18px; bottom: 17px; } .lede { font-size: 16px; } }
+    @media print { body { overflow: visible; background: white; } .deck { background: white; } .topbar, .controls, .progress, .overview { display: none !important; } .slide, .slide.active { display: flex; min-height: 100vh; page-break-after: always; } }
+  </style>
+</head>
+<body>
+  <main class="deck" id="deck">
+    <header class="topbar"><span class="brand">GitHub Copilot customization concepts</span><span class="counter" id="counter">01 / 10</span></header>
+    <section class="slides" aria-live="polite">
+      <article class="slide active accent-cyan" data-title="Customization is a design problem">
+        <div class="eyebrow">GitHub Copilot | Concepts presentation</div>
+        <h1>Shape the work.<br>Shape the context.</h1>
+        <p class="lede">Customization is how teams make Copilot more relevant, more repeatable, and more accountable without turning every request into a giant prompt.</p>
+        <div class="title-mark" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+        <div class="callout accent-cyan">The goal is not maximum customization. It is the smallest boundary that reliably improves the work.<small>Agents, skills, instructions, prompts, hooks, MCP, and packaging</small></div>
+      </article>
+
+      <article class="slide accent-blue" data-title="One mental model">
+        <div class="eyebrow">01 / Mental model</div>
+        <h2>Match the tool to the kind of control you need.</h2>
+        <div class="flow"><span>Always-on guidance</span><i>→</i><span>Reusable task</span><i>→</i><span>Specialist role</span><i>→</i><span>Bundled procedure</span><i>→</i><span>Deterministic action</span><i>→</i><span>External capability</span></div>
+        <div class="grid three" style="margin-top: 22px;">
+          <div class="card accent-blue"><h3>Context</h3><p>Instructions and prompts shape what Copilot knows and how it approaches a request.</p></div>
+          <div class="card accent-purple"><h3>Behavior</h3><p>Agents and skills shape who does the work and which procedure is followed.</p></div>
+          <div class="card accent-orange"><h3>Capability</h3><p>Hooks and MCP connect the workflow to deterministic actions and external systems.</p></div>
+        </div>
+      </article>
+
+      <article class="slide accent-blue" data-title="Instructions and prompts">
+        <div class="eyebrow">02 / Shape the request</div>
+        <h2>Instructions set expectations.<br>Prompts start focused work.</h2>
+        <div class="grid two">
+          <div class="card feature accent-blue"><span class="tag">Instructions</span><h3>Persistent guidance in a scope</h3><p>Use for standards, conventions, architecture rules, accessibility expectations, or repository context that should apply automatically.</p><p class="path" style="margin-top: 14px;">.github/copilot-instructions.md<br>.github/instructions/*.instructions.md</p></div>
+          <div class="card feature accent-cyan"><span class="tag">Prompt files</span><h3>Reusable task templates</h3><p>Use for repeatable tasks with a clear input, process, and output. Keep the request focused and invoke it when needed.</p><p class="path" style="margin-top: 14px;">.github/prompts/*.prompt.md</p></div>
+        </div>
+        <div class="callout accent-cyan"><strong>Rule of thumb:</strong> if it should apply without asking, consider an instruction. If a person chooses when to run it, consider a prompt.<small>Scope instructions with <code>applyTo</code> globs (e.g. <code>backend/**/*.cs</code>) so they only load for matching files — the same token-optimization pattern skills use.</small></div>
+      </article>
+
+      <article class="slide accent-purple" data-title="Agents and skills">
+        <div class="eyebrow">03 / Shape the work</div>
+        <h2>Agents define a role.<br>Skills package a procedure.</h2>
+        <div class="grid two">
+          <div class="card feature accent-purple"><span class="tag">Custom agents</span><h3>A deliberate specialist</h3><p>An agent combines role-specific instructions, boundaries, tools, and a <code>model</code> field. Delegating to an agent spins up a <strong>subagent with a fresh context window</strong> — nothing from the main conversation carries over, a major token optimization. Set <code>model: auto</code> for a 10% premium-request discount when task complexity varies.</p><p class="path" style="margin-top: 14px;">.github/agents/&lt;name&gt;.agent.md</p></div>
+          <div class="card feature accent-teal"><span class="tag">Agent skills</span><h3>A reusable capability bundle</h3><p>A skill is a folder with a focused procedure, references, scripts, and samples. Only the frontmatter (~100 tokens) always loads; the body loads when the <code>description</code> matches. Search the community first with <code>gh skill search</code> / <code>gh skill install</code> (200+ skills in awesome-copilot) before writing one — or run <code>/create-skill</code> to build your own.</p><p class="path" style="margin-top: 14px;">.github/skills/&lt;skill-name&gt;/SKILL.md</p></div>
+        </div>
+        <div class="callout accent-purple"><strong>Design distinction:</strong> an agent answers “who should handle this?” A skill answers “what repeatable method should be used?”</div>
+      </article>
+
+      <article class="slide accent-orange" data-title="Hooks and MCP">
+        <div class="eyebrow">04 / Extend the workflow</div>
+        <h2>Hooks automate moments.<br>MCP opens systems.</h2>
+        <div class="grid two">
+          <div class="card feature accent-orange"><span class="tag">Hooks</span><h3>Deterministic lifecycle actions, zero tokens</h3><p>Hooks run a script at a lifecycle event (e.g. <code>sessionEnd</code>) — no LLM call involved, making them the cheapest primitive. Use them for checks an agent should never be able to skip, like secret scanning before a commit.</p><p class="path" style="margin-top: 14px;">.github/hooks/*.json</p></div>
+          <div class="card feature accent-cyan"><span class="tag">Model Context Protocol</span><h3>Tools and data beyond the repository</h3><p>MCP servers expose approved tools such as issue trackers, APIs, databases, or live docs. Pick a transport that matches distribution: <code>local</code> (stdio, launches a CLI/binary), <code>http</code> (hosted server), or legacy <code>sse</code>.</p><p class="path" style="margin-top: 14px;">.vscode/mcp.json</p></div>
+        </div>
+        <div class="tree" style="margin-top: 18px;">.vscode/mcp.json  —  example: Context7 (http transport)
+{
+  "servers": {
+    "context7": {
+      "type": "http",
+      "url": "https://mcp.context7.com/mcp",
+      "headers": { "Authorization": "Bearer ${input:context7-key}" }
+    }
+  }
+}</div>
+        <div class="callout accent-orange"><strong>Security boundary:</strong> treat hooks and MCP as executable capability. Every configured MCP server's tool definitions load into context on <em>every</em> request — before you've asked anything server-related — so only add servers you'll actually use, and keep secrets in <code>inputs</code>, never hard-coded.</div>
+      </article>
+
+      <article class="slide accent-teal" data-title="Choose the smallest useful boundary">
+        <div class="eyebrow">05 / Decision framework</div>
+        <h2>Start with the smallest useful boundary.</h2>
+        <div class="decision">
+          <div class="question"><h3>What kind of change are you trying to make?</h3><p>Choose the first answer that describes the behavior. Add another primitive only when the current boundary cannot express the need clearly.</p></div>
+          <div class="card" style="padding: 0;">
+            <div class="answer accent-blue"><strong>Make every request follow a rule</strong><span>Use an instruction.</span></div>
+            <div class="answer accent-cyan"><strong>Run a known task on demand</strong><span>Use a prompt file.</span></div>
+            <div class="answer accent-purple"><strong>Give the work a specialist owner</strong><span>Use a custom agent.</span></div>
+            <div class="answer accent-teal"><strong>Teach a multi-step method</strong><span>Use a skill.</span></div>
+            <div class="answer accent-orange"><strong>Run a predictable command at a moment</strong><span>Use a hook.</span></div>
+            <div class="answer accent-cyan"><strong>Reach an external system</strong><span>Use MCP.</span></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="slide accent-blue" data-title="Make the pieces compose">
+        <div class="eyebrow">06 / Composition</div>
+        <h2>Good customizations compose without hiding responsibility.</h2>
+        <div class="flow"><span>Orchestrator</span><i>→</i><span>Planner (auto)</span><i>→</i><span>✋ checkpoint</span><i>→</i><span>Tester (haiku)</span><i>→</i><span>Reviewer (sonnet)</span></div>
+        <div class="grid three" style="margin-top: 24px;">
+          <div class="card accent-blue"><h3>Make inputs visible</h3><p>Name the assumptions, files, permissions, and data sources the workflow expects.</p></div>
+          <div class="card accent-purple"><h3>Make handoffs explicit</h3><p>An <code>agents:</code> array declares exactly which sub-agents an orchestrator may delegate to — the boundary is enforced, not just documented.</p></div>
+          <div class="card accent-orange"><h3>Make approval points real</h3><p>Stage gates (e.g. “✋ wait for user approval before implementation”) keep humans accountable between planning and execution.</p></div>
+        </div>
+        <div class="callout accent-teal">A customization is production-ready when another developer can predict when it activates, what it can do, and how to verify its result. Example: a <code>dev-flow</code> orchestrator coordinating Planner → Tester → Reviewer sub-agents through a plan → code → test → review → ship pipeline.</div>
+      </article>
+
+      <article class="slide accent-orange" data-title="Package for adoption">
+        <div class="eyebrow">07 / Packaging</div>
+        <h2>Package the working system,<br>not just the files.</h2>
+        <div class="package">
+          <div class="tree">copilot-customizations/
+  plugin.json
+  README.md
+  agents/
+  instructions/
+  prompts/
+  skills/
+  hooks/
+  .vscode/
+    mcp.json</div>
+          <div class="package-list">
+            <div class="accent-orange"><strong>Manifest</strong><span>Name, version, description, and the component inventory — <code>plugin.json</code> for a simple bundle, or <code>apm.yml</code> + <code>apm.lock.yaml</code> via the Agent Package Manager when you need version-locked, reproducible team installs.</span></div>
+            <div class="accent-blue"><strong>Documentation</strong><span>Purpose, installation, prerequisites, permissions, and verification steps.</span></div>
+            <div class="accent-teal"><strong>Portable paths</strong><span>Use relative references and include the files needed by each skill or agent.</span></div>
+            <div class="accent-purple"><strong>Safe defaults</strong><span>Keep secrets out of the package. Make MCP examples illustrative unless they are configured and approved. <code>apm install</code>/<code>apm audit</code> also scan for hidden Unicode tampering.</span></div>
+          </div>
+        </div>
+        <p class="lede" style="margin-top: 16px; font-size: 14px;">Distributing org-wide? Plugins and APM are <em>pull</em> (a user installs); an org's <code>.github-private</code> repo is a <em>push</em> model for sharing agents automatically across every repo.</p>
+      </article>
+
+      <article class="slide accent-cyan" data-title="Validate before sharing">
+        <div class="eyebrow">08 / Quality and governance</div>
+        <h2>Adoption starts with trust.</h2>
+        <div class="checklist">
+          <div>Every referenced path exists and is portable.</div>
+          <div>Frontmatter, JSON, and Markdown parse cleanly.</div>
+          <div>Trigger conditions are clear to a new user.</div>
+          <div>Tools, permissions, and network access are documented.</div>
+          <div>Secrets and private endpoints are excluded.</div>
+          <div>Examples distinguish facts from recommendations.</div>
+          <div>Failure paths and recovery steps are visible.</div>
+          <div>Browser, keyboard, and narrow-layout checks pass.</div>
+        </div>
+        <div class="callout accent-cyan"><strong>Definition of done:</strong> a teammate can install the package, understand what activates, run a bounded example, and explain what a human still needs to review.</div>
+      </article>
+
+      <article class="slide accent-teal" data-title="The takeaway">
+        <div class="eyebrow">09 / Takeaway</div>
+        <h2>Customize with intent.<br>Package with evidence.</h2>
+        <p class="lede">Instructions shape expectations. Prompts focus tasks. Agents assign roles. Skills carry procedures. Hooks automate moments. MCP connects systems. Packaging makes the whole system adoptable.</p>
+        <div class="title-mark" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+        <div class="callout accent-teal">The strongest Copilot customization is understandable before it is powerful, bounded before it is broad, and verified before it is shared.</div>
+        <div class="resource-links" style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px;">
+          <a href="../cheatsheets/github-copilot-customization-cheat-sheet.html" style="padding: 10px 13px; border: 1px solid #bfd0dd; border-radius: 7px; background: white; color: var(--navy); font-size: 12px; font-weight: 800; text-decoration: none;">Customization cheat sheet</a>
+          <a href="../labs/github-copilot-customization-lab.html" style="padding: 10px 13px; border: 1px solid #bfd0dd; border-radius: 7px; background: white; color: var(--navy); font-size: 12px; font-weight: 800; text-decoration: none;">Customization lab</a>
+          <a href="../exercises/github-copilot-customization-plugins-lab-exercises.html" style="padding: 10px 13px; border: 1px solid #bfd0dd; border-radius: 7px; background: white; color: var(--navy); font-size: 12px; font-weight: 800; text-decoration: none;">Plugin exercises</a>
+        </div>
+      </article>
+    </section>
+
+    <nav class="controls" aria-label="Presentation controls">
+      <button class="overview-toggle" id="overview-toggle" type="button" aria-haspopup="dialog">Overview</button>
+      <button class="control" id="previous" type="button" aria-label="Previous slide" title="Previous slide">←</button>
+      <button class="control" id="next" type="button" aria-label="Next slide" title="Next slide">→</button>
+    </nav>
+    <div class="progress" aria-hidden="true"><span id="progress-bar"></span></div>
+    <aside class="overview" id="overview" aria-label="Slide overview" aria-hidden="true">
+      <div class="overview-head"><h2>Slide overview</h2><button class="control" id="overview-close" type="button" aria-label="Close slide overview">×</button></div>
+      <div class="thumbs" id="thumbs"></div>
+    </aside>
+  </main>
+  <script>
+    (() => {
+      const slides = [...document.querySelectorAll('.slide')];
+      const counter = document.getElementById('counter');
+      const progressBar = document.getElementById('progress-bar');
+      const overview = document.getElementById('overview');
+      const thumbs = document.getElementById('thumbs');
+      let current = 0;
+      let touchStartX = 0;
+
+      slides.forEach((slide, index) => {
+        const thumb = document.createElement('button');
+        thumb.className = 'thumb';
+        thumb.type = 'button';
+        thumb.style.setProperty('--accent', getComputedStyle(slide).getPropertyValue('--accent'));
+        thumb.innerHTML = `<small>${String(index + 1).padStart(2, '0')}</small><strong>${slide.dataset.title}</strong>`;
+        thumb.addEventListener('click', () => { show(index); closeOverview(); });
+        thumbs.appendChild(thumb);
+      });
+
+      function show(index) {
+        current = Math.max(0, Math.min(index, slides.length - 1));
+        slides.forEach((slide, slideIndex) => slide.classList.toggle('active', slideIndex === current));
+        counter.textContent = `${String(current + 1).padStart(2, '0')} / ${String(slides.length).padStart(2, '0')}`;
+        progressBar.style.width = `${((current + 1) / slides.length) * 100}%`;
+        document.title = `${slides[current].dataset.title} | GitHub Copilot Customization`;
+      }
+      function next() { show(current + 1); }
+      function previous() { show(current - 1); }
+      function closeOverview() { overview.classList.remove('open'); overview.setAttribute('aria-hidden', 'true'); }
+      function toggleOverview() { const open = overview.classList.toggle('open'); overview.setAttribute('aria-hidden', String(!open)); if (open) document.getElementById('overview-close').focus(); }
+
+      document.getElementById('next').addEventListener('click', next);
+      document.getElementById('previous').addEventListener('click', previous);
+      document.getElementById('overview-toggle').addEventListener('click', toggleOverview);
+      document.getElementById('overview-close').addEventListener('click', closeOverview);
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'ArrowRight' || event.key === 'PageDown' || event.key === ' ') { event.preventDefault(); next(); }
+        if (event.key === 'ArrowLeft' || event.key === 'PageUp') { event.preventDefault(); previous(); }
+        if (event.key === 'Home') show(0);
+        if (event.key === 'End') show(slides.length - 1);
+        if (event.key === 'Escape') closeOverview();
+      });
+      document.getElementById('deck').addEventListener('touchstart', (event) => { touchStartX = event.changedTouches[0].screenX; }, { passive: true });
+      document.getElementById('deck').addEventListener('touchend', (event) => { const distance = event.changedTouches[0].screenX - touchStartX; if (Math.abs(distance) > 50) distance < 0 ? next() : previous(); }, { passive: true });
+      show(0);
+    })();
+  </script>
+</body>
+</html>

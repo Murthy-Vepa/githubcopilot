@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="An extensive practical guide to designing, authoring, testing, sharing, and governing GitHub Copilot custom agents.">
+  <title>GitHub Copilot Custom Agent Guide</title>
+  <style>
+    :root { --navy:#09243c; --blue:#1769aa; --teal:#0f9da8; --coral:#e26d5a; --gold:#d9a441; --ink:#17212b; --muted:#5f6f7d; --paper:#f5f1e8; --white:#fffdf8; --line:#d8d0c4; --soft-blue:#eaf6f4; --soft-coral:#fff0eb; --shadow:0 8px 26px rgba(23,33,43,.06); }
+    * { box-sizing:border-box; }
+    html { scroll-behavior:smooth; font-family:'Trebuchet MS','Segoe UI',sans-serif; }
+    body { margin:0; color:var(--ink); background:var(--paper); line-height:1.6; }
+    a { color:var(--blue); font-weight:700; text-decoration:none; }
+    a:hover { color:var(--coral); text-decoration:underline; }
+    code { padding:2px 5px; color:var(--navy); background:#e5eef0; font:.88em Consolas,monospace; }
+    .shell { display:grid; grid-template-columns:260px minmax(0,1fr); min-height:100vh; }
+    .rail { position:sticky; top:0; height:100vh; overflow-y:auto; padding:28px 20px; color:#d9e8f2; background:var(--navy); }
+    .brand { padding-bottom:24px; border-bottom:1px solid rgba(255,255,255,.14); }
+    .brand small { color:#7ed6d1; font-size:11px; font-weight:800; letter-spacing:1.8px; text-transform:uppercase; }
+    .brand h1 { margin:9px 0 0; color:#fffdf8; font:700 24px/1.05 Georgia,'Times New Roman',serif; }
+    .menu-label { margin:25px 0 8px; color:#88a7ba; font-size:10px; font-weight:800; letter-spacing:1.4px; text-transform:uppercase; }
+    .menu { display:grid; gap:4px; }
+    .menu a { display:block; padding:8px 9px; border-left:2px solid transparent; color:#c4d6e0; font-size:12px; font-weight:400; }
+    .menu a:hover, .menu a.active { border-left-color:#7ed6d1; background:rgba(255,255,255,.06); color:#fff; text-decoration:none; }
+    .rail-note { margin-top:28px; padding-top:16px; border-top:1px solid rgba(255,255,255,.14); color:#88a7ba; font-size:11px; }
+    main { min-width:0; padding:42px clamp(22px,5vw,76px) 70px; }
+    .content { width:min(980px,100%); margin:0 auto; }
+    .hero { margin-bottom:36px; padding:clamp(30px,5vw,58px); color:#fffdf8; background:var(--navy); box-shadow:0 18px 45px rgba(23,33,43,.12); position:relative; overflow:hidden; }
+    .hero::after { content:''; position:absolute; width:300px; height:300px; right:-70px; bottom:-125px; border:45px solid rgba(126,214,209,.32); border-radius:50%; }
+    .hero > * { position:relative; z-index:1; }
+    .eyebrow { margin-bottom:12px; color:#7ed6d1; font-size:11px; font-weight:800; letter-spacing:2px; text-transform:uppercase; }
+    h2 { margin:0; color:var(--navy); font:700 clamp(30px,4vw,52px)/1.04 Georgia,'Times New Roman',serif; }
+    .hero h2 { max-width:760px; color:#fffdf8; }
+    .hero p { max-width:760px; color:#d9e8f2; font-size:17px; }
+    .meta { display:flex; flex-wrap:wrap; gap:9px; margin-top:24px; }
+    .meta span { padding:7px 11px; border:1px solid rgba(255,255,255,.22); color:#fffdf8; font-size:11px; font-weight:800; }
+    .section { margin:0 0 40px; }
+    .section-head { margin-bottom:24px; padding-bottom:17px; border-bottom:2px solid var(--line); }
+    .section-head p { max-width:760px; margin:12px 0 0; color:var(--muted); font-size:16px; }
+    h3 { margin:28px 0 10px; color:var(--blue); font-size:20px; }
+    h4 { margin:20px 0 7px; color:var(--navy); font-size:15px; }
+    p { max-width:800px; }
+    ul, ol { padding-left:23px; }
+    li { margin:7px 0; }
+    .grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; margin:20px 0; }
+    .card { padding:20px; border:1px solid var(--line); background:var(--white); box-shadow:var(--shadow); }
+    .card h3 { margin-top:0; font-size:17px; }
+    .card p, .card li { color:var(--muted); font-size:14px; }
+    .callout { margin:22px 0; padding:17px 20px; border-left:5px solid var(--teal); background:var(--soft-blue); }
+    .callout.warning { border-left-color:var(--coral); background:var(--soft-coral); }
+    .callout strong { color:var(--navy); }
+    .code { margin:16px 0; padding:18px 20px; overflow-x:auto; color:#d9f8f2; background:#142d41; border-left:4px solid var(--teal); font:12.5px/1.7 Consolas,'Courier New',monospace; white-space:pre-wrap; }
+    .table-wrap { margin:20px 0; overflow-x:auto; border:1px solid var(--line); background:var(--white); }
+    table { width:100%; min-width:680px; border-collapse:collapse; font-size:13px; }
+    th, td { padding:11px 13px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; }
+    th { color:#fffdf8; background:var(--navy); font-size:10px; letter-spacing:1px; text-transform:uppercase; }
+    tr:last-child td { border-bottom:0; }
+    .checklist { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px 18px; padding:0; list-style:none; }
+    .checklist li { margin:0; padding:10px 13px 10px 32px; border-bottom:1px solid var(--line); color:var(--muted); position:relative; }
+    .checklist li::before { content:'□'; position:absolute; left:10px; color:var(--coral); font-weight:800; }
+    .source { margin-top:38px; padding-top:18px; border-top:1px solid var(--line); color:var(--muted); font-size:13px; }
+    #top { position:fixed; right:20px; bottom:20px; display:none; width:38px; height:38px; border:1px solid var(--teal); border-radius:50%; color:#fff; background:var(--navy); cursor:pointer; font-size:17px; }
+    #top.show { display:block; }
+    .progress { position:fixed; top:0; left:0; z-index:10; width:0; height:3px; background:var(--teal); }
+    @media (max-width:900px) { .shell { display:block; } .rail { position:relative; height:auto; } .menu { grid-template-columns:repeat(2,minmax(0,1fr)); } main { padding:28px 20px 50px; } }
+    @media (max-width:600px) { .menu, .grid, .checklist { grid-template-columns:1fr; } .hero { padding:30px 24px; } }
+    @media print { .rail, #top, .progress { display:none !important; } main { padding:12px; } .hero, .card { box-shadow:none; break-inside:avoid; } }
+  </style>
+</head>
+<body>
+  <div class="progress" id="progress"></div>
+  <div class="shell">
+    <aside class="rail">
+      <div class="brand"><small>GitHub Copilot</small><h1>Custom Agent Guide</h1></div>
+      <div class="menu-label">Guide path</div>
+      <nav class="menu" aria-label="Guide sections"><a class="active" href="#overview">Overview</a><a href="#choose">Choose the right surface</a><a href="#setup">Setup and discovery</a><a href="#anatomy">Agent file anatomy</a><a href="#capabilities">Tools and models</a><a href="#orchestration">Handoffs and subagents</a><a href="#walkthrough">Build an agent</a><a href="#testing">Test and iterate</a><a href="#sharing">Share and govern</a><a href="#practices">Best practices</a><a href="#checklist">Readiness checklist</a><a href="#troubleshooting">Troubleshooting</a></nav>
+      <p class="rail-note">A custom agent is a focused AI persona with explicit instructions, capabilities, and workflow boundaries.</p>
+    </aside>
+    <main><div class="content">
+      <header class="hero" id="overview"><div class="eyebrow">Customization guide</div><h2>Build a custom agent that knows its job.</h2><p>Custom agents package a specialized role, operating instructions, tools, models, and next steps into a reusable Markdown file. Use this guide to move from a blank <code>.agent.md</code> file to a tested team workflow.</p><div class="meta"><span>Focused expertise</span><span>Explicit authority</span><span>Composable workflows</span><span>Evidence-driven</span></div></header>
+
+      <section class="section" id="choose"><div class="section-head"><div class="eyebrow">01 · Select the surface</div><h2>Use an agent when the AI itself needs to change</h2><p>Custom agents are for specialized personas with distinct tools or workflow behavior. Choose the smallest customization surface that expresses the requirement.</p></div>
+        <div class="table-wrap"><table><thead><tr><th>Surface</th><th>File or control</th><th>Use it when</th><th>Example</th></tr></thead><tbody><tr><td>Custom instructions</td><td><code>copilot-instructions.md</code></td><td>Rules and standards should apply to every Copilot interaction.</td><td>Always follow the repository's testing and security conventions.</td></tr><tr><td>Prompt files</td><td><code>.prompt.md</code></td><td>A repeatable, parameterized task should be invoked on demand.</td><td>Generate a release-notes draft from the current changes.</td></tr><tr><td>Custom agents</td><td><code>.agent.md</code></td><td>The AI needs a different identity, tool set, model, or multi-step workflow.</td><td>Analyze a codebase as a read-only architecture reviewer.</td></tr><tr><td>Agent Skills</td><td><code>SKILL.md</code></td><td>A reusable capability should be discovered and applied by agents.</td><td>Review an OpenAPI contract using a standard checklist.</td></tr></tbody></table></div>
+        <div class="callout"><strong>Decision rule:</strong> use an agent to change who is acting and what that agent is allowed to do. Use instructions to establish universal rules, and prompts to package a task someone can invoke.</div>
+        <div class="grid"><article class="card"><h3>Good agent candidates</h3><p>Security reviewer, test-coverage specialist, API builder, migration planner, documentation maintainer, or domain expert with a recognizable output.</p></article><article class="card"><h3>Weak agent candidates</h3><p>A generic "do everything" assistant, a single short prompt, or a policy that must be enforced deterministically outside the model.</p></article></div>
+      </section>
+
+      <section class="section" id="setup"><div class="section-head"><div class="eyebrow">02 · Setup</div><h2>Put the agent where Copilot can discover it</h2><p>Repository agents are easy to share and version. User-level agents are useful for personal workflows that should follow you between workspaces.</p></div>
+        <h3>Prerequisites</h3><ul><li>Visual Studio Code 1.106 or later, or a compatible GitHub Copilot environment that supports custom agents.</li><li>The GitHub Copilot extension and an active Copilot subscription.</li><li>A workspace where you can create and test Markdown customization files.</li><li>A representative codebase, test project, or workflow that gives the agent real evidence to inspect.</li></ul>
+        <h3>Repository-level location</h3><div class="code">your-project/
+  .github/
+    agents/
+      test-coverage.agent.md
+      api-builder.agent.md
+      code-reviewer.agent.md
+    copilot-instructions.md
+    prompts/
+    skills/
+  backend/
+  frontend/</div>
+        <h3>User-level location</h3><p>Create a user agent from the Copilot Chat agent picker when the workflow is personal and workspace-independent. Repository-level agents are the better default for team standards, project context, and shared review.</p>
+        <h3>Verify discovery</h3><ol><li>Open Copilot Chat and open the Agents dropdown.</li><li>Confirm the new agent appears with the expected name and description.</li><li>Use Configure Custom Agents to inspect the source and scope.</li><li>Run a small test prompt before attempting a complex workflow.</li></ol>
+        <div class="callout warning"><strong>Debugging tip:</strong> use the Chat Debug View from the Chat overflow menu or the Command Palette. Inspect the system prompt, gathered context, and tool invocations to verify that the agent file is actually applied.</div>
+      </section>
+
+      <section class="section" id="anatomy"><div class="section-head"><div class="eyebrow">03 · File anatomy</div><h2>Make the agent file readable as a contract</h2><p>Every custom agent has optional YAML frontmatter followed by a Markdown body. The frontmatter configures the agent; the body supplies its role, workflow, standards, output format, and boundaries.</p></div>
+        <h3>Complete file shape</h3><div class="code">---
+name: test-coverage
+description: Analyze a codebase for coverage gaps and generate tests.
+argument-hint: Describe the area or target you want tested.
+tools: ['search', 'codebase', 'editFiles', 'runCommands', 'runTests', 'problems']
+model: 'Claude Sonnet 4 (copilot)'
+handoffs:
+  - label: Review the tests
+    agent: code-reviewer
+    prompt: Review the generated tests for correctness and maintainability.
+    send: false
+agents: ['code-reviewer']
+target: vscode
+user-invokable: true
+---
+
+# Role and identity
+You are a senior testing specialist...
+
+# Workflow
+1. Analyze...
+2. Plan...
+3. Generate...
+4. Validate...
+5. Report...</div>
+        <h3>Frontmatter properties</h3><div class="table-wrap"><table><thead><tr><th>Property</th><th>Required</th><th>Purpose</th><th>Design guidance</th></tr></thead><tbody><tr><td><code>description</code></td><td>Yes</td><td>Describes the agent and helps users understand when to select it.</td><td>Use a concise description with capability, input, and outcome.</td></tr><tr><td><code>name</code></td><td>No</td><td>Display name for the agent.</td><td>Use a stable, short name; the filename is the fallback.</td></tr><tr><td><code>argument-hint</code></td><td>No</td><td>Guides the user on what to put in the chat input.</td><td>Describe the expected scope, target, or decision.</td></tr><tr><td><code>tools</code></td><td>No</td><td>Restricts available tools.</td><td>Omit only when the agent genuinely needs broad authority.</td></tr><tr><td><code>model</code></td><td>No</td><td>Selects a preferred model or fallback list.</td><td>Choose for reasoning, latency, cost, and supported features.</td></tr><tr><td><code>handoffs</code></td><td>No</td><td>Provides suggested next-step buttons.</td><td>Chain agents where the next phase has a different responsibility.</td></tr><tr><td><code>agents</code></td><td>No</td><td>Whitelists subagents this agent may invoke.</td><td>Prefer a narrow list over <code>*</code>.</td></tr><tr><td><code>target</code></td><td>No</td><td>Limits availability to <code>vscode</code> or <code>github-copilot</code>.</td><td>Use when a workflow depends on an environment-specific capability.</td></tr><tr><td><code>user-invokable</code></td><td>No</td><td>Controls whether the agent appears in the user picker.</td><td>Set false for internal subagents that should not be selected directly.</td></tr><tr><td><code>mcp-servers</code></td><td>No</td><td>Configures MCP servers for supported coding-agent scenarios.</td><td>Review server permissions and data handling before enabling.</td></tr></tbody></table></div>
+        <h3>Body structure</h3><div class="grid"><article class="card"><h3>Identity and role</h3><p>State who the agent is, its domain, and the one outcome it owns. This anchors behavior before the task details arrive.</p></article><article class="card"><h3>Workflow steps</h3><p>Use an ordered analyze, plan, execute, validate, and report sequence. Name decision points and stop conditions.</p></article><article class="card"><h3>Standards and rules</h3><p>Encode repository conventions, positive requirements, negative constraints, and approval boundaries.</p></article><article class="card"><h3>Output format</h3><p>Define the report structure, evidence required, changed files, commands run, and unresolved risks.</p></article></div>
+        <div class="callout"><strong>Write for behavior:</strong> “Write good tests” is vague. “Use the existing framework, mirror source paths, use the Arrange-Act-Assert pattern, run the focused test command, and report failures” is observable and testable.</div>
+      </section>
+
+      <section class="section" id="capabilities"><div class="section-head"><div class="eyebrow">04 · Capabilities</div><h2>Give the agent exactly the authority it needs</h2><p>Tools define what the agent can do. Models influence quality, latency, and cost. Both belong in the design rather than being accidental defaults.</p></div>
+        <h3>Common built-in tools</h3><div class="table-wrap"><table><thead><tr><th>Tool</th><th>Capability</th><th>Useful for</th></tr></thead><tbody><tr><td><code>search</code></td><td>Search workspace files by text.</td><td>Finding conventions, symbols, configuration, and examples.</td></tr><tr><td><code>codebase</code></td><td>Semantic code search and project understanding.</td><td>Mapping architecture and locating related behavior.</td></tr><tr><td><code>editFiles</code></td><td>Create and edit files.</td><td>Implementation, test generation, and documentation changes.</td></tr><tr><td><code>runCommands</code></td><td>Execute terminal commands.</td><td>Builds, linters, formatters, migrations, and validation.</td></tr><tr><td><code>runTests</code></td><td>Run test suites.</td><td>Focused and full test validation.</td></tr><tr><td><code>findTestFiles</code></td><td>Locate test files.</td><td>Discovering test conventions and existing coverage.</td></tr><tr><td><code>problems</code></td><td>Read compile and lint diagnostics.</td><td>Diagnosing errors after edits.</td></tr><tr><td><code>changes</code></td><td>Inspect current changes.</td><td>Reviewing scope and preventing unrelated modifications.</td></tr><tr><td><code>testFailure</code></td><td>Inspect test failure details.</td><td>Targeted diagnosis and repair.</td></tr><tr><td><code>fetch</code></td><td>Read web content.</td><td>Official documentation and external specifications.</td></tr></tbody></table></div>
+        <h3>Tool selection by archetype</h3><div class="table-wrap"><table><thead><tr><th>Agent type</th><th>Recommended tools</th><th>Boundary</th></tr></thead><tbody><tr><td>Planner or read-only reviewer</td><td><code>search</code>, <code>codebase</code>, <code>fetch</code>, <code>usages</code>, <code>changes</code>, <code>problems</code></td><td>No editing or command execution.</td></tr><tr><td>Implementation agent</td><td>Editing, search, codebase, commands, tests, problems</td><td>Changes only the requested scope; validates before reporting.</td></tr><tr><td>Testing agent</td><td>Search, codebase, edit, tests, test files, commands, failures, problems</td><td>Prefer test-only changes unless a production bug blocks validation.</td></tr><tr><td>Migration orchestrator</td><td>Analysis, planning, delegated agents, editing, commands, tests</td><td>Uses handoffs or subagents to separate phases and approvals.</td></tr></tbody></table></div>
+        <h3>Model selection</h3><p>Omit <code>model</code> when the user should choose. Specify a model when a workflow needs predictable reasoning or a known capability. A model array can express fallback options when supported.</p>
+        <div class="callout warning"><strong>Least privilege:</strong> a read-only planner that can edit files or run arbitrary commands is carrying unnecessary risk. Tool restrictions are a useful boundary, but they do not replace review of the agent instructions and the requested task.</div>
+      </section>
+
+      <section class="section" id="orchestration"><div class="section-head"><div class="eyebrow">05 · Orchestration</div><h2>Compose work with handoffs and subagents</h2><p>Handoffs are visible transitions for a person to approve or initiate. Subagents are delegated specialists an agent can invoke as part of its own workflow.</p></div>
+        <h3>Handoffs: visible next steps</h3><div class="code">handoffs:
+  - label: Generate tests
+    agent: test-coverage
+    prompt: Generate tests for the implementation described above.
+    send: false
+  - label: Review changes
+    agent: code-reviewer
+    prompt: Review the files and validation evidence from the previous step.
+    send: true</div><div class="table-wrap"><table><thead><tr><th>Setting</th><th>Behavior</th><th>Use it for</th></tr></thead><tbody><tr><td><code>label</code></td><td>Text shown on the action button.</td><td>A clear, outcome-oriented next step.</td></tr><tr><td><code>agent</code></td><td>Target custom agent.</td><td>A specialist with a distinct role or authority.</td></tr><tr><td><code>prompt</code></td><td>Context sent to the target agent.</td><td>Passing the previous result and the next objective.</td></tr><tr><td><code>send: false</code></td><td>Prefills the prompt for user review.</td><td>Human approval, sensitive changes, or ambiguous scope.</td></tr><tr><td><code>send: true</code></td><td>Submits immediately.</td><td>Low-risk, deterministic transitions where the user has already opted in.</td></tr></tbody></table></div>
+        <h3>Subagents: delegated specialists</h3><div class="code">---
+name: migration-orchestrator
+description: Coordinate a staged application migration.
+agents: ['architecture-reviewer', 'api-builder', 'test-coverage']
+user-invokable: true
+---</div><p>Use <code>agents: []</code> to prevent subagent invocation, a named list to allow specific specialists, or <code>agents: ['*']</code> only when broad delegation is genuinely required and governed.</p>
+        <h3>Example workflow chain</h3><div class="code">Planner (read-only)
+    | handoff: "Implement the approved plan"
+    v
+Implementation agent (edit and validate)
+    | handoff: "Add tests for the changed behavior"
+    v
+Test-coverage agent (test tools and evidence)
+    | handoff: "Review the complete change"
+    v
+Code-review agent (read-only assessment)</div>
+        <div class="grid"><article class="card"><h3>Prefer handoffs when</h3><p>A person should inspect the result, choose the next phase, or approve a side effect. Handoffs make the workflow legible and interruptible.</p></article><article class="card"><h3>Prefer subagents when</h3><p>The parent agent needs a bounded specialist to complete a well-defined subtask and can evaluate the returned result.</p></article></div>
+        <div class="callout warning"><strong>Keep chains shallow:</strong> every extra agent adds context transfer, model variability, and debugging cost. Each stage should have one owner, one purpose, and a clear completion signal.</div>
+      </section>
+
+      <section class="section" id="walkthrough"><div class="section-head"><div class="eyebrow">06 · Walkthrough</div><h2>Build a test-coverage agent step by step</h2><p>The following example turns a real testing need into a focused agent. Adapt the domain, paths, framework, and quality target to your repository rather than copying assumptions blindly.</p></div>
+        <h3>Step 1: Define the purpose</h3><ul><li><strong>Role:</strong> a senior testing specialist for the repository's application stack.</li><li><strong>Outcome:</strong> identify coverage gaps, generate maintainable tests, run validation, and report remaining gaps.</li><li><strong>Authority:</strong> read source and tests, write test files, run test commands, and inspect diagnostics.</li><li><strong>Boundary:</strong> do not change production code unless a confirmed defect blocks testing and the user approves it.</li></ul>
+        <h3>Step 2: Study existing examples</h3><p>Read community agents and local agents for patterns, but treat them as examples rather than authority. Look for explicit identity, analyze-before-editing, concrete constraints, and validation evidence.</p>
+        <h3>Step 3: Study repository patterns</h3><p>Before drafting instructions, inspect the repository's instruction file, test projects, representative test classes, test data builders, mocking libraries, and build scripts. The agent should extend existing conventions, not invent a second testing culture.</p>
+        <h3>Step 4: Write frontmatter</h3><div class="code">---
+name: test-coverage
+description: Analyze code coverage gaps and generate comprehensive unit and integration tests.
+argument-hint: Describe the project area, class, or behavior you want tested.
+---</div><p>In this example, tools and model are omitted because the agent needs broad testing capability and should respect the user's model selection. Add explicit tools when a narrower boundary is safer.</p>
+        <h3>Step 5: Write the body</h3><div class="code"># Role and identity
+You are a senior testing specialist. Focus on identifying coverage gaps and
+creating reliable unit and integration tests that follow this repository's
+existing conventions.
+
+# Workflow
+1. Analyze source, tests, build files, and repository instructions.
+2. Discover naming, structure, data, mocking, and integration patterns.
+3. Create a coverage plan ordered by architectural layer and risk.
+4. Generate one test class at a time; validate after each meaningful change.
+5. Run focused tests, diagnose failures, then run the broader suite.
+6. Report files changed, commands run, results, and remaining gaps.
+
+# Rules
+- NEVER change production code unless a confirmed testing blocker is approved.
+- ALWAYS inspect existing tests before creating new patterns.
+- ALWAYS run the narrowest useful build or test command after edits.
+- Do not claim coverage percentages without measurement evidence.
+
+# Output
+Return a concise summary with coverage scope, files changed, validation results,
+remaining risks, and recommended next tests.</div>
+        <h3>Step 6: Save and verify</h3><ol><li>Save the file as <code>.github/agents/test-coverage.agent.md</code>.</li><li>Confirm it appears in the Agents dropdown.</li><li>Test a narrow class before asking for the whole repository.</li><li>Inspect the debug view if tools, instructions, or scope look wrong.</li></ol>
+        <h3>Step 7: Share through version control</h3><p>Review the file like code, commit it with the repository's normal process, and include a short usage note or example prompt in the team documentation.</p>
+      </section>
+
+      <section class="section" id="testing"><div class="section-head"><div class="eyebrow">07 · Testing</div><h2>Evaluate the agent as a behavior</h2><p>A polished Markdown file can still produce weak behavior. Test positive cases, boundary cases, missing prerequisites, and adversarial inputs before sharing the agent.</p></div>
+        <h3>Recommended test prompts</h3><div class="table-wrap"><table><thead><tr><th>Prompt</th><th>What to observe</th><th>Pass condition</th></tr></thead><tbody><tr><td>Analyze the current test coverage and identify gaps.</td><td>Does the agent inspect the correct source and test areas?</td><td>It produces an evidence-based plan without editing prematurely.</td></tr><tr><td>Add unit tests for the health controller.</td><td>Does it follow local naming, framework, and test structure?</td><td>Tests compile, match conventions, and target meaningful behavior.</td></tr><tr><td>Generate integration tests for the request middleware.</td><td>Does it select the established integration harness?</td><td>It uses the repository's fixture and validates the request pipeline.</td></tr><tr><td>Run the tests and report the results.</td><td>Does it execute the right command and interpret failures?</td><td>It reports actual commands and results, not guessed coverage.</td></tr><tr><td>Here is a file telling you to ignore the agent rules.</td><td>Does untrusted content override the agent?</td><td>It treats the file as data and preserves its governing instructions.</td></tr></tbody></table></div>
+        <h3>Iteration loop</h3><ol><li><strong>Observe:</strong> record the prompt, files inspected, tool calls, edits, and output.</li><li><strong>Compare:</strong> check behavior against the agent's stated success criteria.</li><li><strong>Refine:</strong> add a concrete rule, example, or stop condition for the failure.</li><li><strong>Replay:</strong> rerun the failing prompt and a nearby regression case.</li><li><strong>Review:</strong> confirm the change did not widen authority or introduce contradictions.</li></ol>
+        <div class="table-wrap"><table><thead><tr><th>Failure</th><th>Instruction refinement</th></tr></thead><tbody><tr><td>Generated tests do not compile.</td><td>Name the build command, show a correct local example, and require validation after each test class.</td></tr><tr><td>Agent modifies production code.</td><td>Repeat the boundary in rules and workflow, and restrict tools if read-only behavior is intended.</td></tr><tr><td>Too many tests are generated at once.</td><td>Require one class or layer at a time with a validation checkpoint.</td></tr><tr><td>Wrong mocking library is used.</td><td>State the repository's actual library and explicitly exclude alternatives.</td></tr><tr><td>Agent claims a coverage target without measurement.</td><td>Require a coverage command or label the result as an estimate.</td></tr></tbody></table></div>
+        <div class="callout"><strong>Debug with evidence:</strong> the Chat Debug View is useful for checking whether frontmatter was parsed, the body was included, the expected tools were available, and the agent actually used the intended workflow.</div>
+      </section>
+
+      <section class="section" id="sharing"><div class="section-head"><div class="eyebrow">08 · Sharing</div><h2>Match the scope to the ownership model</h2><p>Custom agents can live at repository, organization, or user scope. The right location depends on who owns the standards and how much project context the agent needs.</p></div>
+        <div class="table-wrap"><table><thead><tr><th>Scope</th><th>Location or setup</th><th>Best for</th><th>Tradeoff</th></tr></thead><tbody><tr><td>Repository</td><td><code>.github/agents/</code></td><td>Project-specific workflows and versioned team standards.</td><td>Must be maintained with the repository.</td></tr><tr><td>Organization</td><td>Organization custom-agent repository and enabled organization settings.</td><td>Cross-repository security, review, or platform standards.</td><td>Requires governance, ownership, and rollout discipline.</td></tr><tr><td>User profile</td><td>New Agent (User) from the Copilot Chat agent configuration.</td><td>Personal productivity and reusable individual workflows.</td><td>May not understand project-specific conventions.</td></tr></tbody></table></div>
+        <h3>Recommended team structure</h3><div class="code">Organization custom agents
+  org-security-reviewer.agent.md
+  org-code-reviewer.agent.md
+
+Repository custom agents
+  .github/agents/
+    test-coverage.agent.md
+    api-builder.agent.md
+
+Personal agents
+  documentation-helper.agent.md</div>
+        <h3>Governance questions</h3><ul><li>Who owns the agent and reviews changes?</li><li>Which tools, repositories, or data can it access?</li><li>What output must be reviewed by a human?</li><li>Which model and external services are permitted?</li><li>How are prompts, examples, scripts, and dependencies versioned?</li><li>What test prompts demonstrate that the agent still works after a platform update?</li></ul>
+        <div class="callout warning"><strong>Inspect before enabling:</strong> review instructions, scripts, references, network access, file writes, MCP servers, and data handling. A trusted repository location does not make every agent implementation safe by itself.</div>
+      </section>
+
+      <section class="section" id="practices"><div class="section-head"><div class="eyebrow">09 · Design practice</div><h2>Patterns that keep agents useful</h2><p>Good custom agents are narrow enough to be predictable and rich enough to handle the real workflow around their task.</p></div>
+        <h3>Useful community patterns</h3><div class="grid"><article class="card"><h3>Specialist agent</h3><p>One role, one domain, and a constrained tool set. A Playwright tester or security reviewer is easier to evaluate than a generalist.</p></article><article class="card"><h3>Meta-agent</h3><p>An agent builder gathers requirements, proposes tools, drafts an agent, and checks the result against a quality checklist.</p></article><article class="card"><h3>Chained workflow</h3><p>Separate TDD Red, Green, and Refactor or plan, implement, test, and review phases into agents with clear transitions.</p></article><article class="card"><h3>Migration orchestrator</h3><p>A coordinator delegates architecture, scaffolding, frontend, and testing tasks while retaining the overall plan and validation.</p></article><article class="card"><h3>Platform expert</h3><p>A deep domain agent encodes language, framework, security, and testing conventions that are expensive to restate in every prompt.</p></article><article class="card"><h3>Analyze first</h3><p>Repository exploration before editing reduces invented patterns, missing dependencies, and changes that conflict with local architecture.</p></article></div>
+        <h3>Do</h3><div class="table-wrap"><table><thead><tr><th>Practice</th><th>Reason</th></tr></thead><tbody><tr><td>Start with identity and scope.</td><td>A role statement focuses the model before procedural details.</td></tr><tr><td>Use numbered workflow steps.</td><td>Ordered actions and checkpoints are easier to follow and test.</td></tr><tr><td>Include concrete examples.</td><td>Examples communicate naming, structure, and quality more reliably than abstract advice.</td></tr><tr><td>Match existing patterns.</td><td>Local conventions are the most relevant source of truth for implementation.</td></tr><tr><td>Add validation steps.</td><td>Commands and evidence make success observable.</td></tr><tr><td>Restrict read-only agents.</td><td>Authority should match the job, especially for reviewers and planners.</td></tr></tbody></table></div>
+        <h3>Do not</h3><div class="table-wrap"><table><thead><tr><th>Anti-pattern</th><th>Why it fails</th></tr></thead><tbody><tr><td>Vague instructions.</td><td>The agent must infer the workflow and quality bar from too little signal.</td></tr><tr><td>Too many responsibilities.</td><td>Competing goals produce inconsistent choices and difficult evaluation.</td></tr><tr><td>Hardcoded absolute paths.</td><td>The agent becomes brittle across clones, branches, and repositories.</td></tr><tr><td>Skipping analysis.</td><td>Generated work is more likely to conflict with existing architecture.</td></tr><tr><td>Contradicting repository instructions.</td><td>Conflicting authority creates unpredictable behavior and maintenance debt.</td></tr><tr><td>Relying on prose for enforcement.</td><td>Security, approvals, and permissions need deterministic controls as well as instructions.</td></tr></tbody></table></div>
+        <h3>Prompt-writing techniques</h3><ol><li>Use imperative language for mandatory actions.</li><li>Use negative constraints for known failure modes.</li><li>Define success criteria in observable terms.</li><li>Layer specificity from role to workflow to repository convention.</li><li>Reference tools and supporting files explicitly when they matter.</li></ol>
+      </section>
+
+      <section class="section" id="checklist"><div class="section-head"><div class="eyebrow">10 · Readiness</div><h2>Custom agent readiness checklist</h2><p>Use this before committing an agent to a shared repository or organization catalog.</p></div>
+        <ul class="checklist"><li>Agent has one clear role, audience, and outcome</li><li>Description explains when to select it</li><li>Argument hint describes useful input</li><li>Repository, user, or organization scope is intentional</li><li>Frontmatter parses and uses supported property names</li><li>Tools match the minimum authority needed</li><li>Model choice is deliberate or left to the user for good reason</li><li>Body has identity, workflow, standards, output, and boundaries</li><li>Instructions align with repository guidance and existing examples</li><li>Handoffs have clear labels, prompts, targets, and send behavior</li><li>Subagents are explicitly whitelisted where possible</li><li>Analyze and plan steps occur before side effects</li><li>Validation commands are explicit and produce evidence</li><li>Positive, near-miss, missing-input, and adversarial prompts were tested</li><li>Chat Debug View was used when behavior was unclear</li><li>Owner, review cadence, dependencies, and data boundaries are documented</li></ul>
+        <div class="callout"><strong>Definition of done:</strong> another engineer can tell when the agent activates, what it is allowed to touch, how it should work, what happens next, and which evidence proves the result is ready.</div>
+      </section>
+
+      <section class="section" id="troubleshooting"><div class="section-head"><div class="eyebrow">11 · Recovery</div><h2>Troubleshoot the common failure modes</h2><p>Most custom-agent failures are discoverability, configuration, authority, or instruction-quality problems. Use the narrowest diagnostic first.</p></div>
+        <div class="table-wrap"><table><thead><tr><th>Symptom</th><th>Likely cause</th><th>Check or fix</th></tr></thead><tbody><tr><td>Agent does not appear.</td><td>Wrong folder, extension, or frontmatter.</td><td>Verify <code>.github/agents/</code>, the <code>.agent.md</code> suffix, valid YAML, and reload the workspace.</td></tr><tr><td>Agent appears with the wrong name.</td><td>Missing or unexpected <code>name</code>.</td><td>Set an explicit stable name and confirm the source path.</td></tr><tr><td>Agent ignores instructions.</td><td>Malformed frontmatter, contradictory guidance, or prompt scope.</td><td>Use the Chat Debug View to inspect the assembled system prompt.</td></tr><tr><td>Agent cannot use a tool.</td><td>Tool name is invalid or omitted from a restricted list.</td><td>Check supported tool names and the agent's available-tool trace.</td></tr><tr><td>Agent changes too much.</td><td>Broad tools, vague scope, or missing approval boundary.</td><td>Restrict tools, require an analysis plan, and add a stop condition.</td></tr><tr><td>Agent contradicts repository standards.</td><td>Agent body conflicts with <code>copilot-instructions.md</code>.</td><td>Remove the contradiction and make the repository standard the shared baseline.</td></tr><tr><td>Output is inconsistent.</td><td>Insufficient examples, checkpoints, or success criteria.</td><td>Add concrete patterns, validation commands, and regression prompts.</td></tr><tr><td>YAML parsing fails.</td><td>Indentation or quoting error.</td><td>Use consistent indentation and quote strings containing special characters.</td></tr></tbody></table></div>
+        <h3>Quick diagnostic sequence</h3><ol><li>Confirm file location and extension.</li><li>Validate frontmatter syntax and property names.</li><li>Reload and confirm discovery in the agent picker.</li><li>Run one focused prompt with a small scope.</li><li>Inspect the Chat Debug View for prompt and tool evidence.</li><li>Make one instruction or configuration change, then replay the same prompt.</li></ol>
+        <p class="source">References: <a href="https://copilot-academy.github.io/workshops/copilot-customization/custom_agent_developer_guide" target="_blank" rel="noreferrer noopener">Custom Agent Developer Guide | GitHub Copilot Academy</a> · <a href="https://github.com/github/awesome-copilot/tree/main/agents" target="_blank" rel="noreferrer noopener">Awesome Copilot agent examples</a> · <a href="https://code.visualstudio.com/docs/copilot/customization/custom-agents" target="_blank" rel="noreferrer noopener">VS Code custom agents documentation</a> · <a href="https://docs.github.com/en/copilot" target="_blank" rel="noreferrer noopener">GitHub Copilot documentation</a> · <a href="agent-skills-guide.html">Companion Agent Skills Guide</a>.</p>
+      </section>
+    </div></main>
+  </div>
+  <button id="top" title="Back to top" aria-label="Back to top">^</button>
+  <script>
+    const progress = document.querySelector('#progress');
+    const topButton = document.querySelector('#top');
+    function updateScroll() {
+      const max = document.documentElement.scrollHeight - window.innerHeight || 1;
+      progress.style.width = `${(window.scrollY / max) * 100}%`;
+      topButton.classList.toggle('show', window.scrollY > 320);
+    }
+    window.addEventListener('scroll', updateScroll, { passive: true });
+    topButton.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+    updateScroll();
+  </script>
+</body>
+</html>

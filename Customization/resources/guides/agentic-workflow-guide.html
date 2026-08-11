@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A practical guide to creating, securing, testing, and operating GitHub Agentic Workflows with gh-aw.">
+  <title>GitHub Copilot Agentic Workflow Guide</title>
+  <style>
+    :root { --navy:#09243c; --blue:#1769aa; --teal:#0f9da8; --coral:#e26d5a; --gold:#d9a441; --ink:#17212b; --muted:#5f6f7d; --paper:#f5f1e8; --white:#fffdf8; --line:#d8d0c4; --soft-blue:#eaf6f4; --soft-coral:#fff0eb; --shadow:0 8px 26px rgba(23,33,43,.06); }
+    * { box-sizing:border-box; }
+    html { scroll-behavior:smooth; font-family:'Trebuchet MS','Segoe UI',sans-serif; }
+    body { margin:0; color:var(--ink); background:var(--paper); line-height:1.6; }
+    a { color:var(--blue); font-weight:700; text-decoration:none; }
+    a:hover { color:var(--coral); text-decoration:underline; }
+    code { padding:2px 5px; color:var(--navy); background:#e5eef0; font:.88em Consolas,monospace; }
+    .shell { display:grid; grid-template-columns:260px minmax(0,1fr); min-height:100vh; }
+    .rail { position:sticky; top:0; height:100vh; overflow-y:auto; padding:28px 20px; color:#d9e8f2; background:var(--navy); }
+    .brand { padding-bottom:24px; border-bottom:1px solid rgba(255,255,255,.14); }
+    .brand small { color:#7ed6d1; font-size:11px; font-weight:800; letter-spacing:1.8px; text-transform:uppercase; }
+    .brand h1 { margin:9px 0 0; color:#fffdf8; font:700 24px/1.05 Georgia,'Times New Roman',serif; }
+    .menu-label { margin:25px 0 8px; color:#88a7ba; font-size:10px; font-weight:800; letter-spacing:1.4px; text-transform:uppercase; }
+    .menu { display:grid; gap:4px; }
+    .menu a { display:block; padding:8px 9px; border-left:2px solid transparent; color:#c4d6e0; font-size:12px; font-weight:400; }
+    .menu a:hover { border-left-color:#7ed6d1; background:rgba(255,255,255,.06); color:#fff; text-decoration:none; }
+    .rail-note { margin-top:28px; padding-top:16px; border-top:1px solid rgba(255,255,255,.14); color:#88a7ba; font-size:11px; }
+    main { min-width:0; padding:42px clamp(22px,5vw,76px) 70px; }
+    .content { width:min(980px,100%); margin:0 auto; }
+    .hero { margin-bottom:36px; padding:clamp(30px,5vw,58px); color:#fffdf8; background:var(--navy); box-shadow:0 18px 45px rgba(23,33,43,.12); position:relative; overflow:hidden; }
+    .hero::after { content:''; position:absolute; width:300px; height:300px; right:-70px; bottom:-125px; border:45px solid rgba(126,214,209,.32); border-radius:50%; }
+    .hero > * { position:relative; z-index:1; }
+    .eyebrow { margin-bottom:12px; color:#7ed6d1; font-size:11px; font-weight:800; letter-spacing:2px; text-transform:uppercase; }
+    h2 { margin:0; color:var(--navy); font:700 clamp(30px,4vw,52px)/1.04 Georgia,'Times New Roman',serif; }
+    .hero h2 { max-width:760px; color:#fffdf8; }
+    .hero p { max-width:760px; color:#d9e8f2; font-size:17px; }
+    .meta { display:flex; flex-wrap:wrap; gap:9px; margin-top:24px; }
+    .meta span { padding:7px 11px; border:1px solid rgba(255,255,255,.22); color:#fffdf8; font-size:11px; font-weight:800; }
+    .section { margin:0 0 40px; }
+    .section-head { margin-bottom:24px; padding-bottom:17px; border-bottom:2px solid var(--line); }
+    .section-head p { max-width:760px; margin:12px 0 0; color:var(--muted); font-size:16px; }
+    h3 { margin:28px 0 10px; color:var(--blue); font-size:20px; }
+    h4 { margin:20px 0 7px; color:var(--navy); font-size:15px; }
+    p { max-width:800px; }
+    ul, ol { padding-left:23px; }
+    li { margin:7px 0; }
+    .grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; margin:20px 0; }
+    .card { padding:20px; border:1px solid var(--line); background:var(--white); box-shadow:var(--shadow); }
+    .card h3 { margin-top:0; font-size:17px; }
+    .card p, .card li { color:var(--muted); font-size:14px; }
+    .callout { margin:22px 0; padding:17px 20px; border-left:5px solid var(--teal); background:var(--soft-blue); }
+    .callout.warning { border-left-color:var(--coral); background:var(--soft-coral); }
+    .callout strong { color:var(--navy); }
+    .code { margin:16px 0; padding:18px 20px; overflow-x:auto; color:#d9f8f2; background:#142d41; border-left:4px solid var(--teal); font:12.5px/1.7 Consolas,'Courier New',monospace; white-space:pre-wrap; }
+    .table-wrap { margin:20px 0; overflow-x:auto; border:1px solid var(--line); background:var(--white); }
+    table { width:100%; min-width:680px; border-collapse:collapse; font-size:13px; }
+    th, td { padding:11px 13px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; }
+    th { color:#fffdf8; background:var(--navy); font-size:10px; letter-spacing:1px; text-transform:uppercase; }
+    tr:last-child td { border-bottom:0; }
+    .checklist { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px 18px; padding:0; list-style:none; }
+    .checklist li { margin:0; padding:10px 13px 10px 32px; border-bottom:1px solid var(--line); color:var(--muted); position:relative; }
+    .checklist li::before { content:'□'; position:absolute; left:10px; color:var(--coral); font-weight:800; }
+    .source { margin-top:38px; padding-top:18px; border-top:1px solid var(--line); color:var(--muted); font-size:13px; }
+    #top { position:fixed; right:20px; bottom:20px; display:none; width:38px; height:38px; border:1px solid var(--teal); border-radius:50%; color:#fff; background:var(--navy); cursor:pointer; font-size:17px; }
+    #top.show { display:block; }
+    .progress { position:fixed; top:0; left:0; z-index:10; width:0; height:3px; background:var(--teal); }
+    @media (max-width:900px) { .shell { display:block; } .rail { position:relative; height:auto; } .menu { grid-template-columns:repeat(2,minmax(0,1fr)); } main { padding:28px 20px 50px; } }
+    @media (max-width:600px) { .menu, .grid, .checklist { grid-template-columns:1fr; } .hero { padding:30px 24px; } }
+    @media print { .rail, #top, .progress { display:none !important; } main { padding:12px; } .hero, .card { box-shadow:none; break-inside:avoid; } }
+  </style>
+</head>
+<body>
+  <div class="progress" id="progress"></div>
+  <div class="shell">
+    <aside class="rail">
+      <div class="brand"><small>GitHub Copilot</small><h1>Agentic Workflows</h1></div>
+      <div class="menu-label">Guide path</div>
+      <nav class="menu" aria-label="Guide sections"><a href="#overview">Overview</a><a href="#why">Why agentic</a><a href="#setup">Setup</a><a href="#anatomy">Workflow anatomy</a><a href="#security">Security</a><a href="#walkthroughs">Walkthroughs</a><a href="#patterns">Patterns</a><a href="#test">Test and debug</a><a href="#create">Create your own</a><a href="#checklist">Readiness checklist</a></nav>
+      <p class="rail-note">Author in Markdown, compile to Actions, and keep every model-powered side effect bounded by policy and Safe Outputs.</p>
+    </aside>
+    <main><div class="content">
+      <header class="hero" id="overview"><div class="eyebrow">Customization guide</div><h2>Build agentic workflows that can act, explain, and stay bounded.</h2><p>GitHub Agentic Workflows bring AI reasoning into GitHub Actions. Define the intent in Markdown, compile it with gh-aw, and let the workflow respond to repository context within explicit permissions, network rules, and human review.</p><div class="meta"><span>Markdown-first</span><span>Safe Outputs</span><span>GitHub Actions</span><span>Auditable automation</span></div></header>
+
+      <section class="section" id="why"><div class="section-head"><div class="eyebrow">01 · The idea</div><h2>Why use an agentic workflow?</h2><p>Traditional automation is excellent when every branch is known in advance. Agentic workflows help when the input is rich, unstructured, or changing and a model needs to interpret context before choosing a response.</p></div>
+        <div class="table-wrap"><table><thead><tr><th>Traditional workflow</th><th>Agentic workflow</th><th>Design implication</th></tr></thead><tbody><tr><td>Fixed code decides every branch.</td><td>The model interprets issues, pull requests, logs, or repository state.</td><td>Write clear intent and acceptance criteria.</td></tr><tr><td>Configured actions write directly.</td><td>Proposed changes pass through Safe Outputs.</td><td>Separate reasoning from side effects.</td></tr><tr><td>Behavior changes through code edits.</td><td>Behavior can be refined through reviewed Markdown.</td><td>Version and review the source workflow.</td></tr></tbody></table></div>
+        <div class="grid"><article class="card"><h3>Good fit</h3><p>Daily summaries, issue triage, CI diagnosis, documentation maintenance, release notes, and other tasks where context changes but the outcome is bounded.</p></article><article class="card"><h3>Use caution</h3><p>High-impact decisions, unrestricted production changes, secrets handling, or workflows where a mistaken model action cannot be reviewed or rolled back.</p></article></div>
+        <div class="callout"><strong>Core principle:</strong> let the agent interpret and propose; let deterministic workflow code, permissions, Safe Outputs, and people control what becomes real.</div>
+      </section>
+
+      <section class="section" id="setup"><div class="section-head"><div class="eyebrow">02 · Setup</div><h2>Install gh-aw and prepare the repository</h2><p>The gh-aw extension converts Markdown workflow sources into GitHub Actions lock files. Development is easiest with a test repository and a manual trigger.</p></div>
+        <div class="code">gh extension install github/gh-aw
+
+# Confirm the extension is available
+gh aw --help
+
+# Compile a workflow source
+gh aw compile .github/workflows/daily-report.md
+
+# Run a local or dispatched workflow as supported by your setup
+gh aw run .github/workflows/daily-report.md</div>
+        <ol><li>Create a workflow source in <code>.github/workflows/&lt;name&gt;.md</code>.</li><li>Choose a narrow trigger, preferably <code>workflow_dispatch</code> while developing.</li><li>Declare only the permissions, tools, and network access the task requires.</li><li>Compile the source and inspect the generated <code>.lock.yml</code>.</li><li>Commit both the Markdown source and the compiled lock file.</li></ol>
+        <div class="callout warning"><strong>Source versus artifact:</strong> the <code>.md</code> file is the human-editable contract. The <code>.lock.yml</code> file is the compiled workflow executed by Actions. Frontmatter changes require recompilation; body-only changes may not, but recompiling is a useful consistency check.</div>
+      </section>
+
+      <section class="section" id="anatomy"><div class="section-head"><div class="eyebrow">03 · Authoring</div><h2>Understand the workflow anatomy</h2><p>A workflow combines YAML frontmatter for machine configuration with Markdown instructions for the agent. Keep both explicit enough for review.</p></div>
+        <div class="code">---
+name: daily-repository-report
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+  issues: read
+safe-outputs:
+  create-issue:
+    max: 1
+network:
+  allowed:
+    - github.com
+---
+
+# Daily repository report
+
+Review the repository activity for the requested period. Summarize
+meaningful changes, open risks, and follow-up work. Cite the issues,
+pull requests, and commits that support each conclusion.
+
+Do not invent activity. If evidence is missing, say so.
+
+## Expected output
+- A concise report for maintainers
+- Links to supporting GitHub artifacts
+- A proposed issue only when a follow-up is clearly needed</div>
+        <div class="grid"><article class="card"><h3>Frontmatter</h3><p>Defines triggers, permissions, engines, tools, network allowlists, Safe Outputs, and other compilation settings.</p></article><article class="card"><h3>Instructions</h3><p>Explains the task, scope, evidence standard, output format, and stop conditions in human-readable Markdown.</p></article><article class="card"><h3>Tools</h3><p>Use GitHub context, shell commands, MCP servers, or other supported tools only when they are needed and explicitly allowed.</p></article><article class="card"><h3>Outputs</h3><p>Prefer comments, issues, labels, and pull requests through Safe Outputs rather than granting the model direct write authority.</p></article></div>
+      </section>
+
+      <section class="section" id="security"><div class="section-head"><div class="eyebrow">04 · Guardrails</div><h2>Make the safe path the default</h2><p>Agentic workflows execute in a CI environment and may read untrusted repository content. Security belongs in the workflow configuration as well as the prompt.</p></div>
+        <div class="grid"><article class="card"><h3>Least privilege</h3><p>Start with read-only permissions. Add a permission only when the task and the resulting evidence justify it.</p></article><article class="card"><h3>Safe Outputs</h3><p>Use bounded output declarations to validate and release external effects such as issues, comments, labels, or pull requests.</p></article><article class="card"><h3>Network allowlists</h3><p>Permit only the hosts required by the workflow. Treat broad internet access as a design exception that needs review.</p></article><article class="card"><h3>Threat detection</h3><p>Use strict compilation and the available threat detection controls to catch suspicious instructions, unsafe tools, and excessive authority.</p></article></div>
+        <div class="code">---
+permissions:
+  contents: read
+  pull-requests: read
+network:
+  allowed:
+    - api.github.com
+    - github.com
+safe-outputs:
+  add-comment:
+    max: 2
+  create-issue:
+    max: 1
+---</div>
+        <div class="callout warning"><strong>Never grant direct write permissions to the model just to make a demo work.</strong> Use a Safe Output with a small maximum, clear content rules, and a reviewable artifact. Keep secrets out of prompts, logs, issues, and model context.</div>
+      </section>
+
+      <section class="section" id="walkthroughs"><div class="section-head"><div class="eyebrow">05 · Examples</div><h2>Three useful starting workflows</h2><p>These examples show the shape of common workflows. Adapt the instructions and frontmatter to the current gh-aw schema, repository policy, and risk level.</p></div>
+        <h3>Daily status report</h3><p>Gather recent commits, pull requests, and issues, then produce a concise report for maintainers. The workflow should cite evidence and avoid creating output when there is nothing actionable.</p>
+        <div class="code"># Daily status report
+
+Review activity from the last reporting period. Group findings into:
+1. Delivered work
+2. Active work
+3. Risks or blocked work
+4. Suggested follow-up
+
+Use links to GitHub artifacts as evidence. Do not infer status from
+file names alone. If the repository has no meaningful change, report that
+fact and do not create an issue.</div>
+        <h3>Issue triage</h3><p>Classify new issues by area, urgency, and missing information. Use a bounded label or comment output only after checking the issue body and repository guidance.</p>
+        <div class="code"># Issue triage
+
+For each eligible issue, inspect the title, body, labels, and related
+issues. Recommend a category and priority only when the evidence supports it.
+Do not close issues, remove labels, or change milestones.
+
+When information is missing, add one concise request for clarification.
+Do not repeat an existing maintainer comment.</div>
+        <h3>CI Doctor</h3><p>Inspect a failed check, identify the most likely cause, and suggest a repair. Keep the workflow diagnostic unless a separate reviewed workflow owns the change.</p>
+        <div class="code"># CI Doctor
+
+Inspect the failed workflow run, relevant logs, recent changes, and the
+repository's troubleshooting guidance. State:
+- failing job and first meaningful error
+- likely root cause and confidence
+- evidence used
+- smallest recommended next step
+
+Do not rerun jobs repeatedly, edit workflow files, or claim a fix was made.</div>
+      </section>
+
+      <section class="section" id="patterns"><div class="section-head"><div class="eyebrow">06 · Patterns</div><h2>Compose context, decisions, and outputs</h2><p>Reliable workflows make the model's decision surface small. Give it the right context, define what good looks like, and constrain the possible side effects.</p></div>
+        <div class="table-wrap"><table><thead><tr><th>Pattern</th><th>Use it when</th><th>Implementation note</th></tr></thead><tbody><tr><td>Evidence-first report</td><td>People need a summary of changing repository state.</td><td>Require links and distinguish observed facts from interpretation.</td></tr><tr><td>Classifier plus Safe Output</td><td>A request needs a label, comment, or bounded issue.</td><td>Set a maximum and prevent duplicate or destructive actions.</td></tr><tr><td>Diagnostic advisor</td><td>A human owns the repair decision.</td><td>Return confidence, evidence, and a smallest next step.</td></tr><tr><td>Scheduled maintainer</td><td>A recurring review can reduce toil.</td><td>Keep the schedule modest and make no-change runs cheap.</td></tr><tr><td>Human-in-the-loop proposal</td><td>Potential changes need review.</td><td>Produce a patch, issue, or pull request for approval rather than applying it directly.</td></tr></tbody></table></div>
+        <div class="callout"><strong>Context engineering matters:</strong> provide focused files, issue history, logs, and repository instructions. More context is not automatically better; irrelevant or untrusted content increases both cost and risk.</div>
+      </section>
+
+      <section class="section" id="test"><div class="section-head"><div class="eyebrow">07 · Validation</div><h2>Compile, test, and debug in small loops</h2><p>Test the workflow as both a GitHub Actions artifact and a model-guided behavior. Capture the generated lock file, run logs, model response, tool calls, and Safe Output decisions.</p></div>
+        <div class="code"># Compile with strict checks before sharing
+gh aw compile .github/workflows/daily-report.md --strict
+
+# Inspect generated workflows and repository status
+git diff -- .github/workflows/daily-report.md .github/workflows/daily-report.lock.yml
+
+# Run the manual workflow from GitHub Actions during development
+gh aw run .github/workflows/daily-report.md</div>
+        <ul class="checklist"><li>Markdown source compiles successfully</li><li>Generated lock file is committed and reviewable</li><li>Manual trigger works in a test repository</li><li>Read-only permissions are sufficient</li><li>Untrusted issue or log content cannot override instructions</li><li>Missing evidence produces a qualified response</li><li>Safe Outputs stay within their configured maximum</li><li>Duplicate comments or issues are prevented</li><li>Failure logs identify the first meaningful error</li><li>Cost, duration, and model behavior are acceptable</li></ul>
+        <div class="callout warning"><strong>Debug the compiled artifact too:</strong> a correct Markdown instruction can still produce an unsafe or broken Actions workflow if frontmatter, permissions, tool wiring, or generated configuration is wrong.</div>
+      </section>
+
+      <section class="section" id="create"><div class="section-head"><div class="eyebrow">08 · Build</div><h2>Create your own workflow</h2><p>Start with one recurring pain point and make the first version deliberately narrow. Expand only after the workflow produces useful evidence without surprising side effects.</p></div>
+        <ol><li><strong>Name the job.</strong> Describe the user or maintainer outcome, not the model technology.</li><li><strong>Choose the trigger.</strong> Use <code>workflow_dispatch</code> while developing, then add issue, pull request, schedule, or check-run triggers deliberately.</li><li><strong>Define the evidence.</strong> List the files, events, logs, and links the model must inspect.</li><li><strong>Write stop conditions.</strong> Say what to do when evidence is missing, conflicting, sensitive, or outside scope.</li><li><strong>Set the smallest permissions.</strong> Prefer read-only access and bounded Safe Outputs.</li><li><strong>Compile and inspect.</strong> Run <code>gh aw compile --strict</code>, review the lock file, and test with representative and adversarial inputs.</li><li><strong>Operationalize.</strong> Document ownership, monitoring, cost expectations, rollback, and the review path for changes.</li></ol>
+        <div class="grid"><article class="card"><h3>Commit together</h3><p>Commit the editable Markdown source and generated lock file so reviewers see intent and executable configuration together.</p></article><article class="card"><h3>Review like code</h3><p>Use pull requests, ownership, dependency review, and regression cases. A prompt change can alter production behavior.</p></article><article class="card"><h3>Keep outputs observable</h3><p>Preserve reports, proposed patches, logs, and decisions as artifacts that maintainers can inspect later.</p></article><article class="card"><h3>Plan for failure</h3><p>Make retries bounded, no-op runs inexpensive, and human escalation clear when the agent cannot establish enough evidence.</p></article></div>
+      </section>
+
+      <section class="section" id="checklist"><div class="section-head"><div class="eyebrow">09 · Readiness</div><h2>Agentic workflow readiness checklist</h2><p>Use this before enabling a workflow on a shared or production repository.</p></div>
+        <ul class="checklist"><li>Workflow has a bounded, valuable maintainer outcome</li><li>Source Markdown and compiled lock file are both committed</li><li>Frontmatter uses minimal permissions and explicit triggers</li><li>Network access is limited to required hosts</li><li>Safe Outputs constrain every external side effect</li><li>Instructions require evidence and links</li><li>Missing, conflicting, and untrusted input cases are defined</li><li>Strict compilation passes</li><li>Manual test run has been reviewed by a human</li><li>Logs, artifacts, and outputs are observable</li><li>Owner, cost expectations, and rollback path are documented</li><li>Changes have a pull request and regression test path</li></ul>
+        <div class="callout"><strong>Definition of done:</strong> a maintainer can explain what starts the workflow, what information the agent can access, what it may propose or release, how a person reviews the result, and what evidence proves the run behaved as intended.</div>
+        <p class="source">Primary reference: <a href="https://copilot-academy.github.io/workshops/copilot-customization/agentic_workflows" target="_blank" rel="noreferrer noopener">Agentic Workflows Developer Guide | GitHub Copilot Academy</a> · Further reading: <a href="https://github.github.com/gh-aw/" target="_blank" rel="noreferrer noopener">GitHub Agentic Workflows documentation</a> · <a href="https://docs.github.com/en/actions" target="_blank" rel="noreferrer noopener">GitHub Actions documentation</a>.</p>
+      </section>
+    </div></main>
+  </div>
+  <button id="top" title="Back to top" aria-label="Back to top">^</button>
+  <script>
+    const progress = document.querySelector('#progress');
+    const topButton = document.querySelector('#top');
+    function updateScroll() {
+      const max = document.documentElement.scrollHeight - window.innerHeight || 1;
+      progress.style.width = `${(window.scrollY / max) * 100}%`;
+      topButton.classList.toggle('show', window.scrollY > 320);
+    }
+    window.addEventListener('scroll', updateScroll, { passive: true });
+    topButton.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+    updateScroll();
+  </script>
+</body>
+</html>

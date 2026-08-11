@@ -1,0 +1,428 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Architecture guide for GitHub Copilot customization: instructions, agent skills, custom agents, hooks, MCP, and the Copilot SDK.">
+  <title>GitHub Copilot Customization Architecture Guide</title>
+  <style>
+    :root { --navy:#09243c; --blue:#1769aa; --teal:#0f9da8; --coral:#e26d5a; --gold:#d9a441; --ink:#17212b; --muted:#5f6f7d; --paper:#f5f1e8; --white:#fffdf8; --line:#d8d0c4; --soft-blue:#eaf6f4; --soft-coral:#fff0eb; --shadow:0 8px 26px rgba(23,33,43,.06); }
+    * { box-sizing:border-box; }
+    html { scroll-behavior:smooth; font-family:'Trebuchet MS','Segoe UI',sans-serif; }
+    body { margin:0; color:var(--ink); background:var(--paper); line-height:1.6; }
+    a { color:var(--blue); font-weight:700; text-decoration:none; }
+    a:hover { color:var(--coral); text-decoration:underline; }
+    code { padding:2px 5px; color:var(--navy); background:#e5eef0; font:.88em Consolas,monospace; }
+    .shell { display:grid; grid-template-columns:260px minmax(0,1fr); min-height:100vh; }
+    .rail { position:sticky; top:0; height:100vh; overflow-y:auto; padding:28px 20px; color:#d9e8f2; background:var(--navy); }
+    .brand { padding-bottom:24px; border-bottom:1px solid rgba(255,255,255,.14); }
+    .brand small { color:#7ed6d1; font-size:11px; font-weight:800; letter-spacing:1.8px; text-transform:uppercase; }
+    .brand h1 { margin:9px 0 0; color:#fffdf8; font:700 24px/1.05 Georgia,'Times New Roman',serif; }
+    .menu-label { margin:25px 0 8px; color:#88a7ba; font-size:10px; font-weight:800; letter-spacing:1.4px; text-transform:uppercase; }
+    .menu { display:grid; gap:4px; }
+    .menu a { display:block; padding:8px 9px; border-left:2px solid transparent; color:#c4d6e0; font-size:12px; font-weight:400; }
+    .menu a:hover, .menu a.active { border-left-color:#7ed6d1; background:rgba(255,255,255,.06); color:#fff; text-decoration:none; }
+    .rail-note { margin-top:28px; padding-top:16px; border-top:1px solid rgba(255,255,255,.14); color:#88a7ba; font-size:11px; }
+    main { min-width:0; padding:42px clamp(22px,5vw,76px) 70px; }
+    .content { width:min(1040px,100%); margin:0 auto; }
+    .hero { margin-bottom:36px; padding:clamp(30px,5vw,58px); color:#fffdf8; background:var(--navy); box-shadow:0 18px 45px rgba(23,33,43,.12); position:relative; overflow:hidden; }
+    .hero::after { content:''; position:absolute; width:300px; height:300px; right:-70px; bottom:-125px; border:45px solid rgba(126,214,209,.32); border-radius:50%; }
+    .hero > * { position:relative; z-index:1; }
+    .eyebrow { margin-bottom:12px; color:#7ed6d1; font-size:11px; font-weight:800; letter-spacing:2px; text-transform:uppercase; }
+    h2 { margin:0; color:var(--navy); font:700 clamp(30px,4vw,52px)/1.04 Georgia,'Times New Roman',serif; }
+    .hero h2 { max-width:800px; color:#fffdf8; }
+    .hero p { max-width:820px; color:#d9e8f2; font-size:17px; }
+    .meta { display:flex; flex-wrap:wrap; gap:9px; margin-top:24px; }
+    .meta span { padding:7px 11px; border:1px solid rgba(255,255,255,.22); color:#fffdf8; font-size:11px; font-weight:800; }
+    .section { margin:0 0 42px; }
+    .section-head { margin-bottom:24px; padding-bottom:17px; border-bottom:2px solid var(--line); }
+    .section-head p { max-width:820px; margin:12px 0 0; color:var(--muted); font-size:16px; }
+    h3 { margin:28px 0 10px; color:var(--blue); font-size:20px; }
+    h4 { margin:20px 0 7px; color:var(--navy); font-size:15px; }
+    p { max-width:840px; }
+    ul, ol { padding-left:23px; }
+    li { margin:7px 0; }
+    .grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; margin:20px 0; }
+    .card { padding:20px; border:1px solid var(--line); background:var(--white); box-shadow:var(--shadow); }
+    .card h3 { margin-top:0; font-size:17px; }
+    .card p, .card li { color:var(--muted); font-size:14px; }
+    .callout { margin:22px 0; padding:17px 20px; border-left:5px solid var(--teal); background:var(--soft-blue); }
+    .callout.warning { border-left-color:var(--coral); background:var(--soft-coral); }
+    .callout strong { color:var(--navy); }
+    .code { margin:16px 0; padding:18px 20px; overflow-x:auto; color:#d9f8f2; background:#142d41; border-left:4px solid var(--teal); font:12.5px/1.7 Consolas,'Courier New',monospace; white-space:pre-wrap; }
+    .diagram { margin:20px 0; padding:20px; overflow-x:auto; color:#d9f8f2; background:#142d41; border:1px solid #28536b; font:12px/1.6 Consolas,'Courier New',monospace; white-space:pre; }
+    .table-wrap { margin:20px 0; overflow-x:auto; border:1px solid var(--line); background:var(--white); }
+    table { width:100%; min-width:700px; border-collapse:collapse; font-size:13px; }
+    th, td { padding:11px 13px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; }
+    th { color:#fffdf8; background:var(--navy); font-size:10px; letter-spacing:1px; text-transform:uppercase; }
+    tr:last-child td { border-bottom:0; }
+    .checklist { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px 18px; padding:0; list-style:none; }
+    .checklist li { margin:0; padding:10px 13px 10px 32px; border-bottom:1px solid var(--line); color:var(--muted); position:relative; }
+    .checklist li::before { content:'□'; position:absolute; left:10px; color:var(--coral); font-weight:800; }
+    .source { margin-top:38px; padding-top:18px; border-top:1px solid var(--line); color:var(--muted); font-size:13px; }
+    #top { position:fixed; right:20px; bottom:20px; display:none; width:38px; height:38px; border:1px solid var(--teal); border-radius:50%; color:#fff; background:var(--navy); cursor:pointer; font-size:17px; }
+    #top.show { display:block; }
+    .progress { position:fixed; top:0; left:0; z-index:10; width:0; height:3px; background:var(--teal); }
+    @media (max-width:900px) { .shell { display:block; } .rail { position:relative; height:auto; } .menu { grid-template-columns:repeat(2,minmax(0,1fr)); } main { padding:28px 20px 50px; } }
+    @media (max-width:600px) { .menu, .grid, .checklist { grid-template-columns:1fr; } .hero { padding:30px 24px; } }
+    @media print { .rail, #top, .progress { display:none !important; } main { padding:12px; } .hero, .card { box-shadow:none; break-inside:avoid; } }
+  </style>
+</head>
+<body>
+  <div class="progress" id="progress"></div>
+  <div class="shell">
+    <aside class="rail">
+      <div class="brand"><small>GitHub Copilot</small><h1>Customization Architecture</h1></div>
+      <div class="menu-label">Guide path</div>
+      <nav class="menu" aria-label="Guide sections"><a class="active" href="#overview">Overview</a><a href="#architecture">Architecture model</a><a href="#instructions">Instructions</a><a href="#skills">Agent Skills</a><a href="#agents">Custom Agents</a><a href="#hooks">Hooks</a><a href="#placement">Workflow placement</a><a href="#structure">Project structure</a><a href="#tokens">Token strategy</a><a href="#security">Security</a><a href="#sdk">Copilot SDK</a><a href="#checklist">Architecture checklist</a></nav>
+      <p class="rail-note">Design each customization layer for one job: context, capability, role, enforcement, or programmatic composition.</p>
+    </aside>
+    <main><div class="content">
+      <header class="hero" id="overview"><div class="eyebrow">Customization architecture guide</div><h2>Design Copilot as a system of layers, not a pile of prompts.</h2><p>Use the right customization mechanism for the right responsibility: instructions establish standards, Skills package expertise, custom agents define roles, hooks enforce deterministic controls, and the SDK assembles the runtime into an application.</p><div class="meta"><span>Instructions</span><span>Agent Skills</span><span>Custom Agents</span><span>Hooks</span><span>Copilot SDK</span></div></header>
+
+      <section class="section" id="architecture"><div class="section-head"><div class="eyebrow">01 · Architecture model</div><h2>Five components, five distinct jobs</h2><p>A maintainable Copilot implementation separates information that should always be available from expertise that should load only when needed, role behavior, runtime controls, and application-level orchestration.</p></div>
+        <div class="diagram">                         YOUR APPLICATION
+                                |
+                         Copilot SDK / CLI
+                                |
+       +----------------+-------+--------+----------------+
+       |                |                |                |
+  Instructions       Skills        Custom Agents       Hooks
+  foundation       capability          roles          enforcement
+       |                |                |                |
+       +----------------+-------+--------+----------------+
+                                |
+                         MCP servers / tools
+                                |
+                    Files, APIs, repositories, systems</div>
+        <div class="table-wrap"><table><thead><tr><th>Layer</th><th>Mental model</th><th>Activation</th><th>Best for</th><th>Primary risk</th></tr></thead><tbody><tr><td>Instructions</td><td>Company bylaws or team handbook</td><td>Always-on or path-matched</td><td>Conventions, standards, technology preferences</td><td>Context bloat and contradictions</td></tr><tr><td>Agent Skills</td><td>Specialist training manual</td><td>On demand through matching or explicit invocation</td><td>Detailed workflows, scripts, examples, references</td><td>Weak descriptions or unsafe third-party content</td></tr><tr><td>Custom Agents</td><td>Dedicated teammate or role</td><td>User selected or delegated</td><td>Persona, tools, model, handoffs, sub-agents</td><td>Over-permissioning and unclear boundaries</td></tr><tr><td>Hooks</td><td>Security checkpoint or automation trigger</td><td>Lifecycle event</td><td>Validation, permission checks, logging, notifications</td><td>Unsafe scripts and false positives</td></tr><tr><td>Copilot SDK</td><td>Programmatic remote control</td><td>Application invocation</td><td>Custom tools, agents, permissions, MCP, workflows</td><td>Privilege escalation and uncontrolled tool access</td></tr></tbody></table></div>
+        <div class="callout"><strong>Architectural principle:</strong> Instructions answer “what standards apply?”, Skills answer “how is this specialist task performed?”, Agents answer “which role performs it?”, Hooks answer “what must happen or be blocked at runtime?”, and the SDK answers “how does an application compose and invoke the system?”.</div>
+        <div class="grid"><article class="card"><h3>Foundation</h3><p>Keep global instructions short, stable, and applicable to nearly every interaction.</p></article><article class="card"><h3>Capability</h3><p>Move task-specific depth, scripts, templates, and references into Skills that can be loaded progressively.</p></article><article class="card"><h3>Role</h3><p>Give a custom agent a mission, tools, model, and collaboration contract rather than a vague persona.</p></article><article class="card"><h3>Control</h3><p>Use hooks and permission handlers for deterministic behavior that must not depend on model compliance.</p></article></div>
+      </section>
+
+      <section class="section" id="instructions"><div class="section-head"><div class="eyebrow">02 · Instructions</div><h2>Layer context from broad to specific</h2><p>Instructions are guidance injected into Copilot context. They are the right place for stable standards, not long procedures or agent orchestration.</p></div>
+        <h3>Six instruction types</h3><div class="table-wrap"><table><thead><tr><th>Type</th><th>Typical location</th><th>Scope and loading</th><th>Use for</th></tr></thead><tbody><tr><td>Repository-wide</td><td><code>.github/copilot-instructions.md</code></td><td>Always-on for repository interactions</td><td>Stack, naming, testing, architecture principles</td></tr><tr><td>Path-specific</td><td><code>.github/instructions/*.instructions.md</code></td><td>Matched by <code>applyTo</code> glob</td><td>Language, framework, directory, or file-type rules</td></tr><tr><td>Agent instructions</td><td><code>AGENTS.md</code> in the repository tree</td><td>Operational guidance when an autonomous coding agent works</td><td>Build, test, deploy, and repository procedures</td></tr><tr><td>Model-specific</td><td><code>CLAUDE.md</code>, <code>GEMINI.md</code></td><td>When the corresponding model is active</td><td>Model-specific conventions or compatibility notes</td></tr><tr><td>Personal</td><td>VS Code user settings</td><td>Across a developer's workspaces</td><td>Individual preferences that should not be committed</td></tr><tr><td>Organization</td><td>GitHub organization settings</td><td>Organization-wide where supported</td><td>Shared standards and governance expectations</td></tr></tbody></table></div>
+        <h3>Repository-wide instruction example</h3><div class="code"># Project standards
+- Use TypeScript strict mode for all .ts and .tsx files.
+- Prefer pnpm over npm for package management.
+- Add tests for every new public function.
+- Follow the repository's conventional commit format.
+- Never commit secrets, tokens, or local environment files.
+- Run the focused test before running the full suite.</div>
+        <h3>Path-specific instruction example</h3><div class="code">---
+applyTo: "**/*.py"
+excludeAgent: "code-review"
+---
+
+- Use Python 3.12 or newer.
+- Add type hints to public functions.
+- Prefer pytest fixtures over test setup duplication.
+- Run `ruff check` and the focused pytest module for Python changes.</div>
+        <h3>Precedence is composition, not a license for contradiction</h3><div class="diagram">Personal preferences                    highest local influence
+        |
+Repository-wide copilot-instructions.md  always-on standards
+        |
+Path-specific *.instructions.md          conditional rules
+        |
+AGENTS.md                                autonomous operations
+        |
+Skills                                  matched expertise
+        |
+Custom agent prompt                      selected role behavior</div><p>Applicable instructions are provided together. Treat the layers as complementary and remove conflicts instead of relying on a hidden precedence trick.</p>
+        <div class="grid"><article class="card"><h3>Keep it concise</h3><p>Use roughly 5–15 core repository rules. A global file should usually fit in about 200–500 tokens.</p></article><article class="card"><h3>Prefer durable rules</h3><p>Write principles that remain true across features, contributors, and model versions.</p></article><article class="card"><h3>Use applyTo deliberately</h3><p><code>applyTo: "*"</code> can target all files while remaining conditional on an active file context. It is not identical to a repository-wide instruction file.</p></article><article class="card"><h3>Do not embed runbooks</h3><p>Move lengthy procedures, code examples, and multi-step workflows to Skills or prompt files.</p></article></div>
+        <div class="callout warning"><strong>Common failure:</strong> putting “when X happens, invoke agent Y, then run Z and update W” in <code>copilot-instructions.md</code>. This wastes context on unrelated tasks and asks a probabilistic model to perform orchestration that belongs in an explicit workflow mechanism.</div>
+      </section>
+
+      <section class="section" id="skills"><div class="section-head"><div class="eyebrow">03 · Agent Skills</div><h2>Package expertise with progressive disclosure</h2><p>Agent Skills are reusable task capabilities. Their design goal is to make specialist knowledge available when relevant without placing every detailed procedure in every interaction.</p></div>
+        <h3>Three-tier loading model</h3><div class="table-wrap"><table><thead><tr><th>Tier</th><th>Content</th><th>Loading behavior</th><th>Design target</th></tr></thead><tbody><tr><td>1. Metadata</td><td><code>name</code> and <code>description</code> in YAML frontmatter</td><td>Available for skill discovery</td><td>About 50–100 tokens; describe both capability and trigger condition</td></tr><tr><td>2. Body</td><td><code>SKILL.md</code> instructions</td><td>Loaded when Copilot determines the Skill is relevant or the user invokes it</td><td>Concise quick-start and decision flow; keep detailed reference content out of the body</td></tr><tr><td>3. References</td><td>Files under <code>references/</code>, scripts, assets, templates</td><td>Loaded only when the Skill directs Copilot to them</td><td>Small, focused files that answer one specialized question</td></tr></tbody></table></div>
+        <h3>Recommended directory structure</h3><div class="code">.github/skills/webapp-testing/
+├── SKILL.md              # Required entry point
+├── LICENSE.txt           # Recommended for shared Skills
+├── scripts/
+│   ├── helper.py
+│   └── helper.ps1
+├── references/
+│   ├── visual-testing.md
+│   └── debugging-guide.md
+├── assets/
+│   └── baseline.png
+└── templates/
+    └── scaffold.py</div>
+        <h3>SKILL.md example</h3><div class="code">---
+name: webapp-testing
+description: >
+  Toolkit for testing local web applications with Playwright.
+  Use when asked to verify frontend behavior, debug UI issues,
+  capture screenshots, or check visual regressions.
+---
+
+## Quick start
+1. Run `npx playwright install` when browsers are missing.
+2. Start the application using the repository's documented command.
+3. Run the focused test or use the browser workflow.
+
+## Choose a workflow
+- For visual regression, read `references/visual-testing.md`.
+- For debugging, read `references/debugging-guide.md`.
+- Use scripts in `scripts/` instead of rewriting repeated setup steps.</div>
+        <div class="callout"><strong>Description quality controls discovery:</strong> state what the Skill does, when it should trigger, and what kinds of work it supports. A vague description creates both false positives and false negatives.</div>
+        <h3>Skill design rules</h3><ul><li>Make the first screen useful: include a quick start and the first decision.</li><li>Use references for API details, edge cases, and long examples.</li><li>Keep scripts deterministic, documented, and safe to run in a clean workspace.</li><li>Do not assume an undocumented working directory, secret, or installed binary.</li><li>Include a verification step and tell the agent what success looks like.</li><li>Audit third-party Skills before adding them to a trusted organization repository.</li></ul>
+      </section>
+
+      <section class="section" id="agents"><div class="section-head"><div class="eyebrow">04 · Custom Agents</div><h2>Define roles and collaboration contracts</h2><p>Custom Agents specialize Copilot for a role. Their configuration can restrict tools, select a model, expose handoffs, and allow a parent agent to delegate bounded sub-tasks.</p></div>
+        <h3>Configuration fields</h3><div class="table-wrap"><table><thead><tr><th>Field</th><th>Responsibility</th><th>Example</th></tr></thead><tbody><tr><td><code>name</code></td><td>Display and invocation name</td><td><code>Security Reviewer</code></td></tr><tr><td><code>description</code></td><td>Role purpose and recommendation signal</td><td>Reviews code for security vulnerabilities</td></tr><tr><td><code>tools</code></td><td>Allowed tool whitelist</td><td><code>['read', 'search']</code></td></tr><tr><td><code>model</code></td><td>Model selection or fallback list</td><td><code>['Claude Sonnet', 'GPT']</code></td></tr><tr><td><code>handoffs</code></td><td>User-visible transitions to another role</td><td>Planner to Implementer</td></tr><tr><td><code>agents</code></td><td>Sub-agent names a parent may invoke</td><td><code>['Researcher', 'Implementer']</code></td></tr></tbody></table></div>
+        <h3>Handoff: human-guided relay</h3><p>A handoff is a visible transition. One agent completes its work, then the user clicks a button to move to the next role with a preset prompt and conversation context.</p><div class="code">---
+name: Planner
+description: Generate implementation plans from requirements
+tools: ['search', 'fetch']
+handoffs:
+  - label: Start Implementation
+    agent: Implementer
+    prompt: Implement the plan above.
+    send: false
+---
+
+You are a planning specialist. Research the repository, identify affected files,
+write a step-by-step plan, and list focused tests. Stop when the plan is ready
+for a human to review.</div><div class="diagram">User selects Planner
+        |
+        v
+Planner researches and writes plan
+        |
+        v  [Start Implementation] - human confirms
+Implementer receives plan and writes changes
+        |
+        v  [Review Code] - human confirms
+Reviewer evaluates implementation</div>
+        <h3>Sub-agent: autonomous delegation</h3><p>A parent agent can invoke a whitelisted sub-agent as a bounded task. The sub-agent runs in an isolated context and returns a result to the parent. Include <code>agent</code> in the parent's tools and enumerate permitted agents.</p><div class="code">---
+name: Feature Builder
+description: Research and implement features with a quality review
+tools: ['agent', 'editFiles', 'search']
+agents: ['Researcher', 'Implementer', 'CodeReviewer']
+---
+
+For each task:
+1. Ask Researcher for relevant patterns and dependencies.
+2. Ask Implementer to make the smallest change.
+3. Ask CodeReviewer for security, quality, and test feedback.
+4. Fix concrete findings and run the focused validation.</div>
+        <div class="table-wrap"><table><thead><tr><th>Dimension</th><th>Handoff</th><th>Sub-agent</th></tr></thead><tbody><tr><td>Trigger</td><td>User clicks a button</td><td>Parent agent invokes programmatically</td></tr><tr><td>Control</td><td>Human-driven</td><td>Agent-autonomous</td></tr><tr><td>Context</td><td>Shared conversation history</td><td>Isolated context with explicit handoff input</td></tr><tr><td>User experience</td><td>Visible agent switch</td><td>Usually transparent to the user</td></tr><tr><td>Best suited for</td><td>Plan, implement, review pipelines that need approval</td><td>Research, parallel scans, automated review loops</td></tr><tr><td>Depth</td><td>Can continue through user transitions</td><td>Single-level delegation; sub-agents cannot recursively spawn more sub-agents</td></tr></tbody></table></div>
+        <h3>Choose the collaboration mode</h3><ul><li><strong>Plan to implement to review:</strong> use handoffs when each stage needs human confirmation.</li><li><strong>Research plus implementation:</strong> use a sub-agent when research is an auxiliary step.</li><li><strong>Parallel independent scans:</strong> use multiple bounded sub-agents and aggregate their results.</li><li><strong>Automated review loop:</strong> let a parent invoke a read-only reviewer, fix findings, and rerun validation.</li><li><strong>Domain role with a visible decision:</strong> use a handoff so the user can inspect the output before proceeding.</li></ul>
+        <div class="callout warning"><strong>Least privilege applies to roles:</strong> a planner usually needs search and fetch, not edit. A reviewer generally needs read and search, not shell or write access. A parent that can invoke agents should have a narrow whitelist.</div>
+      </section>
+
+      <section class="section" id="hooks"><div class="section-head"><div class="eyebrow">05 · Hooks</div><h2>Put deterministic controls at the runtime boundary</h2><p>Hooks are code, not prompts. They run when a configured lifecycle event fires and can validate, block, record, or prepare an operation without spending model tokens.</p></div>
+        <h3>Common hook events</h3><div class="table-wrap"><table><thead><tr><th>Event</th><th>When it runs</th><th>Useful behavior</th></tr></thead><tbody><tr><td><code>sessionStart</code></td><td>Session begins</td><td>Load environment context or validate prerequisites</td></tr><tr><td><code>userPromptSubmitted</code></td><td>User submits a prompt</td><td>Record metadata, normalize context, or apply request policy</td></tr><tr><td><code>preToolUse</code></td><td>Before a tool invocation</td><td>Validate parameters, approve safe commands, block protected paths</td></tr><tr><td><code>postToolUse</code></td><td>After a tool invocation</td><td>Run focused checks, record result, format generated files</td></tr><tr><td><code>sessionEnd</code></td><td>Session ends</td><td>Aggregate redacted logs or send a notification</td></tr><tr><td><code>onError</code></td><td>When configured execution fails</td><td>Retry safely, degrade gracefully, or surface a diagnostic</td></tr></tbody></table></div>
+        <h3>Hook versus instruction</h3><div class="table-wrap"><table><thead><tr><th>Question</th><th>Use an instruction when...</th><th>Use a hook when...</th></tr></thead><tbody><tr><td>What is the rule?</td><td>The model should understand a convention or preference.</td><td>The host must enforce a deterministic condition.</td></tr><tr><td>Can a model forget it?</td><td>It is acceptable to provide guidance and let the model apply judgment.</td><td>It is not acceptable to rely on model compliance.</td></tr><tr><td>Does it consume context?</td><td>Yes, it is supplied to the model.</td><td>No model tokens are required for the code-level check.</td></tr><tr><td>What does failure mean?</td><td>The response may be less consistent.</td><td>The operation should stop, warn, or enter a defined recovery path.</td></tr></tbody></table></div>
+        <h3>Example hook policy</h3><div class="code">{
+  "hooks": {
+    "preToolUse": [
+      {
+        "matcher": "shell",
+        "command": "pwsh -File .github/hooks/check-command.ps1",
+        "timeout": 5
+      }
+    ]
+  }
+}
+
+# check-command.ps1
+param([Parameter(ValueFromPipeline = $true)] $Event)
+$command = $Event.toolInput.command
+if ($command -match 'git reset --hard|Remove-Item|DROP TABLE') {
+  Write-Output '{"decision":"deny","reason":"Destructive operation requires approval."}'
+  exit 0
+}
+Write-Output '{"decision":"allow"}'</div>
+        <div class="callout warning"><strong>Review hook code as production security code:</strong> validate JSON, escape shell inputs, avoid secret logging, bound network calls, use least privilege, and test case, whitespace, encoding, and path variations.</div>
+      </section>
+
+      <section class="section" id="placement"><div class="section-head"><div class="eyebrow">06 · Placement</div><h2>Put each workflow where it naturally belongs</h2><p>The most common architecture mistake is placing every procedure in the always-on instruction file. Choose based on activation, human control, detail, and determinism.</p></div>
+        <div class="table-wrap"><table><thead><tr><th>Workflow need</th><th>Recommended mechanism</th><th>Reason</th></tr></thead><tbody><tr><td>Global coding standards</td><td><code>copilot-instructions.md</code></td><td>The only content that should be broadly always-on.</td></tr><tr><td>Language or directory rules</td><td><code>*.instructions.md</code></td><td>Loaded only for matching files.</td></tr><tr><td>Build, test, and deploy steps for an autonomous agent</td><td><code>AGENTS.md</code></td><td>Operational guidance for coding-agent work.</td></tr><tr><td>Detailed task procedure</td><td><code>SKILL.md</code></td><td>On-demand expertise with scripts and references.</td></tr><tr><td>User-triggered repeatable command</td><td><code>*.prompt.md</code></td><td>Explicit slash-command invocation.</td></tr><tr><td>Plan, implement, review with approval</td><td>Custom agent plus handoffs</td><td>Visible, deterministic human gates.</td></tr><tr><td>Research, parallel scans, or automated review loop</td><td>Parent custom agent plus sub-agents</td><td>Programmatic delegation with isolated context.</td></tr><tr><td>Permission, validation, or audit control</td><td>Hook or SDK permission handler</td><td>Deterministic code-level boundary.</td></tr><tr><td>Reusable application workflow</td><td>Copilot SDK</td><td>Programmatic composition with explicit permissions and tools.</td></tr></tbody></table></div>
+        <h3>Why workflows do not belong in global instructions</h3><ol><li><strong>Token waste:</strong> complex procedures occupy context even for unrelated questions.</li><li><strong>Separation of concerns:</strong> standards and orchestration change at different rates and have different owners.</li><li><strong>Unreliable execution:</strong> a model may skip or reinterpret a long procedural instruction.</li><li><strong>Poor discoverability:</strong> users cannot easily tell which operation is a standard, a Skill, a prompt, or an agent transition.</li><li><strong>Harder governance:</strong> a single global file becomes a conflict zone for every team.</li></ol>
+        <div class="callout"><strong>Rule of thumb:</strong> if content is needed in nearly every interaction, use Instructions. If it is needed only for specific tasks, use a Skill or Prompt. If it involves inter-agent collaboration, use a Custom Agent and choose Handoff or Sub-agent based on human control. If it must happen regardless of model wording, use a Hook.</div>
+      </section>
+
+      <section class="section" id="structure"><div class="section-head"><div class="eyebrow">07 · Project structure</div><h2>Make the architecture visible in the repository</h2><p>A clear directory layout lets contributors discover the right customization mechanism and review changes at the correct boundary.</p></div>
+        <div class="code">your-project/
+├── .github/
+│   ├── copilot-instructions.md              # Global standards
+│   ├── instructions/
+│   │   ├── typescript.instructions.md       # applyTo: **/*.ts
+│   │   ├── python.instructions.md           # applyTo: **/*.py
+│   │   └── security.instructions.md         # Security-sensitive paths
+│   ├── agents/
+│   │   ├── planner.agent.md                 # Handoff -> Implementer
+│   │   ├── implementer.agent.md             # Handoff -> Reviewer
+│   │   ├── reviewer.agent.md                # Read-only review role
+│   │   └── feature-builder.agent.md         # Parent with sub-agents
+│   ├── skills/
+│   │   ├── ci-debugging/
+│   │   │   ├── SKILL.md
+│   │   │   └── references/common-errors.md
+│   │   └── db-migration/
+│   │       ├── SKILL.md
+│   │       └── scripts/generate-migration.sh
+│   ├── prompts/
+│   │   ├── plan-feature.prompt.md
+│   │   └── generate-endpoint.prompt.md
+│   └── hooks/
+│       ├── check-command.ps1
+│       └── README.md
+├── AGENTS.md                                # Agent operational procedures
+├── CLAUDE.md                                # Model-specific guidance, if needed
+├── src/
+├── tests/
+└── docs/</div>
+        <h3>Example ownership map</h3><div class="table-wrap"><table><thead><tr><th>Asset</th><th>Suggested owner</th><th>Review question</th></tr></thead><tbody><tr><td>Global instructions</td><td>Architecture or developer experience team</td><td>Does this apply to nearly every repository interaction?</td></tr><tr><td>Path instructions</td><td>Language or platform maintainers</td><td>Does the glob match only the intended files?</td></tr><tr><td>Skills</td><td>Domain expert or enablement team</td><td>Can a new contributor follow and verify the workflow?</td></tr><tr><td>Custom agents</td><td>Team leads and workflow owners</td><td>Are role, tools, handoffs, and delegation boundaries explicit?</td></tr><tr><td>Hooks</td><td>Security or platform engineering</td><td>Is the decision deterministic, tested, and recoverable?</td></tr><tr><td>SDK application</td><td>Application engineering team</td><td>Are permissions and external tools approved explicitly?</td></tr></tbody></table></div>
+        <div class="callout warning"><strong>Do not hide architecture in filenames alone:</strong> add a short README near customizations describing activation, ownership, testing, secrets, and safe disablement.</div>
+      </section>
+
+      <section class="section" id="tokens"><div class="section-head"><div class="eyebrow">08 · Token strategy</div><h2>Spend context where it creates capability</h2><p>Token consumption is an architecture concern. Always-on content competes with the task, while on-demand content can remain deep without affecting unrelated interactions.</p></div>
+        <div class="table-wrap"><table><thead><tr><th>Component</th><th>Typical loading</th><th>Cost behavior</th><th>Optimization</th></tr></thead><tbody><tr><td>Repository instructions</td><td>Always-on</td><td>Consumed on every relevant invocation</td><td>Keep to stable rules and remove duplicate examples.</td></tr><tr><td>Path instructions</td><td>Conditional</td><td>Consumed when file context matches</td><td>Split by language or framework; keep globs narrow.</td></tr><tr><td><code>AGENTS.md</code></td><td>Agent operation</td><td>Consumed when an autonomous agent works</td><td>Keep build/test commands concise and executable.</td></tr><tr><td>Skill metadata</td><td>Available for discovery</td><td>Small persistent description footprint</td><td>Write precise trigger descriptions.</td></tr><tr><td>Skill body</td><td>On demand</td><td>Consumed on match</td><td>Move long content to references and scripts.</td></tr><tr><td>Custom agent prompt</td><td>When selected</td><td>Can become large and role-specific</td><td>State mission, decision process, output contract, and boundaries.</td></tr><tr><td>Hooks</td><td>Event-triggered</td><td>Code-level execution; no model prompt tokens</td><td>Use for deterministic checks instead of repeating instructions.</td></tr><tr><td>Sub-agent</td><td>Delegation-triggered</td><td>Isolated context; does not accumulate parent history</td><td>Pass a compact task packet and return structured findings.</td></tr></tbody></table></div>
+        <div class="diagram">Lower context cost                                      Higher context cost
+
+Hooks -------- Path instructions -------- Repo instructions -------- Skills -------- Agent prompt
+0 tokens       conditional              always-on              on match       selected role
+</div>
+        <h3>Strategic principles</h3><ul><li>Never make always-on what can be loaded on demand.</li><li>Never use Instructions when a Hook can enforce the rule without model involvement.</li><li>Never put detailed procedures in Instructions when a Skill can provide them only for matching tasks.</li><li>Write Skill metadata for true-positive discovery and low false-positive loading.</li><li>Keep global Instructions stable so the repository context remains predictable.</li><li>Pass sub-agents only the context they need; do not copy the entire parent conversation into every delegation.</li></ul>
+      </section>
+
+      <section class="section" id="security"><div class="section-head"><div class="eyebrow">09 · Security</div><h2>Treat customization as executable policy</h2><p>Customization files influence what an agent sees, what it can invoke, and what it can change. Review them as part of the repository's security boundary.</p></div>
+        <div class="table-wrap"><table><thead><tr><th>Surface</th><th>Primary threat</th><th>Controls</th></tr></thead><tbody><tr><td>Instructions</td><td>Prompt injection or malicious repository guidance</td><td>Version control, code review, ownership, short stable content.</td></tr><tr><td>Skills</td><td>Untrusted scripts, references, or package installation</td><td>Audit source, pin dependencies, sandbox execution, test with least privilege.</td></tr><tr><td>Custom Agents</td><td>Overly broad tools or agent delegation</td><td>Explicit tool whitelist, narrow agent whitelist, separate read and write roles.</td></tr><tr><td>Hooks</td><td>Command injection, unsafe parsing, secret leakage</td><td>Validate structured input, avoid shell interpolation, redact logs, bound timeouts.</td></tr><tr><td>SDK</td><td>Privilege escalation through tools or permission callbacks</td><td>Default deny, explicit permission handlers, isolated runtime, approved MCP servers.</td></tr><tr><td>MCP servers</td><td>Untrusted external tool behavior or data exfiltration</td><td>Approved servers, narrow tools, documented data flow, network controls, audit logs.</td></tr></tbody></table></div>
+        <h3>Security design principles</h3><ol><li><strong>Default deny:</strong> an agent should not execute shell commands, read or write files, or fetch URLs unless the runtime explicitly approves them.</li><li><strong>Least privilege:</strong> grant only the tools and scopes required for the role or task.</li><li><strong>Isolation:</strong> use containers or Dev Containers for agents with shell, file, or dependency-installation access.</li><li><strong>Auditability:</strong> record tool invocations and permission outcomes without logging secrets.</li><li><strong>Human control:</strong> place high-impact transitions behind handoffs or interactive approval.</li><li><strong>Recovery:</strong> document how to disable a broken customization without removing all protections.</li></ol>
+        <div class="callout warning"><strong>Prompt injection is an architecture concern:</strong> instructions and Skill content can be treated as data by an attacker if they are loaded from an untrusted source. Review third-party content, avoid blindly executing repository-provided scripts, and keep privileged operations behind code-level permission checks.</div>
+      </section>
+
+      <section class="section" id="sdk"><div class="section-head"><div class="eyebrow">10 · Copilot SDK</div><h2>Assemble the layers inside an application</h2><p>The Copilot SDK gives an application programmatic control over sessions, custom agents, Skills, MCP servers, and permission handling. It is the composition layer rather than another replacement for repository customization.</p></div>
+        <h3>Runtime architecture</h3><div class="diagram">Your application
+      |
+      v
+SDK client  ---- JSON-RPC ---->  Copilot CLI server mode
+      |                                  |
+      |-- custom tools                   |-- built-in fs / git / shell
+      |-- custom agents                  |-- MCP servers
+      |-- permission handler             |-- auto-discovered instructions
+      |-- Skill directories               |-- AGENTS.md and repository context</div>
+        <h3>Session-level instruction injection</h3><div class="code">const session = await client.createSession({
+  model: "claude-sonnet-4.5",
+  instructions: `You are a code analysis specialist.
+Follow these rules:
+- Focus on security, performance, and maintainability.
+- Rate each finding from 1 to 5.
+- Provide evidence and an actionable next step.`,
+});</div>
+        <h3>Filesystem auto-discovery</h3><div class="code"># The CLI scans the working directory for project guidance:
+# .github/copilot-instructions.md
+# AGENTS.md
+# .github/instructions/*.instructions.md
+# CLAUDE.md or GEMINI.md when the matching model is active
+
+const session = await client.createSession({
+  model: "claude-sonnet-4.5",
+  workingDirectory: "/path/to/repository"
+});</div>
+        <h3>Dynamic Skill selection</h3><div class="code">const skills = [];
+if (taskType === "code_review") {
+  skills.push("./.copilot_skills/code-review/SKILL.md");
+} else if (taskType === "migration") {
+  skills.push("./.copilot_skills/migration/SKILL.md");
+}
+
+const session = await client.createSession({
+  model: "claude-sonnet-4.5",
+  skillDirectories: skills
+});</div>
+        <h3>Custom agent registration</h3><div class="code">const session = await client.createSession({
+  customAgents: [{
+    name: "pr-reviewer",
+    displayName: "PR Reviewer",
+    description: "Reviews pull requests for security and maintainability",
+    prompt: `You are an expert code reviewer.
+Focus on security vulnerabilities, performance, consistency,
+and test coverage gaps. Return evidence and severity.`
+  }]
+});</div>
+        <h3>Permission handler: read-only pattern</h3><div class="code">function readOnlyHandler(request, context) {
+  if (["read", "search"].includes(request.kind)) {
+    return { kind: "approved" };
+  }
+
+  if (request.kind === "shell") {
+    const command = context.command || "";
+    if (/^(git log|git diff|git show|git status)\b/.test(command)) {
+      return { kind: "approved" };
+    }
+  }
+
+  return { kind: "denied" };
+}
+
+const session = await client.createSession({
+  model: "claude-sonnet-4.5",
+  onPermissionRequest: readOnlyHandler
+});</div>
+        <h3>MCP server integration</h3><div class="code">const session = await client.createSession({
+  mcpServers: {
+    filesystem: {
+      type: "stdio",
+      command: "npx",
+      args: ["-y", "@modelcontextprotocol/server-filesystem", "."]
+    },
+    github: {
+      type: "http",
+      url: "https://api.githubcopilot.com/mcp/"
+    }
+  }
+});</div>
+        <h3>End-to-end PR analysis shape</h3><div class="code">from copilot import CopilotClient
+
+async def main():
+    client = CopilotClient()
+    await client.start()
+
+    session = await client.create_session({
+        "model": "claude-sonnet-4.5",
+        "instructions": "Analyze PRs for security, performance, and quality.",
+        "skill_directories": ["./.copilot_skills/pr-analyzer/SKILL.md"],
+        "mcp_servers": {
+            "github": {
+                "type": "http",
+                "url": "https://api.githubcopilot.com/mcp/"
+            }
+        },
+        "on_permission_request": read_only_handler
+    })
+
+    result = await session.send_and_wait({
+        "prompt": "Analyze all PRs merged yesterday. Include a summary,\n"
+                   "security assessment, performance impact, and quality score."
+    })
+    print(result.content)
+    await client.stop()</div>
+        <div class="table-wrap"><table><thead><tr><th>SDK mechanism</th><th>Repository equivalent</th><th>Role in a session</th></tr></thead><tbody><tr><td><code>session.instructions</code></td><td><code>copilot-instructions.md</code></td><td>Foundational context supplied every invocation.</td></tr><tr><td><code>skill_directories</code></td><td><code>.github/skills/</code></td><td>On-demand specialist capability.</td></tr><tr><td><code>customAgents</code></td><td><code>.github/agents/*.agent.md</code></td><td>Registered roles selected or delegated during work.</td></tr><tr><td><code>onPermissionRequest</code></td><td>Hooks and permission controls</td><td>Intercepts risky operations before execution.</td></tr><tr><td><code>mcpServers</code></td><td>Approved MCP configuration</td><td>Connects external tools and data sources.</td></tr><tr><td>Working-directory discovery</td><td><code>AGENTS.md</code>, instructions, model files</td><td>Reuses repository context without duplicating it in application code.</td></tr></tbody></table></div>
+        <div class="callout"><strong>SDK core principle:</strong> instructions provide foundational context, Skills provide on-demand knowledge, permission handlers enforce safety, MCP supplies external tools, and sub-agents enable divide-and-conquer. The SDK assembles these pieces inside a controlled application session.</div>
+      </section>
+
+      <section class="section" id="checklist"><div class="section-head"><div class="eyebrow">11 · Readiness</div><h2>Architecture review checklist</h2><p>Use this checklist when introducing or reviewing Copilot customization in a team repository.</p></div>
+        <ul class="checklist"><li>Global instructions contain only durable, broadly applicable standards</li><li>Path-specific rules use narrow, tested applyTo patterns</li><li>AGENTS.md contains operational steps, not a second global handbook</li><li>Skills have precise descriptions and progressive disclosure</li><li>Skill scripts and third-party content have been audited</li><li>Custom agents have explicit role, tools, model, and output boundaries</li><li>Handoffs are used for human-gated transitions</li><li>Sub-agents have a narrow whitelist and compact task packets</li><li>Hooks enforce deterministic rules with bounded timeouts</li><li>Hook inputs, outputs, and failure modes are tested</li><li>MCP servers and external tools have approved data flows</li><li>SDK permission handlers default to deny for risky operations</li><li>Secrets never appear in instructions, Skills, logs, or prompts</li><li>Owners, review dates, and recovery paths are documented</li><li>Focused validation runs before full repository validation</li></ul>
+        <div class="callout"><strong>Definition of done:</strong> a new contributor can look at the repository and answer five questions: what is always-on, what loads on demand, which role owns the task, what is enforced in code, and how the application composes the runtime.</div>
+        <p class="source">Primary reference: <a href="https://gist.github.com/LawrenceHwang/6194421c3bb4208fff84452b403e191a" target="_blank" rel="noreferrer noopener">GitHub Copilot Customization Architecture by Lawrence Hwang</a>. Official references: <a href="https://docs.github.com/en/copilot/customizing-copilot/adding-custom-instructions-for-github-copilot" target="_blank" rel="noreferrer noopener">custom instructions</a> · <a href="https://docs.github.com/en/copilot/concepts/agents/about-agent-skills" target="_blank" rel="noreferrer noopener">Agent Skills</a> · <a href="https://code.visualstudio.com/docs/copilot/customization/custom-agents" target="_blank" rel="noreferrer noopener">custom agents</a> · <a href="https://docs.github.com/en/copilot/concepts/agents/coding-agent/about-hooks" target="_blank" rel="noreferrer noopener">hooks</a> · <a href="https://code.visualstudio.com/docs/copilot/customization/overview" target="_blank" rel="noreferrer noopener">VS Code customization overview</a> · <a href="https://github.com/github/copilot-sdk" target="_blank" rel="noreferrer noopener">Copilot SDK</a>.</p>
+      </section>
+    </div></main>
+  </div>
+  <button id="top" title="Back to top" aria-label="Back to top">^</button>
+  <script>
+    const progress = document.querySelector('#progress');
+    const topButton = document.querySelector('#top');
+    function updateScroll() {
+      const max = document.documentElement.scrollHeight - window.innerHeight || 1;
+      progress.style.width = `${(window.scrollY / max) * 100}%`;
+      topButton.classList.toggle('show', window.scrollY > 320);
+    }
+    window.addEventListener('scroll', updateScroll, { passive: true });
+    topButton.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+    updateScroll();
+  </script>
+</body>
+</html>
