@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A 45-minute hands-on lab for building a GitHub Agentic Workflow that analyzes repository health and publishes an actionable report.">
+  <title>Lab: Agentic Workflows Repo Analyzer</title>
+  <style>
+    :root { --bg:#ffffff; --fg:#0f172a; --muted:#64748b; --accent:#3b82f6; --accent-light:#dbeafe; --border:#e2e8f0; --code-bg:#0f1c2e; --navy:#0f172a; --shadow-sm:0 1px 3px rgba(0,0,0,.08); --shadow-md:0 4px 6px rgba(0,0,0,.1),0 2px 4px rgba(0,0,0,.06); }
+    * { box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body { margin:0; color:var(--fg); background:var(--bg); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; line-height:1.6; }
+    a { color:var(--accent); font-weight:700; text-decoration:none; }
+    a:hover { color:#1d4ed8; text-decoration:underline; }
+    code { padding:.1rem .35rem; color:var(--fg); background:#e2e8f0; border-radius:5px; font:.85em "Cascadia Code",Consolas,monospace; }
+    .shell { display:grid; grid-template-columns:260px minmax(0,1fr); min-height:100vh; }
+    .rail { position:sticky; top:0; height:100vh; overflow-y:auto; padding:0; color:#1e293b; background:linear-gradient(180deg,#f8fafc 0%,#eef2f7 100%); border-right:1px solid var(--border); }
+    .brand { padding:1.4rem 1.1rem 1rem; border-bottom:1px solid var(--border); }
+    .brand small { display:block; color:var(--accent); font-size:11px; font-weight:800; letter-spacing:1.8px; text-transform:uppercase; }
+    .brand h1 { margin:9px 0 0; color:var(--navy); font:800 21px/1.15 -apple-system,'Segoe UI',sans-serif; }
+    .menu-label { margin:1rem 0 .5rem; padding:0 1.1rem; color:var(--muted); font-size:10px; font-weight:800; letter-spacing:1.4px; text-transform:uppercase; }
+    .menu { display:grid; gap:2px; padding:0 .6rem 1.5rem; }
+    .menu a { display:block; padding:.4rem .6rem; border-radius:6px; border-left:2px solid transparent; color:#475569; font-size:12.5px; font-weight:700; }
+    .menu a:hover, .menu a.active { border-left-color:var(--accent); background:var(--accent-light); color:#1d4ed8; text-decoration:none; }
+    .rail-note { margin:1rem 1.1rem 0; padding-top:16px; border-top:1px solid var(--border); color:var(--muted); font-size:11px; }
+    main { min-width:0; padding:42px clamp(22px,5vw,76px) 70px; }
+    .content { width:min(980px,100%); margin:0 auto; }
+    .hero { margin-bottom:36px; padding:clamp(30px,5vw,58px); color:#fff; background:linear-gradient(135deg,#0f172a 0%,#1e3a8a 100%); border-radius:14px; box-shadow:var(--shadow-md); position:relative; overflow:hidden; }
+    .hero::after { content:''; position:absolute; width:300px; height:300px; right:-70px; bottom:-125px; border:45px solid rgba(59,130,246,.25); border-radius:50%; }
+    .hero > * { position:relative; z-index:1; }
+    .eyebrow { display:inline-block; margin-bottom:12px; padding:.2rem .6rem; border-radius:6px; background:var(--accent); color:#fff; font-size:11px; font-weight:800; letter-spacing:1px; text-transform:uppercase; }
+    h2 { margin:0; color:var(--navy); font-weight:800; font-size:clamp(26px,4vw,40px); line-height:1.1; }
+    .hero h2 { max-width:760px; color:#fff; }
+    .hero p { max-width:760px; color:#dbeafe; font-size:17px; }
+    .meta { display:flex; flex-wrap:wrap; gap:9px; margin-top:24px; }
+    .meta span { padding:.3rem .85rem; border:1px solid rgba(255,255,255,.25); border-radius:999px; background:rgba(255,255,255,.12); color:#fff; font-size:11px; font-weight:700; }
+    .section { margin:0 0 40px; }
+    .section-head { margin-bottom:24px; padding-bottom:17px; border-bottom:3px solid var(--accent); }
+    .section-head p { max-width:760px; margin:12px 0 0; color:var(--muted); font-size:16px; }
+    h3 { margin:28px 0 10px; color:#1e3a8a; font-weight:750; font-size:20px; }
+    h4 { margin:20px 0 7px; color:#334155; font-size:15px; font-weight:700; }
+    p { max-width:800px; }
+    ul, ol { padding-left:23px; }
+    li { margin:7px 0; }
+    .grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; margin:20px 0; }
+    .card { padding:20px; border:1px solid var(--border); border-radius:10px; background:#fff; box-shadow:var(--shadow-sm); }
+    .card h3 { margin-top:0; font-size:17px; }
+    .card p, .card li { color:var(--muted); font-size:14px; }
+    .callout { margin:1rem 0; padding:1rem 1.2rem; border-left:5px solid var(--accent); border-radius:10px; background:#eff6ff; }
+    .callout.warning { border-left-color:#f59e0b; background:#fffbeb; }
+    .callout strong { display:block; margin-bottom:.35rem; color:var(--navy); }
+    .code { margin:1rem 0; padding:1rem 1.15rem; overflow-x:auto; color:#dbeafe; background:var(--code-bg); border-radius:10px; box-shadow:var(--shadow-sm); font:.83rem/1.7 "Cascadia Code",Consolas,monospace; white-space:pre-wrap; }
+    .table-wrap { margin:1rem 0; overflow-x:auto; border-radius:8px; box-shadow:var(--shadow-sm); }
+    table { width:100%; min-width:680px; border-collapse:collapse; font-size:13px; }
+    th, td { padding:11px 13px; border-bottom:1px solid var(--border); text-align:left; vertical-align:top; }
+    th { color:#fff; background:#1e293b; font-size:10px; letter-spacing:1px; text-transform:uppercase; }
+    tr:last-child td { border-bottom:0; }
+    .checklist { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px 18px; padding:0; list-style:none; }
+    .checklist li { margin:0; padding:10px 13px 10px 32px; border-bottom:1px solid var(--border); color:var(--muted); position:relative; }
+    .checklist li::before { content:'□'; position:absolute; left:10px; color:var(--accent); font-weight:800; }
+    .checkpoint { margin:1rem 0; padding:1rem 1.2rem; border-left:5px solid #10b981; border-radius:10px; background:#ecfdf5; }
+    .checkpoint strong { color:#0f172a; }
+    .source { margin-top:38px; padding-top:18px; border-top:1px solid var(--border); color:var(--muted); font-size:13px; }
+    #top { position:fixed; right:1.4rem; bottom:1.4rem; z-index:50; display:none; width:46px; height:46px; border:none; border-radius:50%; color:#fff; background:var(--accent); box-shadow:var(--shadow-md); cursor:pointer; font-size:17px; }
+    #top.show { display:block; }
+    .progress { position:fixed; top:0; left:0; z-index:10; width:0; height:3px; background:var(--accent); }
+    @media (max-width:900px) { .shell { display:block; } .rail { position:relative; height:auto; } .menu { grid-template-columns:repeat(2,minmax(0,1fr)); } main { padding:28px 20px 50px; } }
+    @media (max-width:600px) { .menu, .grid, .checklist { grid-template-columns:1fr; } .hero { padding:30px 24px; } }
+    @media print { .rail, #top, .progress { display:none !important; } main { padding:12px; } .hero, .card, .checkpoint { box-shadow:none; break-inside:avoid; } }
+  </style>
+</head>
+<body>
+  <div class="progress" id="progress"></div>
+  <div class="shell">
+    <aside class="rail">
+      <div class="brand"><small>GitHub Copilot</small><h1>Repo Analyzer Lab</h1></div>
+      <div class="menu-label">Lab path</div>
+      <nav class="menu" aria-label="Lab sections"><a class="active" href="#overview">Overview</a><a href="#build">What you'll build</a><a href="#setup">Install gh-aw</a><a href="#anatomy">Workflow anatomy</a><a href="#frontmatter">Write frontmatter</a><a href="#instructions">Write instructions</a><a href="#compile">Compile and validate</a><a href="#deploy">Deploy and run</a><a href="#customize">Customize and extend</a><a href="#wrapup">Wrap-up</a></nav>
+      <p class="rail-note">Build a weekly repository health report with a read-only agent, GitHub MCP data, Python charts, and bounded Safe Outputs.</p>
+    </aside>
+    <main><div class="content">
+      <header class="hero" id="overview"><div class="eyebrow">Customization lab · Agentic Workflows</div><h2>Build a Repo Health Analyzer with gh-aw.</h2><p>Create a GitHub Agentic Workflow that examines repository health and publishes a comprehensive, evidence-based report as a GitHub issue.</p><div class="meta"><span>~45 minutes</span><span>Intermediate</span><span>GitHub Actions</span><span>Safe Outputs</span></div></header>
+
+      <section class="section" id="build"><div class="section-head"><div class="eyebrow">Objective</div><h2>What you will build</h2><p>By the end of this lab, you will have a workflow that runs weekly and on demand, gathers repository data through the GitHub MCP server, generates trend charts, and creates one labeled health report issue.</p></div>
+        <div class="grid"><article class="card"><h3>AI agent readiness</h3><p>A scorecard for README quality, architecture documentation, repository structure, tests, CI, custom instructions, and contribution guidance.</p></article><article class="card"><h3>CI/CD health</h3><p>Workflow inventory, pass rates, average duration, failure frequency, and likely flaky jobs from recent GitHub Actions runs.</p></article><article class="card"><h3>DORA and SPACE proxies</h3><p>Approximate deployment frequency, lead time, change failure rate, MTTR, activity, performance, collaboration, and efficiency from GitHub data.</p></article><article class="card"><h3>Review and PR flow</h3><p>Time to first review, review-to-merge, reviewer throughput, review backlog, stale pull requests, and lead time by PR size.</p></article><article class="card"><h3>Copilot adoption</h3><p>Copilot-assisted commits, pull requests, reviews, adoption rate, and four-week trends based on repository evidence.</p></article><article class="card"><h3>Actionable recommendations</h3><p>A week-over-week summary and five to seven prioritized recommendations with an action, reason, and expected impact.</p></article></div>
+        <div class="callout"><strong>What are GitHub Agentic Workflows?</strong> <a href="https://github.github.io/gh-aw/" target="_blank" rel="noopener noreferrer">gh-aw</a> lets you write GitHub Actions workflows in Markdown with natural-language instructions. The <code>gh aw</code> CLI compiles the source into a secure <code>.lock.yml</code> workflow that runs an AI agent with scoped permissions, tools, and guardrails.</div>
+        <div class="grid"><article class="card"><h3>Prerequisites</h3><ul><li>GitHub CLI installed and authenticated</li><li>A GitHub repository with some issue, PR, commit, and Actions history</li><li>GitHub Copilot access for workflow requests</li><li>Linux, macOS, or Windows with WSL</li></ul></article><article class="card"><h3>Important safety boundary</h3><p>The agent remains read-only. It does not receive <code>issues: write</code> or other direct write permissions. Report creation is declared as a validated Safe Output with a limit.</p></article></div>
+      </section>
+
+      <section class="section" id="setup"><div class="section-head"><div class="eyebrow">Exercise 1 · Install</div><h2>Install and verify gh-aw</h2><p>The GitHub CLI extension provides the compiler and runner for Markdown-authored agentic workflows.</p></div>
+        <h3>1.1 Verify GitHub CLI</h3><div class="code">gh auth status</div><p>You should see the authenticated account and the host it can access. Run <code>gh auth login</code> if the CLI is not authenticated.</p>
+        <h3>1.2 Install the extension</h3><div class="code"># Official installer for Linux, macOS, or WSL
+curl -sL https://raw.githubusercontent.com/github/gh-aw/main/install-gh-aw.sh | bash
+
+# If gh-aw is already installed, upgrade the extension
+gh extension upgrade aw</div>
+        <h3>1.3 Verify installation</h3><div class="code">gh aw version
+gh aw --help</div><div class="checkpoint"><strong>Checkpoint:</strong> you have an authenticated GitHub CLI and <code>gh aw version</code> returns a version number.</div>
+      </section>
+
+      <section class="section" id="anatomy"><div class="section-head"><div class="eyebrow">Exercise 2 · Understand</div><h2>Understand the two-part workflow</h2><p>Every agentic workflow has a Markdown source with two responsibilities: machine configuration in YAML frontmatter and agent guidance in the Markdown body.</p></div>
+        <div class="table-wrap"><table><thead><tr><th>Part</th><th>Contains</th><th>When changes take effect</th></tr></thead><tbody><tr><td>YAML frontmatter</td><td>Triggers, permissions, environment, tools, network, Safe Outputs, setup steps</td><td>Recompile when changed</td></tr><tr><td>Markdown body</td><td>Mission, data collection, analysis criteria, output structure, evidence rules</td><td>Loaded at runtime; body edits do not require recompilation</td></tr><tr><td>Compiled lock file</td><td>Generated GitHub Actions workflow with runner infrastructure and guardrails</td><td>Created or refreshed by <code>gh aw compile</code></td></tr></tbody></table></div>
+        <div class="code">.github/workflows/repo-health-analyzer.md
+├── YAML frontmatter between --- markers
+│   ├── triggers and timeout
+│   ├── read-only permissions
+│   ├── tools and network allowlist
+│   ├── Safe Outputs
+│   └── setup steps
+└── Markdown body
+    ├── repository health mission
+    ├── data collection instructions
+    ├── eight analysis sections
+    ├── chart generation rules
+    └── report issue format</div>
+        <div class="callout warning"><strong>Never edit the lock file.</strong> Edit the <code>.md</code> source and recompile. Direct changes to <code>.lock.yml</code> will be overwritten and are difficult to review as intent.</div>
+        <h3>2.1 Security model</h3><div class="code"># Correct: the agent reads; Safe Outputs perform bounded writes
+permissions:
+  contents: read
+  issues: read
+  pull-requests: read
+  actions: read
+safe-outputs:
+  create-issue:
+    max: 3
+
+# Wrong: this bypasses the Safe Outputs safety boundary
+permissions:
+  issues: write</div>
+        <div class="checkpoint"><strong>Checkpoint:</strong> explain why the workflow uses read-only permissions and why report creation belongs under <code>safe-outputs</code>.</div>
+      </section>
+
+      <section class="section" id="frontmatter"><div class="section-head"><div class="eyebrow">Exercise 3 · Configure</div><h2>Write the workflow frontmatter</h2><p>Create <code>.github/workflows/repo-health-analyzer.md</code>. Add the frontmatter in small pieces so each permission, tool, and output has a reason.</p></div>
+        <h3>3.1 Description and triggers</h3><div class="code">---
+description: |
+  Weekly repository health analyzer that assesses AI-agent readiness,
+  CI/CD health, DORA and SPACE metrics, review efficiency, PR lead times,
+  and GitHub Copilot adoption. Produces a comprehensive report as a
+  GitHub issue with trend charts and actionable recommendations.
+on:
+  schedule:
+    - cron: '0 6 * * 0' # Every Sunday at 06:00 UTC
+  workflow_dispatch:
+timeout-minutes: 30</div><ul><li>The weekly schedule provides a repeatable baseline; adjust the cron hour to your timezone (for example, <code>0 12 * * 0</code> for 7 AM ET / 4 AM PT during daylight saving time).</li><li><code>workflow_dispatch</code> enables manual development runs.</li><li>Thirty minutes gives the agent time to collect data, create charts, and publish the report.</li></ul>
+        <h3>3.2 Permissions and target repository</h3><div class="code">permissions:
+  contents: read
+  issues: read
+  pull-requests: read
+  actions: read
+env:
+  TARGET_REPOSITORY: ${{ vars.TARGET_REPOSITORY || github.repository }}</div><div class="callout"><strong>Analyzing a different repo:</strong> setting the <code>TARGET_REPOSITORY</code> repository variable under Settings → Variables points the analyzer at any repository you have access to. The built-in Actions token only carries permissions for the current repository, so cross-repository analysis of a private target needs a broader credential such as a PAT.</div>
+        <h3>3.3 Network and tools</h3><div class="code">network:
+  allowed:
+    - defaults
+    - python
+    - node
+tools:
+  edit:
+  bash:
+    - '*'
+  github:
+    lockdown: false
+    min-integrity: none
+    toolsets: [default]
+    allowed-repos: all</div><div class="table-wrap"><table><thead><tr><th>Configuration</th><th>Purpose</th></tr></thead><tbody><tr><td><code>edit</code></td><td>Lets the agent create temporary Python scripts for chart generation.</td></tr><tr><td><code>bash</code></td><td>Runs the chart scripts and verifies generated files.</td></tr><tr><td><code>github</code></td><td>Reads repository metadata, issues, pull requests, commits, and workflow runs through the GitHub MCP server.</td></tr><tr><td><code>network</code></td><td>Allows Python and Node package access needed by the setup steps; narrow additional hosts when possible.</td></tr></tbody></table></div>
+        <h3>3.4 Safe Outputs and setup</h3><div class="code">safe-outputs:
+  mentions: false
+  allowed-github-references: []
+  upload-asset:
+  create-issue:
+    title-prefix: '[Repo Health] '
+    labels: [report, repo-health, weekly]
+    close-older-issues: true
+steps:
+  - name: Setup Python environment
+    run: |
+      mkdir -p /tmp/charts /tmp/data
+      pip install --user --quiet numpy pandas matplotlib seaborn scipy
+      python3 -c "import pandas, matplotlib, seaborn; print('Python environment ready')"
+---</div><ul><li><code>upload-asset</code> makes chart images available to the report.</li><li><code>create-issue</code> limits and labels the final report output.</li><li><code>mentions: false</code> prevents accidental notifications.</li><li>The closing <code>---</code> separates configuration from the agent instructions.</li></ul>
+        <div class="checkpoint"><strong>Checkpoint:</strong> save a complete frontmatter block with a schedule, manual trigger, read-only permissions, tools, network access, Safe Outputs, and Python setup.</div>
+      </section>
+
+      <section class="section" id="instructions"><div class="section-head"><div class="eyebrow">Exercise 4 · Instruct</div><h2>Write the repository analysis instructions</h2><p>The Markdown body tells the agent how to collect evidence, calculate metrics, handle sparse data, generate charts, and structure the final issue.</p></div>
+        <h3>4.1 Mission and data collection</h3><div class="code"># Repository Health Analyzer
+
+Analyze repository `${{ env.TARGET_REPOSITORY }}` and produce a comprehensive
+health report as a GitHub issue. Help maintainers understand repository health,
+AI-agent readiness, and improvement trends.
+
+## Data Collection
+Use GitHub tools to gather data for the past 30 days:
+1. Repository metadata: README, file tree at the top two levels, key config files.
+2. Pull requests: opened, merged, closed, authors, reviewers, timestamps, and commits.
+3. Issues: opened and closed issues, labels, timestamps, and comments.
+4. Commits: recent default-branch commits, authors, and co-author trailers.
+5. Workflow runs: CI/CD results, duration, jobs, and failure details.
+6. Releases and tags: recent releases or deployment-like events.
+
+Collect enough data to compute four weekly trend points.</div>
+        <h3>4.2 AI Agent Readiness</h3><p>Assess the repository against this scorecard. For each criterion use <strong>Present &amp; Good</strong>, <strong>Partial</strong>, or <strong>Missing</strong>, with a brief finding and evidence.</p>
+        <div class="table-wrap"><table><thead><tr><th>#</th><th>Criterion</th><th>What to check</th></tr></thead><tbody><tr><td>1</td><td>Clear README</td><td>Purpose, architecture summary, build steps, test steps, and repository layout.</td></tr><tr><td>2</td><td>Architecture documentation</td><td><code>/docs/architecture.md</code>, components documentation, diagrams, or similar.</td></tr><tr><td>3</td><td>Predictable structure</td><td>Clear <code>/src</code>, <code>/tests</code>, <code>/docs</code>, and <code>/scripts</code> boundaries.</td></tr><tr><td>4</td><td>In-repository documentation</td><td>Build, test, contribution, and operational instructions in Markdown.</td></tr><tr><td>5</td><td>Architecture decisions</td><td>An ADR directory or another visible decision-record practice.</td></tr><tr><td>6</td><td>Scriptable build and test</td><td>Make, npm scripts, task runner, or similarly simple commands.</td></tr><tr><td>7</td><td>Test suite</td><td>Test directory, configured framework, and evidence of meaningful coverage.</td></tr><tr><td>8</td><td>Automated CI</td><td>Actions workflows for tests, linting, security, or other checks on pull requests.</td></tr><tr><td>9</td><td>Linting and formatting</td><td>Configuration such as ESLint, Prettier, Ruff, EditorConfig, or pyproject tools.</td></tr><tr><td>10</td><td>Copilot auto-review</td><td>Review configuration or evidence of Copilot review activity.</td></tr><tr><td>11</td><td>Custom instructions</td><td><code>.github/copilot-instructions.md</code> or equivalent project guidance.</td></tr><tr><td>12</td><td>CONTRIBUTING.md</td><td>Meaningful coding standards, branch strategy, and pull request expectations.</td></tr></tbody></table></div><p>Compute a grade: <strong>A</strong> for 10 or more criteria met, <strong>B</strong> for 7–9, <strong>C</strong> for 4–6, and <strong>D</strong> for 0–3. Follow with three to five specific recommendations.</p>
+        <h3>4.3 CI/CD health and DORA</h3><div class="code">## CI/CD Health
+List workflows, trigger types, runs, pass rate, average and median duration,
+failure frequency, and jobs that alternate between pass and fail.
+Present a table with Workflow, Runs, Pass Rate, Average Duration, and Trend.
+
+## DORA Metrics
+Approximate from the last 30 days:
+- Deployment frequency: releases, tags, deployments, or merges as a proxy.
+- Lead time for changes: first commit on a branch to PR merge.
+- Change failure rate: reverted PRs, hotfixes, or bug/regression issues after merge.
+- MTTR: time from bug, incident, or regression issue opened to closed.
+Classify each as Elite, High, Medium, or Low and explain proxy limitations.</div>
+        <h3>4.4 SPACE and review efficiency</h3><div class="code">## SPACE Metrics
+Use proxy indicators for Satisfaction and well-being, Performance, Activity,
+Communication and collaboration, and Efficiency. Include contributors,
+new contributors, CI pass rate, commits, PRs, issues, review comments,
+reviewer participation, PR cycle time, review turnaround, and review load.
+Present a four-week activity trend table.
+
+## Review Efficiency
+Calculate median time to first review, first review to merge, total review cycle,
+reviews completed per reviewer, review backlog, and stale PRs over seven days.
+Highlight bottlenecks and state when data is incomplete.</div>
+        <h3>4.5 PR lead times and Copilot adoption</h3><div class="code">## PR Lead Times
+Analyze Open to First Review, First Review to Merge, and Open to Merge.
+Group PRs as Small (&lt;50 lines), Medium (50–250), and Large (&gt;250).
+Create /tmp/charts/pr_lead_times.png as a 300 DPI 12x7 horizontal grouped bar chart.
+
+## GitHub Copilot Adoption
+Search commit messages and PR descriptions for Copilot co-author trailers,
+Copilot-authored PRs, and Copilot review activity. Report assisted commits,
+assisted PRs, reviews, adoption rate, and week-over-week trend.
+Create /tmp/charts/copilot_adoption.png as a 300 DPI 12x7 trend chart.</div>
+        <h3>4.6 Trends, charts, and recommendations</h3><div class="code">## Activity Trends and Recommendations
+Create /tmp/charts/activity_trends.png with weekly PRs opened, PRs merged,
+issues opened, issues closed, and total commits for four weeks.
+Use matplotlib.use('Agg'), pandas, seaborn whitegrid, tight_layout, and 300 DPI.
+Handle sparse data with bars and zero data with a placeholder message.
+
+Create a week-over-week table for PRs, issues, commits, average PR lead time,
+CI pass rate, and Copilot adoption using ↑, ↓, or →.
+Then provide 5–7 prioritized recommendations. Each must include What, Why,
+and Impact (High, Medium, or Low).</div>
+        <div class="callout"><strong>Evidence rule:</strong> never invent a metric. If a value cannot be computed, explain why and mark the gap. A smaller report with honest limitations is more useful than a complete-looking report built on guesses.</div>
+        <h3>4.7 Report and metadata</h3><div class="code">## 📊 Repository Health Report
+**Repository**: {repo_name}
+**Report Date**: {date}
+**Analysis Period**: Past 30 days
+
+### 🤖 AI Agent Readiness
+{scorecard, grade, and recommendations}
+---
+### 🔧 CI/CD Health
+{workflow table and highlights}
+---
+### 📈 DORA Metrics
+{metric, value, classification, and trend}
+---
+### 🧭 SPACE Metrics
+{dimension tables and four-week activity}
+---
+### 👀 Review Efficiency
+{review metrics and bottlenecks}
+---
+### ⏱️ PR Lead Times
+{lead-time table and chart}
+![PR Lead Times]({chart_url})
+---
+### 🤝 GitHub Copilot Adoption
+{adoption metrics and chart}
+![Copilot Adoption]({chart_url})
+---
+### 📉 Activity Trends
+{activity chart and week-over-week table}
+![Activity Trends]({chart_url})
+---
+### 💡 Top Recommendations
+{prioritized recommendations}
+
+<details><summary><b>📋 Report Metadata</b></summary>
+Workflow, run URL, analysis period, and data collection timestamp.
+</details></div>
+        <div class="checkpoint"><strong>Checkpoint:</strong> the Markdown body contains the mission, data collection, all eight report sections, chart requirements, output format, evidence rules, and recommendations.</div>
+      </section>
+
+      <section class="section" id="compile"><div class="section-head"><div class="eyebrow">Exercise 5 · Validate</div><h2>Compile and inspect the workflow</h2><p>Compilation produces the Actions workflow that GitHub will execute. Treat the generated artifact as a security and configuration review surface.</p></div>
+        <h3>5.1 Compile the workflow</h3><div class="code">gh aw compile repo-health-analyzer</div><div class="code">✓ .github/workflows/repo-health-analyzer.md (58.3 KB)
+✓ Compiled 1 workflow(s): 0 error(s), 0 warning(s)</div><p>The command creates <code>.github/workflows/repo-health-analyzer.lock.yml</code>, the compiled GitHub Actions workflow that GitHub Actions actually runs.</p>
+        <h3>5.2 Check generated-file handling</h3><div class="code">Get-Content .gitattributes
+# Expected pattern:
+.github/workflows/*.lock.yml linguist-generated=true merge=ours</div><p>On Linux or macOS, use <code>cat .gitattributes</code>. This marks lock files as generated and reduces merge noise.</p>
+        <h3>5.3 Inspect without editing</h3><div class="code">Get-Content .github/workflows/repo-health-analyzer.lock.yml -TotalCount 80
+# Linux/macOS:
+# sed -n '1,80p' .github/workflows/repo-health-analyzer.lock.yml</div><ul><li>Confirm the trigger and timeout are present.</li><li>Confirm the job uses read-only permissions.</li><li>Confirm Safe Outputs are configured.</li><li>Confirm setup steps create chart directories and install dependencies.</li><li>Confirm the generated workflow is committed alongside the Markdown source.</li></ul>
+        <div class="checkpoint"><strong>Checkpoint:</strong> you have the source Markdown, compiled lock file, and appropriate <code>.gitattributes</code> handling. Do not modify the lock file directly.</div>
+      </section>
+
+      <section class="section" id="deploy"><div class="section-head"><div class="eyebrow">Exercise 6 · Run</div><h2>Deploy, trigger, and review the report</h2><p>Use a branch and pull request when branch protection applies. Keep credentials out of the workflow source and logs.</p></div>
+        <h3>6.1 Commit and push</h3><div class="code">git add .gitattributes .github/workflows/repo-health-analyzer.md .github/workflows/repo-health-analyzer.lock.yml
+git commit -m "Add repository health agentic workflow"
+git push</div><div class="callout warning"><strong>Protected branches:</strong> create a feature branch and pull request instead of pushing directly to the default branch. Review permissions, network access, tools, Safe Outputs, and the compiled lock file.</div>
+        <h3>6.2 Configure Copilot authentication</h3><p>Agentic workflows currently need a personal access token to authorize Copilot requests (expected to be simplified with org-level support so the built-in Actions token can be used instead).</p><ol><li>Open <a href="https://github.com/settings/personal-access-tokens/new?name=COPILOT_GITHUB_TOKEN&amp;description=GitHub+Agentic+Workflows+-+Copilot+engine+authentication&amp;user_copilot_requests=read" target="_blank" rel="noopener noreferrer">Create a fine-grained PAT</a>, which pre-fills the name, description, and Copilot Requests permission.</li><li>Set <strong>Resource owner</strong> to your user account, not the organization — the Copilot seat is owned by you. Repository permissions do not matter since none are granted.</li><li>Set an appropriate expiration, generate the token, and copy the value.</li><li>Add it as the repository secret <code>COPILOT_GITHUB_TOKEN</code> under Settings → Secrets and variables → Actions → New repository secret.</li><li>Never paste the token into this lab, workflow Markdown, an issue, a log, or chat.</li></ol><div class="callout warning"><strong>Credential safety:</strong> token setup is account-specific and may change. Follow the current <a href="https://github.github.com/gh-aw/reference/auth/" target="_blank" rel="noopener noreferrer">gh-aw authentication reference</a> and your organization's policy.</div>
+        <h3>6.3 Trigger and monitor</h3><div class="code"># From the Actions tab: Run workflow → select branch → Run workflow
+# Or trigger from the CLI:
+gh workflow run repo-health-analyzer
+
+# Watch the latest run:
+gh run watch</div><p>A run typically takes 5 to 15 minutes depending on repository size and activity. Inspect the Actions log if a tool, package installation, chart, or Safe Output step fails.</p>
+        <h3>6.4 Review the report issue</h3><div class="code">gh issue list --label repo-health</div><p>Open the generated issue and review the AI readiness scorecard, CI/CD table, DORA and SPACE approximations, review metrics, charts, Copilot adoption, trends, recommendations, and metadata. Check that every conclusion has evidence or a limitation note.</p>
+        <div class="checkpoint"><strong>Checkpoint:</strong> the workflow runs successfully and creates one labeled issue with the repository health report and chart assets.</div>
+      </section>
+
+      <section class="section" id="customize"><div class="section-head"><div class="eyebrow">Exercise 7 · Extend</div><h2>Customize the analyzer</h2><p>Once the baseline works, change one dimension at a time and observe how the report changes.</p></div>
+        <h3>7.1 Analyze a different repository</h3><p>Add a repository variable named <code>TARGET_REPOSITORY</code> under Settings → Secrets and variables → Actions → Variables, with a value such as <code>facebook/react</code>, then run the workflow again. The built-in Actions token can read a public target; private repositories need an approved credential with access.</p><div class="code"># Or set it via CLI:
+gh variable set TARGET_REPOSITORY --body "octocat/hello-world"
+gh workflow run repo-health-analyzer</div><p>This repository is small, so its report will not be very interesting — try the workflow against an active repository to see meaningful metrics and a baseline for improvement.</p>
+        <h3>7.2 Edit the body without recompiling</h3><p>The Markdown body is loaded at runtime. On GitHub, edit the body of <code>.github/workflows/repo-health-analyzer.md</code> to add a ninth section such as Security Posture:</p><div class="code">## Section 9: Security Posture
+Check for Dependabot alerts, CodeQL, secret scanning, branch protection,
+and required pull request reviews. Report enabled, partial, or missing
+controls with links to repository settings or configuration files.</div><p>Body-only edits do not require compilation. Frontmatter changes do require compilation, and a pull request is still recommended for reviewability.</p>
+        <h3>7.3 Explore related agentics</h3><div class="table-wrap"><table><thead><tr><th>Workflow idea</th><th>Useful outcome</th></tr></thead><tbody><tr><td>Issue Triage</td><td>Classify and label incoming issues with bounded comments.</td></tr><tr><td>CI Doctor</td><td>Investigate failed checks and recommend the smallest next step.</td></tr><tr><td>Weekly Research</td><td>Collect research updates and summarize them for maintainers.</td></tr><tr><td>Grumpy Reviewer</td><td>Run an on-demand, opinionated review with explicit boundaries.</td></tr><tr><td>Documentation Updater</td><td>Identify documentation drift and propose changes for review.</td></tr></tbody></table></div><p>Browse the <a href="https://github.com/githubnext/agentics" target="_blank" rel="noopener noreferrer">githubnext/agentics</a> catalog and <a href="https://github.github.io/gh-aw/blog/2026-01-12-welcome-to-pelis-agent-factory/" target="_blank" rel="noopener noreferrer">Peli's Agent Factory</a> for additional patterns.</p>
+        <div class="checkpoint"><strong>Checkpoint:</strong> you have customized the target or report instructions and can explain which edits required recompilation and which did not.</div>
+      </section>
+
+      <section class="section" id="wrapup"><div class="section-head"><div class="eyebrow">Wrap-up</div><h2>Make repository health a repeatable conversation.</h2><p>You built an agentic workflow that turns repository evidence into a recurring report while keeping the agent read-only and side effects bounded.</p></div>
+        <div class="grid"><article class="card"><h3>What you built</h3><ul><li>A weekly and on-demand GitHub Agentic Workflow</li><li>A 12-point AI Agent Readiness scorecard</li><li>DORA and SPACE metric approximations</li><li>Python-generated trend charts</li><li>A labeled GitHub issue with recommendations</li></ul></article><article class="card"><h3>Key takeaways</h3><ul><li>Markdown expresses intent; the lock file is the executable artifact.</li><li>Read-only agents plus Safe Outputs keep writes constrained.</li><li>Runtime body edits support quick iteration.</li><li>Evidence and limitations matter more than a complete-looking score.</li><li>Workflows can be composed from reusable tools and patterns.</li></ul></article></div>
+        <h3>Final readiness checklist</h3><ul class="checklist"><li>gh-aw is installed and authenticated</li><li>Manual trigger works before scheduling</li><li>Source and lock file are both committed</li><li>Permissions are read-only for the agent</li><li>Network access is explicit and minimal</li><li>Safe Outputs have limits and labels</li><li>All eight report sections have evidence rules</li><li>Charts handle sparse and zero data</li><li>Credentials are stored only as repository secrets</li><li>Report recommendations include impact and rationale</li></ul>
+        <p class="source">Reference lab: <a href="https://copilot-academy.github.io/labs/agentic-workflows-repo-analyzer" target="_blank" rel="noopener noreferrer">Lab: Agentic Workflows Repo Analyzer | GitHub Copilot Academy</a> · <a href="https://github.github.io/gh-aw/" target="_blank" rel="noopener noreferrer">GitHub Agentic Workflows documentation</a> · <a href="https://github.github.io/gh-aw/setup/quick-start/" target="_blank" rel="noopener noreferrer">gh-aw Quick Start</a> · <a href="https://copilot-academy.github.io/workshops/copilot-customization/prepare_your_repository" target="_blank" rel="noopener noreferrer">Preparing a Repository for AI Agents</a>.</p>
+      </section>
+    </div></main>
+  </div>
+  <button id="top" title="Back to top" aria-label="Back to top">^</button>
+  <script>
+    const progress = document.querySelector('#progress');
+    const topButton = document.querySelector('#top');
+    function updateScroll() {
+      const max = document.documentElement.scrollHeight - window.innerHeight || 1;
+      progress.style.width = `${(window.scrollY / max) * 100}%`;
+      topButton.classList.toggle('show', window.scrollY > 320);
+    }
+    window.addEventListener('scroll', updateScroll, { passive: true });
+    topButton.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+    updateScroll();
+  </script>
+</body>
+</html>

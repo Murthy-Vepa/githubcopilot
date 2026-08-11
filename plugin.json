@@ -1,0 +1,60 @@
+{
+  "name": "metlife-copilot-customizations",
+  "displayName": "MetLife GitHub Copilot Customizations",
+  "description": "A shareable package of GitHub Copilot instructions, agents, prompts, skills, hooks, and MCP configuration examples for this learning repository.",
+  "version": "1.0.0",
+  "author": {
+    "name": "MetLife Learning"
+  },
+  "license": "MIT",
+  "keywords": [
+    "github-copilot",
+    "customization",
+    "agents",
+    "skills",
+    "prompts",
+    "instructions",
+    "hooks",
+    "mcp"
+  ],
+  "components": {
+    "instructions": [
+      ".github/instructions/dotnet-coding.instructions.md",
+      ".github/instructions/folder-structure.instructions.md"
+    ],
+    "agents": [
+      ".github/agents/dotnet-unit-test-writer.agent.md"
+    ],
+    "prompts": [
+      ".github/prompts/build-rest-api.prompt.md",
+      ".github/prompts/explain-code.prompt.md"
+    ],
+    "skills": [
+      ".github/skills/cnn-stock-price",
+      ".github/skills/documentation-writing",
+      ".github/skills/generate-nutshell-html"
+    ],
+    "hooks": [
+      ".github/hooks/show-time.json"
+    ],
+    "mcp": [
+      "Customization/resources/starter-kits/sources/copilot-mcp-integration-starter-kit/.vscode/mcp.json"
+    ]
+  },
+  "files": [
+    ".github/agents/dotnet-unit-test-writer.agent.md",
+    ".github/hooks/show-time.json",
+    ".github/instructions/dotnet-coding.instructions.md",
+    ".github/instructions/folder-structure.instructions.md",
+    ".github/prompts/build-rest-api.prompt.md",
+    ".github/prompts/explain-code.prompt.md",
+    ".github/skills/cnn-stock-price/SKILL.md",
+    ".github/skills/documentation-writing/SKILL.md",
+    ".github/skills/documentation-writing/references/documentation-types.md",
+    ".github/skills/documentation-writing/references/review-checklist.md",
+    ".github/skills/documentation-writing/samples/reference.md",
+    ".github/skills/documentation-writing/samples/tutorial.md",
+    ".github/skills/documentation-writing/scripts/validate-documentation.ps1",
+    ".github/skills/generate-nutshell-html/SKILL.md"
+  ]
+}
