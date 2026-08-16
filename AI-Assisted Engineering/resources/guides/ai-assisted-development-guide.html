@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="A practical 2026 guide to AI-Assisted Development: how it works, where it helps, its risks, and how teams can use it responsibly.">
+<title>What Is AI-Assisted Development?</title>
+<style>
+  :root {
+    --ink: #18232d;
+    --muted: #60717d;
+    --paper: #f2eee5;
+    --paper-deep: #e6ddcf;
+    --white: #fffdf8;
+    --navy: #102a43;
+    --blue: #1769aa;
+    --cyan: #0f9da8;
+    --coral: #e26d5a;
+    --gold: #d9a441;
+    --line: #d5cbbd;
+    --display: Georgia, 'Times New Roman', serif;
+    --body: 'Trebuchet MS', 'Segoe UI', sans-serif;
+    --mono: 'Cascadia Code', Consolas, monospace;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--body); line-height: 1.6; }
+  a { color: inherit; }
+  .shell { display: grid; grid-template-columns: 255px minmax(0, 1fr); min-height: 100vh; }
+  .rail { position: sticky; top: 0; height: 100vh; overflow-y: auto; padding: 28px 20px; background: var(--navy); color: #d9e8f2; }
+  .rail-mark { color: #7ed6d1; font-size: 11px; font-weight: 800; letter-spacing: 1.8px; text-transform: uppercase; }
+  .rail h2 { margin: 9px 0 24px; color: #fffdf8; font: 700 25px/1.05 var(--display); }
+  .rail-label { margin: 25px 0 8px; color: #88a7ba; font-size: 10px; font-weight: 800; letter-spacing: 1.4px; text-transform: uppercase; }
+  .rail a { display: block; padding: 7px 9px; border-left: 2px solid transparent; color: #c4d6e0; font-size: 12px; text-decoration: none; }
+  .rail a:hover, .rail a:focus { border-left-color: #7ed6d1; background: rgba(255,255,255,.06); color: #fff; }
+  .rail-footer { margin-top: 30px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,.14); color: #88a7ba; font-size: 11px; }
+  main { min-width: 0; }
+  .content { width: min(1120px, calc(100% - 64px)); margin: 0 auto; padding: 48px 0 80px; }
+  .hero { position: relative; overflow: hidden; min-height: 430px; padding: 54px 58px; background: var(--navy); color: #fffdf8; box-shadow: 0 18px 45px rgba(23,33,43,.12); }
+  .hero::before { content: ''; position: absolute; width: 360px; height: 360px; right: -130px; bottom: -150px; border: 55px solid rgba(126,214,209,.27); border-radius: 50%; }
+  .hero::after { content: ''; position: absolute; width: 118px; height: 118px; right: 180px; top: -42px; border: 19px solid rgba(226,109,90,.7); transform: rotate(28deg); }
+  .eyebrow { position: relative; z-index: 1; color: #7ed6d1; font-size: 11px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; }
+  h1 { position: relative; z-index: 1; max-width: 770px; margin: 18px 0 19px; font: 700 clamp(42px, 7vw, 82px)/.95 var(--display); letter-spacing: -2px; }
+  .hero p { position: relative; z-index: 1; max-width: 710px; margin: 0; color: #d9e8f2; font-size: 17px; }
+  .hero-meta { position: relative; z-index: 1; display: flex; flex-wrap: wrap; gap: 10px; margin-top: 30px; }
+  .tag { display: inline-flex; padding: 7px 11px; border: 1px solid rgba(255,255,255,.23); color: #fffdf8; font-size: 11px; }
+  .section { margin-top: 34px; padding: 32px 36px; background: var(--white); border: 1px solid var(--line); box-shadow: 0 8px 26px rgba(23,33,43,.05); }
+  .section-head { display: flex; align-items: flex-start; gap: 18px; margin-bottom: 22px; }
+  .section-number { flex: 0 0 auto; color: var(--coral); font: 700 28px/1 var(--display); }
+  h2 { margin: 0; color: var(--navy); font: 700 30px/1.08 var(--display); }
+  h3 { margin: 25px 0 8px; color: var(--navy); font-size: 18px; }
+  p { margin: 10px 0; }
+  .lede { color: var(--muted); font-size: 16px; }
+  .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+  .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .card { padding: 20px; background: #faf7f0; border: 1px solid var(--line); }
+  .card strong { display: block; margin-bottom: 5px; color: var(--navy); }
+  .card p { margin: 0; color: var(--muted); font-size: 14px; }
+  .callout { margin: 20px 0; padding: 17px 19px; border-left: 4px solid var(--cyan); background: #eaf6f4; }
+  .callout.warn { border-left-color: var(--coral); background: #fff0eb; }
+  .callout.gold { border-left-color: var(--gold); background: #fff8df; }
+  .callout strong { color: var(--navy); }
+  .flow { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: 22px 0; }
+  .flow-step { min-height: 118px; padding: 14px 12px; background: var(--navy); color: #fffdf8; }
+  .flow-step:nth-child(2), .flow-step:nth-child(4) { background: var(--blue); }
+  .flow-step:nth-child(3) { background: var(--cyan); }
+  .flow-step:nth-child(5) { background: var(--coral); }
+  .flow-step b { display: block; margin-bottom: 5px; color: #fff; font-size: 12px; }
+  .flow-step span { display: block; color: rgba(255,255,255,.86); font-size: 12px; }
+  .checklist { padding: 0; list-style: none; }
+  .checklist li { position: relative; padding: 7px 0 7px 28px; color: var(--muted); }
+  .checklist li::before { content: '\2610'; position: absolute; left: 0; color: var(--coral); font-size: 19px; line-height: 1.2; }
+  .prompt { position: relative; margin: 14px 0; padding: 19px 21px; background: #142d41; color: #d9e8f2; font: 13px/1.7 var(--mono); white-space: pre-wrap; }
+  .prompt::before { content: 'PROMPT'; position: absolute; right: 14px; top: 10px; color: #7ed6d1; font: 800 9px var(--body); letter-spacing: 1px; }
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { padding: 11px 12px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+  th { background: var(--navy); color: #fffdf8; font-size: 11px; letter-spacing: .5px; text-transform: uppercase; }
+  td { color: var(--muted); }
+  td:first-child { color: var(--navy); font-weight: 700; }
+  .lesson-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 26px; }
+  .lesson-nav a { padding: 7px 10px; border: 1px solid var(--line); color: var(--blue); font-size: 12px; text-decoration: none; }
+  .lesson-nav a:hover, .lesson-nav a:focus { border-color: var(--blue); background: #edf6fb; }
+  .source { margin-top: 34px; padding: 22px 26px; background: var(--paper-deep); color: var(--muted); font-size: 13px; }
+  .source a { color: var(--blue); font-weight: 700; }
+  .top { display: inline-block; margin-top: 18px; color: var(--blue); font-size: 12px; font-weight: 700; text-decoration: none; }
+  .reveal { animation: rise .65s ease both; }
+  @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+  @media (max-width: 850px) {
+    .shell { display: block; }
+    .rail { position: relative; height: auto; }
+    .rail nav { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2px 12px; }
+    .rail-label { grid-column: 1 / -1; }
+    .content { width: min(100% - 28px, 720px); padding-top: 20px; }
+    .hero { padding: 38px 28px; }
+    .section { padding: 26px 22px; }
+    .flow, .grid.three { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 560px) {
+    h1 { letter-spacing: -1px; }
+    .grid, .flow, .grid.three { grid-template-columns: 1fr; }
+    .hero { min-height: 0; }
+  }
+</style>
+</head>
+<body id="top">
+<div class="shell">
+  <aside class="rail">
+    <div class="rail-mark">GitHub Copilot Learning</div>
+    <h2>AI-Assisted Development</h2>
+    <nav aria-label="Guide sections">
+      <div class="rail-label">Start here</div>
+      <a href="#definition">The short version</a>
+      <a href="#mechanics">How it works</a>
+      <div class="rail-label">Understand it</div>
+      <a href="#strengths">Where AI helps</a>
+      <a href="#limits">Where it fails</a>
+      <a href="#teams">Team value and risk</a>
+      <a href="#tools">Tools and modes</a>
+      <div class="rail-label">Apply it</div>
+      <a href="#playbook">Responsible playbook</a>
+      <a href="#prototype">Prototype checklist</a>
+      <a href="#caution">Caution zones</a>
+    </nav>
+    <div class="rail-footer">A practical companion for developers, product teams, and technical leaders.</div>
+  </aside>
+
+  <main>
+    <div class="content">
+      <header class="hero reveal">
+        <div class="eyebrow">A practical 2026 guide</div>
+        <h1>AI-assisted work needs a human center.</h1>
+        <p>AI-Assisted Development helps teams move from an idea to working software by combining natural-language direction, code generation, review, testing, and iteration. The useful question is not whether AI can write code. It is where AI can accelerate the work while people keep ownership of the decisions.</p>
+        <div class="hero-meta">
+          <span class="tag">17-minute read</span>
+          <span class="tag">Human in the loop</span>
+          <span class="tag">Prototype to production</span>
+          <span class="tag">Risk-aware</span>
+        </div>
+      </header>
+
+      <section class="section reveal" id="definition">
+        <div class="section-head"><div class="section-number">01</div><div><h2>What is AI-Assisted Development?</h2><p class="lede">In simple terms, it is the use of AI tools to help developers write, review, debug, test, document, and improve software across the lifecycle.</p></div></div>
+        <div class="grid three">
+          <div class="card"><strong>AI is an assistant</strong><p>It proposes completions, explanations, designs, tests, and transformations. A developer still decides what belongs in the product.</p></div>
+          <div class="card"><strong>Context determines quality</strong><p>The more useful context the tool receives, the more relevant its suggestions can become: requirements, examples, conventions, tests, and constraints.</p></div>
+          <div class="card"><strong>Accountability stays human</strong><p>People remain responsible for business correctness, architecture, security, accessibility, maintainability, and production behavior.</p></div>
+        </div>
+        <div class="callout"><strong>A practical mental model:</strong> AI produces a fast first draft. The developer turns that draft into an understood, tested, reviewed, and maintainable result.</div>
+      </section>
+
+      <section class="section reveal" id="mechanics">
+        <div class="section-head"><div class="section-number">02</div><div><h2>How does it work?</h2><p class="lede">Modern AI development tools combine language models with editor context, repository search, terminal actions, tests, and structured instructions.</p></div></div>
+        <div class="flow">
+          <div class="flow-step"><b>1. Frame</b><span>Explain the goal, users, constraints, examples, and definition of done.</span></div>
+          <div class="flow-step"><b>2. Generate</b><span>Ask for a focused implementation, explanation, plan, test, or alternative.</span></div>
+          <div class="flow-step"><b>3. Inspect</b><span>Read the proposal. Compare it with requirements and local conventions.</span></div>
+          <div class="flow-step"><b>4. Verify</b><span>Run tests, linters, type checks, security scans, and realistic scenarios.</span></div>
+          <div class="flow-step"><b>5. Learn</b><span>Use the evidence to refine the code, prompt, requirement, or next decision.</span></div>
+        </div>
+        <p>The model predicts a useful response from patterns learned from code and language. It does not possess your organization's unwritten history, your stakeholder priorities, or the consequences of a wrong decision. That is why the workflow must include context and evidence, not only generation.</p>
+        <div class="prompt">Act as a careful implementation partner. First restate the goal and list assumptions. Then propose the smallest change that satisfies the acceptance criteria. Identify security, accessibility, and failure-mode risks. After implementation, state exactly which checks should be run.</div>
+      </section>
+
+      <section class="section reveal" id="strengths">
+        <div class="section-head"><div class="section-number">03</div><div><h2>Where does AI help most?</h2><p class="lede">AI is strongest when the task has recognizable patterns, clear inputs and outputs, and a short feedback loop.</p></div></div>
+        <div class="grid">
+          <div class="card"><strong>Boilerplate and scaffolding</strong><p>Generate predictable route handlers, data models, configuration, validation schemas, and repetitive glue code.</p></div>
+          <div class="card"><strong>Code exploration</strong><p>Explain an unfamiliar module, trace a call path, summarize dependencies, or compare implementation options.</p></div>
+          <div class="card"><strong>Testing and debugging</strong><p>Draft tests, identify missing cases, interpret errors, suggest likely causes, and propose small experiments.</p></div>
+          <div class="card"><strong>Refactoring and documentation</strong><p>Improve readability, translate code between patterns, draft documentation, and expose duplicated or unclear logic.</p></div>
+          <div class="card"><strong>Rapid prototypes</strong><p>Make an idea tangible quickly so a team can learn from a working slice before committing to a full solution.</p></div>
+          <div class="card"><strong>Onboarding and learning</strong><p>Provide examples and explanations that help developers explore a framework, library, language, or repository.</p></div>
+        </div>
+      </section>
+
+      <section class="section reveal" id="limits">
+        <div class="section-head"><div class="section-number">04</div><div><h2>Where does it fail?</h2><p class="lede">A polished answer can still be wrong. AI-generated code is plausible output, not proof of correctness.</p></div></div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Limit</th><th>Why it matters</th><th>Human response</th></tr></thead>
+          <tbody>
+            <tr><td>Business context</td><td>The model may miss organizational history, implicit policy, or what users actually value.</td><td>Write the intent, non-goals, examples, and acceptance criteria down.</td></tr>
+            <tr><td>Complex logic</td><td>Confidently incorrect edge cases can survive a happy-path demo.</td><td>Use boundary cases, property checks, review, and domain expertise.</td></tr>
+            <tr><td>Architecture</td><td>Distributed-system trade-offs depend on scale, failure modes, cost, and operational reality.</td><td>Let humans own architecture; use AI to compare and document options.</td></tr>
+            <tr><td>Security</td><td>Generated authentication, authorization, data access, or parsing code may contain exploitable patterns.</td><td>Apply threat modeling, secure defaults, scanning, and specialist review.</td></tr>
+            <tr><td>Maintainability</td><td>Fast output can create duplicated abstractions, hidden coupling, or verification debt.</td><td>Prefer small changes, clear ownership, tests, and deliberate refactoring.</td></tr>
+          </tbody>
+        </table></div>
+        <div class="callout warn"><strong>Do not confuse fluency with understanding.</strong> If you cannot explain what the generated code does, why it is safe, and how it was verified, it is not ready to merge.</div>
+      </section>
+
+      <section class="section reveal" id="teams">
+        <div class="section-head"><div class="section-number">05</div><div><h2>What changes for teams?</h2><p class="lede">The largest benefits come from reducing repetitive work and shortening learning loops. The largest risks come from scaling output faster than verification.</p></div></div>
+        <div class="grid">
+          <div class="card"><strong>Faster delivery on bounded work</strong><p>Teams can spend less time on structural implementation and more time on product decisions, integration, and quality.</p></div>
+          <div class="card"><strong>Lower cognitive load</strong><p>Developers can offload syntax recall, documentation searches, routine transformations, and first-draft test writing.</p></div>
+          <div class="card"><strong>Faster onboarding</strong><p>New contributors gain a conversational entry point into code, patterns, commands, and local terminology.</p></div>
+          <div class="card"><strong>Verification debt</strong><p>When code generation accelerates without proportional testing and review, defects and uncertainty accumulate quietly.</p></div>
+          <div class="card"><strong>Skill development</strong><p>AI should explain and challenge developers, not replace the practice needed to understand fundamentals.</p></div>
+          <div class="card"><strong>Governance questions</strong><p>Teams need clear rules for approved tools, sensitive data, attribution, auditability, review, and deployment.</p></div>
+        </div>
+      </section>
+
+      <section class="section reveal" id="tools">
+        <div class="section-head"><div class="section-number">06</div><div><h2>Tools, modes, and levels of autonomy</h2><p class="lede">AI-assisted development is a spectrum. Choose the lightest mode that gives enough leverage for the task.</p></div></div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Mode</th><th>Best fit</th><th>Guardrail</th></tr></thead>
+          <tbody>
+            <tr><td>Inline completion</td><td>Syntax, repetitive statements, small local edits.</td><td>Read the suggestion before accepting it.</td></tr>
+            <tr><td>Chat and explanation</td><td>Learning, exploration, debugging, alternatives, documentation.</td><td>Check claims against source code and trusted documentation.</td></tr>
+            <tr><td>Agent-assisted change</td><td>Multi-file work with a clear task, tests, and repository context.</td><td>Review the plan and diff; keep the scope bounded.</td></tr>
+            <tr><td>Autonomous execution</td><td>Narrow, reversible, well-instrumented tasks in controlled environments.</td><td>Do not remove human approval from high-impact decisions.</td></tr>
+          </tbody>
+        </table></div>
+        <p>GitHub Copilot, Tabnine, Codeium, JetBrains AI Assistant, Cursor, and AI features in low-code platforms all support different points on this spectrum. Tool choice matters less than the quality of context, verification, and governance around the tool.</p>
+      </section>
+
+      <section class="section reveal" id="playbook">
+        <div class="section-head"><div class="section-number">07</div><div><h2>A responsible playbook</h2><p class="lede">Use AI for acceleration while keeping decisions, evidence, and accountability visible.</p></div></div>
+        <ul class="checklist">
+          <li><strong>Define the outcome.</strong> State the user, problem, scope, non-goals, constraints, and acceptance criteria.</li>
+          <li><strong>Share useful context.</strong> Point to relevant files, patterns, APIs, tests, coding standards, and examples.</li>
+          <li><strong>Ask for a plan before a large change.</strong> Review assumptions, affected files, risks, and the proposed verification.</li>
+          <li><strong>Keep changes small.</strong> Short loops make generated work easier to understand, review, revert, and test.</li>
+          <li><strong>Review like an external contribution.</strong> Read every meaningful change and ask whether it belongs in the product.</li>
+          <li><strong>Test proportionally.</strong> Increase automated tests and manual scenarios as the risk and blast radius increase.</li>
+          <li><strong>Scan for security and data risks.</strong> Never place secrets in prompts or accept sensitive-data handling without policy review.</li>
+          <li><strong>Record decisions.</strong> Preserve requirements, rationale, assumptions, and evidence so future contributors can follow the trail.</li>
+        </ul>
+        <div class="callout gold"><strong>Good collaboration has a handoff point.</strong> Use exploratory AI work to learn quickly. When the result becomes a real product commitment, convert what you learned into durable requirements, tests, and a maintainable plan.</div>
+      </section>
+
+      <section class="section reveal" id="prototype">
+        <div class="section-head"><div class="section-number">08</div><div><h2>Want to build a prototype?</h2><p class="lede">Prototypes are a strong fit when the goal is learning, not quietly shipping production behavior.</p></div></div>
+        <div class="grid three">
+          <div class="card"><strong>Before</strong><p>Write a one-page brief. Name the user, the job to be done, the happy path, the out-of-scope work, and the evidence you need.</p></div>
+          <div class="card"><strong>During</strong><p>Build one vertical slice. Ask for explanations. Capture decisions. Test the experience with realistic data and failure cases.</p></div>
+          <div class="card"><strong>After</strong><p>Separate learning from production code. Record what worked, what failed, and which requirements need a formal specification.</p></div>
+        </div>
+        <h3>Prototype exit checklist</h3>
+        <ul class="checklist">
+          <li>The core user journey is demonstrated with representative inputs.</li>
+          <li>Known limitations, shortcuts, and untested areas are written down.</li>
+          <li>No secrets, sensitive data, or unsafe defaults were introduced.</li>
+          <li>The team can explain the generated code well enough to decide what happens next.</li>
+          <li>A production path exists: requirements, tests, architecture review, and ownership.</li>
+        </ul>
+      </section>
+
+      <section class="section reveal" id="caution">
+        <div class="section-head"><div class="section-number">09</div><div><h2>When should you be cautious?</h2><p class="lede">Apply extra scrutiny where a plausible mistake becomes expensive, unsafe, or difficult to reverse.</p></div></div>
+        <div class="grid">
+          <div class="card"><strong>Security-critical code</strong><p>Authentication, authorization, payments, cryptography, secrets, and data isolation require specialist review.</p></div>
+          <div class="card"><strong>Regulated workloads</strong><p>Healthcare, financial, legal, and other regulated systems need evidence, auditability, approved data handling, and clear accountability.</p></div>
+          <div class="card"><strong>High-scale architecture</strong><p>Capacity, resilience, consistency, regional behavior, cost, and graceful failure need experienced architectural judgment.</p></div>
+          <div class="card"><strong>Ambiguous requirements</strong><p>When stakeholders do not agree on the problem, generating more code can hide the disagreement instead of resolving it.</p></div>
+        </div>
+        <div class="callout warn"><strong>Use a formal specification when the work is durable, shared, regulated, high-impact, or likely to span multiple people and iterations.</strong> AI-assisted exploration and spec-driven development work well together: explore to learn, specify to commit.</div>
+      </section>
+
+      <section class="section reveal" id="future">
+        <div class="section-head"><div class="section-number">10</div><div><h2>Is it the future?</h2><p class="lede">AI-Assisted Development is already part of modern software work. The future is less about replacing developers and more about changing where engineering judgment is applied.</p></div></div>
+        <p>As tools become more capable, developers will spend more time clarifying intent, designing systems, evaluating trade-offs, reviewing evidence, and building feedback loops. Narrow forms of autonomy will become useful in controlled environments. Human accountability will remain essential because software still affects people, money, privacy, safety, and trust.</p>
+        <div class="callout"><strong>The durable advantage is not generating more code.</strong> It is building a team that can move quickly while preserving understanding, quality, security, and the ability to explain why the system works.</div>
+      </section>
+
+      <div class="source">
+        <strong>Further reading</strong><br>
+        This guide is an original learning companion informed by the themes in <a href="https://www.lowcode.agency/blog/ai-assisted-engineering-guide" target="_blank" rel="noopener">What Is AI-Assisted Development? (2026 Guide)</a>, published by LOW/CODE and updated July 11, 2026. For the course's Microsoft Learn companion, see the <a href="vibe-coding-guide.html">AI-Assisted Development Field Guide</a> and the <a href="../../../github-copilot-ai-assisted-engineering.html">AI-Assisted Development presentation</a>.
+        <a class="top" href="#top">Back to top</a>
+      </div>
+    </div>
+  </main>
+</div>
+</body>
+</html>

@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Lab: Context Engineering</title>
+<meta name="description" content="Hands-on Context Engineering lab for GitHub Copilot: measure token usage, reduce context waste, choose models, and build durable project knowledge." />
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+  :root{--bg:#fff;--fg:#0f172a;--muted:#64748b;--accent:#0f766e;--accent-light:#ccfbf1;--border:#dbe4e8;--code-bg:#102a2e;--shadow-sm:0 1px 3px rgba(15,23,42,.1);--shadow-md:0 4px 12px rgba(15,23,42,.12)}
+  html{scroll-behavior:smooth}body{background:var(--bg);color:var(--fg);line-height:1.65;overflow-wrap:anywhere}
+  .navbar{background:#102a2e!important;box-shadow:var(--shadow-md)}.navbar-brand{color:#fff!important;font-weight:700}.navbar-brand small{display:block;color:#99f6e4;font-size:.65rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase}.navbar-toggler{border-color:#475569}.navbar-toggler-icon{filter:invert(1)}
+  nav.sidebar{background:linear-gradient(180deg,#f0fdfa 0%,#ecfeff 100%);border-right:1px solid var(--border);height:calc(100vh - 56px);overflow-y:auto;position:sticky;top:56px;padding:0;max-width:280px}.menu-header{padding:1rem 1.1rem .6rem;font-size:.72rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#475569}.toc{list-style:none;margin:0;padding:0 .6rem 1.5rem}.toc>li>a{display:block;padding:.4rem .6rem;border-radius:6px;color:#134e4a;font-weight:700;font-size:.86rem;text-decoration:none}.toc>li>a:hover,.toc>li>a.active{background:var(--accent-light);color:#115e59}.toc ul{list-style:none;margin:.15rem 0 .5rem;padding-left:.9rem;border-left:2px solid var(--border)}.toc ul li a{display:block;padding:.28rem .5rem;border-radius:5px;color:#475569;font-size:.79rem;text-decoration:none}.toc ul li a:hover,.toc ul li a.active{background:#dff7f3;color:#0f766e}
+  main.content{padding:2.2rem clamp(1rem,3vw,3rem) 5rem}.lead-banner{background:linear-gradient(135deg,#102a2e 0%,#115e59 60%,#0f766e 100%);color:#fff;border-radius:14px;padding:2.4rem 2.2rem;margin-bottom:2rem;box-shadow:var(--shadow-md)}.lead-banner h1{font-weight:800}.meta-pill{display:inline-flex;gap:.4rem;align-items:center;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:.3rem .85rem;font-size:.8rem;margin:.2rem .3rem .2rem 0}.part-badge{display:inline-block;background:#14b8a6;color:#042f2e;font-weight:800;font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;padding:.2rem .6rem;border-radius:6px;margin-bottom:.5rem}
+  section.article{scroll-margin-top:70px;padding-top:1.4rem;margin-bottom:1rem}section.article>h2{font-weight:800;border-bottom:3px solid var(--accent);padding-bottom:.5rem;margin-bottom:1rem}section.subsection{scroll-margin-top:70px;margin:1.6rem 0}section.subsection>h3{font-weight:750;color:#115e59}h4{font-weight:700;color:#334155;margin-top:1.1rem}
+  .card-note,.card-tip,.card-warning,.card-important{border-left:5px solid var(--accent);background:#f0fdfa;border-radius:10px;padding:1rem 1.2rem;margin:1rem 0}.card-tip{border-left-color:#10b981;background:#ecfdf5}.card-warning{border-left-color:#f97316;background:#fff7ed}.card-important{border-left-color:#f59e0b;background:#fffbeb}.card-note strong,.card-tip strong,.card-warning strong,.card-important strong{display:block;margin-bottom:.35rem;color:#0f172a}
+  pre{background:var(--code-bg);color:#ccfbf1;border-radius:10px;padding:1rem 1.15rem;overflow-x:auto;font-size:.83rem;box-shadow:var(--shadow-sm)}code{font-family:"Cascadia Code",Consolas,monospace}:not(pre)>code{background:#e2e8f0;color:#0f172a;padding:.1rem .35rem;border-radius:5px;font-size:.85em}.table{box-shadow:var(--shadow-sm);border-radius:8px;overflow:hidden}.table thead{background:#134e4a;color:#fff}.table-wrap{overflow-x:auto;margin:1rem 0}.diagram-card{background:#f8fafc;border:1px solid var(--border);border-radius:12px;padding:1rem;margin:1.2rem 0;box-shadow:var(--shadow-sm)}.diagram-card .mermaid{text-align:center}.diagram-caption{text-align:center;font-size:.8rem;color:var(--muted);margin-top:.4rem}.checklist li{margin-bottom:.35rem}.btn-scroll-top{position:fixed;right:1rem;bottom:1rem;z-index:50;border-radius:50%;width:36px;height:36px;box-shadow:var(--shadow-md)}
+  @media(max-width:991.98px){nav.sidebar{display:none}}
+</style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg sticky-top" aria-label="Top bar"><div class="container-fluid px-3"><button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarOffcanvas" aria-controls="sidebarOffcanvas" aria-label="Toggle contents menu"><span class="navbar-toggler-icon"></span></button><a class="navbar-brand ms-2" href="#top"><small>Hands-on Lab</small>Context Engineering</a><span class="d-none d-md-inline text-light small">GitHub Copilot &middot; Tokens &middot; Sessions &middot; Tools &middot; Knowledge</span></div></nav>
+<div class="container-fluid" id="top"><div class="row">
+<nav class="col-lg-3 d-none d-lg-block sidebar" aria-label="Table of contents"><div class="menu-header">Contents</div><ul class="toc" id="toc">
+<li><a href="#objective">Objective</a></li><li><a href="#prerequisites">Prerequisites</a></li><li><a href="#what-youll-build">What You'll Build</a></li>
+<li><a href="#background">Background: Prompt to Context Engineering</a></li><li><a href="#usage">Where to See Token Usage</a></li>
+<li><a href="#part1">Exercise 1 &middot; See What's in the Window</a><ul><li><a href="#baseline">1.1 Launch and Set Your Model</a></li><li><a href="#window-growth">1.2 Check and Grow the Baseline</a></li></ul></li>
+<li><a href="#part2">Exercise 2 &middot; Measure the Real Cost</a><ul><li><a href="#output-cost">2.1 Compare Verbose and Concise Output</a></li><li><a href="#usage-stats">2.2 Check Usage and Cost</a></li></ul></li>
+<li><a href="#part3">Exercise 3 &middot; Tame the Output</a><ul><li><a href="#output-constraints">3.1 Add Conciseness Constraints</a></li><li><a href="#instructions">3.2 Make Instructions Permanent</a></li></ul></li>
+<li><a href="#part4">Exercise 4 &middot; Right-Size Your Model</a><ul><li><a href="#model-choice">4.1 Match Model to Task</a></li><li><a href="#thinking-tokens">4.2 Account for Thinking Tokens</a></li></ul></li>
+<li><a href="#part5">Exercise 5 &middot; Practice Session Hygiene</a><ul><li><a href="#compact">5.1 Compact Stale History</a></li><li><a href="#fresh-start">5.2 Start Fresh on Purpose</a></li></ul></li>
+<li><a href="#part6">Exercise 6 &middot; Select Better Inputs</a><ul><li><a href="#files">6.1 Target Files and Symbols</a></li><li><a href="#tools">6.2 Control Tool Output</a></li></ul></li>
+<li><a href="#part7">Exercise 7 &middot; Compare MCP and CLI Tools</a></li><li><a href="#part8">Exercise 8 &middot; Bound Agent Workflows</a></li><li><a href="#part9">Exercise 9 &middot; Write Information-Dense Prompts</a></li><li><a href="#part10">Exercise 10 &middot; Build Knowledge Graphs</a></li>
+<li><a href="#guardrails">Safety and Privacy Guardrails</a></li><li><a href="#recap">Wrap-Up</a></li><li><a href="#resources">Tools and Further Reading</a></li>
+</ul></nav>
+<main class="col-lg-9 content">
+<div class="lead-banner"><span class="part-badge">Lab</span><h1>Context Engineering</h1><p class="mb-2">Design, measure, and optimize the information you feed to AI models so every token produces more useful work.</p><span class="meta-pill">~2 hours</span><span class="meta-pill">Intermediate</span><span class="meta-pill">GitHub Copilot CLI</span><span class="meta-pill">Node.js 22+</span></div>
+<div class="card-note"><strong>How to use this lab</strong>Use a scratch repository or a non-sensitive project. Keep a short log of the context size, model, prompt, tool output, and observed result after each experiment. Context engineering is an evidence loop, not a contest to fit the most words into a window.</div>
+<section class="article" id="objective"><h2>Objective</h2><p>Every token an AI coding agent reads or writes has a cost. Context engineering is the practice of designing, measuring, and optimizing the information supplied to an AI model so signal stays high and noise stays low.</p><p>By the end of this lab, you will be able to:</p><ul class="checklist"><li>Explain the difference between prompt engineering and context engineering.</li><li>Measure token usage in real time with Copilot CLI.</li><li>Reduce output tokens with high-value custom instructions.</li><li>Choose the right model for each task and manage stale sessions.</li><li>Filter tool output and write information-dense prompts.</li></ul></section>
+<section class="article" id="prerequisites"><h2>Prerequisites</h2><ul class="checklist"><li>An active <a href="https://github.com/features/copilot/plans" target="_blank" rel="noopener">GitHub Copilot subscription</a> and <a href="https://github.com/features/copilot/cli" target="_blank" rel="noopener">Copilot CLI</a> installation.</li><li>Basic familiarity with Copilot CLI, or completion of a Copilot CLI introductory lab.</li><li><a href="https://nodejs.org/" target="_blank" rel="noopener">Node.js 22+</a> and a scratch repository or non-sensitive project.</li></ul><div class="card-warning"><strong>Use representative, non-sensitive data</strong>Never place credentials, access tokens, private keys, customer records, or regulated data in prompts, examples, instruction files, or tool output.</div></section>
+<section class="article" id="background"><h2>Background: From Prompt Engineering to Context Engineering</h2><p>A prompt is only one part of what a model receives. The context window also includes system prompts, custom instructions, conversation history, tools, tool results, referenced files, and model reasoning.</p><div class="table-wrap"><table class="table table-bordered table-striped"><thead><tr><th>Context component</th><th>Examples</th><th>Who controls it</th></tr></thead><tbody><tr><td>System and instructions</td><td>Platform behavior, <code>.github/copilot-instructions.md</code></td><td>Copilot and you</td></tr><tr><td>Conversation and files</td><td>Messages, <code>@</code> mentions, explored source</td><td>Accumulates or is selected</td></tr><tr><td>Tools and results</td><td>MCP servers, CLI output, shell commands</td><td>You, indirectly</td></tr><tr><td>Reasoning</td><td>Hidden thinking tokens on reasoning models</td><td>Model configuration</td></tr></tbody></table></div><div class="card-important"><strong>Key insight</strong>You control most of what enters the context window. Engineer it deliberately: maximize signal, minimize noise, and measure the result.</div></section>
+
+<section class="article" id="cost-and-caching"><h2>Why Cost and Caching Matter</h2><p>As Copilot transitions from premium requests to usage-based billing, token use has a direct impact on cost. Output tokens typically cost three to five times more than input tokens, making unnecessary explanation an especially expensive form of waste.</p><pre><code>Cost = (Uncached input * input price)
+  + (Cached input * input price * 0.1)
+  + (Output tokens * output price)</code></pre><p>Prompt caching is automatic on most platforms. Stable prefixes such as the system prompt, project instructions, tool definitions, and early conversation history can be served at roughly 10% of normal input price during an active session. The initial cache write costs more, but repeated hits within the cache lifetime are much cheaper.</p><div class="card-tip"><strong>Cache deliberately</strong>Keep stable instructions near the start of the session, work in focused bursts, compact before a long break, and start a fresh session when the task changes. This preserves a small cache-friendly prefix instead of repeatedly processing stale history.</div><div class="table-wrap"><table class="table table-bordered table-striped"><thead><tr><th>Model</th><th>Input per 1M tokens</th><th>Output per 1M tokens</th></tr></thead><tbody><tr><td>Claude Haiku 4.5</td><td>$1.00</td><td>$5.00</td></tr><tr><td>Claude Sonnet 4.6</td><td>$3.00</td><td>$15.00</td></tr><tr><td>Claude Opus 4.7</td><td>$5.00</td><td>$25.00</td></tr><tr><td>GPT-5.5</td><td>$5.00</td><td>$30.00</td></tr><tr><td>GPT-5.3-Codex</td><td>$1.75</td><td>$14.00</td></tr><tr><td>GPT-5.4 Mini</td><td>$0.75</td><td>$4.50</td></tr></tbody></table></div><div class="card-warning"><strong>Use prices as ratios</strong>Model rates change frequently. The durable lesson is that output is more expensive than input, cache hits are deeply discounted, and stronger models cost more.</div></section>
+<section class="article" id="usage"><h2>Where to See Token Usage</h2><div class="table-wrap"><table class="table table-bordered table-striped"><thead><tr><th>Surface</th><th>What it shows</th><th>How to access</th></tr></thead><tbody><tr><td>VS Code context donut</td><td>Context-window fill</td><td>Appears after the first chat turn</td></tr><tr><td>Chat Debug View</td><td>Prompt, completion, cached, and total tokens</td><td>Command Palette &rarr; Developer: Show Chat Debug View</td></tr><tr><td>Copilot CLI <code>/context</code></td><td>System, messages, buffer, and free space</td><td>Any interactive CLI session</td></tr><tr><td>Copilot CLI <code>/usage</code></td><td>Session totals by model and request count</td><td>Any interactive CLI session</td></tr><tr><td>CLI exit summary</td><td>Input, output, cached, and reasoning totals</td><td>Run <code>/exit</code></td></tr><tr><td>GitHub billing dashboard</td><td>Aggregate organization usage</td><td>GitHub Settings &rarr; Billing</td></tr></tbody></table></div></section>
+<section class="article" id="what-youll-build"><h2>What You'll Build</h2><div class="diagram-card"><div class="mermaid">%%{init: {'theme': 'base', 'fontFamily': 'Segoe UI Semibold', 'fontSize': '18px'}}%%
+flowchart LR
+  I["Intent"] --> S["Select sources"] --> O["Order and constrain"] --> M["Measure context"] --> R["Review result"]
+  R -. "remove noise / refresh" .-> S
+  style I fill:#ccfbf1,stroke:#0f766e
+  style S fill:#dbeafe,stroke:#2563eb
+  style O fill:#fef3c7,stroke:#d97706
+  style M fill:#fce7f3,stroke:#db2777
+  style R fill:#dcfce7,stroke:#16a34a</div><p class="diagram-caption">A useful context loop keeps only the information that changes the decision or result.</p></div><ul class="checklist"><li>A baseline context measurement and cost comparison</li><li>A compact, focused coding session with a deliberate fresh start</li><li>A targeted file and tool-input strategy</li><li>A bounded agent workflow with explicit handoffs</li><li>A small instruction or knowledge artifact that prevents repeated discovery</li></ul></section>
+<section class="article" id="part1"><span class="part-badge">Exercise 1</span><h2>See What's in the Window</h2><p>Start by observing what the model receives before optimizing it. The system prompt, tool definitions, project instructions, conversation history, and your current request all compete for the same window.</p>
+<section class="subsection" id="baseline"><h3>1.1 Establish a Baseline</h3><p>Open a Copilot CLI session and inspect the initial context:</p><pre><code>copilot
+/context</code></pre><p>Record the system and tool overhead, available space, and any loaded instructions. In VS Code, also note the context usage indicator after your first chat turn.</p><div class="card-important"><strong>Checkpoint</strong>Write down the fixed overhead and identify one source you did not expect to be present. That is your first optimization candidate.</div></section>
+<section class="subsection" id="window-growth"><h3>1.2 Watch Context Grow</h3><p>Ask a short question, then inspect the window again:</p><pre><code>What is context engineering, and how does it differ from prompt engineering?
+/context</code></pre><p>Compare the result with the baseline. Your request, the response, tool calls, and the retained conversation history all consume space. Repeat once with a follow-up that references the first answer.</p><div class="card-tip"><strong>Context is not just your prompt</strong>The model may see more input than is visible in the chat composer. Treat the complete request envelope as the unit you measure.</div></section></section>
+<section class="article" id="part2"><span class="part-badge">Exercise 2</span><h2>Measure the Real Cost</h2><p>Input and output have different cost profiles, and reasoning models may produce hidden thinking tokens. Compare behavior rather than assuming that a larger model or longer answer is better.</p>
+<section class="subsection" id="output-cost"><h3>2.1 Compare Output Size</h3><p>Clear the session and run a verbose request:</p><pre><code>/clear
+Explain the SOLID principles with examples, best practices, common mistakes, and modern JavaScript guidance.</code></pre><p>Record <code>/context</code> and <code>/usage</code>. Clear again, then run:</p><pre><code>/clear
+List the five SOLID principles in one sentence each. No examples or preamble.</code></pre><p>Compare visible output, total tokens, and usefulness. Concise output is valuable when the task is already clear; it is not a license to omit required reasoning or evidence.</p><div class="card-note"><strong>Cost heuristic</strong>Put stable, reusable context early so it can be cached. Put the task-specific request and changing inputs later. Remove output requirements that do not help a reviewer make a decision.</div></section>
+<section class="subsection" id="model-choice"><h3>2.2 Choose the Right Model</h3><p>Use a lightweight model for pattern-following work and reserve reasoning-capable models for tasks that genuinely require competing hypotheses or multi-file analysis.</p><div class="table-wrap"><table class="table table-bordered table-striped"><thead><tr><th>Task</th><th>Context strategy</th><th>Model posture</th></tr></thead><tbody><tr><td>Rename or format</td><td>One file, exact acceptance criteria</td><td>Fast / low cost</td></tr><tr><td>Add a familiar endpoint</td><td>Reference one analogous route and its test</td><td>General purpose</td></tr><tr><td>Debug a concurrency issue</td><td>Relevant files, failing trace, reproduction steps</td><td>Reasoning capable</td></tr><tr><td>Explore an unfamiliar repository</td><td>Bounded discovery artifact, not the whole tree</td><td>Auto or agentic</td></tr></tbody></table></div><p>Run the same small task on two models and record whether the quality difference justifies the token difference. Change models mid-session only when the preserved context is still relevant.</p></section></section>
+<section class="subsection" id="usage-stats"><h3>2.2 Check Usage and Cost</h3><p>Use <code>/usage</code> in Copilot CLI and the Chat Debug View in VS Code to compare input, cached input, visible output, and reasoning tokens. For a rough comparison, multiply uncached input and output by the model rates shown for your plan.</p><div class="card-note"><strong>Record the result</strong>Capture model, total tokens, cached tokens, visible output, and whether the answer required rework.</div></section></section>
+<section class="article" id="part3"><span class="part-badge">Exercise 3</span><h2>Tame the Output</h2><p>Output tokens are often the biggest controllable cost. Compare an unconstrained response with one that has a clear format, length, and stopping condition.</p>
+<section class="subsection" id="output-constraints"><h3>3.1 Add Conciseness Constraints</h3><p>Start a fresh session and ask for an explanation without constraints. Then repeat it with a precise output contract:</p><pre><code>Explain context engineering for a new developer in exactly five bullets.
+Each bullet must be one sentence and contain no example or preamble.</code></pre><p>Compare usefulness, token count, and whether the response obeyed the contract. Constraints should remove waste without suppressing information needed to make a decision.</p><div class="card-tip"><strong>High-value constraint</strong>Specify audience, format, length, and what to omit when those details materially improve the result.</div></section>
+<section class="subsection" id="output-instructions"><h3>3.2 Make Instructions Permanent</h3><p>Move stable response preferences into the project instruction file instead of repeating them in every prompt:</p><pre><code># .github/copilot-instructions.md
+- Prefer concise answers with a short rationale.
+- Use existing project conventions before introducing new abstractions.
+- Include focused verification steps after code changes.</code></pre><p>Verify that the instructions are loaded, then remove any rule that is too vague, too rarely useful, or likely to conflict with the current task.</p></section></section>
+<section class="article" id="part4"><span class="part-badge">Exercise 4</span><h2>Right-Size Your Model</h2><p>Model choice changes both quality and cost. Use a fast model for bounded pattern-following work and a reasoning-capable model when the task contains competing hypotheses or cross-file uncertainty.</p>
+<section class="subsection" id="model-selection"><h3>4.1 Match Model to Task</h3><div class="table-wrap"><table class="table table-bordered table-striped"><thead><tr><th>Task</th><th>Best starting posture</th></tr></thead><tbody><tr><td>Rename, format, or apply a known pattern</td><td>Fast / low cost</td></tr><tr><td>Add a familiar endpoint with an analogous test</td><td>General purpose</td></tr><tr><td>Debug concurrency or multi-file behavior</td><td>Reasoning capable</td></tr><tr><td>Explore an unfamiliar repository</td><td>Auto or agentic, with bounded outputs</td></tr></tbody></table></div><p>Run one small task on two models and record whether the quality difference justifies the token difference.</p></section>
+<section class="subsection" id="thinking-tokens"><h3>4.2 Account for Thinking Tokens</h3><p>Reasoning models may spend hidden tokens before producing visible output. Include input, cached input, visible output, and reasoning output when comparing cost. A shorter answer is not automatically cheaper if the model used substantial internal reasoning.</p><div class="card-note"><strong>Selection rule</strong>Pay for deeper reasoning when it reduces rework; otherwise keep the task bounded and use the least expensive model that meets the acceptance criteria.</div></section></section>
+<section class="article" id="part5"><span class="part-badge">Exercise 5</span><h2>Practice Session Hygiene</h2><p>Long sessions accumulate intermediate states, abandoned approaches, and stale assumptions. More history can make a task less reliable even when the context limit has not been reached.</p>
+<section class="subsection" id="compact"><h3>3.1 Compact Stale History</h3><p>Build a short conversation by asking for a health endpoint, a users endpoint, validation, and a test. Inspect the window, then compact it:</p><pre><code>/context
+/compact Focus on the current API contract, files changed, open issues, and tests. Discard superseded implementation steps.
+/context</code></pre><p>Check whether the compacted summary preserves the current code state, decisions, constraints, and unresolved questions. If it does not, correct the summary before continuing.</p><div class="card-warning"><strong>Compaction is a lossy operation</strong>Never assume a summary is correct because it is short. Verify important names, paths, contracts, and acceptance criteria against the repository.</div></section>
+<section class="subsection" id="fresh-start"><h3>3.2 Start Fresh on Purpose</h3><p>Use <code>/clear</code> or restart the session when the task changes, the conversation contains contradictory attempts, or you return after a long break. Carry forward a concise handoff instead of the entire history:</p><pre><code>PROJECT STATE:
+- Current goal: add validation to POST /users
+- Relevant files: src/routes/users.js, test/users.test.js
+- Existing convention: errors use { error, code }
+- Failing test: rejects an empty email with the wrong status
+- Do not change: authentication middleware</code></pre><p>Compare a fresh session with a stale one. Note which session produces fewer corrections and less irrelevant discussion.</p></section></section>
+<section class="article" id="part6"><span class="part-badge">Exercise 6</span><h2>Select Better Inputs</h2><p>Relevant context beats complete context. Give the model the smallest set of sources that lets it make the next decision, then expand only when evidence shows a missing dependency.</p>
+<section class="subsection" id="files"><h3>4.1 Target Files and Symbols</h3><p>Compare a whole-file request with a symbol-level request:</p><pre><code>Review the entire repository and improve the delete behavior.
+
+Inspect the DELETE /items/:id handler in @src/app.js and its tests. Explain
+whether the 404 and 204 responses match the existing API conventions. Do not edit.</code></pre><p>Use references to point at the relevant file, symbol, test, or line range. Ask the model to cite the sources it used and to list what it did not inspect.</p><div class="card-tip"><strong>Explore, then focus</strong>For an unfamiliar area, first ask for candidate files and verified conventions. The implementation turn should receive that bounded artifact, not the entire exploratory transcript.</div></section>
+<section class="subsection" id="tools"><h3>4.2 Control Tool Output</h3><p>Tool output becomes context. Run noisy commands and then filtered equivalents:</p><pre><code>npm test
+npm test -- --reporter=dot
+rg "DELETE /items|status\(204\)|Not found" src test</code></pre><p>Prefer commands that return the smallest useful result. Use least-privilege tool access for one-off tasks and ask for summaries of logs, package lists, or generated files instead of pasting them wholesale.</p><div class="card-note"><strong>Think in artifacts</strong>A command is useful when its output changes the next decision. If it only confirms routine progress, keep a one-line status rather than sending the full transcript.</div></section></section>
+<section class="article" id="part7"><span class="part-badge">Exercise 7</span><h2>Compare MCP and CLI Tools</h2><p>Agents and integrations multiply context: tool definitions and returned artifacts may each add tokens. Prefer the simplest surface that can answer the question.</p>
+<section class="subsection" id="mcp"><h3>5.1 Compare MCP and CLI Tools</h3><p>Choose one repository task, such as finding all test files for an endpoint. Compare an MCP tool with a focused CLI command. Record tool-definition overhead, returned fields, latency, and whether the extra capability improved the result.</p><div class="table-wrap"><table class="table table-bordered table-striped"><thead><tr><th>Input source</th><th>Typical strength</th><th>Context risk</th></tr></thead><tbody><tr><td>Focused CLI</td><td>Small, composable output</td><td>Requires the right command and filters</td></tr><tr><td>MCP tool</td><td>Structured access and richer operations</td><td>Tool schemas and default fields add overhead</td></tr><tr><td>Browser or IDE state</td><td>Useful for interactive verification</td><td>Large hidden state for a small question</td></tr></tbody></table></div><p>Use the simplest surface that can answer the question. A richer tool is worthwhile when its structured result prevents multiple exploratory calls.</p></section>
+<section class="subsection" id="delegation"><h3>5.2 Bound Delegated Work</h3><p>Give an agent a narrow objective and a return contract:</p><pre><code>ROLE: Repository test investigator
+TASK: Find the tests that define the DELETE /items/:id contract.
+SCOPE: Search src/routes and test only. Do not edit files.
+RETURN: Verified file paths, relevant test names, expected statuses, and open questions.
+LIMIT: Do not summarize unrelated modules.</code></pre><p>Before passing the result to another agent, remove duplicated prose and preserve uncertainty. A small handoff is cheaper and easier to review than a second agent receiving the full first session.</p><div class="card-important"><strong>Delegation checkpoint</strong>Ask whether the delegated result is sufficient to make the next decision. If not, add one missing source; do not automatically widen the entire context.</div></section></section>
+<section class="article" id="part8"><span class="part-badge">Exercise 8</span><h2>Bound Agent Workflows</h2><p>Agent workflows multiply tokens across planning, tool calls, delegation, and returned artifacts. Make each boundary explicit so the next agent receives only what it needs.</p>
+<section class="subsection" id="agent-context"><h3>8.1 Understand Context Isolation</h3><p>Compare interactive mode, plan mode, and a delegated sub-agent. Record which instructions, files, tools, and prior results each participant receives. Do not assume that a child agent sees the parent session.</p></section>
+<section class="subsection" id="agent-delegation"><h3>8.2 Bound Delegated Work</h3><pre><code>ROLE: Repository test investigator
+TASK: Find tests that define the DELETE /items/:id contract.
+SCOPE: Search src/routes and test only. Do not edit files.
+RETURN: File paths, test names, expected statuses, and open questions.
+LIMIT: Do not summarize unrelated modules.</code></pre><p>Before passing the result onward, remove duplicated prose and preserve uncertainty. A small return contract is easier to review than a full transcript.</p></section></section>
+<section class="article" id="part9"><span class="part-badge">Exercise 9</span><h2>Write Information-Dense Prompts</h2><p>A dense prompt is not a long prompt. It puts the goal, verified context, constraints, acceptance criteria, and return format in an order that makes the next decision unambiguous.</p>
+<section class="subsection" id="dense-prompts"><h3>9.1 Replace Vague Requests</h3><p>Rewrite a request such as <em>Improve the users API</em> into a bounded task:</p><pre><code>GOAL: Reject POST /users when email is empty.
+CONTEXT: Follow the existing { error, code } response shape.
+FILES: Inspect src/routes/users.js and test/users.test.js.
+CONSTRAINTS: Do not change authentication or unrelated endpoints.
+ACCEPTANCE: Return HTTP 400 with code VALIDATION_ERROR and add a focused test.
+RETURN: Files changed, test command, and any unresolved question.</code></pre></section>
+<section class="subsection" id="prompt-patterns"><h3>9.2 Use References and Structure</h3><p>Point to analogous files and symbols instead of describing their contents from memory. Use headings or labeled fields for complex work, and ask the model to cite what it inspected and what it deliberately did not inspect.</p><div class="card-important"><strong>Checkpoint</strong>Remove any sentence that does not affect the implementation, validation, or decision. The goal is maximum signal per token.</div></section></section>
+<section class="article" id="part10"><span class="part-badge">Exercise 10</span><h2>Build Knowledge Graphs and Pre-Compiled Context</h2><p>Repeated exploration is a recurring context cost. Durable, high-value project knowledge lets the model start closer to the decision without rereading the whole repository.</p>
+<section class="subsection" id="architecture-map"><h3>10.1 Build an Architecture Map</h3><p>Replace repeated file discovery with compact relationships:</p><pre><code>## Where Things Live
+| Component | Path | Responsibility |
+|---|---|---|
+| Entry point | src/app.js | Route registration |
+| Middleware | src/middleware.js | Auth and validation |
+| Tests | tests/ | Jest and supertest |
+
+## Key Relationships
+- src/app.js -> src/middleware.js -> route handlers
+- tests/ mirrors the source structure</code></pre><p>Ask Copilot to create an <code>ARCHITECTURE_MAP.md</code> under 200 words, reference it from the instruction file, then compare the token usage for a question answered from the map with a fresh session that must search the source.</p></section>
+<section class="subsection" id="knowledge-graph-tools"><h3>10.2 Compare LLM-Wiki, Graphify, and LSP</h3><p>Use the right pre-compilation surface for the question:</p><div class="table-wrap"><table class="table table-bordered table-striped"><thead><tr><th>Tool or pattern</th><th>Best fit</th><th>What it provides</th></tr></thead><tbody><tr><td>LLM-wiki</td><td>External documentation</td><td>Interlinked summaries and a compact navigation index</td></tr><tr><td>Graphify</td><td>Broad codebase architecture</td><td>AST-derived modules, relationships, graph report, and cached snapshot</td></tr><tr><td>LSP</td><td>Live symbol navigation</td><td>Exact definitions, references, and type information with little noise</td></tr></tbody></table></div><p>Graphify and LLM-wiki are point-in-time summaries; LSP is live and precise. For Graphify, read <code>GRAPH_REPORT.md</code> before raw files and use a <code>preToolUse</code> hook to inject that reminder when the graph exists. Measure the same architecture question before and after the graph to see the token savings.</p><div class="card-tip"><strong>Rule of thumb</strong>Use Graphify for architecture, LLM-wiki for documentation, and LSP for per-symbol resolution.</div></section>
+<section class="subsection" id="instructions"><h3>6.1 Keep Instructions High-Value</h3><p>Create a small instruction file containing rules that are stable, specific, and useful on nearly every task:</p><pre><code># Project Instructions
+- Run `npm test` for focused verification.
+- Use the existing `{ error, code }` response shape.
+- Prefer small changes and cite files before editing.
+- Never include secrets or production customer data in examples.
+- Return concise summaries with tests run and unresolved questions.</code></pre><p>Ask Copilot to list which instructions it loaded, then remove any rule that does not change behavior. Instruction files are sent repeatedly, so a short high-signal file beats a project encyclopedia.</p></section>
+<section class="subsection" id="knowledge-graphs"><h3>6.2 Build a Knowledge Graph</h3><p>For a larger repository, record relationships rather than copying every file:</p><pre><code>MODULE: src/routes/items.js
+RESPONSIBILITY: HTTP handlers for item CRUD
+DEPENDS ON: src/services/items.js, src/validation/items.js
+TESTS: test/items.test.js
+CONTRACT: 404 { error, code: "ITEM_NOT_FOUND" }; delete success is 204
+OPEN QUESTION: authorization is enforced by middleware, not this module</code></pre><p>This kind of precompiled context can live in project documentation, a generated wiki, or a graph-backed retrieval system. Keep it current and link claims to source files so it remains verifiable.</p><div class="card-tip"><strong>Context architecture principle</strong>Use the context window for the decision at hand, durable files for stable knowledge, and tools for evidence that changes over time.</div></section></section>
+
+<section class="article" id="source-procedures"><span class="part-badge">Detailed Procedures</span><h2>Complete Lab Walkthrough</h2>
+<section class="subsection" id="detailed-measurement"><h3>1. Measure the Window and a Session</h3><p>Use an empty scratch repository so the first measurement is reproducible:</p><pre><code>mkdir context-lab &amp;&amp; cd context-lab
+git init
+copilot
+/model
+/context</code></pre><p>Select Auto as a cost-effective default, or a reasoning-capable model such as Claude Opus for the later comparison. Record system/tool overhead, messages, buffer, and remaining free space. Then ask the two questions separately and inspect <code>/context</code> after each:</p><pre><code>What is context engineering?
+How does it differ from prompt engineering?</code></pre><p>Clear the session, compare a verbose and concise request, then inspect usage and exit totals:</p><pre><code>/clear
+Explain the SOLID principles in software engineering. Include examples for each principle, best practices, common mistakes, and how they apply to modern JavaScript development.
+/context
+/clear
+List the 5 SOLID principles. One sentence each, no examples.
+/context
+/usage
+/exit</code></pre><p>The exit line reports input, output, cached, and reasoning totals. For deeper local analytics, <a href="https://github.com/getagentseal/codeburn" target="_blank" rel="noopener">Codeburn</a> can read CLI session data and report cost by model, tool, task, and project.</p></section>
+
+<section class="subsection" id="detailed-output"><h3>2. Reduce Output With a Durable Contract</h3><p>Compare an unconstrained implementation request with one that explicitly stops extra prose:</p><pre><code>Write a JavaScript function that validates an email address using a regex. Include error handling.
+
+Write a JavaScript function that validates an email address using a regex. Include error handling. Code only - no explanation, no examples, no notes.</code></pre><p>Then create a compact project instruction file and restart Copilot to load it:</p><pre><code>mkdir -p .github
+cat &gt; .github/copilot-instructions.md &lt;&lt; 'EOF'
+# Project Instructions
+## Response Style
+- Be extremely concise. No pleasantries or filler.
+- Return code only for code requests unless explanation is requested.
+- Do not restate the question or add notes, tips, examples, or unsolicited improvements.
+## Code Style
+- JavaScript (ES2022+); use const and arrow functions where appropriate.
+- Add inline comments only for genuinely complex logic.
+EOF
+copilot
+/instructions</code></pre><div class="card-warning"><strong>Instructions are recurring input</strong>Every instruction is sent on every turn. Keep only stable, high-impact rules; caching reduces repeated cost but does not make a long instruction file free.</div></section>
+
+<section class="subsection" id="detailed-models"><h3>3. Compare Models and Thinking Cost</h3><p>Create a small, pattern-following target and try the same task on a fast and a reasoning model:</p><pre><code>cat &gt; calculator.js &lt;&lt; 'EOF'
+function add(a, b) { return a + b; }
+function subtract(a, b) { return a - b; }
+function multiply(a, b) { return a * b; }
+function divide(a, b) {
+  if (b === 0) throw new Error('Division by zero');
+  return a / b;
+}
+module.exports = { add, subtract, multiply, divide };
+EOF
+cat calculator.js | copilot --model claude-haiku-4.5 --allow-tool='write' -p "Add a modulo function following the existing pattern. Code only."
+cat calculator.js | copilot --model claude-opus-4.6 --allow-tool='write' -p "Add a modulo function following the existing pattern. Code only."</code></pre><p>Reset the file and repeat with a multi-requirement refactor: a chaining class, finite-number validation, a ten-operation history, and CommonJS plus ESM support. The cheaper model is normally sufficient for the first task; deeper reasoning can justify cost for the second.</p><p>For hidden reasoning cost, inspect a concurrency bug with both models:</p><pre><code>cat &gt; scheduler.js &lt;&lt; 'EOF'
+const tasks = [];
+let running = false;
+async function addTask(fn, priority = 0) {
+  tasks.push({ fn, priority }); tasks.sort((a, b) =&gt; b.priority - a.priority);
+  if (!running) await drain();
+}
+async function drain() {
+  running = true;
+  while (tasks.length &gt; 0) await tasks.shift().fn();
+  running = false;
+}
+module.exports = { addTask };
+EOF
+cat scheduler.js | copilot --model claude-haiku-4.5 -p "Identify all race conditions and concurrency bugs. Be thorough."
+cat scheduler.js | copilot --model claude-opus-4.6 -p "Identify all race conditions and concurrency bugs. Be thorough."</code></pre><p>Read the CLI summary as <code>input</code>, visible <code>output</code>, <code>cached</code>, and <code>reasoning</code>. Thinking tokens are billed output even though they are not displayed. Use them for subtle debugging, security, or trade-off analysis, not boilerplate or formatting. You can use <code>/model</code> mid-session: start on Auto or Haiku, switch to Opus or GPT-5.5 for one hard turn, then switch back for a short summary.</p></section>
+
+<section class="subsection" id="detailed-sessions"><h3>4. Maintain Session Hygiene</h3><p>Build a session by iteratively adding <code>GET /health</code>, <code>POST /users</code>, Zod validation, <code>GET /users</code>, and <code>DELETE /users/:id</code>. Inspect the accumulated history, compact it, then add a products endpoint and compact with a focus hint:</p><pre><code>/context
+/compact
+/context
+/compact Focus on the current Express server state and API endpoints. Discard the step-by-step build process.</code></pre><p>Review the returned session checkpoint and verify names, paths, contracts, and open questions before using the summary. Compaction is lossy. Quality can decline well before the hard context limit, particularly once a session is dominated by stale intermediate states.</p><p>Before a break, compact the session. After a task switch or a long absence, use <code>/clear</code> or start a new session and provide a compact handoff:</p><pre><code>PROJECT STATE:
+- Current goal: add validation to POST /users
+- Relevant files: src/routes/users.js, test/users.test.js
+- Existing convention: errors use { error, code }
+- Failing test: empty email returns the wrong status
+- Do not change: authentication middleware</code></pre><p>Focused bursts preserve prompt-cache hits. Returning to an old session after cache expiry can force the entire bloated history to be reprocessed as uncached input. Copilot CLI session recall and Agentic Memory can help retrieve durable history without keeping every old turn in the active window.</p></section>
+
+<section class="subsection" id="detailed-inputs"><h3>5. Build the Input Experiment and Filter Tool Output</h3><p>Create the small API project used by the input exercises:</p><pre><code>mkdir -p src tests
+cat &gt; src/app.js &lt;&lt; 'EOF'
+const express = require('express');
+const app = express(); app.use(express.json());
+const items = []; let nextId = 1;
+app.get('/items', (req, res) =&gt; res.json(items));
+app.post('/items', (req, res) =&gt; { const item = { id: nextId++, ...req.body, createdAt: new Date() }; items.push(item); res.status(201).json(item); });
+app.get('/items/:id', (req, res) =&gt; { const item = items.find(i =&gt; i.id === parseInt(req.params.id)); if (!item) return res.status(404).json({ error: 'Not found' }); res.json(item); });
+app.delete('/items/:id', (req, res) =&gt; { const index = items.findIndex(i =&gt; i.id === parseInt(req.params.id)); if (index === -1) return res.status(404).json({ error: 'Not found' }); items.splice(index, 1); res.status(204).send(); });
+module.exports = app;
+EOF
+cat &gt; src/server.js &lt;&lt; 'EOF'
+const app = require('./app');
+app.listen(process.env.PORT || 3000);
+EOF
+cat &gt; package.json &lt;&lt; 'EOF'
+{"scripts":{"start":"node src/server.js","test":"vitest run --reporter=verbose"},"dependencies":{"express":"^5.2.1"},"devDependencies":{"vitest":"^4.1.5","supertest":"^7.2.2"}}
+EOF
+npm install</code></pre><p>Compare <code>Look at @src/app.js and tell me if there are bugs.</code> with <code>Look at the DELETE /items/:id handler in @src/app.js. Is the 404 handling correct?</code>. A targeted question chiefly reduces output; a file mention can still load the whole file. For true input savings, use cheap discovery first, then ask the stronger model to modify a named function with a stable signature.</p><pre><code>npm test 2&gt;&amp;1 | tail -20
+rg "DELETE /items|status\(204\)|Not found" src test
+copilot --allow-tool='write(src/app.js)' -p "Add a PUT /items/:id endpoint following the POST and DELETE patterns. Code only."</code></pre><p>Tool output is context. Return only the failing test name and assertion rather than a full runner transcript. For broad analysis, use the think-in-code pattern: write and run a small script that returns only filenames or aggregate statistics instead of reading every raw file. <a href="https://github.com/rtk-ai/rtk" target="_blank" rel="noopener">RTK</a> can automate CLI-output filtering.</p></section>
+
+<section class="subsection" id="detailed-mcp"><h3>6. Measure MCP and Agent Multipliers</h3><p>MCP servers add tool definitions to system context and often return rich JSON, HTML, or browser snapshots. Measure the overhead with <code>/context</code>, inspect servers with <code>/mcp show</code>, and temporarily disable unused servers with <code>/mcp disable</code>. Compare the same result through GitHub MCP and the CLI:</p><pre><code>/clear
+Use the GitHub MCP tool to list the latest 5 open issues in this repository.
+/context
+/clear
+gh issue list --limit 5
+/context</code></pre><p>Prefer <code>gh</code>, <code>curl</code>, <code>psql</code>, or <code>mysql</code> when they can produce the required compact result. MCP is worthwhile when structured capabilities prevent several exploratory calls, or when browser interaction is actually necessary.</p><p>Plan mode, sub-agents, parallel agents, and cloud delegation each use independent or growing context. Use direct interactive prompts for small tasks. Reserve plans for dependent multi-step work, and use a bounded delegation contract that states role, scope, allowed paths, return fields, and non-goals.</p></section>
+
+<section class="subsection" id="detailed-dense-prompts"><h3>7. Make Prompts Dense, Not Long</h3><p>Replace open-ended planning with a concrete implementation contract:</p><pre><code>GOAL: Add GET /products filtering in src/app.js.
+CONTEXT: Follow the /items response and error conventions.
+REQUIREMENTS: ?status=active exact match; ?q=term name substring; ?sort=createdAt&amp;order=desc.
+CONSTRAINTS: Return 400 for invalid sort fields. Do not change other endpoints.
+RETURN: Code only.</code></pre><p>For multi-part work, use labeled requirements and constraints. Point to an analogous implementation instead of retelling it. Remove sentences that do not affect the decision, implementation, acceptance criterion, or verification.</p></section>
+
+<section class="subsection" id="detailed-knowledge"><h3>8. Precompile Knowledge With Maps, Wikis, and Graphs</h3><p>Create <code>ARCHITECTURE_MAP.md</code> under 200 words with a <em>Where Things Live</em> table and <em>Key Relationships</em> list, then link it from project instructions:</p><pre><code>## Architecture Map
+Read ARCHITECTURE_MAP.md before exploring src/.</code></pre><p>Clear the session and test whether Copilot can answer a structural question from the map without searching files. Then remove the map and repeat to compare usage. Structured facts are cheaper to navigate than rediscovering raw source.</p><p>For external documentation, install and initialize the <a href="https://github.com/ndjordjevic/pin-llm-wiki" target="_blank" rel="noopener">pin-llm-wiki</a> skill, use <code>/pin-llm-wiki init</code>, ingest focused source URLs, and compare the same question with and without the compiled wiki. For broad codebase architecture, install Graphify, generate a graph, and have Copilot read <code>graphify-out/GRAPH_REPORT.md</code> before raw exploration:</p><pre><code>uv tool install graphifyy
+graphify install --platform copilot
+copilot
+/graphify .</code></pre><p>Use Graphify for an architecture snapshot, LLM-wiki for external documentation, and LSP for current definition, reference, and type lookups. Graphs are a point-in-time aid, not a substitute for source verification or tests.</p></section>
+</section>
+<section class="article" id="guardrails"><h2>Safety and Privacy Guardrails</h2><ul class="checklist"><li>Use synthetic or minimized data; never paste credentials, tokens, private keys, or unnecessary personal information.</li><li>Apply least privilege to tools and delegation, especially when a task can modify files or execute commands.</li><li>Ask the model to cite sources, state assumptions, and flag uncertainty instead of silently inventing context.</li><li>Review generated code for authorization, validation, logging, external calls, and data exposure.</li><li>Do not treat compaction, retrieval, an instruction file, or a knowledge graph as a substitute for tests and human review.</li></ul></section>
+<section class="article" id="recap"><h2>Recap</h2><ol><li>Measure the full context envelope, not only the visible prompt.</li><li>Remove stale history and start fresh when the task or assumptions change.</li><li>Prefer targeted files, symbols, filtered tool output, and bounded handoffs.</li><li>Match model and tool capability to the reasoning required.</li><li>Precompile stable project knowledge, but keep it concise and verifiable.</li></ol><div class="card-note"><strong>Takeaway</strong>The best context is not the most context. It is the smallest, freshest, most relevant set of evidence that lets the model produce a result you can verify.</div></section>
+<section class="article" id="resources"><h2>Additional Resources</h2><ul><li><a href="../../../InaNutshell/Context%20Engineering%20-%20In%20a%20Nutshell.html" target="_blank">Context Engineering - In a Nutshell</a></li><li><a href="../guides/context-engineering-guide.html" target="_blank">Context Engineering Guide</a></li><li><a href="../knowledge-checks/context-engineering-knowledge-check.html" target="_blank">Context Engineering Knowledge Check</a></li><li><a href="https://docs.github.com/en/copilot" target="_blank" rel="noopener">GitHub Copilot documentation ↗</a></li></ul></section>
+</main></div></div>
+<div class="offcanvas offcanvas-start" tabindex="-1" id="sidebarOffcanvas" aria-labelledby="sidebarOffcanvasLabel"><div class="offcanvas-header"><h5 class="offcanvas-title" id="sidebarOffcanvasLabel">Contents</h5><button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button></div><div class="offcanvas-body p-0" id="tocMobileHost"></div></div>
+<button class="btn btn-primary btn-scroll-top" id="scrollTop" aria-label="Scroll to top">&uarr;</button>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script><script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script><script>
+  mermaid.initialize({startOnLoad:true,theme:"neutral",securityLevel:"loose"});
+  document.getElementById('tocMobileHost').innerHTML=document.getElementById('toc').outerHTML;
+  document.getElementById('scrollTop').addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+  const sections=[...document.querySelectorAll('section.article,section.subsection')];const links=[...document.querySelectorAll('#toc a')];const setActive=id=>links.forEach(link=>link.classList.toggle('active',link.getAttribute('href')==='#'+id));
+  const observer=new IntersectionObserver(entries=>{const visible=entries.filter(entry=>entry.isIntersecting).sort((a,b)=>a.boundingClientRect.top-b.boundingClientRect.top);if(visible.length)setActive(visible[0].target.id)},{rootMargin:'-80px 0px -70% 0px'});sections.forEach(section=>observer.observe(section));
+  document.getElementById('tocMobileHost').addEventListener('click',event=>{if(event.target.tagName==='A'){const offcanvas=bootstrap.Offcanvas.getInstance(document.getElementById('sidebarOffcanvas'));if(offcanvas)offcanvas.hide()}});
+</script>
+</body>
+</html>

@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="One-page rollout roadmap for Spec-Driven Development and SDD Agent Squad adoption.">
+  <title>Spec-Driven Development Rollout</title>
+  <style>
+    :root {
+      --navy: #071a38;
+      --navy-2: #0e2d5c;
+      --blue: #1359b5;
+      --cyan: #0d9db2;
+      --teal: #118b83;
+      --purple: #6740a8;
+      --orange: #e87512;
+      --ink: #203047;
+      --muted: #617086;
+      --line: #d8e1eb;
+      --paper: #f4f7fa;
+      --white: #ffffff;
+      --shadow: 0 12px 28px rgba(7, 26, 56, .09);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: "Segoe UI", "Segoe UI", sans-serif;
+      line-height: 1.45;
+    }
+    a { color: inherit; }
+    .page { max-width: 1440px; margin: 0 auto; padding: 28px; }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      background: var(--navy);
+      color: var(--white);
+      padding: 42px 46px 38px;
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      width: 380px;
+      height: 380px;
+      border: 52px solid rgba(13, 157, 178, .18);
+      border-radius: 50%;
+      right: -120px;
+      top: -160px;
+    }
+    .eyebrow {
+      position: relative;
+      z-index: 1;
+      color: #6ee2df;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 {
+      position: relative;
+      z-index: 1;
+      max-width: 850px;
+      margin-bottom: 10px;
+      font-family: "Segoe UI", Georgia, "Times New Roman", serif;
+      font-size: clamp(34px, 5vw, 64px);
+      line-height: 1.02;
+      letter-spacing: -.8px;
+      font-weight: 700;
+    }
+    .hero-copy {
+      position: relative;
+      z-index: 1;
+      max-width: 720px;
+      color: #c8d7ec;
+      font-size: 16px;
+      margin-bottom: 28px;
+      font-family: "Segoe UI Semibold";
+    }
+    .hero-meta {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .hero-meta span {
+      padding: 8px 14px;
+      border: 1px solid rgba(255,255,255,.2);
+      border-radius: 999px;
+      color: #eaf3ff;
+      background: rgba(255,255,255,.08);
+      font-size: 12px;
+      font-weight: 700;
+      font-family: "Segoe UI Semibold";
+    }
+
+    .section { margin-top: 30px; }
+    .section-heading {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+    .section-heading h2 {
+      margin: 0;
+      color: var(--navy-2);
+      font-size: 21px;
+      letter-spacing: .2px;
+    }
+    .section-heading::after {
+      content: "";
+      height: 2px;
+      flex: 1;
+      background: linear-gradient(90deg, var(--line), transparent);
+    }
+
+    .phase-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+    .phase {
+      position: relative;
+      overflow: hidden;
+      min-height: 285px;
+      padding: 20px 19px 18px;
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-top: 7px solid var(--blue);
+      border-radius: 13px;
+      box-shadow: 0 5px 16px rgba(7, 26, 56, .05);
+      display: flex;
+      flex-direction: column;
+    }
+    .phase:nth-child(2) { border-top-color: var(--cyan); }
+    .phase:nth-child(3) { border-top-color: var(--purple); }
+    .phase:nth-child(4) { border-top-color: var(--orange); }
+    .phase-number {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      height: 30px;
+    }
+    .phase h3 {
+      margin: 8px 0 3px;
+      color: var(--navy-2);
+      font-size: 18px;
+      line-height: 1.15;
+    }
+    .phase-date {
+      color: var(--blue);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .5px;
+      text-transform: uppercase;
+      margin-bottom: 15px;
+    }
+    .phase:nth-child(2) .phase-date { color: var(--cyan); }
+    .phase:nth-child(3) .phase-date { color: var(--purple); }
+    .phase:nth-child(4) .phase-date { color: var(--orange); }
+    ul { margin: 0; padding-left: 17px; }
+    li { margin-bottom: 7px; color: var(--muted); font-size: 12px; }
+    .milestone {
+      margin-top: auto;
+      margin-right: 0;
+      margin-bottom: 0;
+      margin-left: 0;
+      padding-top: 11px;
+      border-top: 1px solid var(--line);
+      color: var(--ink);
+      font-size: 11px;
+      font-weight: 800;
+    }
+    .milestone strong { color: var(--blue); }
+    .phase:nth-child(2) .milestone strong { color: var(--cyan); }
+    .phase:nth-child(3) .milestone strong { color: var(--purple); }
+    .phase:nth-child(4) .milestone strong { color: var(--orange); }
+    .phase-link {
+      display: inline-block;
+      margin-top: 10px;
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 800;
+      text-decoration: none;
+      padding-top: 11px;
+      border-top: 1px solid var(--line);
+    }
+    .phase-link:hover { text-decoration: underline; }
+    .phase:nth-child(2) .phase-link { color: var(--cyan); }
+    .phase:nth-child(3) .phase-link { color: var(--purple); }
+    .phase:nth-child(4) .phase-link { color: var(--orange); }
+    .phase-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+      padding-top: 11px;
+      border-top: 1px solid var(--line);
+    }
+    .phase-actions .phase-link {
+      margin-top: 0;
+      padding-top: 0;
+      border-top: 0;
+    }
+    .zoom-link {
+      display: inline-grid;
+      width: 20px;
+      height: 20px;
+      flex: 0 0 20px;
+      place-items: center;
+      border: 1px solid currentColor;
+      border-radius: 50%;
+      background: transparent;
+      color: var(--blue);
+      cursor: pointer;
+      font-size: 12px;
+      line-height: 1;
+      transition: background .15s ease, color .15s ease, transform .15s ease;
+    }
+    .zoom-link:hover,
+    .zoom-link:focus-visible {
+      background: currentColor;
+      color: var(--white);
+      transform: scale(1.08);
+      outline: none;
+    }
+    .phase:nth-child(2) .zoom-link { color: var(--cyan); }
+    .phase:nth-child(3) .zoom-link { color: var(--purple); }
+    .phase:nth-child(4) .zoom-link { color: var(--orange); }
+    .week-dialog {
+      width: min(1120px, 94vw);
+      height: min(860px, 90vh);
+      padding: 0;
+      border: 0;
+      border-radius: 16px;
+      background: var(--white);
+      box-shadow: 0 24px 80px rgba(7, 26, 56, .32);
+    }
+    .week-dialog::backdrop { background: rgba(7, 26, 56, .72); -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); }
+    .dialog-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      min-height: 58px;
+      padding: 12px 16px 12px 20px;
+      background: var(--navy-2);
+      color: var(--white);
+    }
+    .dialog-title { margin: 0; font-size: 15px; }
+    .dialog-close {
+      display: inline-grid;
+      width: 34px;
+      height: 34px;
+      place-items: center;
+      border: 1px solid rgba(255,255,255,.45);
+      border-radius: 50%;
+      background: transparent;
+      color: var(--white);
+      cursor: pointer;
+      font-size: 22px;
+      line-height: 1;
+    }
+    .dialog-close:hover, .dialog-close:focus-visible { background: rgba(255,255,255,.16); outline: none; }
+    .week-frame { display: block; width: 100%; height: calc(100% - 58px); border: 0; background: var(--paper); }
+
+    .outcomes {
+      display: grid;
+      grid-template-columns: 1.15fr repeat(4, 1fr);
+      align-items: stretch;
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      overflow: hidden;
+      box-shadow: 0 5px 16px rgba(7, 26, 56, .05);
+    }
+    .outcome {
+      padding: 16px 15px;
+      border-right: 1px solid var(--line);
+      text-align: center;
+    }
+    .outcome:last-child { border-right: 0; }
+    .outcome-label {
+      color: var(--navy-2);
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .6px;
+    }
+    .outcome-value {
+      display: block;
+      margin-top: 5px;
+      color: var(--blue);
+      font-size: 13px;
+      font-weight: 800;
+    }
+    .outcome.organization-target { background: var(--navy-2); }
+    .outcome.organization-target .outcome-label { color: var(--white); }
+    .outcome.organization-target .outcome-value { color: lightgreen; font-weight: 700; }
+    .outcome:first-child { text-align: left; }
+    
+    .detail-grid { display: grid; grid-template-columns: 1.55fr .9fr; gap: 18px; }
+    .panel {
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      box-shadow: 0 5px 16px rgba(7, 26, 56, .05);
+      overflow: hidden;
+    }
+    .panel-title {
+      padding: 14px 17px;
+      background: var(--navy-2);
+      color: var(--white);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .7px;
+      text-transform: uppercase;
+    }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 11px; }
+    th {
+      padding: 10px 11px;
+      background: #eef4fb;
+      color: var(--navy-2);
+      font-size: 10px;
+      letter-spacing: .45px;
+      text-align: left;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    td { padding: 10px 11px; color: var(--muted); vertical-align: top; border-top: 1px solid var(--line); }
+    td:first-child { color: var(--navy-2); font-weight: 900; white-space: nowrap; }
+    td strong { color: var(--ink); }
+    .metric-table td:first-child { white-space: normal; width: 33%; }
+    .target { color: var(--teal); font-weight: 900; white-space: nowrap; }
+
+    .principles {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+    .principle {
+      padding: 18px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: var(--white);
+    }
+    .principle:nth-child(1) { border-left: 5px solid var(--blue); }
+    .principle:nth-child(2) { border-left: 5px solid var(--teal); }
+    .principle:nth-child(3) { border-left: 5px solid var(--orange); }
+    .principle h3 { margin-bottom: 6px; color: var(--navy-2); font-size: 15px; }
+    .principle p { margin-bottom: 0; color: var(--muted); font-size: 12px; }
+
+    footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      margin-top: 30px;
+      padding: 18px 2px 5px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 11px;
+    }
+    footer strong { color: var(--navy-2); }
+
+    @media (max-width: 1050px) {
+      .phase-grid { grid-template-columns: repeat(2, 1fr); }
+      .outcomes { grid-template-columns: repeat(2, 1fr); }
+      .outcome:first-child { grid-column: 1 / -1; }
+      .outcome:nth-child(2) { border-left: 0; }
+      .detail-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 650px) {
+      .page { padding: 14px; }
+      .hero { padding: 30px 24px; border-radius: 14px; }
+      .hero-copy { font-size: 15px; }
+      .phase-grid, .principles { grid-template-columns: 1fr; }
+      .phase { min-height: 0; padding-bottom: 18px; }
+      .outcomes { grid-template-columns: 1fr 1fr; }
+      .outcome { border-bottom: 1px solid var(--line); }
+      .outcome:nth-last-child(-n+2) { border-bottom: 0; }
+      footer { flex-direction: column; }
+    }
+    @media print {
+      @page { size: A4 landscape; margin: 10mm; }
+      body { background: #fff; }
+      .page { max-width: none; padding: 0; }
+      .hero, .panel, .phase, .outcomes, .principle { box-shadow: none; }
+      .hero { padding: 24px 30px; }
+      .section { margin-top: 16px; }
+      .phase { min-height: 235px; }
+      footer { margin-top: 15px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="hero">
+      <div class="eyebrow">GitHub Copilot, AI-Assisted Engineering and Spec-Driven Development</div>
+      <h1>Spec-Driven Development Rollout</h1>
+      <p class="hero-copy">Establish Spec-Driven Development using Agent Squad as the standard engineering practice across the organization.</p>
+      <div class="hero-meta">
+        <span>4-week adoption program</span>
+        <span>Audience: development teams, product owners and delivery partners</span>
+      </div>
+    </header>
+
+    <section class="section" aria-labelledby="phases-heading">
+      <div class="section-heading"><h2 id="phases-heading">Rollout at a glance</h2></div>
+      <div class="phase-grid">
+        <article class="phase">
+          <div class="phase-number">Week 1 / Foundation and Standards</div>
+          <h3>Set the standard</h3>
+          <div class="phase-date">Week 1 (July 27 - July 31)</div>
+          <ul>
+            <li>Finalize SDD process and expectations.</li>
+            <li>Define when SDD is required and document exceptions.</li>
+            <li>Approve requirements, specifications, plans, and task templates.</li>
+            <li>Define traceability and DoR / DoD expectations.</li>
+            <li>Launch support channels and office hours.</li>
+          </ul>
+          <div class="milestone"><strong>Milestone:</strong> Standards, templates, and support model approved.</div>
+          <div class="phase-actions">
+            <button class="zoom-link" type="button" data-week="1" data-title="Week 1: Foundations and Standards" data-src="Foundations &amp; Standards/week-1-foundations-and-standards.html" aria-label="Zoom Week 1 guide" title="Zoom Week 1 guide">⌕</button>
+            <a class="phase-link" href="Foundations &amp; Standards/week-1-foundations-and-standards.html" target="_blank">Open Week 1 guide ↗</a>
+          </div>
+        </article>
+        <article class="phase">
+          <div class="phase-number">Week 2 / Fundamentals and Enablement</div>
+          <h3>Build the foundation</h3>
+          <div class="phase-date">Week 2 (August 3 - August 7)</div>
+          <ul>
+            <li>Deepen Fundamentals, responsible use, and Copilot mental models.</li>
+            <li>Practice AI-Assisted Engineering, prompt engineering, and context management.</li>
+            <li>Explore Copilot modes, agents, tools, and review checkpoints.</li>
+            <li>Introduce SDD concepts and prepare the selected practice story.</li>
+            <li>Validate repository, access, and tool readiness with support available.</li>
+          </ul>
+          <div class="milestone"><strong>Milestone:</strong> Teams understand the fundamentals, can use Copilot responsibly.</div>
+          <div class="phase-actions">
+            <button class="zoom-link" type="button" data-week="2" data-title="Week 2: Fundamentals and enablement" data-src="Training &amp; Enablement/week-2-training-and-enablement.html" aria-label="Zoom Week 2 guide" title="Zoom Week 2 guide">⌕</button>
+            <a class="phase-link" href="Fundamentals &amp; Enablement/week-2-training-and-enablement.html" target="_blank">Open Week 2 guide ↗</a>
+          </div>
+        </article>
+        <article class="phase">
+          <div class="phase-number">Week 3 / GitHub Spec Kit and Agent Squad</div>
+          <h3>Explore the delivery path</h3>
+          <div class="phase-date">Week 3 (August 10 - August 14)</div>
+          <ul>
+            <li>Spend one to two focused days learning the GitHub Spec Kit stages.</li>
+            <li>Connect the Spec Kit stages to the team's SDD workflow.</li>
+            <li>Introduce SDD - Agent Squad roles, responsibilities, and handoffs.</li>
+            <li>Use the remaining time for Agent Squad examples, scenarios, and questions.</li>
+            <li>Capture a reusable specification, plan, task path, and Agent Squad handoff checklist.</li>
+          </ul>
+          <div class="milestone"><strong>Milestone:</strong> Teams complete a GitHub Spec Kit walkthrough, focused on the Agent Squad.</div>
+          <div class="phase-actions">
+            <button class="zoom-link" type="button" data-week="3" data-title="Week 3: GitHub Spec Kit and Agent Squad" data-src="Developer Adoption/week-3-developer-adoption.html" aria-label="Zoom Week 3 guide" title="Zoom Week 3 guide">⌕</button>
+            <a class="phase-link" href="Developer Adoption/week-3-developer-adoption.html" target="_blank">Open Week 3 guide ↗</a>
+          </div>
+        </article>
+        <article class="phase">
+          <div class="phase-number">Week 4 / Team Adoption & Operationalization</div>
+          <h3>Make it routine</h3>
+          <div class="phase-date">Week 4 (August 17 - August 28)</div>
+          <ul>
+            <li>Integrate SDD into backlog refinement and sprint planning.</li>
+            <li>Apply it to reviews, testing, and delivery ceremonies.</li>
+            <li>Validate end-to-end traceability.</li>
+            <li>Capture lessons learned and team feedback.</li>
+            <li>Establish ongoing adoption reporting.</li>
+          </ul>
+          <div class="milestone"><strong>Milestone:</strong> SDD incorporated into normal team delivery.</div>
+          <div class="phase-actions">
+            <button class="zoom-link" type="button" data-week="4" data-title="Week 4: Team Adoption and Operationalization" data-src="Team Adoption &amp; Operationalization/week-4-team-adoption-and-operationalization.html" aria-label="Zoom Week 4 guide" title="Zoom Week 4 guide">⌕</button>
+            <a class="phase-link" href="Team Adoption &amp; Operationalization/week-4-team-adoption-and-operationalization.html" target="_blank">Open Week 4 guide ↗</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="outcomes-heading">
+      <div class="section-heading"><h2 id="outcomes-heading">Outcomes by End of the Program</h2></div>
+      <div class="outcomes">
+        <div class="outcome organization-target"><span class="outcome-label">Organization target</span><span class="outcome-value">Consistent, traceable AI-assisted delivery</span></div>
+        <div class="outcome"><span class="outcome-label">Training</span><span class="outcome-value">100% of teams trained</span></div>
+        <div class="outcome"><span class="outcome-label">Readiness</span><span class="outcome-value">100% configured</span></div>
+        <div class="outcome"><span class="outcome-label">Adoption</span><span class="outcome-value">One SDD story per developer</span></div>
+        <div class="outcome"><span class="outcome-label">Operations</span><span class="outcome-value">Reporting and support active</span></div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="plan-heading">
+      <div class="section-heading"><h2 id="plan-heading">Detailed project plan</h2></div>
+      <div class="detail-grid">
+        <div class="panel">
+          <div class="panel-title">Workstreams, owners, and deliverables</div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Week</th><th>Focus</th><th>Key activities</th><th>Deliverables</th><th>Success criteria</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td><strong>Foundation</strong></td><td>Finalize standards, exception criteria, templates, and support model.</td><td>SDD standard, templates, exception process, support channels.</td><td>Standards approved and ready to publish.</td></tr>
+                <tr><td>2</td><td><strong>Fundamentals and enablement</strong></td><td>Deepen Fundamentals, AI-Assisted Engineering, Copilot Agents, and SDD concepts; validate access and prepare the practice story.</td><td>Learning notes, prompt patterns, agent review checklist, prepared story, readiness checklist.</td><td>Teams understand the foundations and are ready for focused Spec Kit practice.</td></tr>
+                <tr><td>3</td><td><strong>GitHub Spec Kit and Agent Squad</strong></td><td>Spend one to two days on the GitHub Spec Kit stages, then introduce Agent Squad roles, handoffs, examples, and team questions.</td><td>Spec Kit walkthrough, specification, plan, task path, Agent Squad handoff checklist, open questions.</td><td>Teams understand the Agent Squad model and are ready for Week 4 operationalization.</td></tr>
+                <tr><td>4</td><td><strong>Operationalize</strong></td><td>Embed SDD in ceremonies, verify traceability, and establish reporting.</td><td>Team playbook, reporting dashboard, lessons learned, ownership model.</td><td>SDD becomes part of normal delivery.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-title">Tracking metrics</div>
+          <div class="table-wrap">
+            <table class="metric-table">
+              <thead><tr><th>Category</th><th>Metric</th><th>Target</th></tr></thead>
+              <tbody>
+                <tr><td>Training</td><td>Teams trained</td><td class="target">100%</td></tr>
+                <tr><td>Training</td><td>Developers trained</td><td class="target">100%</td></tr>
+                <tr><td>Readiness</td><td>Repositories configured</td><td class="target">100%</td></tr>
+                <tr><td>Adoption</td><td>Developers completing first SDD story</td><td class="target">100%</td></tr>
+                <tr><td>Adoption</td><td>Teams applying SDD to production work</td><td class="target">100%</td></tr>
+                <tr><td>Quality</td><td>Coverage baseline captured</td><td class="target">100% of teams</td></tr>
+                <tr><td>Governance</td><td>DoR, DoD, PR, and testing expectations</td><td class="target">Complete</td></tr>
+                <tr><td>Support</td><td>Office hours and Teams channel active</td><td class="target">Complete</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="principles-heading">
+      <div class="section-heading"><h2 id="principles-heading">What changes for teams</h2></div>
+      <div class="principles">
+        <article class="principle"><h3>From prompt to process</h3><p>Copilot and agents support a defined engineering workflow with clear intent, context, constraints, and review points.</p></article>
+        <article class="principle"><h3>From output to evidence</h3><p>Requirements, plans, tasks, code, tests, and reviews remain connected so teams can explain how work was produced.</p></article>
+        <article class="principle"><h3>From experiment to operating model</h3><p>SDD - Agent Squad becomes a repeatable team practice with ownership, coaching, governance, and measurable adoption.</p></article>
+      </div>
+    </section>
+
+    <footer>
+      <span><strong>Program:</strong> GitHub Copilot and Spec-Driven Development</span>
+      <span><strong>Owners:</strong> Engineering Enablement and participating team leads</span>
+    </footer>
+  </main>
+  <dialog class="week-dialog" id="week-dialog" aria-labelledby="week-dialog-title">
+    <div class="dialog-header">
+      <h2 class="dialog-title" id="week-dialog-title">Week guide preview</h2>
+      <button class="dialog-close" type="button" id="week-dialog-close" aria-label="Close week guide preview" title="Close preview">×</button>
+    </div>
+    <iframe class="week-frame" id="week-frame" title="Selected week guide preview"></iframe>
+  </dialog>
+  <script>
+    const weekDialog = document.getElementById('week-dialog');
+    const weekFrame = document.getElementById('week-frame');
+    const weekDialogTitle = document.getElementById('week-dialog-title');
+    let lastZoomTrigger;
+    const closeWeekDialog = () => {
+      weekDialog.close();
+      weekFrame.removeAttribute('src');
+      lastZoomTrigger?.focus();
+    };
+
+    document.querySelectorAll('.zoom-link').forEach((button) => {
+      button.addEventListener('click', () => {
+        lastZoomTrigger = button;
+        weekDialogTitle.textContent = button.dataset.title;
+        weekFrame.src = button.dataset.src;
+        weekFrame.title = `${button.dataset.title} preview`;
+        weekDialog.showModal();
+      });
+    });
+
+    document.getElementById('week-dialog-close').addEventListener('click', closeWeekDialog);
+    weekDialog.addEventListener('click', (event) => {
+      if (event.target === weekDialog) closeWeekDialog();
+    });
+    weekDialog.addEventListener('close', () => weekFrame.removeAttribute('src'));
+  </script>
+</body>
+</html>

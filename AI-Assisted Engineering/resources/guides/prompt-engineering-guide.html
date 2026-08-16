@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="A practical guide to prompt engineering for GitHub Copilot and AI-assisted development.">
+<title>Prompt Engineering Field Guide</title>
+<style>
+  :root {
+    --ink: #17212b;
+    --muted: #5f6f7d;
+    --paper: #f4f0e7;
+    --paper-deep: #e8dfd1;
+    --white: #fffdf8;
+    --navy: #102a43;
+    --blue: #1769aa;
+    --cyan: #0f9da8;
+    --coral: #e26d5a;
+    --gold: #d9a441;
+    --line: #d6cdbf;
+    --display: Georgia, 'Times New Roman', serif;
+    --body: 'Trebuchet MS', 'Segoe UI', sans-serif;
+    --mono: 'Cascadia Code', Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--body); line-height: 1.6; }
+  a { color: inherit; }
+  .shell { display: grid; grid-template-columns: 260px minmax(0, 1fr); min-height: 100vh; }
+  .rail { position: sticky; top: 0; height: 100vh; overflow-y: auto; padding: 28px 20px; background: var(--navy); color: #d9e8f2; }
+  .rail-mark { color: #7ed6d1; font-size: 11px; font-weight: 800; letter-spacing: 1.8px; text-transform: uppercase; }
+  .rail h2 { margin: 8px 0 24px; color: #fffdf8; font: 700 25px/1.05 var(--display); }
+  .rail-label { margin: 25px 0 8px; color: #88a7ba; font-size: 10px; font-weight: 800; letter-spacing: 1.4px; text-transform: uppercase; }
+  .rail a { display: block; padding: 7px 9px; border-left: 2px solid transparent; color: #c4d6e0; font-size: 12px; text-decoration: none; }
+  .rail a:hover, .rail a:focus { border-left-color: #7ed6d1; background: rgba(255,255,255,.06); color: #fff; }
+  .rail-footer { margin-top: 30px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,.14); color: #88a7ba; font-size: 11px; }
+  main { min-width: 0; }
+  .content { width: min(1120px, calc(100% - 64px)); margin: 0 auto; padding: 48px 0 80px; }
+  .hero { position: relative; overflow: hidden; min-height: 420px; padding: 54px 58px; background: var(--navy); color: #fffdf8; box-shadow: 0 18px 45px rgba(23,33,43,.12); }
+  .hero::before { content: ''; position: absolute; width: 360px; height: 360px; right: -130px; bottom: -150px; border: 55px solid rgba(126,214,209,.27); border-radius: 50%; }
+  .hero::after { content: ''; position: absolute; width: 118px; height: 118px; right: 180px; top: -42px; border: 19px solid rgba(226,109,90,.7); transform: rotate(28deg); }
+  .eyebrow { position: relative; z-index: 1; color: #7ed6d1; font-size: 11px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; }
+  h1 { position: relative; z-index: 1; max-width: 760px; margin: 18px 0 19px; font: 700 clamp(44px, 7vw, 82px)/.95 var(--display); letter-spacing: -2px; }
+  .hero p { position: relative; z-index: 1; max-width: 700px; margin: 0; color: #d9e8f2; font-size: 17px; }
+  .hero-meta { position: relative; z-index: 1; display: flex; flex-wrap: wrap; gap: 10px; margin-top: 30px; }
+  .tag { display: inline-flex; padding: 7px 11px; border: 1px solid rgba(255,255,255,.23); color: #fffdf8; font-size: 11px; }
+  .section { margin-top: 34px; padding: 32px 36px; background: var(--white); border: 1px solid var(--line); box-shadow: 0 8px 26px rgba(23,33,43,.05); }
+  .section-head { display: flex; align-items: flex-start; gap: 18px; margin-bottom: 22px; }
+  .section-number { flex: 0 0 auto; color: var(--coral); font: 700 28px/1 var(--display); }
+  h2 { margin: 0; color: var(--navy); font: 700 30px/1.08 var(--display); }
+  h3 { margin: 25px 0 8px; color: var(--navy); font-size: 18px; }
+  p { margin: 10px 0; }
+  .lede { color: var(--muted); font-size: 16px; }
+  .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+  .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .card { padding: 20px; background: #faf7f0; border: 1px solid var(--line); }
+  .card strong { display: block; margin-bottom: 5px; color: var(--navy); }
+  .card p { margin: 0; color: var(--muted); font-size: 14px; }
+  .callout { margin: 20px 0; padding: 17px 19px; border-left: 4px solid var(--cyan); background: #eaf6f4; }
+  .callout.warn { border-left-color: var(--coral); background: #fff0eb; }
+  .callout.gold { border-left-color: var(--gold); background: #fff8df; }
+  .callout strong { color: var(--navy); }
+  .anatomy { display: grid; gap: 8px; margin: 20px 0; }
+  .part { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 16px; padding: 14px 16px; border-left: 5px solid var(--blue); background: #eef5fa; }
+  .part:nth-child(2) { border-left-color: var(--cyan); background: #eaf6f4; }
+  .part:nth-child(3) { border-left-color: var(--gold); background: #fff8df; }
+  .part:nth-child(4) { border-left-color: var(--coral); background: #fff0eb; }
+  .part:nth-child(5) { border-left-color: var(--navy); background: #edf1f4; }
+  .part b { color: var(--navy); font-size: 13px; }
+  .part span { color: var(--muted); font-size: 14px; }
+  .flow { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: 22px 0; }
+  .flow-step { min-height: 112px; padding: 14px 12px; background: var(--navy); color: #fffdf8; }
+  .flow-step:nth-child(2), .flow-step:nth-child(4) { background: var(--blue); }
+  .flow-step:nth-child(3) { background: var(--cyan); }
+  .flow-step:nth-child(5) { background: var(--coral); }
+  .flow-step b { display: block; margin-bottom: 5px; font-size: 12px; }
+  .flow-step span { display: block; color: rgba(255,255,255,.86); font-size: 12px; }
+  .prompt { position: relative; margin: 14px 0; padding: 19px 21px; background: #142d41; color: #d9e8f2; font: 13px/1.7 var(--mono); white-space: pre-wrap; overflow-x: auto; }
+  .prompt::before { content: 'PROMPT'; position: absolute; right: 14px; top: 10px; color: #7ed6d1; font: 800 9px var(--body); letter-spacing: 1px; }
+  .checklist { padding: 0; list-style: none; }
+  .checklist li { position: relative; padding: 7px 0 7px 28px; color: var(--muted); }
+  .checklist li::before { content: '[]'; position: absolute; left: 0; color: var(--coral); font: 700 14px var(--mono); line-height: 1.7; }
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { padding: 11px 12px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+  th { background: var(--navy); color: #fffdf8; font-size: 11px; letter-spacing: .5px; text-transform: uppercase; }
+  td { color: var(--muted); }
+  td:first-child { color: var(--navy); font-weight: 700; }
+  .source { margin-top: 34px; padding: 22px 26px; background: var(--paper-deep); color: var(--muted); font-size: 13px; }
+  .source a { color: var(--blue); font-weight: 700; }
+  .top { display: inline-block; margin-top: 18px; color: var(--blue); font-size: 12px; font-weight: 700; text-decoration: none; }
+  .reveal { animation: rise .65s ease both; }
+  @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+  @media (max-width: 850px) {
+    .shell { display: block; }
+    .rail { position: relative; height: auto; }
+    .rail nav { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2px 12px; }
+    .rail-label { grid-column: 1 / -1; }
+    .content { width: min(100% - 28px, 720px); padding-top: 20px; }
+    .hero { padding: 38px 28px; }
+    .section { padding: 26px 22px; }
+    .flow, .grid.three { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 560px) {
+    h1 { letter-spacing: -1px; }
+    .grid, .flow, .grid.three { grid-template-columns: 1fr; }
+    .part { grid-template-columns: 1fr; gap: 3px; }
+    .hero { min-height: 0; }
+  }
+</style>
+</head>
+<body id="top">
+<div class="shell">
+  <aside class="rail">
+    <div class="rail-mark">MetLife Learning</div>
+    <h2>Prompt Engineering<br>Field Guide</h2>
+    <nav aria-label="Guide sections">
+      <div class="rail-label">Start here</div>
+      <a href="#orientation">Orientation</a>
+      <a href="#anatomy">Prompt anatomy</a>
+      <div class="rail-label">Build better prompts</div>
+      <a href="#process">The process</a>
+      <a href="#patterns">Reliable patterns</a>
+      <a href="#copilot">Copilot prompts</a>
+      <a href="#failures">Common failures</a>
+      <div class="rail-label">Apply it</div>
+      <a href="#evaluation">Evaluation gates</a>
+      <a href="#playbook">Team playbook</a>
+    </nav>
+    <div class="rail-footer">A practical companion for AI-assisted development<br><strong>Prompt with intent. Review with evidence.</strong></div>
+  </aside>
+
+  <main>
+    <div class="content">
+      <header class="hero reveal">
+        <div class="eyebrow">AI-Assisted Engineering / Prompt Engineering</div>
+        <h1>Say what matters.<br>Make the answer testable.</h1>
+        <p>A practical guide to designing prompts that give AI coding tools the right goal, context, constraints, examples, and feedback loop to produce useful work.</p>
+        <div class="hero-meta">
+          <span class="tag">Beginner friendly</span>
+          <span class="tag">GitHub Copilot ready</span>
+          <span class="tag">Reusable patterns</span>
+          <span class="tag">Evidence over guesswork</span>
+        </div>
+      </header>
+
+      <section class="section reveal" id="orientation">
+        <div class="section-head"><div class="section-number">00</div><div><h2>Orientation</h2><p class="lede">Prompt engineering is the disciplined design of instructions and context so an AI system can produce an answer you can inspect, test, and improve.</p></div></div>
+        <div class="callout"><strong>The operating principle:</strong> a prompt is not a magic phrase. It is a small interface between human intent and machine behavior. Good prompts reduce ambiguity and make quality visible.</div>
+        <div class="grid three">
+          <div class="card"><strong>Intent</strong><p>What outcome should exist when the task is finished?</p></div>
+          <div class="card"><strong>Signal</strong><p>What context, examples, constraints, and references will shape the answer?</p></div>
+          <div class="card"><strong>Evidence</strong><p>How will you know the response is correct, useful, secure, and complete?</p></div>
+        </div>
+      </section>
+
+      <section class="section reveal" id="anatomy">
+        <div class="section-head"><div class="section-number">01</div><div><h2>Prompt anatomy</h2><p class="lede">Use the parts that matter for the task. A short, specific prompt is stronger than a long prompt full of unrelated background.</p></div></div>
+        <div class="anatomy">
+          <div class="part"><b>Role and stance</b><span>Tell the tool what perspective is useful: senior reviewer, test writer, accessibility specialist, or pair programmer.</span></div>
+          <div class="part"><b>Goal</b><span>State the desired outcome and the user or system behavior it should enable.</span></div>
+          <div class="part"><b>Context</b><span>Point to the relevant files, APIs, conventions, prior decisions, data shapes, and examples.</span></div>
+          <div class="part"><b>Constraints</b><span>Specify scope, frameworks, compatibility, security, performance, accessibility, and things that must remain unchanged.</span></div>
+          <div class="part"><b>Output and proof</b><span>Define the response format, requested edits, tests, checks, assumptions, and completion criteria.</span></div>
+        </div>
+        <div class="prompt">Act as a focused code reviewer.
+
+Goal: review the pagination change for correctness and regressions.
+Context: inspect src/api/orders.ts and tests/api/orders.test.ts. The API uses cursor-based pagination.
+Constraints: do not refactor unrelated code; preserve the public response shape.
+Output: list findings by severity with file references, then name missing tests. Do not summarize code that has no issue.</div>
+      </section>
+
+      <section class="section reveal" id="process">
+        <div class="section-head"><div class="section-number">02</div><div><h2>The prompt loop</h2><p class="lede">Treat prompting as an iterative engineering process. Each turn should narrow uncertainty or produce evidence.</p></div></div>
+        <div class="flow">
+          <div class="flow-step"><b>1. Frame</b><span>Define the outcome and why it matters.</span></div>
+          <div class="flow-step"><b>2. Ground</b><span>Supply focused context and references.</span></div>
+          <div class="flow-step"><b>3. Direct</b><span>Set constraints and the output shape.</span></div>
+          <div class="flow-step"><b>4. Inspect</b><span>Review the result against evidence.</span></div>
+          <div class="flow-step"><b>5. Refine</b><span>Correct the smallest missing signal.</span></div>
+        </div>
+        <h3>Before you send</h3>
+        <ul class="checklist">
+          <li>Can the goal be verified without reading my mind?</li>
+          <li>Did I identify the files, symbols, or examples that control the task?</li>
+          <li>Did I state what is out of scope?</li>
+          <li>Did I ask for a useful output shape rather than merely saying "help"?</li>
+          <li>Do I know which test, command, or review will disconfirm the answer?</li>
+        </ul>
+      </section>
+
+      <section class="section reveal" id="patterns">
+        <div class="section-head"><div class="section-number">03</div><div><h2>Reliable prompt patterns</h2><p class="lede">Patterns give repeated work a stable shape. Adapt them to the task instead of copying them mechanically.</p></div></div>
+        <div class="grid">
+          <div class="card"><strong>Explore before editing</strong><p>Ask for the owning code path, nearby tests, and one falsifiable hypothesis before making a change.</p></div>
+          <div class="card"><strong>Plan a bounded change</strong><p>Name the files, behavior, constraints, validation command, and explicit non-goals.</p></div>
+          <div class="card"><strong>Implement from an anchor</strong><p>Point to an existing implementation or test and ask for the smallest consistent edit.</p></div>
+          <div class="card"><strong>Review for failure modes</strong><p>Ask for bugs, regressions, security risks, missing tests, and file references first.</p></div>
+          <div class="card"><strong>Teach with contrast</strong><p>Request a good and bad example, then explain the decision boundary between them.</p></div>
+          <div class="card"><strong>Compress the context</strong><p>Prefer relevant excerpts, symbols, and decisions over dumping the entire repository into the conversation.</p></div>
+        </div>
+        <h3>Task prompt template</h3>
+        <div class="prompt">Task: [one sentence describing the desired behavior]
+
+Anchor: [file, symbol, test, failing command, or nearby implementation]
+Context: [only the facts needed to control the decision]
+Constraints: [framework, API, compatibility, security, scope, and non-goals]
+Implementation: [what to change and what to preserve]
+Validation: [the narrow command or test that could disconfirm the change]
+Output: [files changed, concise summary, and validation result]</div>
+      </section>
+
+      <section class="section reveal" id="copilot">
+        <div class="section-head"><div class="section-number">04</div><div><h2>Prompting GitHub Copilot</h2><p class="lede">Copilot works best when the repository itself carries stable instructions and each request supplies the local task context.</p></div></div>
+        <div class="grid">
+          <div class="card"><strong>Inline completion</strong><p>Use nearby code, names, types, and comments to express the immediate shape of an implementation.</p></div>
+          <div class="card"><strong>Chat</strong><p>Ask for explanation, alternatives, tests, or a small transformation while keeping the relevant files visible.</p></div>
+          <div class="card"><strong>Agent mode</strong><p>Define the outcome, scope, allowed tools, checkpoints, and validation. Ask it to inspect before it edits.</p></div>
+          <div class="card"><strong>Instructions and skills</strong><p>Move durable repository conventions out of one-off prompts so every task starts with the same baseline.</p></div>
+        </div>
+        <div class="callout gold"><strong>Context is a budget:</strong> more text is not automatically more signal. Include information that changes the decision, and identify untrusted or merely illustrative material.</div>
+        <h3>Agent task example</h3>
+        <div class="prompt">Add a retry policy for transient payment-provider failures.
+
+First inspect the payment client, its callers, existing error types, and nearby tests. State one hypothesis about where retry ownership belongs and name the narrow test that could disconfirm it.
+
+Keep the public API unchanged. Retry only documented transient failures with bounded exponential backoff. Do not retry validation, authentication, or declined-payment errors.
+
+Implement the smallest change, add focused tests for retry and no-retry cases, then run the payment test suite. Report files changed and any assumptions.</div>
+      </section>
+
+      <section class="section reveal" id="failures">
+        <div class="section-head"><div class="section-number">05</div><div><h2>Common failures</h2><p class="lede">When a response misses, diagnose the missing signal before adding more words.</p></div></div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Failure</th><th>What it looks like</th><th>Repair the prompt</th></tr></thead>
+          <tbody>
+            <tr><td>Vague goal</td><td>A polished answer that solves the wrong problem.</td><td>Name the user, behavior, and observable outcome.</td></tr>
+            <tr><td>Context dump</td><td>The response repeats background but misses the controlling file.</td><td>Point to the owning symbol and remove unrelated material.</td></tr>
+            <tr><td>Hidden constraints</td><td>The change works locally but breaks compatibility or conventions.</td><td>State APIs, versions, security rules, and non-goals explicitly.</td></tr>
+            <tr><td>No proof request</td><td>Code is generated without tests, checks, or assumptions.</td><td>Specify the validation command and edge cases to cover.</td></tr>
+            <tr><td>Too many asks</td><td>Several partially complete changes are difficult to review.</td><td>Split discovery, implementation, and verification into focused turns.</td></tr>
+            <tr><td>Leading question</td><td>The tool agrees with a solution before examining the problem.</td><td>Ask it to inspect alternatives and state a falsifiable hypothesis.</td></tr>
+          </tbody>
+        </table></div>
+      </section>
+
+      <section class="section reveal" id="evaluation">
+        <div class="section-head"><div class="section-number">06</div><div><h2>Evaluation gates</h2><p class="lede">A prompt is only successful when its output survives the checks that matter for the task.</p></div></div>
+        <div class="grid three">
+          <div class="card"><strong>Correctness</strong><p>Does the behavior match the stated requirements and edge cases?</p></div>
+          <div class="card"><strong>Fit</strong><p>Does the change follow local architecture, APIs, style, and ownership boundaries?</p></div>
+          <div class="card"><strong>Risk</strong><p>Did the review consider security, privacy, accessibility, performance, and failure handling?</p></div>
+        </div>
+        <div class="callout warn"><strong>Human judgment remains in the loop:</strong> generated code can be plausible and still be wrong. Read the diff, run the focused check, and verify the result against the user need.</div>
+        <h3>Review prompt</h3>
+        <div class="prompt">Review the current diff as a skeptical maintainer.
+
+Prioritize: correctness bugs, behavior regressions, security and privacy risks, missing error handling, and missing tests.
+
+Use the repository's existing conventions and inspect the nearest tests before judging style. Report findings first, ordered by severity, with file references. If there are no findings, say so and list residual test gaps.</div>
+      </section>
+
+      <section class="section reveal" id="playbook">
+        <div class="section-head"><div class="section-number">07</div><div><h2>Team playbook</h2><p class="lede">Teams get more value when prompt quality becomes a shared practice rather than an individual trick.</p></div></div>
+        <div class="grid">
+          <div class="card"><strong>Capture durable rules</strong><p>Put coding standards, test commands, architecture boundaries, and review expectations in repository instructions.</p></div>
+          <div class="card"><strong>Keep examples current</strong><p>Store successful prompts near the workflow they support and remove examples that no longer match the codebase.</p></div>
+          <div class="card"><strong>Measure the loop</strong><p>Track rework, escaped defects, review findings, and time to a validated result rather than prompt length.</p></div>
+          <div class="card"><strong>Bridge to specifications</strong><p>When the prototype stabilizes, turn decisions, requirements, and acceptance criteria into durable project artifacts.</p></div>
+        </div>
+        <div class="callout"><strong>Prompt engineering maturity:</strong> start with clearer individual requests, then build shared context, reusable patterns, automated evaluation, and specifications that make good work repeatable.</div>
+        <div class="source">Related resources: <a href="../../../InaNutshell/Prompt%20Engineering%20-%20In%20a%20Nutshell.html">Prompt Engineering - In a Nutshell</a> and <a href="../posters/prompt-engineering-light-landscape.png" target="_blank" rel="noreferrer noopener">Prompt Engineering poster</a>.</div>
+        <a class="top" href="#top">Back to top</a>
+      </section>
+    </div>
+  </main>
+</div>
+</body>
+</html>

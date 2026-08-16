@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="icon" href="data:image/svg+xml,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22&gt;&lt;text y=%22.9em%22 font-size=%2290%22&gt;✍️&lt;/text&gt;&lt;/svg&gt;">
+<title>Prompt Engineering - Hands-on Lab</title>
+<meta name="description" content="Hands-on Prompt Engineering lab for GitHub Copilot: structure, context, examples, techniques, chaining, and evaluation." />
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+  :root{--bg:#fff;--fg:#0f172a;--muted:#64748b;--accent:#0f766e;--accent-light:#ccfbf1;--border:#dbe4e8;--code-bg:#102a2e;--shadow-sm:0 1px 3px rgba(15,23,42,.1);--shadow-md:0 4px 12px rgba(15,23,42,.12)}
+  html{scroll-behavior:smooth} body{background:var(--bg);color:var(--fg)}
+  .navbar{background:#102a2e!important;box-shadow:var(--shadow-md)} .navbar-brand{color:#fff!important;font-weight:700}.navbar-brand small{display:block;color:#99f6e4;font-size:.65rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase}
+  nav.sidebar{background:linear-gradient(180deg,#f0fdfa 0%,#ecfeff 100%);border-right:1px solid var(--border);height:calc(100vh - 56px);overflow-y:auto;position:sticky;top:56px;padding:0;max-width:280px}
+  .menu-header{padding:1rem 1.1rem .6rem;font-size:.72rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#475569}.toc{list-style:none;margin:0;padding:0 .6rem 1.5rem}.toc>li>a{display:block;padding:.4rem .6rem;border-radius:6px;color:#134e4a;font-weight:700;font-size:.86rem;text-decoration:none}.toc>li>a:hover,.toc>li>a.active{background:var(--accent-light);color:#115e59}.toc ul{list-style:none;margin:.15rem 0 .5rem;padding-left:.9rem;border-left:2px solid var(--border)}.toc ul li a{display:block;padding:.28rem .5rem;border-radius:5px;color:#475569;font-size:.79rem;text-decoration:none}.toc ul li a:hover,.toc ul li a.active{background:#dff7f3;color:#0f766e}
+  main.content{padding:2.2rem clamp(1rem,3vw,3rem) 5rem}.lead-banner{background:linear-gradient(135deg,#102a2e 0%,#115e59 60%,#0f766e 100%);color:#fff;border-radius:14px;padding:2.4rem 2.2rem;margin-bottom:2rem;box-shadow:var(--shadow-md)}.lead-banner h1{font-weight:800}.lead-banner .meta-pill{display:inline-flex;gap:.4rem;align-items:center;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:.3rem .85rem;font-size:.8rem;margin:.2rem .3rem .2rem 0}.part-badge{display:inline-block;background:#14b8a6;color:#042f2e;font-weight:800;font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;padding:.2rem .6rem;border-radius:6px;margin-bottom:.5rem}
+  section.article{scroll-margin-top:70px;padding-top:1.4rem;margin-bottom:1rem}section.article>h2{font-weight:800;border-bottom:3px solid var(--accent);padding-bottom:.5rem;margin-bottom:1rem}section.subsection{scroll-margin-top:70px;margin:1.6rem 0}section.subsection>h3{font-weight:750;color:#115e59}h4{font-weight:700;color:#334155;margin-top:1.1rem}
+  .card-note,.card-tip,.card-warning,.card-important{border-left:5px solid var(--accent);background:#f0fdfa;border-radius:10px;padding:1rem 1.2rem;margin:1rem 0}.card-tip{border-left-color:#10b981;background:#ecfdf5}.card-warning{border-left-color:#f97316;background:#fff7ed}.card-important{border-left-color:#f59e0b;background:#fffbeb}.card-note strong,.card-tip strong,.card-warning strong,.card-important strong{display:block;margin-bottom:.35rem;color:#0f172a}
+  pre{background:var(--code-bg);color:#ccfbf1;border-radius:10px;padding:1rem 1.15rem;overflow-x:auto;font-size:.83rem;box-shadow:var(--shadow-sm)}code{font-family:"Cascadia Code",Consolas,monospace}:not(pre)>code{background:#e2e8f0;color:#0f172a;padding:.1rem .35rem;border-radius:5px;font-size:.85em}.table{box-shadow:var(--shadow-sm);border-radius:8px;overflow:hidden}.table thead{background:#134e4a;color:#fff}.table-wrap{overflow-x:auto;margin:1rem 0}.diagram-card{background:#f8fafc;border:1px solid var(--border);border-radius:12px;padding:1rem;margin:1.2rem 0;box-shadow:var(--shadow-sm)}.diagram-card .mermaid{text-align:center}.diagram-caption{text-align:center;font-size:.8rem;color:var(--muted);margin-top:.4rem}.checklist li{margin-bottom:.35rem}.btn-scroll-top{position:fixed;right:1rem;bottom:1rem;z-index:50;border-radius:50%;width:36px;height:36px;box-shadow:var(--shadow-md)}
+  @media(max-width:991.98px){nav.sidebar{display:none}}
+</style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg sticky-top" aria-label="Top bar"><div class="container-fluid px-3"><button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarOffcanvas" aria-controls="sidebarOffcanvas" aria-label="Toggle contents menu"><span class="navbar-toggler-icon"></span></button><a class="navbar-brand ms-2" href="#top"><small>Hands-on Lab</small>Prompt Engineering</a><span class="d-none d-md-inline text-light small">GitHub Copilot &middot; Structure &middot; Context &middot; Examples &middot; Techniques &middot; Evaluation</span></div></nav>
+<div class="container-fluid" id="top"><div class="row">
+<nav class="col-lg-3 d-none d-lg-block sidebar" aria-label="Table of contents"><div class="menu-header">Contents</div><ul class="toc" id="toc">
+<li><a href="#objective">Objective</a></li><li><a href="#prerequisites">Prerequisites</a></li><li><a href="#what-youll-build">What You'll Build</a></li>
+<li><a href="#part1">Part 1 &middot; Prompt Anatomy</a><ul><li><a href="#baseline">1.1 Establish a Baseline</a></li><li><a href="#structure">1.2 Add Structure</a></li></ul></li>
+<li><a href="#part2">Part 2 &middot; Context and Instructions</a><ul><li><a href="#context">2.1 Add Relevant Context</a></li><li><a href="#constraints">2.2 Make Success Measurable</a></li></ul></li>
+<li><a href="#part3">Part 3 &middot; Examples and Techniques</a><ul><li><a href="#few-shot">3.1 Use Few-Shot Examples</a></li><li><a href="#technique-choice">3.2 Choose a Technique</a></li></ul></li>
+<li><a href="#part4">Part 4 &middot; Prompt Chaining</a><ul><li><a href="#chain">4.1 Split the Workflow</a></li><li><a href="#chain-errors">4.2 Handle Handoffs</a></li></ul></li>
+<li><a href="#part5">Part 5 &middot; Evaluate and Optimize</a><ul><li><a href="#rubric">5.1 Build a Rubric</a></li><li><a href="#iterate">5.2 Run an Iteration Loop</a></li></ul></li>
+<li><a href="#guardrails">Safety and Privacy Guardrails</a></li><li><a href="#recap">Recap</a></li><li><a href="#resources">Additional Resources</a></li>
+</ul></nav>
+<main class="col-lg-9 content">
+<div class="lead-banner"><span class="part-badge">Lab</span><h1>Prompt Engineering</h1><p class="mb-2">Turn an underspecified development request into a reliable Copilot workflow by adding structure, context, examples, techniques, and evaluation.</p><span class="meta-pill">⏱ ~60 minutes</span><span class="meta-pill">🎯 Beginner to intermediate</span><span class="meta-pill">💻 GitHub Copilot in VS Code</span><span class="meta-pill">🧪 One running scenario</span></div>
+<div class="card-note"><strong>How to use this lab</strong>Keep the same scenario throughout: you are adding a <strong>CSV customer-import endpoint</strong> to a web application. Run each prompt in Copilot Chat, save the useful output, and compare it with the previous version. The goal is not a magic phrase; it is a repeatable design and review process.</div>
+<section class="article" id="objective"><h2>Objective</h2><p>Prompt engineering is the practice of designing and optimizing instructions so an LLM can produce accurate, relevant, and useful results. In this lab you will move from a one-line request to a prompt that is explicit about role, task, context, constraints, examples, output format, and verification.</p><p>By the end, you will have a reusable prompt pattern for a development task and a small evaluation rubric for deciding whether the result is good enough.</p></section>
+<section class="article" id="prerequisites"><h2>Prerequisites</h2><ul class="checklist"><li>VS Code with GitHub Copilot Chat enabled.</li><li>Any small code repository you can safely edit, or a scratch folder with a sample API.</li><li>A basic understanding of your repository's language, test runner, and API conventions.</li></ul><div class="card-warning"><strong>Use representative, non-sensitive data</strong>Do not paste production customer records, credentials, access tokens, private keys, or regulated data into a prompt. Use a fabricated sample such as <code>customer_id,name,email</code>.</div></section>
+<section class="article" id="what-youll-build"><h2>What You'll Build</h2><div class="diagram-card"><div class="mermaid">%%{init: {'theme': 'base', 'fontFamily': 'Segoe UI Semibold', 'fontSize': '18px'}}%%
+flowchart LR
+  I["User intent"] --> B["Baseline prompt"] --> S["Structure + context"] --> E["Examples + constraints"] --> C["Technique or chain"] --> V["Evaluate + refine"]
+  V -. "repeat" .-> S
+  style I fill:#ccfbf1,stroke:#0f766e
+  style S fill:#dbeafe,stroke:#2563eb
+  style E fill:#fef3c7,stroke:#d97706
+  style C fill:#fce7f3,stroke:#db2777
+  style V fill:#dcfce7,stroke:#16a34a</div><p class="diagram-caption">Prompt engineering is an iterative loop: each output gives you evidence for the next revision.</p></div><ul class="build-list"><li>✅ A baseline prompt and a measurable before/after comparison</li><li>✅ A structured prompt using role, task, context, constraints, and output format</li><li>✅ Few-shot examples for validation and error handling</li><li>✅ A technique decision for zero-shot, few-shot, or a multi-step chain</li><li>✅ An evaluation rubric and an iteration record</li></ul></section>
+<section class="article" id="part1"><span class="part-badge">Part 1</span><h2>Prompt Anatomy</h2><p>The source guide describes a well-structured prompt as a sequence of system message, task, context/input, constraints, and output format. Start by observing what changes when you add those components.</p>
+<section class="subsection" id="baseline"><h3>1.1 Establish a Baseline</h3><p>Open Copilot Chat and submit this intentionally underspecified request:</p><pre><code>Build a customer CSV import endpoint.</code></pre><p>Record the response. Look for assumptions about the framework, file location, CSV shape, validation, duplicates, error handling, and tests.</p><div class="card-important"><strong>Checkpoint</strong>Write down three assumptions Copilot made and two acceptance criteria it could not infer. Those gaps become the inputs for your next prompt.</div></section>
+<section class="subsection" id="structure"><h3>1.2 Add Structure</h3><p>Run a second prompt that makes the task and desired output explicit:</p><pre><code>Role: You are a senior backend developer working in this repository.
+
+Task: Design a customer CSV import endpoint. First inspect the existing
+routing, validation, persistence, and test patterns. Do not edit files yet.
+
+Output format:
+1. Files and symbols you would reuse
+2. Proposed request and response contract
+3. Validation and error cases
+4. Test cases
+5. Open questions and assumptions</code></pre><p>Compare the response with the baseline. The prompt is still incomplete, but its structure makes uncertainty visible before code is generated.</p><div class="card-tip"><strong>Prompt design principle</strong>Use clear labels such as <code>ROLE</code>, <code>TASK</code>, <code>CONTEXT</code>, <code>CONSTRAINTS</code>, and <code>OUTPUT FORMAT</code>. Labels separate instructions from input and make prompts easier to reuse.</div></section></section>
+<section class="article" id="part2"><span class="part-badge">Part 2</span><h2>Context and Instructions</h2><p>Context turns a generic request into a repository-specific request. Add only relevant facts: domain, audience, current situation, previous attempts, and constraints.</p>
+<section class="subsection" id="context"><h3>2.1 Add Relevant Context</h3><p>Adapt the prompt below to your repository. Replace the bracketed values with facts you can verify by reading the code.</p><pre><code>ROLE:
+You are a senior backend developer familiar with [language/framework].
+
+TASK:
+Design the customer CSV import endpoint. Inspect the repository first;
+propose a plan before making edits.
+
+CONTEXT:
+- API entry point: [existing route/controller pattern]
+- Validation: [existing library or convention]
+- Persistence: [repository/service pattern]
+- Tests: [test framework and command]
+- Audience: maintainers who prefer small, reviewable changes
+
+INPUT:
+CSV columns are customer_id, name, email. The file can contain a header.
+
+OUTPUT FORMAT:
+Return a short implementation plan, impacted files, and tests.</code></pre><p>Ask Copilot to cite the files it used for each repository convention. If it cannot find a convention, record that as an open question rather than allowing it to invent one.</p></section>
+<section class="subsection" id="constraints"><h3>2.2 Make Success Measurable</h3><p>Extend the prompt with SMART-style instructions: specific, measurable, actionable, realistic, and bounded.</p><pre><code>CONSTRAINTS:
+- Preserve existing API response and error conventions.
+- Reject missing required columns and malformed email addresses.
+- Define duplicate behavior explicitly; do not silently overwrite records.
+- Return a row-level error summary without exposing sensitive input values.
+- Add unit tests for valid rows, malformed rows, duplicates, empty files,
+  headers-only files, and mixed valid/invalid rows.
+- Keep the change limited to the import feature; do not refactor unrelated code.
+- At the end, list any requirement that remains ambiguous.</code></pre><div class="card-note"><strong>Why constraints help</strong>Constraints reduce unwanted variation and make an output reviewable. They should describe boundaries and acceptance criteria, not merely ask the model to “do a good job.”</div></section></section>
+<section class="article" id="part3"><span class="part-badge">Part 3</span><h2>Examples and Techniques</h2><p>Examples demonstrate patterns more precisely than prose. The source guide distinguishes zero-shot prompting, where no examples are supplied, from few-shot prompting, where representative input/output pairs guide the model.</p>
+<section class="subsection" id="few-shot"><h3>3.1 Use Few-Shot Examples</h3><p>Add these fabricated examples to your structured prompt. Keep examples small and choose cases that expose the behavior you care about.</p><pre><code>EXAMPLES:
+Input row: 42,Ada Lovelace,ada@example.com
+Result: accepted; normalized email to ada@example.com
+
+Input row: 43,Grace Hopper,not-an-email
+Result: rejected; code EMAIL_INVALID; report row number and column
+
+Input row: 42,Ada Lovelace,ada@example.com
+Result: rejected; code CUSTOMER_DUPLICATE; do not overwrite existing data</code></pre><p>Ask Copilot to propose the response schema for row-level errors. Then ask it to explain which part of each example influenced the proposal.</p><div class="card-important"><strong>Example quality beats quantity</strong>Use a few diverse, accurate examples. Include an edge case when the edge case is part of the contract. Do not include real customer data merely to make a prompt look realistic.</div></section>
+<section class="subsection" id="technique-choice"><h3>3.2 Choose a Technique</h3><p>Choose the least complex technique that can reliably solve the task.</p><div class="table-wrap"><table class="table table-bordered table-striped"><thead><tr><th>Technique</th><th>Use it when</th><th>Try it here</th></tr></thead><tbody><tr><td><strong>Zero-shot</strong></td><td>The task is clear and follows an established pattern.</td><td>Ask for a short explanation of an existing endpoint.</td></tr><tr><td><strong>Few-shot</strong></td><td>You need consistent classification, formatting, or edge-case behavior.</td><td>Classify CSV rows as accepted or rejected with error codes.</td></tr><tr><td><strong>Prompt chaining</strong></td><td>A single prompt mixes discovery, design, implementation, and verification.</td><td>Separate repository analysis, implementation, and test review.</td></tr><tr><td><strong>Role/persona</strong></td><td>A perspective or audience changes the quality criteria.</td><td>Ask a security reviewer to inspect import validation and data exposure.</td></tr></tbody></table></div><p>Run the same task with zero-shot and few-shot prompts. Compare consistency across three fabricated rows. Record whether the more complex prompt produced enough benefit to justify its maintenance cost.</p></section></section>
+<section class="article" id="part4"><span class="part-badge">Part 4</span><h2>Prompt Chaining</h2><p>Prompt chaining decomposes a complex workflow into focused steps. Each step produces a bounded artifact that becomes input to the next step.</p>
+<section class="subsection" id="chain"><h3>4.1 Split the Workflow</h3><div class="diagram-card"><div class="mermaid">flowchart TD
+  A["1. Inspect repository"] --> B["Conventions + open questions"]
+  B --> C["2. Design contract"]
+  C --> D["Contract + acceptance criteria"]
+  D --> E["3. Implement small change"]
+  E --> F["Diff + tests"]
+  F --> G["4. Review and refine"]
+  style A fill:#ccfbf1,stroke:#0f766e
+  style C fill:#dbeafe,stroke:#2563eb
+  style E fill:#fef3c7,stroke:#d97706
+  style G fill:#dcfce7,stroke:#16a34a</div><p class="diagram-caption">A chain keeps each prompt focused and makes handoff artifacts inspectable.</p></div><p>Run these prompts as separate turns. Do not allow the implementation step to skip the discovery artifact.</p><pre><code>Step 1 - Discovery:
+Inspect the repository's existing API, validation, persistence, and test patterns.
+Return only verified conventions, candidate files, and open questions.
+Do not edit files.
+
+Step 2 - Contract:
+Using the discovery notes below, propose the import request, response, error
+codes, duplicate policy, and acceptance criteria. Flag contradictions.
+
+Step 3 - Implementation:
+Using the approved contract below, implement the smallest change that matches
+existing conventions. Add focused tests. Do not refactor unrelated code.
+
+Step 4 - Verification:
+Review the diff and run the relevant tests. Report failures, missing edge cases,
+security concerns, and whether each acceptance criterion is satisfied.</code></pre></section>
+<section class="subsection" id="chain-errors"><h3>4.2 Handle Handoffs</h3><p>A chain is only useful when its handoffs are explicit. After each step, check that the next prompt receives the right artifact and that uncertainty is preserved.</p><ul class="checklist"><li>Use a named section for the handoff, such as <code>DISCOVERY NOTES</code> or <code>APPROVED CONTRACT</code>.</li><li>Ask the model to identify missing or contradictory inputs before continuing.</li><li>Keep intermediate outputs concise enough to inspect and reuse.</li><li>Stop the chain when a requirement needs a human decision.</li></ul><div class="card-warning"><strong>Do not turn a chain into a blind pipeline</strong>Each handoff is a checkpoint. Review the plan and contract before asking Copilot to edit files.</div></section></section>
+<section class="article" id="part5"><span class="part-badge">Part 5</span><h2>Evaluate and Optimize</h2><p>Prompt engineering is iterative. Evaluate outputs against observable dimensions rather than relying on whether the answer sounds convincing.</p>
+<section class="subsection" id="rubric"><h3>5.1 Build a Rubric</h3><p>Score the final implementation or plan from 0 to 2 for each dimension. A score of 2 means the criterion is fully met, 1 means partial, and 0 means missing or incorrect.</p><div class="table-wrap"><table class="table table-bordered table-striped"><thead><tr><th>Dimension</th><th>Question</th><th>Score</th></tr></thead><tbody><tr><td>Relevance</td><td>Does the answer fit this repository and scenario?</td><td>0 / 1 / 2</td></tr><tr><td>Correctness</td><td>Does it preserve verified conventions and handle valid inputs?</td><td>0 / 1 / 2</td></tr><tr><td>Completeness</td><td>Does it cover errors, duplicates, tests, and acceptance criteria?</td><td>0 / 1 / 2</td></tr><tr><td>Consistency</td><td>Does the same prompt behave predictably across sample rows?</td><td>0 / 1 / 2</td></tr><tr><td>Safety</td><td>Does it avoid secrets, unnecessary personal data, and unsafe exposure?</td><td>0 / 1 / 2</td></tr><tr><td>Maintainability</td><td>Is the prompt clear, bounded, and reusable by another developer?</td><td>0 / 1 / 2</td></tr></tbody></table></div><p>Set a threshold before you optimize. For example, require at least 10/12 overall and no zero in correctness or safety.</p></section>
+<section class="subsection" id="iterate"><h3>5.2 Run an Iteration Loop</h3><p>Use the rubric to make one targeted revision at a time. Avoid adding length without evidence that it addresses a failed dimension.</p><pre><code>OPTIMIZATION REQUEST:
+Here is the current prompt and its score: [paste both].
+The weakest dimension is [dimension] because [evidence].
+Suggest the smallest prompt change that should improve that dimension.
+Preserve all requirements that already score 2.
+Return:
+1. Revised prompt
+2. What changed
+3. Why it should help
+4. A test case that could disconfirm the improvement</code></pre><div class="card-tip"><strong>Final checkpoint</strong>Run the revised prompt on a happy path, an edge case, and a deliberately ambiguous input. Keep a short log of prompt version, model, input, score, and observed failure. That log is more valuable than a single impressive response.</div></section></section>
+<section class="article" id="guardrails"><h2>Safety and Privacy Guardrails</h2><ul class="checklist"><li>Use synthetic or minimized data; never paste credentials, tokens, private keys, or unnecessary personal information.</li><li>Ask Copilot to flag uncertainty and identify assumptions instead of filling gaps silently.</li><li>Review generated code, especially validation, authorization, logging, data handling, and external calls.</li><li>Do not use a prompt as a substitute for tests, security review, human approval, or domain expertise.</li><li>Keep prompts and examples free of secrets because reusable prompt files may be shared with the repository.</li></ul></section>
+<section class="article" id="recap"><h2>Recap</h2><p>You practiced the core progression from the Prompt Engineering guide:</p><ol><li>Start with user intent and observe a baseline.</li><li>Make the task explicit with role, context, instructions, constraints, and output format.</li><li>Use relevant examples to demonstrate formats and edge cases.</li><li>Choose zero-shot, few-shot, role-based, or chained prompting based on the task.</li><li>Evaluate outputs with a rubric and iterate against evidence.</li></ol><div class="card-note"><strong>Takeaway</strong>The best prompt is not the longest prompt. It is the smallest clear specification that gives the model enough context to produce a verifiable result.</div></section>
+<section class="article" id="resources"><h2>Additional Resources</h2><ul><li><a href="../../../InaNutshell/Prompt%20Engineering%20-%20In%20a%20Nutshell.html">Prompt Engineering - In a Nutshell</a></li><li><a href="../guides/prompt-engineering-guide.html">Prompt Engineering Guide</a></li><li><a href="../knowledge-checks/prompt-engineering-knowledge-check.html">Prompt Engineering Knowledge Check</a></li><li><a href="https://docs.github.com/en/copilot" target="_blank" rel="noopener">GitHub Copilot documentation ↗</a></li></ul></section>
+</main></div></div>
+<div class="offcanvas offcanvas-start" tabindex="-1" id="sidebarOffcanvas" aria-labelledby="sidebarOffcanvasLabel"><div class="offcanvas-header"><h5 class="offcanvas-title" id="sidebarOffcanvasLabel">Contents</h5><button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button></div><div class="offcanvas-body p-0" id="tocMobileHost"></div></div>
+<button class="btn btn-primary btn-scroll-top" id="scrollTop" aria-label="Scroll to top">↑</button>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script><script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script><script>
+  mermaid.initialize({startOnLoad:true,theme:"neutral",securityLevel:"loose"});
+  document.getElementById('tocMobileHost').innerHTML=document.getElementById('toc').outerHTML;
+  document.getElementById('scrollTop').addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+  const sections=[...document.querySelectorAll('section.article,section.subsection')];const links=[...document.querySelectorAll('#toc a')];const setActive=id=>links.forEach(link=>link.classList.toggle('active',link.getAttribute('href')==='#'+id));
+  const observer=new IntersectionObserver(entries=>{const visible=entries.filter(entry=>entry.isIntersecting).sort((a,b)=>a.boundingClientRect.top-b.boundingClientRect.top);if(visible.length)setActive(visible[0].target.id)},{rootMargin:'-80px 0px -70% 0px'});sections.forEach(section=>observer.observe(section));
+  document.getElementById('tocMobileHost').addEventListener('click',event=>{if(event.target.tagName==='A'){const offcanvas=bootstrap.Offcanvas.getInstance(document.getElementById('sidebarOffcanvas'));if(offcanvas)offcanvas.hide()}});
+</script>
+</body></html>

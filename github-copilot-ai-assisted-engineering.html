@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="AI-Assisted Engineering presentation covering Vibe Coding, prompt engineering, context engineering, workflow design, verification, and Spec-Driven Development.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='80' font-size='80'>🤖</text></svg>" />
+  <title>AI-Assisted Engineering</title>
+  <style>
+    :root { --ink:#17253d; --navy:#071a38; --blue:#1359b5; --cyan:#0d9db2; --teal:#118b83; --orange:#c66b1b; --paper:#f4f7fa; --white:#fff; --muted:#617086; --line:#d8e1eb; --display:"Segoe UI"; --body:"Segoe UI"; }
+    * { box-sizing:border-box; } html,body { min-height:100%; } body { margin:0; overflow:hidden; background:var(--paper); color:var(--ink); font-family:var(--body); } button { font:inherit; }
+    .deck { min-height:100vh; position:relative; isolation:isolate; background:radial-gradient(circle at 10% 12%, rgba(13,157,178,.12), transparent 23rem), radial-gradient(circle at 92% 88%, rgba(198,107,27,.09), transparent 22rem), var(--paper); }
+    .deck::before { content:""; position:fixed; inset:0; z-index:-1; pointer-events:none; opacity:.34; background-image:linear-gradient(rgba(23,37,61,.025) 1px, transparent 1px),linear-gradient(90deg, rgba(23,37,61,.025) 1px, transparent 1px); background-size:36px 36px; -webkit-mask-image:linear-gradient(to bottom, black, transparent 85%); mask-image:linear-gradient(to bottom, black, transparent 85%); }
+    .topbar { position:fixed; inset:0 0 auto; z-index:5; display:flex; justify-content:space-between; padding:18px clamp(20px,4vw,60px); color:var(--muted); font-size:11px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; } .brand { color:var(--navy); } .counter { font-variant-numeric:tabular-nums; }
+    .slides { min-height:100vh; position:relative; } .slide { display:none; width:min(1240px,100%); min-height:100vh; max-height:100vh; margin:0 auto; padding:clamp(74px,8vh,104px) clamp(24px,7vw,104px) 92px; overflow:hidden; animation:enter .45s ease both; } .slide.active,.slides:last-child { background:rgba(255,255,255,.58); display:flex; flex-direction:column; justify-content:center; }
+    @keyframes enter { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:none; } }
+    .eyebrow { display:inline-flex; align-items:center; width:max-content; margin-bottom:8px; padding-bottom:5px; border-bottom:2px solid var(--accent,var(--cyan)); color:var(--accent,var(--cyan)); font-size:13px; font-weight:800; letter-spacing:.1em; line-height:1; text-transform:uppercase; } .accent-blue { --accent:var(--blue); } .accent-cyan { --accent:var(--cyan); } .accent-teal { --accent:var(--teal); } .accent-orange { --accent:var(--orange); }
+    h1,h2,h3,p { margin-top:0; } h1,h2 { font-family:var(--display); font-weight:700; letter-spacing:-.025em; } h1 { max-width:950px; margin:14px 0 18px; color:var(--navy); font-size:clamp(42px,6.2vw,78px); line-height:.98; } h2 { max-width:900px; margin:11px 0 24px; color:var(--navy); font-size:clamp(32px,4.2vw,56px); line-height:1.02; } h3 { margin-bottom:8px; color:var(--navy); font-size:16px; line-height:1.15; } .lede { max-width:760px; color:#53677d; font-size:clamp(16px,1.7vw,21px); line-height:1.48; }
+    .date-line { margin-top:24px; color:var(--muted); font-size:13px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; } .title-mark { display:flex; gap:8px; margin-top:34px; } .title-mark span { width:58px; height:8px; border-radius:99px; } .title-mark span:nth-child(1){background:var(--blue)} .title-mark span:nth-child(2){background:var(--cyan)} .title-mark span:nth-child(3){background:var(--teal)} .title-mark span:nth-child(4){background:var(--orange)}
+    .welcome-slide { position:relative; justify-content:flex-start; } .welcome-slide::after { content:""; position:absolute; width:min(42vw,520px); height:min(42vw,520px); right:-8%; bottom:-24%; border:1px solid rgba(19,89,181,.16); border-radius:50%; box-shadow:0 0 0 34px rgba(13,157,178,.04),0 0 0 68px rgba(198,107,27,.035); pointer-events:none; } .logo-lockup { display:block; width:min(220px,62vw); margin-bottom:15px; } .logo-lockup img { display:block; width:100%; height:auto; } .welcome-slide h1 { max-width:820px; margin-bottom:22px; font-size:clamp(46px,7vw,88px); } .welcome-slide .lede { max-width:700px; color:var(--blue); font-size:clamp(20px,2.2vw,29px); font-weight:700; letter-spacing:-.02em; } .welcome-footer-meta { position:absolute; left:clamp(24px,7vw,104px); right:clamp(24px,7vw,104px); bottom:60px; display:flex; flex-direction:column; gap:14px; } .welcome-slide .title-mark { margin-top:0; } .welcome-meta { display:flex; flex-wrap:wrap; gap:10px; margin-top:0; color:var(--muted); font-size:12px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; } .welcome-meta span { padding:9px 12px; border:1px solid var(--line); border-radius:99px; background:rgba(255,255,255,.7); }
+    .grid { display:grid; gap:12px; } .grid.two { grid-template-columns:repeat(2,1fr); } .grid.three { grid-template-columns:repeat(3,1fr); } .card { position:relative; padding:18px; border:1px solid var(--line); border-radius:12px; background:rgba(255,255,255,.84); box-shadow:0 7px 18px rgba(22,55,87,.05); } .card::before { content:""; display:block; width:30px; height:4px; margin-bottom:14px; border-radius:99px; background:var(--accent,var(--cyan)); } .card p,.card li { color:var(--muted); font-size:13px; line-height:1.42; } .card p { margin-bottom:0; } ul { margin:0; padding-left:17px; } li+li { margin-top:6px; }
+    .callout { margin-top:14px; padding:17px 20px; border-left:5px solid var(--accent,var(--cyan)); background:rgba(255,255,255,.72); color:var(--navy); font-size:16px; line-height:1.38; } .callout small { display:block; margin-top:9px; color:var(--muted); font-size:12px; }
+    .flow { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-top:6px; } .flow-item { min-height:150px; padding:15px; border-top:5px solid var(--accent); background:rgba(255,255,255,.84); box-shadow:0 9px 22px rgba(7,26,56,.08); } .flow-item h3 { margin-top:14px; } .flow-item p { color:var(--muted); font-size:12px; line-height:1.4; } .flow-number { color:var(--accent); font-family:var(--display); font-size:30px; line-height:1; }
+    .spectrum { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:5px; } .spectrum-item { min-height:155px; padding:15px; border-top:5px solid var(--accent); background:rgba(255,255,255,.84); } .spectrum-item strong { display:block; margin-bottom:12px; color:var(--accent); font-family:var(--display); font-size:20px; } .spectrum-item span { color:var(--muted); font-size:12px; line-height:1.4; }
+    .vibe-benefits { display:grid; grid-template-columns:repeat(4,1fr); margin-top:24px; border-top:1px solid rgba(0,59,92,.18); border-bottom:1px solid rgba(0,59,92,.18); }
+    .vibe-benefit { min-height:170px; padding:22px 18px 20px; text-align:center; }
+    .vibe-benefit + .vibe-benefit { border-left:1px solid rgba(0,59,92,.18); }
+    .vibe-benefit-icon { display:grid; place-items:center; width:56px; height:56px; margin:0 auto 15px; border:1px solid currentColor; border-radius:50%; color:var(--accent); background:rgba(255,255,255,.58); font-size:29px; line-height:1; }
+    .vibe-benefit strong { display:block; margin-bottom:9px; color:var(--ink); font-family:var(--display); font-size:19px; line-height:1.05; }
+    .vibe-benefit span { display:block; color:var(--muted); font-size:13px; line-height:1.35; }
+    .vibe-slide .vibe-benefit.accent-cyan { background:rgba(13,157,178,.12); }
+    .vibe-slide .vibe-benefit.accent-blue { background:rgba(19,89,181,.11); }
+    .vibe-slide .vibe-benefit.accent-teal { background:rgba(17,139,131,.12); }
+    .vibe-slide .vibe-benefit.accent-orange { background:rgba(198,107,27,.13); }
+    .vibe-slide .vibe-benefit strong { color:var(--accent); }
+    .vibe-slide .callout { max-width:760px; margin:22px auto 0; border-left:0; border-top:4px solid var(--teal); background:linear-gradient(90deg,rgba(13,157,178,.08),rgba(17,139,131,.1),rgba(198,107,27,.1)); text-align:center; font-size:20px; }
+    .vibe-slide .callout small { font-size:13px; }
+    .poster-pillars { display:grid; grid-template-columns:repeat(4,1fr); margin-top:24px; border-top:1px solid rgba(0,59,92,.18); border-bottom:1px solid rgba(0,59,92,.18); }
+    .poster-pillar { min-height:170px; padding:22px 18px 20px; text-align:center; }
+    .poster-pillar + .poster-pillar { border-left:1px solid rgba(0,59,92,.18); }
+    .poster-pillar.accent-orange { background:rgba(253,187,48,.16); }
+    .poster-pillar.accent-blue { background:rgba(0,115,168,.12); }
+    .poster-pillar.accent-teal { background:rgba(0,168,89,.13); }
+    .poster-pillar.accent-cyan { background:rgba(0,168,174,.12); }
+    .poster-pillar-icon { display:grid; place-items:center; width:56px; height:56px; margin:0 auto 15px; border:2px solid currentColor; border-radius:50%; color:var(--accent); background:rgba(255,255,255,.82); box-shadow:0 5px 14px rgba(0,59,92,.12); font-size:29px; line-height:1; }
+    .poster-pillar strong { display:block; margin-bottom:9px; color:var(--accent); font-family:var(--display); font-size:19px; line-height:1.05; }
+    .poster-pillar span { display:block; color:var(--muted); font-size:13px; line-height:1.35; }
+    .poster-slide-message .callout { max-width:760px; margin:22px auto 0; border-left:0; border-top:4px solid var(--accent); background:linear-gradient(90deg,rgba(0,115,168,.08),rgba(0,168,89,.1),rgba(253,187,48,.12)); text-align:center; font-size:20px; }
+    .poster-slide-message .callout small { font-size:13px; }
+    .poster-comparison { display:grid; grid-template-columns:repeat(2,1fr); gap:14px; margin-top:10px; }
+    .comparison-panel { overflow:hidden; border:1px solid rgba(0,59,92,.16); border-radius:6px; background:rgba(255,255,255,.82); }
+    .comparison-panel > header { padding:11px 16px 10px; color:#fff; background:linear-gradient(110deg,#0750a3,#087db3); }
+    .comparison-panel.vibe > header { background:linear-gradient(110deg,#5b1fca,#7e32d7); }
+    .comparison-panel h3 { margin:0 0 3px; color:#fff; font-size:19px; text-transform:uppercase; }
+    .comparison-panel header p { margin:0; color:#fff; font-size:11px; line-height:1.2; }
+    .comparison-panel-body { padding:9px 13px 10px; }
+    .comparison-panel-body > p { min-height:31px; margin:0 0 7px; color:var(--ink); font-size:11px; line-height:1.25; text-align:center; }
+    .comparison-section { display:grid; grid-template-columns:48px 1fr; gap:8px; align-items:center; padding:5px 0; border-top:1px solid rgba(0,59,92,.13); }
+    .comparison-section h4 { display:grid; place-items:center; min-height:46px; margin:0; padding:3px 0; border-right:1px solid rgba(0,59,92,.16); color:var(--blue); font-size:10px; line-height:1; text-align:center; text-transform:uppercase; writing-mode:vertical-rl; transform:rotate(180deg); }
+    .comparison-panel.vibe .comparison-section h4 { color:#6423ca; }
+    .comparison-list { display:grid; grid-template-columns:repeat(5,1fr); gap:5px; align-items:center; margin:0; padding:0; list-style:none; }
+    .comparison-list li { color:var(--muted); font-size:9px; line-height:1.2; text-align:center; }
+    .comparison-list strong { display:block; margin-bottom:2px; color:var(--ink); font-size:10px; }
+    .comparison-footer { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:12px; padding:10px 18px; border:1px solid rgba(0,115,168,.2); border-radius:6px; background:linear-gradient(90deg,rgba(0,115,168,.1),rgba(0,168,89,.09),rgba(102,41,205,.1)); text-align:center; }
+    .comparison-footer strong { display:block; margin-bottom:3px; color:var(--ink); font-size:12px; }
+    .comparison-footer span { color:var(--muted); font-size:11px; line-height:1.2; }
+    .comparison-slide { padding-top:42px !important; padding-bottom:56px !important; }
+    .comparison-slide h2 { margin-bottom:7px !important; font-size:clamp(20px,2vw,34px) !important; }
+    .comparison-slide > p { margin-bottom:3px; font-size:13px; line-height:1.2; }
+    .comparison-slide .poster-comparison { margin-top:4px; gap:12px; }
+    .comparison-slide .comparison-panel > header { padding:8px 14px 7px; }
+    .comparison-slide .comparison-panel h3 { font-size:17px; }
+    .comparison-slide .comparison-panel-body { padding:6px 10px 7px; }
+    .comparison-slide .comparison-panel-body > p { min-height:25px; margin-bottom:3px; font-size:11px; line-height:1.2; }
+    .comparison-slide .comparison-section { min-height:40px; padding:2px 0; gap:6px; }
+    .comparison-slide .comparison-section h4 { min-height:34px; font-size:10px; }
+    .comparison-slide .comparison-list { gap:3px; }
+    .comparison-slide .comparison-list li { font-size:10px; line-height:1.15; }
+    .comparison-slide .comparison-list strong { margin-bottom:1px; font-size:11px; }
+    .comparison-slide .comparison-footer { margin-top:5px; padding:6px 12px; gap:8px; }
+    .comparison-slide .comparison-footer strong { margin-bottom:0px; font-size:11px; }
+    .comparison-slide .comparison-footer span { font-size:10px; line-height: 1; font-family: "Segoe UI Semibold"; }
+    .comparison-slide .resource-link { margin-top:3px; font-size:10px; }
+    .coding-table-slide { padding-top:42px !important; padding-bottom:56px !important; }
+    .coding-table-slide h2 { margin-bottom:7px !important; font-size:clamp(20px,2vw,34px) !important; }
+    .coding-table-slide > p { margin-bottom:4px; color:var(--muted); font-size:13px; line-height:1.2; }
+    .coding-table-slide .comparison-table-wrap { margin-top:4px; border:1px solid rgba(0,59,92,.16); border-radius:6px; overflow:hidden; box-shadow:0 8px 18px rgba(0,24,38,.07); }
+    .coding-table-slide .comparison-table { font-size:10px; line-height:1.15; }
+    .coding-table-slide .comparison-table th, .coding-table-slide .comparison-table td { padding:5px 8px; border-color:rgba(0,59,92,.12); }
+    .coding-table-slide .comparison-table thead th { color:#fff; background:linear-gradient(110deg,#5b1fca,#7e32d7); font-size:12px; text-transform:uppercase; }
+    .coding-table-slide .comparison-table thead th:first-child { background:#0750a3; }
+    .coding-table-slide .comparison-table thead th:last-child { background:linear-gradient(110deg,#0750a3,#087db3); }
+    .coding-table-slide .comparison-table th:first-child { width:14%; color:var(--ink); background:rgba(0,115,168,.08); font-size:10px; }
+    .coding-table-slide .comparison-table tbody tr:nth-child(even) td { background:rgba(255,255,255,.54); }
+    .coding-table-slide .comparison-table tbody td:nth-child(2) { background:rgba(126,50,215,.045); }
+    .coding-table-slide .comparison-table tbody td:nth-child(3) { background:rgba(0,115,168,.045); }
+    .coding-table-note { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin-top:6px; padding:6px 12px; border:1px solid rgba(0,115,168,.18); border-radius:6px; background:linear-gradient(90deg,rgba(126,50,215,.08),rgba(0,115,168,.1)); text-align:center; }
+    .coding-table-note strong { color:var(--ink); font-size:10px; margin-right: 5px; }
+    .coding-table-note span { color:var(--muted); font-size:9px; }
+    .approach-panels { display:grid; grid-template-columns:repeat(2,1fr); gap:14px; margin-top:5px; }
+    .approach-panel { overflow:hidden; border:1px solid rgba(0,59,92,.16); border-radius:6px; background:rgba(255,255,255,.86); box-shadow:0 9px 20px rgba(0,24,38,.08); }
+    .approach-panel > header { padding:12px 18px 11px; color:#fff; background:linear-gradient(110deg,#5b1fca,#7e32d7); }
+    .approach-panel.ai > header { background:linear-gradient(110deg,#0750a3,#087db3); }
+    .approach-panel h3 { margin:0 0 3px; color:#fff; font-size:20px; text-transform:uppercase; }
+    .approach-panel header p { margin:0; color:#fff; font-size:11px; line-height:1.2; }
+    .approach-body { padding:5px 13px; }
+    .approach-row { display:grid; grid-template-columns:102px 1fr; gap:12px; align-items:center; min-height:65px; padding:7px 0; border-bottom:1px solid rgba(0,59,92,.12); }
+    .approach-row:last-child { border-bottom:0; }
+    .approach-row > strong { color:#6423ca; font-size:10px; letter-spacing:.07em; text-transform:uppercase; }
+    .approach-panel.ai .approach-row > strong { color:var(--blue); }
+    .approach-row h4 { margin:0 0 3px; color:var(--ink); font-size:12px; }
+    .approach-row p { margin:0; color:var(--muted); font-size:10px; line-height:1.25; }
+    .approach-panel .approach-row:nth-child(odd) { background:linear-gradient(90deg,rgba(126,50,215,.06),transparent); }
+    .approach-panel.ai .approach-row:nth-child(odd) { background:linear-gradient(90deg,rgba(0,115,168,.06),transparent); }
+    .approach-choice-slide { justify-content:flex-start !important; padding-top:42px !important; padding-bottom:56px !important; }
+    .approach-choice-slide h2 { margin-bottom:7px !important; font-size:clamp(20px,2vw,34px) !important; }
+    .approach-choice-slide > p { margin-bottom:4px; color:var(--muted); font-size:13px; line-height:1.2; }
+    .approach-choice-grid { margin-top:4px; gap:12px; }
+    .approach-choice-card { overflow:hidden; padding:0 12px 8px; border:1px solid rgba(0,59,92,.16); border-top:0; border-radius:6px; background:rgba(255,255,255,.86); box-shadow:0 8px 18px rgba(0,24,38,.06); }
+    .approach-choice-card.accent-orange { background:rgba(255,255,255,.86); }
+    .approach-choice-card.accent-blue { background:rgba(255,255,255,.86); }
+    .approach-choice-card h3 { margin:0 -12px 5px; padding:10px 14px 9px; color:#fff; background:linear-gradient(110deg,#5b1fca,#7e32d7); font-size:18px; text-transform:uppercase; }
+    .approach-choice-card.accent-blue h3 { background:linear-gradient(110deg,#0750a3,#087db3); }
+    .approach-choice-card ul { display:grid; gap:9px; margin:0; padding:0; list-style:none; counter-reset:choice; }
+    .approach-choice-card li { display:grid; grid-template-columns:27px 1fr; gap:8px; align-items:start; padding:7px 0; color:var(--muted); font-size:11px; line-height:1.2; counter-increment:choice; }
+    .approach-choice-card li::before { content:counter(choice); display:grid; place-items:center; width:22px; height:22px; border-radius:50%; background:var(--accent); color:#fff; font-size:10px; font-weight:900; }
+    .approach-choice-card li strong { color:var(--ink); }
+    .approach-choice-slide .callout { margin:5px auto 0; padding:10px 13px; border-left:0; border-top:4px solid var(--teal); background:linear-gradient(90deg,rgba(13,157,178,.08),rgba(17,139,131,.1),rgba(198,107,27,.1)); text-align:center; font-size:12px; }
+    .approach-choice-slide .callout small { margin-top:4px; font-size:10px; }
+    .prompt-definition { margin:4px 0 8px; padding:8px 12px; border-left:4px solid var(--blue); background:rgba(255,255,255,.72); color:var(--muted); font-size:12px; line-height:1.3; }
+    .prompt-definition strong { display:block; margin-bottom:2px; color:var(--blue); font-size:12px; text-transform:uppercase; }
+    .prompt-rules { display:grid; grid-template-columns:repeat(5,1fr); gap:0; margin-top:4px; border-top:1px solid rgba(0,59,92,.16); border-bottom:1px solid rgba(0,59,92,.16); }
+    .prompt-rule { min-height:112px; padding:12px 11px 9px; text-align:center; border-right:1px solid rgba(0,59,92,.14); }
+    .prompt-rule:last-child { border-right:0; }
+    .prompt-rule:nth-child(1) h3 { color:var(--blue); }
+    .prompt-rule:nth-child(2) h3 { color:#218a32; }
+    .prompt-rule:nth-child(3) h3 { color:#6336c8; }
+    .prompt-rule:nth-child(4) h3 { color:#d8660b; }
+    .prompt-rule:nth-child(5) h3 { color:#087f91; }
+    .prompt-rule .rule-icon { display:grid; place-items:center; width:42px; height:42px; margin:0 auto 7px; border-radius:50%; background:rgba(33,105,190,.1); color:var(--blue); font-size:20px; font-weight:900; }
+    .prompt-rule:nth-child(2) .rule-icon { background:rgba(33,138,50,.1); color:#218a32; }
+    .prompt-rule:nth-child(3) .rule-icon { background:rgba(99,54,200,.1); color:#6336c8; }
+    .prompt-rule:nth-child(4) .rule-icon { background:rgba(216,102,11,.1); color:#d8660b; }
+    .prompt-rule:nth-child(5) .rule-icon { background:rgba(8,127,145,.1); color:#087f91; }
+    .prompt-rule h3 { margin:0 0 4px; font-size:13px; }
+    .prompt-rule p { margin:0; color:var(--muted); font-size:10px; line-height:1.25; }
+    .prompt-process { display:grid; grid-template-columns:repeat(5,1fr); gap:0; margin-top:9px; padding:8px 12px 7px; border:1px solid rgba(0,59,92,.14); border-radius:6px; background:rgba(255,255,255,.62); }
+    .prompt-process h3 { grid-column:1 / -1; margin:0 0 5px; color:var(--blue); font-size:15px; text-align:center; text-transform:uppercase; }
+    .prompt-step { position:relative; padding:6px 10px; text-align:center; }
+    .prompt-step:not(:last-child)::after { content:'→'; position:absolute; top:18px; right:-5px; color:var(--navy); font-size:20px; }
+    .prompt-step .step-icon { display:grid; place-items:center; width:34px; height:34px; margin:0 auto 4px; border-radius:50%; background:rgba(23,105,170,.1); color:var(--blue); font-size:16px; font-weight:900; }
+    .prompt-step strong { display:block; color:var(--blue); font-size:11px; }
+    .prompt-step span { display:block; margin-top:2px; color:var(--muted); font-size:9px; line-height:1.2; }
+    .prompt-tip { display:flex; align-items:center; gap:12px; margin-top:8px; padding:8px 14px; border-left:4px solid #218a32; background:rgba(33,138,50,.08); }
+    .prompt-tip strong { color:#218a32; font-size:12px; }
+    .prompt-tip span { color:var(--muted); font-size:10px; }
+    .prompt-components-slide h2 { margin-bottom:4px; }
+    .prompt-components-slide > p { margin:0 0 7px; color:var(--muted); font-size:12px; text-align:center; }
+    .prompt-components-intro { margin:0 auto 8px; padding:5px 14px; width:max-content; max-width:100%; border-radius:5px; background:var(--navy); color:#fff; font-size:11px; font-weight:800; text-align:center; }
+    .prompt-components { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+    .prompt-component { position:relative; min-height:205px; padding:12px 12px 10px; overflow:hidden; border:1px solid rgba(0,59,92,.14); border-radius:8px; background:rgba(255,255,255,.78); text-align:center; }
+    .prompt-component::before { content:""; position:absolute; inset:0 0 auto; height:68px; background:rgba(20,155,90,.1); }
+    .prompt-component:nth-child(2)::before { background:rgba(23,105,170,.1); }
+    .prompt-component:nth-child(3)::before { background:rgba(99,54,200,.1); }
+    .prompt-component:nth-child(4)::before { background:rgba(230,109,17,.1); }
+    .prompt-component .component-number { position:relative; display:grid; place-items:center; width:31px; height:31px; margin-bottom:8px; border-radius:50%; background:#149b5a; color:#fff; font-size:16px; font-weight:900; }
+    .prompt-component:nth-child(2) .component-number { background:var(--blue); }
+    .prompt-component:nth-child(3) .component-number { background:#6336c8; }
+    .prompt-component:nth-child(4) .component-number { background:#e66d11; }
+    .prompt-component h3 { position:relative; margin:0 0 3px; color:#149b5a; font-size:17px; text-transform:uppercase; }
+    .prompt-component:nth-child(2) h3 { color:var(--blue); }
+    .prompt-component:nth-child(3) h3 { color:#6336c8; }
+    .prompt-component:nth-child(4) h3 { color:#e66d11; }
+    .prompt-component .component-rule { width:42px; height:2px; margin:0 auto 8px; background:currentColor; }
+    .prompt-component p { margin:0 auto 10px; max-width:150px; color:var(--ink); font-size:11px; line-height:1.25; }
+    .prompt-example { margin-top:auto; padding:8px; border:1px solid rgba(0,59,92,.12); border-radius:6px; color:var(--muted); font-size:10px; font-style:italic; line-height:1.25; }
+    .prompt-example strong { display:block; margin-bottom:4px; color:#149b5a; font-size:9px; font-style:normal; text-align:left; text-transform:uppercase; }
+    .prompt-component:nth-child(2) .prompt-example strong { color:var(--blue); }
+    .prompt-component:nth-child(3) .prompt-example strong { color:#6336c8; }
+    .prompt-component:nth-child(4) .prompt-example strong { color:#e66d11; }
+    .prompt-components-footer { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-top:10px; padding:9px 14px; border:1px solid rgba(0,59,92,.14); border-radius:7px; background:rgba(255,255,255,.62); }
+    .prompt-components-footer strong { display:block; color:var(--blue); font-size:11px; }
+    .prompt-components-footer span { color:var(--muted); font-size:10px; line-height:1.25; }
+    @media (max-width:800px) { .prompt-components { grid-template-columns:1fr 1fr; } .prompt-components-footer { grid-template-columns:1fr; } }
+    .structured-prompt-slide h2 { margin-bottom:4px; }
+    .structured-prompt-slide > p { max-width:800px; margin:0 0 6px; color:var(--muted); font-size:13px; line-height:1.3; }
+    .structured-prompt-lede { margin:0 0 8px; color:#5728d4; font-size:15px; font-weight:800; }
+    .structured-prompt-flow { display:grid; grid-template-columns:repeat(5,1fr); gap:8px; }
+    .structured-prompt-card { position:relative; min-height:240px; padding:10px 9px 9px; border:1px solid rgba(0,59,92,.14); border-radius:8px; background:rgba(255,255,255,.78); text-align:center; }
+    .structured-prompt-card:not(:last-child)::after { content:'→'; position:absolute; top:124px; right:-12px; z-index:2; color:var(--blue); font-size:22px; font-weight:900; }
+    .structured-prompt-icon { display:grid; place-items:center; width:45px; height:45px; margin:0 auto 7px; border:5px solid rgba(87,40,212,.12); border-radius:50%; background:#5728d4; color:#fff; font-size:20px; font-weight:900; }
+    .structured-prompt-card:nth-child(2) .structured-prompt-icon { background:#1264d8; border-color:rgba(18,100,216,.14); }
+    .structured-prompt-card:nth-child(3) .structured-prompt-icon { background:#149b5a; border-color:rgba(20,155,90,.14); }
+    .structured-prompt-card:nth-child(4) .structured-prompt-icon { background:#ef7411; border-color:rgba(239,116,17,.14); }
+    .structured-prompt-card:nth-child(5) .structured-prompt-icon { background:#e62d62; border-color:rgba(230,45,98,.14); }
+    .structured-prompt-card h3 { margin:0 0 3px; color:#5728d4; font-size:13px; line-height:1.15; }
+    .structured-prompt-card:nth-child(2) h3 { color:#1264d8; }
+    .structured-prompt-card:nth-child(3) h3 { color:#149b5a; }
+    .structured-prompt-card:nth-child(4) h3 { color:#ef7411; }
+    .structured-prompt-card:nth-child(5) h3 { color:#e62d62; }
+    .structured-prompt-rule { width:38px; height:2px; margin:0 auto 7px; background:currentColor; }
+    .structured-prompt-card > p { min-height:43px; margin:0 0 8px; color:var(--ink); font-size:10px; line-height:1.3; }
+    .structured-prompt-example { min-height:73px; padding:8px; border:1px solid rgba(87,40,212,.15); border-radius:6px; background:rgba(87,40,212,.05); color:var(--ink); font-size:11px; font-style:italic; line-height:1.35; text-align:left; }
+    .structured-prompt-card:nth-child(2) .structured-prompt-example { border-color:rgba(18,100,216,.15); background:rgba(18,100,216,.05); }
+    .structured-prompt-card:nth-child(3) .structured-prompt-example { border-color:rgba(20,155,90,.15); background:rgba(20,155,90,.05); }
+    .structured-prompt-card:nth-child(4) .structured-prompt-example { border-color:rgba(239,116,17,.15); background:rgba(239,116,17,.05); }
+    .structured-prompt-card:nth-child(5) .structured-prompt-example { border-color:rgba(230,45,98,.15); background:rgba(230,45,98,.05); }
+    .structured-prompt-example strong { display:block; margin-bottom:4px; color:#5728d4; font-size:10px; font-style:normal; }
+    .structured-prompt-card:nth-child(2) .structured-prompt-example strong { color:#1264d8; }
+    .structured-prompt-card:nth-child(3) .structured-prompt-example strong { color:#149b5a; }
+    .structured-prompt-card:nth-child(4) .structured-prompt-example strong { color:#ef7411; }
+    .structured-prompt-card:nth-child(5) .structured-prompt-example strong { color:#e62d62; }
+    .structured-prompt-footer { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-top:10px; padding:9px 14px; border:1px solid rgba(0,59,92,.14); border-radius:7px; background:rgba(255,255,255,.62); }
+    .structured-prompt-footer strong { display:block; color:var(--blue); font-size:11px; }
+    .structured-prompt-footer span { color:var(--muted); font-size:10px; line-height:1.25; }
+    .structured-prompt-footer .closing { align-self:center; color:var(--blue); font-size:16px; font-weight:900; }
+    .prompt-techniques-slide { padding-top:46px !important; padding-bottom:64px !important; }
+    .technique-group-label { margin:8px 0 4px; color:var(--navy); font-size:12px; letter-spacing:.08em; text-transform:uppercase; }
+    .technique-group-label.basic-label { color:var(--blue); }
+    .technique-group-label.advanced-label { color:var(--teal); margin-top:30px; }
+    .techniques-basic { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-top:4px; }
+    .technique-basic { display:grid; grid-template-columns:42px 1fr 1fr; gap:8px 10px; align-items:center; min-height:102px; padding:11px 13px; border:1px solid rgba(0,59,92,.14); border-top:5px solid var(--accent); border-radius:7px; background:rgba(255,255,255,.82); box-shadow:0 6px 16px rgba(0,24,38,.05); }
+    .technique-number { display:grid; place-items:center; width:36px; height:36px; border-radius:50%; background:var(--accent); color:#fff; font-size:18px; font-weight:900; }
+    .technique-basic h3 { margin:0 0 3px; color:var(--accent); font-size:17px; }
+    .technique-basic h3 span { display:block; color:var(--muted); font-size:11px; font-weight:700; }
+    .technique-basic p { margin:0; color:var(--muted); font-size:11px; line-height:1.25; }
+    .technique-use { grid-column:1 / -1; padding:6px 0 0 52px; border-top:1px solid rgba(0,59,92,.12); color:var(--ink); font-size:11px; line-height:1.25; }
+    .technique-use strong { display:block; margin-bottom:2px; color:var(--accent); font-size:11px; }
+    .techniques-advanced { display:grid; grid-template-columns:repeat(5,1fr); gap:9px; margin-top:9px; }
+    .technique-advanced { min-height:154px; padding:10px; border:1px solid rgba(0,59,92,.14); border-top:5px solid var(--accent); border-radius:7px; background:rgba(255,255,255,.82); box-shadow:0 6px 16px rgba(0,24,38,.05); }
+    .technique-advanced h3 { margin:0 0 4px; color:var(--accent); font-size:13px; line-height:1.08; }
+    .technique-advanced h3 span { display:block; margin-top:3px; color:var(--muted); font-size:10px; font-weight:700; }
+    .technique-advanced p { min-height:36px; margin:0 0 7px; color:var(--muted); font-size:10px; line-height:1.25; }
+    .technique-example { padding:7px; border-radius:4px; background:color-mix(in srgb, var(--accent) 8%, white); color:var(--ink); font-size:10px; line-height:1.25; }
+    .technique-example strong { display:block; margin-bottom:3px; color:var(--accent); font-size:10px; }
+    .techniques-footer { display:grid; grid-template-columns:1.7fr 1fr; gap:10px; margin-top:9px; }
+    .technique-choice { display:grid; grid-template-columns:repeat(4,1fr); gap:0; padding:9px 11px; border:1px solid rgba(0,59,92,.14); border-radius:7px; background:rgba(255,255,255,.7); }
+    .technique-choice h3 { grid-column:1 / -1; margin:0 0 6px; color:var(--navy); font-size:13px; text-transform:uppercase; }
+    .choice-step { position:relative; padding:2px 7px; border-right:1px solid rgba(0,59,92,.12); text-align:center; }
+    .choice-step:last-child { border-right:0; }
+    .choice-step strong { display:block; color:var(--blue); font-size:10px; }
+    .choice-step span { display:block; margin-top:3px; color:var(--muted); font-size:9px; line-height:1.2; }
+    .technique-takeaway { display:flex; flex-direction:column; justify-content:center; padding:11px 14px; border:1px solid rgba(19,89,181,.18); border-radius:7px; background:linear-gradient(110deg,rgba(19,89,181,.1),rgba(13,157,178,.08)); }
+    .technique-takeaway strong { color:var(--blue); font-size:13px; text-transform:uppercase; }
+    .technique-takeaway span { margin-top:5px; color:var(--ink); font-size:11px; line-height:1.3; }
+    .prompt-techniques-slide > div:last-child { position:absolute; top:50px; right:clamp(24px,7vw,104px); }
+    .prompt-techniques-slide .resource-link { display:inline-block; margin-top:0; padding:6px 9px; border:1px solid rgba(13,157,178,.24); border-radius:5px; background:rgba(255,255,255,.72); font-size:12px; }
+    .prompt-patterns-slide { padding-top:46px !important; padding-bottom:64px !important; }
+    .prompt-patterns-slide h2 { margin-bottom:4px !important; font-size:clamp(24px,2.7vw,42px) !important; }
+    .prompt-patterns { display:grid; grid-template-columns:repeat(4,1fr); gap:9px; }
+    .prompt-pattern { overflow:hidden; min-height:286px; border:1px solid rgba(0,59,92,.14); border-radius:7px; background:rgba(255,255,255,.82); }
+    .prompt-pattern header { min-height:66px; padding:11px 13px; color:#fff; background:linear-gradient(110deg,#0750a3,#087db3); }
+    .prompt-pattern:nth-child(2) header { background:linear-gradient(110deg,#07966d,#10b576); }
+    .prompt-pattern:nth-child(3) header { background:linear-gradient(110deg,#ee7900,#f39d12); }
+    .prompt-pattern:nth-child(4) header { background:linear-gradient(110deg,#df2165,#ef3c80); }
+    .prompt-pattern h3 { margin:0 0 3px; color:#fff; font-size:16px; line-height:1.05; }
+    .prompt-pattern header span { font-size:10px; font-weight:700; }
+    .prompt-pattern-body { padding:10px 12px; }
+    .prompt-pattern-body > p { min-height:47px; margin:0 0 8px; color:var(--ink); font-size:11px; line-height:1.3; }
+    .prompt-pattern-body h4 { margin:0 0 5px; color:var(--accent); font-size:12px; }
+    .prompt-pattern-body ul { min-height:43px; margin-bottom:8px; padding-left:17px; }
+    .prompt-pattern-body li { color:var(--ink); font-size:10px; line-height:1.25; }
+    .prompt-pattern-example { min-height:83px; padding:9px; border:1px solid color-mix(in srgb, var(--accent) 20%, white); border-radius:6px; background:color-mix(in srgb, var(--accent) 7%, white); color:var(--ink); font-size:10px; line-height:1.3; }
+    .prompt-pattern-example strong { display:block; margin-bottom:4px; color:var(--accent); font-size:10px; }
+    .prompt-patterns-footer { display:grid; grid-template-columns:1.7fr 1fr; gap:10px; margin-top:10px; }
+    .pattern-choice { display:grid; grid-template-columns:repeat(4,1fr); gap:0; padding:10px 12px; border:1px solid rgba(0,59,92,.14); border-radius:7px; background:rgba(255,255,255,.7); }
+    .pattern-choice h3 { grid-column:1 / -1; margin:0 0 7px; color:var(--blue); font-size:14px; }
+    .pattern-step { padding:0 9px; border-right:1px solid rgba(0,59,92,.12); }
+    .pattern-step:last-child { border-right:0; }
+    .pattern-step strong { display:block; color:var(--blue); font-size:10px; }
+    .pattern-step span { display:block; margin-top:3px; color:var(--muted); font-size:9px; line-height:1.25; }
+    .pattern-takeaway { display:flex; flex-direction:column; justify-content:center; padding:12px 14px; border:1px solid rgba(19,89,181,.18); border-radius:7px; background:linear-gradient(110deg,rgba(19,89,181,.1),rgba(13,157,178,.08)); }
+    .pattern-takeaway strong { color:var(--blue); font-size:13px; text-transform:uppercase; }
+    .pattern-takeaway span { margin-top:5px; color:var(--ink); font-size:11px; line-height:1.3; }
+    .prompt-patterns-slide > div:last-child { position:absolute; top:46px; right:clamp(24px,7vw,104px); }
+    .prompt-patterns-slide .resource-link { display:inline-block; margin:0; padding:6px 9px; border:1px solid rgba(19,89,181,.2); border-radius:5px; background:rgba(255,255,255,.72); font-size:12px; }
+    .vibe-production-slide { justify-content:flex-start !important; padding-top:42px !important; padding-bottom:56px !important; }
+    .vibe-production-slide h2 { margin-bottom:7px !important; font-size:clamp(20px,2vw,34px) !important; }
+    .vibe-production-columns { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:5px; }
+    .vibe-production-panel { overflow:hidden; border:1px solid rgba(0,59,92,.16); border-radius:6px; background:rgba(255,255,255,.86); box-shadow:0 9px 20px rgba(0,24,38,.08); }
+    .vibe-production-panel > header { padding:12px 18px 11px; color:#fff; background:linear-gradient(110deg,#5b1fca,#7e32d7); font-size:18px; font-weight:900; text-align:left; text-transform:uppercase; }
+    .vibe-production-panel.production-path > header { background:linear-gradient(110deg,#0750a3,#087db3); }
+    .vibe-risk-list,.vibe-path-list { display:grid; gap:5px; padding:7px; }
+    .vibe-risk,.vibe-path { display:grid; grid-template-columns:30px 1fr; gap:7px; align-items:start; padding:6px 7px; border-left:3px solid var(--accent); background:rgba(255,255,255,.8); }
+    .vibe-risk .context-icon,.vibe-path .context-icon { color:var(--accent); font-size:19px; text-align:center; }
+    .vibe-risk strong,.vibe-path strong { display:block; color:var(--accent); font-size:12px; line-height:1.15; }
+    .vibe-risk span,.vibe-path span { display:block; margin-top:2px; color:var(--ink); font-size:10px; line-height:1.2; }
+    .vibe-production-rule { margin:7px; padding:8px 9px; border:1px solid rgba(17,139,131,.24); border-radius:6px; background:rgba(13,157,178,.07); color:var(--ink); font-size:9px; line-height:1.2; }
+    .vibe-production-rule strong { color:var(--teal); }
+    .vibe-production-slide > .resource-links { margin-top:5px; }
+    .vibe-production-slide > .resource-links .resource-link { margin-top:0; font-size:10px; }
+    @media (min-width:801px) { .vibe-production-slide { padding-top:42px !important; padding-bottom:56px !important; } .vibe-production-slide h2 { font-size:clamp(20px,2vw,34px) !important; } .vibe-production-slide > p { margin-bottom:4px; color:var(--muted); font-size:13px; line-height:1.2; } .vibe-production-columns { height:360px; min-height:0; align-items:stretch; } .vibe-production-panel { display:flex; min-height:0; flex-direction:column; } .vibe-risk-list,.vibe-path-list { flex:1; min-height:0; gap:4px; padding:7px; } .vibe-risk-list { grid-template-rows:repeat(4,minmax(0,1fr)); } .vibe-path-list { grid-template-rows:repeat(5,minmax(0,1fr)); } .vibe-risk,.vibe-path { min-height:0; grid-template-columns:30px 1fr; gap:7px; align-content:center; padding:5px 7px; } .vibe-risk .context-icon,.vibe-path .context-icon { font-size:19px; } .vibe-risk strong,.vibe-path strong { font-size:12px; } .vibe-risk span,.vibe-path span { font-size:10px; line-height:1.25; } .vibe-production-rule { margin:7px; padding:7px 9px; font-size:9px; } .vibe-production-slide > .resource-links { margin-top:8px; } }
+    @media (max-width:800px) { .resource-anchor { position:static; right:auto; top:auto; margin-top:8px !important; } .prompt-patterns { grid-template-columns:1fr 1fr; } .prompt-pattern { min-height:0; } .prompt-patterns-footer { grid-template-columns:1fr; } .pattern-choice { grid-template-columns:1fr 1fr; gap:8px 0; } .pattern-step:nth-of-type(2) { border-right:0; } }
+    @media (max-width:800px) { .techniques-basic,.techniques-advanced,.techniques-footer { grid-template-columns:1fr; } .technique-basic { grid-template-columns:38px 1fr; } .technique-basic p { grid-column:2; } .technique-use { grid-column:1 / -1; padding-left:0; } .techniques-advanced { gap:8px; } .technique-advanced { min-height:0; } .technique-choice { grid-template-columns:repeat(2,1fr); } .choice-step:nth-of-type(2) { border-right:0; } }
+    .structured-prompt-body { display:grid; grid-template-columns:1.22fr .98fr; gap:12px; }
+    .structured-prompt-list { display:grid; gap:6px; }
+    .structured-prompt-row { display:grid; grid-template-columns:38px 130px 1fr 174px; gap:9px; align-items:center; min-height:56px; padding:7px 10px; border:1px solid rgba(0,59,92,.14); border-radius:7px; background:rgba(255,255,255,.78); }
+    .structured-prompt-row .row-number { display:grid; place-items:center; width:29px; height:29px; border-radius:50%; background:#5728d4; color:#fff; font-size:14px; font-weight:900; }
+    .structured-prompt-row:nth-child(2) .row-number { background:#1264d8; }
+    .structured-prompt-row:nth-child(3) .row-number { background:#149b5a; }
+    .structured-prompt-row:nth-child(4) .row-number { background:#ef7411; }
+    .structured-prompt-row:nth-child(5) .row-number { background:#e62d62; }
+    .structured-prompt-row h3 { margin:0; color:#5728d4; font-size:12px; line-height:1.1; }
+    .structured-prompt-row:nth-child(2) h3 { color:#1264d8; }
+    .structured-prompt-row:nth-child(3) h3 { color:#149b5a; }
+    .structured-prompt-row:nth-child(4) h3 { color:#ef7411; }
+    .structured-prompt-row:nth-child(5) h3 { color:#e62d62; }
+    .structured-prompt-row .row-description { padding-left:9px; border-left:1px solid rgba(0,59,92,.15); color:var(--ink); font-size:10px; line-height:1.25; }
+    .structured-prompt-row .row-example { padding:6px 8px; border:1px solid rgba(87,40,212,.18); border-radius:5px; background:rgba(87,40,212,.05); color:var(--ink); font-size:9px; font-style:italic; line-height:1.2; }
+    .structured-prompt-row:nth-child(2) .row-example { border-color:rgba(18,100,216,.18); background:rgba(18,100,216,.05); }
+    .structured-prompt-row:nth-child(3) .row-example { border-color:rgba(20,155,90,.18); background:rgba(20,155,90,.05); }
+    .structured-prompt-row:nth-child(4) .row-example { border-color:rgba(239,116,17,.18); background:rgba(239,116,17,.05); }
+    .structured-prompt-row:nth-child(5) .row-example { border-color:rgba(230,45,98,.18); background:rgba(230,45,98,.05); }
+    .structured-prompt-row .row-example strong { display:block; margin-bottom:2px; color:#5728d4; font-size:9px; font-style:normal; }
+    .structured-prompt-row:nth-child(2) .row-example strong { color:#1264d8; }
+    .structured-prompt-row:nth-child(3) .row-example strong { color:#149b5a; }
+    .structured-prompt-row:nth-child(4) .row-example strong { color:#ef7411; }
+    .structured-prompt-row:nth-child(5) .row-example strong { color:#e62d62; }
+    .structured-prompt-pyramid { padding:10px 12px; border:1px solid rgba(0,59,92,.14); border-radius:8px; background:rgba(255,255,255,.62); }
+    .structured-prompt-pyramid h3 { margin:0 0 3px; color:var(--navy); font-size:18px; text-transform:uppercase; }
+    .structured-prompt-pyramid > p { margin:0 0 8px; color:var(--muted); font-size:11px; line-height:1.25; }
+    .pyramid { display:grid; gap:3px; margin:0 auto 8px; max-width:270px; }
+    .pyramid-level { display:flex; align-items:center; justify-content:center; min-height:33px; margin:0 auto; color:#fff; font-size:11px; font-weight:900; }
+    .pyramid-level span { margin-left:8px; }
+    .pyramid-level:nth-child(1) { width:34%; background:#1264d8; clip-path:polygon(50% 0,100% 100%,0 100%); }
+    .pyramid-level:nth-child(2) { width:50%; background:#149b5a; }
+    .pyramid-level:nth-child(3) { width:66%; background:#ef7411; }
+    .pyramid-level:nth-child(4) { width:82%; background:#7044cf; }
+    .pyramid-level:nth-child(5) { width:100%; background:#1599ad; }
+    .pyramid-labels { display:grid; gap:4px; }
+    .pyramid-label { display:grid; grid-template-columns:22px 1fr; gap:7px; align-items:center; font-size:10px; }
+    .pyramid-label b { display:grid; place-items:center; width:22px; height:22px; border-radius:50%; background:#1264d8; color:#fff; }
+    .pyramid-label:nth-child(2) b { background:#149b5a; }
+    .pyramid-label:nth-child(3) b { background:#ef7411; }
+    .pyramid-label:nth-child(4) b { background:#7044cf; }
+    .pyramid-label:nth-child(5) b { background:#1599ad; }
+    .pyramid-label strong { display:block; color:var(--ink); }
+    .pyramid-label span { color:var(--muted); }
+    .structured-prompt-takeaway { margin-top:8px; padding:8px 10px; border:1px solid var(--blue); border-radius:7px; background:rgba(0,115,168,.04); }
+    .structured-prompt-takeaway strong { display:block; color:var(--blue); font-size:11px; }
+    .structured-prompt-takeaway span { color:var(--ink); font-size:10px; line-height:1.25; }
+    .structured-prompt-assembled { margin-top:8px; padding:7px 9px; border:1px solid rgba(0,59,92,.12); border-radius:7px; background:rgba(255,255,255,.62); }
+    .structured-prompt-assembled strong { display:block; margin-bottom:5px; color:var(--blue); font-size:10px; text-align:center; }
+    .assembled-flow { display:grid; grid-template-columns:repeat(5,1fr); gap:4px; }
+    .assembled-flow span { color:var(--muted); font-size:8px; line-height:1.15; text-align:center; }
+    .assembled-flow b { display:block; margin-bottom:2px; color:var(--blue); font-size:14px; }
+    @media (max-width:1050px) and (min-width:801px) { .structured-prompt-body { grid-template-columns:1.1fr .9fr; } .structured-prompt-row { grid-template-columns:30px 105px 1fr 130px; gap:6px; padding:6px; } .structured-prompt-row .row-description,.structured-prompt-row .row-example { font-size:8px; } }
+    @media (max-width:800px) { .structured-prompt-body { grid-template-columns:1fr; } .structured-prompt-row { grid-template-columns:34px 120px 1fr; } .structured-prompt-row .row-example { grid-column:2 / -1; } .structured-prompt-pyramid { margin-top:2px; } }
+    @media (max-width:1000px) and (min-width:801px) { .structured-prompt-card { min-height:230px; padding-left:6px; padding-right:6px; } .structured-prompt-card:not(:last-child)::after { right:-11px; } .structured-prompt-card > p { font-size:9px; } }
+    @media (max-width:800px) { .structured-prompt-flow { grid-template-columns:1fr 1fr; } .structured-prompt-card:not(:last-child)::after { content:'↓'; top:auto; right:auto; bottom:-14px; left:calc(50% - 5px); } .structured-prompt-card:nth-child(5) { grid-column:1 / -1; } .structured-prompt-footer { grid-template-columns:1fr; } }
+    @media (max-width:800px) { .prompt-rules,.prompt-process { grid-template-columns:1fr; } .prompt-rule { min-height:0; border-right:0; border-bottom:1px solid rgba(0,59,92,.14); } .prompt-rule:last-child { border-bottom:0; } .prompt-step { padding:9px; } .prompt-step:not(:last-child)::after { content:'↓'; top:auto; right:auto; bottom:-8px; left:calc(50% - 5px); } }
+    @media (max-width:800px) { .approach-panels { grid-template-columns:1fr; } }
+    .layers { display:grid; gap:8px; margin-top:4px; } .layer { display:grid; grid-template-columns:160px 1fr; gap:14px; align-items:center; padding:14px 16px; border-left:5px solid var(--accent); background:rgba(255,255,255,.84); } .layer strong { color:var(--accent); font-size:12px; letter-spacing:.08em; text-transform:uppercase; } .layer span { color:var(--muted); font-size:13px; line-height:1.35; }
+    .context-reference-slide { padding-top:46px !important; padding-bottom:64px !important; }
+    .context-hero { display:grid; grid-template-columns:1fr 300px; gap:18px; align-items:center; }
+    .context-definition { margin:0; color:var(--ink); font-size:12px; line-height:1.35; }
+    .context-goal { display:grid; grid-template-columns:58px 1fr; gap:8px; align-items:center; padding:9px 11px; border:1px solid rgba(0,59,92,.14); border-radius:7px; background:rgba(255,255,255,.82); box-shadow:0 3px 10px rgba(0,59,92,.05); }
+    .context-goal-icon { display:grid; place-items:center; width:58px; height:58px; border:2px solid var(--blue); border-radius:50%; color:var(--blue); font-size:28px; font-weight:900; }
+    .context-goal strong { display:block; margin-bottom:4px; color:var(--blue); font-size:13px; text-transform:uppercase; }
+    .context-goal span { color:var(--ink); font-size:11px; line-height:1.3; }
+    .context-section-title { display:flex; align-items:center; gap:10px; margin:8px 0 3px; color:var(--blue); font-size:12px; text-align:center; text-transform:uppercase; }
+    .context-section-title::before,.context-section-title::after { content:""; height:1px; flex:1; background:rgba(19,89,181,.16); }
+    .context-principles { display:grid; grid-template-columns:repeat(5,1fr); border:1px solid rgba(0,59,92,.14); border-radius:7px; background:rgba(255,255,255,.66); box-shadow:0 3px 10px rgba(0,59,92,.04); }
+    .context-principle { min-height:82px; padding:7px 8px; text-align:center; }
+    .context-principle + .context-principle { border-left:1px solid rgba(0,59,92,.14); }
+    .context-principle .context-icon { display:grid; place-items:center; width:40px; height:40px; margin:0 auto 5px; border:2px solid currentColor; border-radius:50%; color:var(--accent); background:rgba(255,255,255,.7); font-size:19px; }
+    .context-principle strong { display:block; margin-bottom:4px; color:var(--accent); font-size:13px; }
+    .context-principle span { display:block; color:var(--ink); font-size:10px; line-height:1.25; }
+    .context-bottom { display:grid; grid-template-columns:1.7fr .7fr; gap:10px; }
+    .context-workflow { display:grid; grid-template-columns:repeat(5,1fr); padding:7px 8px; border:1px solid rgba(0,59,92,.14); border-radius:7px; background:rgba(255,255,255,.82); box-shadow:0 3px 10px rgba(0,59,92,.04); }
+    .context-step { position:relative; padding:0 8px; text-align:center; }
+    .context-step + .context-step { border-left:1px solid rgba(0,59,92,.12); }
+    .context-step .context-icon { display:grid; place-items:center; width:38px; height:38px; margin:0 auto 4px; border:1px solid currentColor; border-radius:50%; color:var(--accent); background:rgba(255,255,255,.7); font-size:18px; }
+    .context-step strong { display:block; margin-bottom:3px; color:var(--accent); font-size:11px; }
+    .context-step span { display:block; color:var(--ink); font-size:9px; line-height:1.25; }
+    .context-tip { display:flex; flex-direction:column; justify-content:center; padding:9px 11px; border:1px solid rgba(0,59,92,.14); border-radius:7px; background:rgba(255,255,255,.82); box-shadow:0 3px 10px rgba(0,59,92,.04); }
+    .context-tip strong { color:var(--cyan); font-size:13px; text-transform:uppercase; }
+    .context-tip span { margin-top:5px; color:var(--ink); font-size:11px; line-height:1.3; }
+    .context-tip em { margin-top:8px; color:var(--teal); font-size:12px; font-style:normal; font-weight:800; line-height:1.25; }
+    .context-reference-slide > .resource-links { display:flex; gap:12px; margin-top:6px; }
+    .context-reference-slide > .resource-links .resource-link { margin-top:0; font-size:10px; }
+    .context-concepts-slide { justify-content:flex-start !important; padding-top:42px !important; padding-bottom:70px !important; }
+    .context-concepts-grid { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:12px; align-items:start; }
+    .context-concept-panel { overflow:hidden; border:1px solid rgba(0,59,92,.14); border-radius:7px; background:rgba(255,255,255,.76); }
+    .context-concept-panel > header { padding:7px 12px; color:#fff; background:linear-gradient(110deg,#0750a3,#1264d8); font-size:13px; font-weight:900; text-transform:uppercase; }
+    .context-concept-panel:nth-child(1) > header { background:linear-gradient(110deg,#5422c7,#7137da); }
+    .context-concept-panel:nth-child(2) > header { background:linear-gradient(110deg,#087552,#15966e); }
+    .context-concept-body { padding:6px 8px; }
+    .context-principle-row { display:grid; grid-template-columns:30px 34px 1fr; gap:7px; align-items:center; min-height:49px; padding:4px 3px; border-bottom:1px solid rgba(0,59,92,.11); }
+    .context-principle-row:last-child { border-bottom:0; }
+    .context-principle-number { display:grid; place-items:center; width:26px; height:26px; border-radius:50%; background:var(--accent); color:#fff; font-size:13px; font-weight:900; }
+    .context-principle-row .context-icon { display:grid; place-items:center; width:30px; height:30px; color:var(--accent); font-size:22px; font-weight:900; }
+    .context-principle-row strong { display:block; color:var(--accent); font-size:11px; }
+    .context-principle-row span { display:block; margin-top:2px; color:var(--ink); font-size:9px; line-height:1.2; }
+    .context-window { padding:7px; border:1px solid rgba(99,54,200,.35); border-radius:7px; background:rgba(99,54,200,.04); }
+    .context-window-title { padding:7px; border-radius:5px; background:#6336c8; color:#fff; text-align:center; }
+    .context-window-title strong { display:block; font-size:14px; }
+    .context-window-title span { font-size:10px; }
+    .context-window-items { display:grid; gap:4px; margin-top:5px; }
+    .context-window-item { display:grid; grid-template-columns:25px 1fr; gap:6px; align-items:center; min-height:34px; padding:4px 7px; border:1px solid rgba(99,54,200,.16); border-radius:5px; background:rgba(255,255,255,.75); }
+    .context-window-item .context-icon { color:var(--accent); font-size:18px; text-align:center; }
+    .context-window-item strong { color:var(--ink); font-size:10px; }
+    .context-window-item span { display:block; color:var(--muted); font-size:8px; line-height:1.15; }
+    .context-lifecycle { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:5px; }
+    .context-lifecycle-step { display:grid; grid-template-columns:28px 1fr; gap:6px; align-items:center; min-height:39px; padding:4px 7px; border:1px solid color-mix(in srgb, var(--accent) 28%, white); border-radius:5px; background:color-mix(in srgb, var(--accent) 7%, white); }
+    .context-lifecycle-step .context-icon { color:var(--accent); font-size:18px; text-align:center; }
+    .context-lifecycle-step strong { display:block; color:var(--accent); font-size:10px; }
+    .context-lifecycle-step span { display:block; color:var(--ink); font-size:8px; line-height:1.15; }
+    .context-concepts-footer { display:grid; grid-template-columns:1.8fr .7fr; gap:10px; margin-top:8px; }
+    .context-outcomes { display:grid; grid-template-columns:repeat(5,1fr); padding:8px 10px; border:1px solid rgba(0,59,92,.14); border-radius:7px; background:rgba(255,255,255,.7); }
+    .context-outcome { padding:0 8px; text-align:center; }
+    .context-outcome + .context-outcome { border-left:1px solid rgba(0,59,92,.12); }
+    .context-outcome .context-icon { margin-bottom:3px; color:var(--accent); font-size:20px; }
+    .context-outcome strong { display:block; color:var(--accent); font-size:10px; }
+    .context-outcome span { display:block; margin-top:2px; color:var(--ink); font-size:8px; line-height:1.15; }
+    .context-concepts-takeaway { display:flex; flex-direction:column; justify-content:center; padding:10px 13px; border:1px solid rgba(19,89,181,.18); border-radius:7px; background:linear-gradient(135deg,rgba(19,89,181,.1),rgba(13,157,178,.08)); }
+    .context-concepts-takeaway strong { color:var(--blue); font-size:12px; }
+    .context-concepts-takeaway span { margin-top:4px; color:var(--ink); font-size:10px; line-height:1.25; }
+    .context-concepts-slide > .resource-links { display:flex; gap:10px; margin-top:5px; }
+    .context-concepts-slide > .resource-links .resource-link { margin-top:0; font-size:10px; }
+    .token-budget-slide { justify-content:flex-start !important; padding-top:40px !important; padding-bottom:64px !important; }
+    .token-budget-top,.token-budget-lower { display:grid; grid-template-columns:1.9fr .95fr; gap:10px; }
+    .token-budget-panel,.token-budget-section { overflow:hidden; border:1px solid rgba(0,59,92,.14); border-radius:7px; background:rgba(255,255,255,.78); box-shadow:0 3px 10px rgba(0,59,92,.04); }
+    .token-budget-panel > header { padding:7px 11px; color:#fff; background:linear-gradient(110deg,#0750a3,#1264d8); font-size:12px; font-weight:900; text-transform:uppercase; }
+    .token-window-allocation { display:grid; grid-template-columns:repeat(6,1fr); gap:5px; padding:8px; }
+    .token-window-total { grid-column:1 / -1; padding:6px; border:1px solid rgba(19,89,181,.2); border-radius:6px; background:rgba(235,242,252,.72); color:var(--blue); text-align:center; }
+    .token-window-total strong,.token-budget-card strong { display:block; font-size:10px; }
+    .token-window-total span { display:block; margin-top:2px; color:var(--ink); font-size:9px; }
+    .token-budget-card { min-height:92px; padding:7px 5px; border:1px solid color-mix(in srgb,var(--accent) 22%,white); border-radius:6px; background:color-mix(in srgb,var(--accent) 6%,white); text-align:center; }
+    .token-budget-card .context-icon { display:grid; place-items:center; width:25px; height:25px; margin:0 auto 3px; border-radius:50%; background:var(--accent); color:#fff; font-size:13px; }
+    .token-budget-card strong { color:var(--accent); font-size:9px; line-height:1.1; text-transform:uppercase; }
+    .token-budget-card span { display:block; margin-top:4px; color:var(--ink); font-size:8px; line-height:1.15; }
+    .token-budget-card em { display:block; margin-top:5px; color:var(--accent); font-size:9px; font-style:normal; font-weight:900; }
+    .token-budget-purple { --accent:#6336c8; }
+    .token-budget-pink { --accent:#df2165; }
+    .token-budget-tip { grid-template-columns:1fr !important; margin-top:10px !important; }
+    .token-budget-equation { padding:8px 10px; }
+    .token-budget-equation h3,.token-budget-section h3 { margin:0 0 6px; color:var(--blue); font-size:12px; text-transform:uppercase; }
+    .token-equation { display:grid; grid-template-columns:1fr 14px 1fr 14px 1fr; gap:4px; align-items:center; }
+    .token-equation div { min-height:48px; display:grid; place-items:center; padding:5px; border:1px solid rgba(19,89,181,.18); border-radius:6px; color:var(--navy); font-size:9px; font-weight:800; text-align:center; }
+    .token-equation b { color:var(--blue); font-size:15px; text-align:center; }
+    .token-example { margin-top:8px; padding:6px; border-radius:6px; background:rgba(17,139,131,.08); color:var(--teal); font-size:9px; font-weight:800; line-height:1.25; text-align:center; }
+    .token-budget-lower { grid-template-columns:1fr 1.15fr 1fr; margin-top:9px; }
+    .token-budget-section { padding:8px 10px; }
+    .token-types { display:grid; grid-template-columns:repeat(5,1fr); gap:4px; }
+    .token-type { padding:4px 3px; border-right:1px solid rgba(0,59,92,.12); color:var(--ink); font-size:8px; line-height:1.2; text-align:center; }
+    .token-type:last-child { border-right:0; }
+    .token-type strong { display:block; margin-bottom:3px; color:var(--accent); font-size:10px; }
+    .token-strategy,.token-practice { display:grid; gap:5px; }
+    .token-strategy div,.token-practice div { display:grid; grid-template-columns:20px 1fr; gap:6px; padding-bottom:5px; border-bottom:1px solid rgba(0,59,92,.1); color:var(--ink); font-size:9px; line-height:1.2; }
+    .token-strategy div:last-child,.token-practice div:last-child { padding-bottom:0; border-bottom:0; }
+    .token-strategy b,.token-practice b { display:grid; place-items:center; width:19px; height:19px; border-radius:50%; background:var(--accent); color:#fff; font-size:10px; }
+    .token-strategy strong,.token-practice strong { color:var(--accent); }
+    .token-budget-takeaway { display:grid; grid-template-columns:120px 1fr 1.2fr; gap:10px; align-items:center; margin-top:9px; padding:9px 12px; border:1px solid rgba(19,89,181,.16); border-radius:7px; background:linear-gradient(90deg,rgba(19,89,181,.08),rgba(17,139,131,.08)); }
+    .token-budget-takeaway strong { color:var(--blue); font-size:12px; text-transform:uppercase; }
+    .token-budget-takeaway span { color:var(--ink); font-size:10px; line-height:1.25; }
+    .token-outcomes { display:flex; justify-content:space-between; gap:8px; color:var(--muted); font-size:9px; }
+    .token-outcomes strong { display:block; color:var(--accent); font-size:10px; }
+    @media (min-width:801px) { .token-budget-slide { padding-top:30px !important; padding-bottom:48px !important; } .token-budget-slide .token-window-allocation { gap:4px; padding:6px; } .token-budget-slide .token-budget-card { min-height:78px; padding:5px 4px; } .token-budget-slide .token-budget-card .context-icon { width:22px; height:22px; margin-bottom:2px; font-size:12px; } .token-budget-slide .token-budget-card span { margin-top:3px; font-size:7px; } .token-budget-slide .token-budget-card em { margin-top:3px; font-size:8px; } .token-budget-slide .token-budget-lower { margin-top:6px; } .token-budget-slide .token-budget-section { padding:6px 8px; } .token-budget-slide .token-strategy,.token-budget-slide .token-practice { gap:3px; } .token-budget-slide .token-strategy div,.token-budget-slide .token-practice div { padding-bottom:3px; font-size:8px; } .token-budget-slide > .token-budget-takeaway { margin-top:6px; padding:6px 9px; } .token-budget-slide > .token-budget-takeaway span { font-size:9px; } }
+    @media (max-width:800px) { .token-budget-slide { overflow-y:auto !important; } .token-budget-top,.token-budget-lower,.token-budget-takeaway { grid-template-columns:1fr; } .token-window-allocation { grid-template-columns:repeat(2,1fr); } .token-window-total { grid-column:1 / -1; } .token-budget-card { min-height:0; } .token-outcomes { flex-wrap:wrap; } }
+    @media (max-width:800px) { .context-concepts-slide { overflow-y:auto !important; } .context-reference-slide { padding-top:26px !important; } .context-concepts-grid,.context-concepts-footer,.context-lifecycle { grid-template-columns:1fr; } .context-outcomes { grid-template-columns:1fr; } .context-outcome + .context-outcome { border-top:1px solid rgba(0,59,92,.12); border-left:0; } }
+    .context-architecture-slide { justify-content:flex-start !important; padding-top:38px !important; padding-bottom:70px !important; }
+    .context-architecture-slide h2 { margin-bottom:3px !important; font-size:clamp(27px,3.3vw,44px) !important; text-transform:uppercase; }
+    .context-architecture-slide > p { margin-bottom:8px; color:var(--blue); font-size:13px; font-weight:700; line-height:1.2; }
+    .architecture-sources { display:grid; grid-template-columns:repeat(6,1fr); gap:7px; padding:7px; border:1px solid #4c85ed; border-radius:8px; background:rgba(255,255,255,.62); }
+    .architecture-label { grid-column:1 / -1; color:var(--blue); font-size:12px; font-weight:900; text-align:center; text-transform:uppercase; }
+    .architecture-source { min-height:94px; padding:8px; border:1px solid rgba(19,89,181,.22); border-radius:7px; background:linear-gradient(145deg,rgba(19,89,181,.08),rgba(255,255,255,.78)); }
+    .architecture-source:nth-child(3n) { border-color:rgba(21,150,110,.28); background:linear-gradient(145deg,rgba(21,150,110,.08),rgba(255,255,255,.78)); }
+    .architecture-source:nth-child(4n) { border-color:rgba(223,33,101,.22); background:linear-gradient(145deg,rgba(223,33,101,.06),rgba(255,255,255,.78)); }
+    .architecture-source .context-icon { margin-bottom:3px; color:var(--accent); font-size:23px; }
+    .architecture-source strong { display:block; color:var(--accent); font-size:10px; line-height:1.1; }
+    .architecture-source span { display:block; margin-top:4px; color:var(--ink); font-size:8px; line-height:1.2; }
+    .architecture-main { display:grid; grid-template-columns:minmax(0,1fr) 225px; gap:10px; margin-top:8px; }
+    .architecture-pipeline { padding:9px 12px; border:1px solid #43af77; border-radius:8px; background:rgba(224,248,233,.3); }
+    .architecture-pipeline > h3 { margin:0 0 7px; color:#087552; font-size:13px; text-align:center; text-transform:uppercase; }
+    .architecture-pipeline-row { display:flex; justify-content:center; gap:10px; }
+    .architecture-node { position:relative; flex:0 1 250px; padding:8px 12px 8px 43px; border:1px solid rgba(21,150,110,.45); border-radius:7px; background:rgba(255,255,255,.82); }
+    .architecture-node + .architecture-node { border-color:rgba(223,145,0,.5); background:rgba(255,249,225,.85); }
+    .architecture-node .context-icon { position:absolute; top:10px; left:12px; color:var(--accent); font-size:23px; }
+    .architecture-node strong { display:block; color:var(--accent); font-size:12px; }
+    .architecture-node span { display:block; margin-top:3px; color:var(--ink); font-size:9px; line-height:1.2; }
+    .architecture-arrow { height:14px; color:#1f3c55; font-size:17px; line-height:14px; text-align:center; }
+    .architecture-window { margin:8px auto; max-width:760px; padding:8px; border:1px solid #dfa000; border-radius:8px; background:rgba(255,249,225,.78); }
+    .architecture-window h3 { margin:0; color:#a86b00; font-size:13px; text-align:center; text-transform:uppercase; }
+    .architecture-window > p { margin:2px 0 6px; color:var(--ink); font-size:9px; text-align:center; }
+    .architecture-payload { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; }
+    .architecture-payload span { display:grid; place-items:center; min-height:38px; padding:4px; border:1px solid rgba(19,89,181,.22); border-radius:5px; background:rgba(255,255,255,.75); color:var(--blue); font-size:8px; font-weight:800; text-align:center; }
+    .architecture-inference { margin:7px auto; max-width:580px; padding:8px 12px 8px 48px; border:1px solid rgba(223,33,101,.4); border-radius:7px; background:rgba(255,235,244,.72); }
+    .architecture-inference .context-icon { position:absolute; margin-left:-36px; color:#b41c65; font-size:25px; }
+    .architecture-inference strong { display:block; color:#a3195d; font-size:12px; }
+    .architecture-inference span { display:block; color:var(--ink); font-size:9px; }
+    .architecture-response { margin:7px auto 0; max-width:580px; padding:8px 12px 8px 48px; border:1px solid rgba(19,89,181,.4); border-radius:7px; background:rgba(232,241,255,.8); }
+    .architecture-response .context-icon { position:absolute; margin-left:-36px; color:var(--blue); font-size:25px; }
+    .architecture-response strong { display:block; color:var(--blue); font-size:12px; }
+    .architecture-response span { display:block; color:var(--ink); font-size:9px; }
+    .architecture-rail { display:grid; gap:8px; align-content:start; }
+    .architecture-rail-panel { padding:9px 11px; border:1px solid rgba(19,89,181,.22); border-radius:8px; background:rgba(255,255,255,.72); }
+    .architecture-rail-panel h3 { margin:0 0 6px; color:var(--blue); font-size:12px; text-align:center; text-transform:uppercase; }
+    .architecture-rail-panel ul { display:grid; gap:4px; margin:0; padding:0; list-style:none; }
+    .architecture-rail-panel li { color:var(--ink); font-size:9px; line-height:1.2; }
+    .architecture-rail-panel li::before { content:'✓'; margin-right:5px; color:#087552; font-weight:900; }
+    .architecture-rail-panel.principles li::before { content:'•'; color:var(--blue); }
+    .architecture-takeaway { display:grid; grid-template-columns:40px 1fr; gap:8px; align-items:center; margin-top:8px; padding:8px 12px; border:1px solid rgba(19,89,181,.2); border-radius:8px; background:rgba(255,255,255,.72); }
+    .architecture-takeaway .context-icon { color:var(--blue); font-size:27px; text-align:center; }
+    .architecture-takeaway strong { display:block; color:var(--blue); font-size:11px; text-transform:uppercase; }
+    .architecture-takeaway span { display:block; margin-top:2px; color:var(--ink); font-size:9px; line-height:1.2; }
+    .context-architecture-slide > .resource-links { margin-top:5px; }
+    .context-architecture-slide > .resource-links .resource-link { margin-top:0; font-size:10px; }
+    @media (max-width:800px) { .context-architecture-slide { overflow-y:auto !important; } .architecture-sources { grid-template-columns:1fr 1fr; } .architecture-main { grid-template-columns:1fr; } .architecture-payload { grid-template-columns:repeat(2,1fr); } .architecture-pipeline-row { flex-direction:column; } .architecture-node { flex-basis:auto; } }
+    .context-types-slide { justify-content:flex-start !important; padding-top:38px !important; padding-bottom:70px !important; }
+    .context-types-slide h2 { margin-bottom:3px !important; font-size:clamp(28px,3.3vw,44px) !important; text-transform:uppercase; }
+    .context-types-slide > p { margin-bottom:8px; color:var(--blue); font-size:13px; font-weight:700; line-height:1.2; }
+    .context-types-grid { display:grid; grid-template-columns:1.1fr .9fr; gap:10px; }
+    .context-types-panel { overflow:hidden; border:1px solid rgba(0,59,92,.14); border-radius:8px; background:rgba(255,255,255,.7); }
+    .context-types-panel > header { padding:7px 12px; color:#fff; background:linear-gradient(110deg,#1545d8,#174eea); font-size:13px; font-weight:900; text-align:center; text-transform:uppercase; }
+    .context-type-row { display:grid; grid-template-columns:34px 34px 1fr 168px; gap:7px; align-items:center; min-height:68px; padding:6px 8px; border-bottom:1px solid rgba(0,59,92,.11); }
+    .context-type-row:last-child { border-bottom:0; }
+    .context-type-number { display:grid; place-items:center; width:27px; height:27px; border-radius:50%; background:var(--accent); color:#fff; font-size:13px; font-weight:900; }
+    .context-type-row .context-icon { color:var(--accent); font-size:25px; text-align:center; }
+    .context-type-row strong { display:block; color:var(--accent); font-size:11px; }
+    .context-type-row p { margin:3px 0 0; color:var(--ink); font-size:9px; line-height:1.2; }
+    .context-type-row em { display:block; margin-top:3px; color:var(--accent); font-size:8px; font-weight:800; line-height:1.15; }
+    .context-type-example { padding:6px 8px; border:1px solid color-mix(in srgb, var(--accent) 18%, white); border-radius:5px; background:color-mix(in srgb, var(--accent) 6%, white); color:var(--ink); font-family:ui-monospace,Consolas,monospace; font-size:8px; line-height:1.35; }
+    .context-layers { display:grid; gap:5px; padding:9px 12px 10px; }
+    .context-layer { display:grid; grid-template-columns:29px 34px 1fr 100px; gap:7px; align-items:center; min-height:54px; padding:5px 8px; border:1px solid color-mix(in srgb, var(--accent) 28%, white); border-radius:6px; background:color-mix(in srgb, var(--accent) 8%, white); }
+    .context-layer-number { display:grid; place-items:center; width:25px; height:25px; border-radius:50%; background:var(--accent); color:#fff; font-size:12px; font-weight:900; }
+    .context-layer .context-icon { color:var(--accent); font-size:24px; text-align:center; }
+    .context-layer strong { display:block; color:var(--accent); font-size:11px; }
+    .context-layer span { display:block; margin-top:2px; color:var(--ink); font-size:8px; line-height:1.15; }
+    .context-layer-note { color:var(--accent); font-size:8px; font-weight:800; line-height:1.15; }
+    .context-layer-note b { display:block; font-size:10px; }
+    .context-layers-tip { margin-top:2px; padding:7px 9px; border:1px solid rgba(223,145,0,.28); border-radius:6px; background:rgba(255,249,225,.8); color:#8a5b00; font-size:9px; font-weight:800; text-align:center; }
+    .context-types-footer { display:grid; grid-template-columns:1.15fr 1fr; gap:10px; margin-top:8px; padding:8px 10px; border:1px solid rgba(0,59,92,.14); border-radius:8px; background:rgba(255,255,255,.72); }
+    .context-types-footer h3 { margin:0 0 5px; color:var(--blue); font-size:11px; text-transform:uppercase; }
+    .context-refinement { display:grid; grid-template-columns:repeat(4,1fr); gap:5px; }
+    .context-refinement div { padding:6px; border-left:2px solid var(--accent); background:color-mix(in srgb, var(--accent) 6%, white); }
+    .context-refinement strong { display:block; color:var(--accent); font-size:9px; }
+    .context-refinement span { display:block; margin-top:2px; color:var(--ink); font-size:8px; line-height:1.15; }
+    .context-types-takeaway { display:flex; align-items:center; gap:9px; padding:6px 8px; }
+    .context-types-takeaway .context-icon { color:var(--blue); font-size:29px; }
+    .context-types-takeaway p { margin:0; color:var(--ink); font-size:10px; line-height:1.25; }
+    .context-types-slide > .resource-links { margin-top:5px; }
+    .context-types-slide > .resource-links .resource-link { margin-top:0; font-size:10px; }
+    @media (max-width:800px) { .context-types-slide { overflow-y:auto !important; } .context-types-grid,.context-types-footer { grid-template-columns:1fr; } .context-type-row { grid-template-columns:30px 30px 1fr; } .context-type-example { grid-column:3; } .context-layer { grid-template-columns:27px 30px 1fr; } .context-layer-note { grid-column:3; } .context-refinement { grid-template-columns:1fr 1fr; } }
+    @media (max-width:800px) { .context-reference-slide { overflow-y:auto !important; } .context-hero,.context-bottom { grid-template-columns:1fr; } .context-principles,.context-workflow { grid-template-columns:1fr; } .context-principle + .context-principle,.context-step + .context-step { border-top:1px solid rgba(0,59,92,.12); border-left:0; } .context-principle,.context-step { min-height:0; padding:10px; } }
+    .code { margin-top:4px; padding:17px 20px; border:1px solid #29445f; border-radius:10px; background:#0b2038; color:#d9f8f2; box-shadow:0 12px 24px rgba(7,26,56,.14); font-family:"Segoe UI"; font-size:13px; line-height:1.65; } .code .key { color:#5ed8ca; } .code .value { color:#f4c67e; } .code .comment { color:#8fa8bc; }
+    .resource-link { display:inline-block; margin-top:14px; color:var(--blue); font-size:11px; font-weight:600; text-decoration:none; } .resource-link:hover,.resource-link:focus-visible { color:var(--orange); text-decoration:underline; }
+    .resource-anchor { position:absolute; top:50px; right:clamp(24px,7vw,104px); display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin:0 !important; }
+    .resource-anchor .resource-link { margin-top:0; padding:0; border:0; border-radius:0; background:transparent; }
+    .controls { position:fixed; right:clamp(18px,4vw,60px); bottom:24px; z-index:6; display:flex; gap:8px; } .control,.overview-toggle { display:grid; place-items:center; min-width:38px; height:38px; padding:0 11px; border:1px solid #bfd0dd; border-radius:8px; background:rgba(255,255,255,.9); color:var(--navy); cursor:pointer; box-shadow:0 5px 18px rgba(22,55,87,.08); font-weight:900; } .control:hover,.control:focus-visible,.overview-toggle:hover,.overview-toggle:focus-visible { border-color:var(--cyan); color:var(--cyan); outline:none; } .control:disabled { cursor:not-allowed; opacity:.4; }
+    .progress { position:fixed; right:0; bottom:0; left:0; z-index:5; height:4px; background:#dfe8ef; } .progress span { display:block; height:100%; width:0; background:linear-gradient(90deg,var(--blue),var(--cyan),var(--teal),var(--orange)); transition:width .35s ease; }
+    .overview { position:fixed; inset:0; z-index:10; display:none; padding:8vh 7vw; overflow:auto; background:rgba(245,248,251,.96); -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); } .overview.open { display:block; animation:enter .25s ease both; } .overview-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:26px; } .overview h2 { margin:0; font-size:38px; } .thumbs { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px; } .thumb { min-height:120px; padding:16px; border:1px solid var(--line); border-top:5px solid var(--accent); background:var(--white); color:var(--navy); text-align:left; cursor:pointer; } .thumb:hover,.thumb:focus-visible { transform:translateY(-3px); box-shadow:0 12px 28px rgba(7,26,56,.09); outline:none; } .thumb small { display:block; margin-bottom:18px; color:var(--accent); font-weight:900; } .thumb strong { font-family:var(--display); font-size:18px; }
+    @media (max-width:800px) { .grid.two,.grid.three,.flow,.spectrum,.vibe-benefits,.poster-pillars,.poster-comparison { grid-template-columns:1fr; } .flow-item,.spectrum-item { min-height:0; } .vibe-benefit,.poster-pillar { min-height:0; padding:18px; } .vibe-benefit + .vibe-benefit,.poster-pillar + .poster-pillar { border-top:1px solid rgba(0,59,92,.18); border-left:0; } h1 { font-size:clamp(40px,11vw,62px); } h2 { font-size:clamp(30px,8vw,46px); } .layer { grid-template-columns:1fr; gap:4px; } }
+    @media (max-height:800px) and (min-width:801px) { .slide { padding-top:68px; padding-bottom:82px; } h1 { font-size:clamp(40px,5.6vw,68px); } h2 { font-size:clamp(30px,3.8vw,48px); margin-bottom:18px; } .card { padding:15px; } .card::before { margin-bottom:10px; } .card p,.card li,.layer span,.spectrum-item span { font-size:12px; } .callout { padding:13px 16px; font-size:14px; } .flow-item,.spectrum-item { min-height:132px; } }
+    @media (max-height:700px) and (min-width:801px) { .slide { padding-top:36px; padding-bottom:124px; overflow-y:auto; } h2 { font-size:clamp(27px,3.1vw,40px); margin-bottom:12px; } .lede { font-size:15px; line-height:1.3; } .grid,.flow,.spectrum,.layers { gap:8px; margin-top:0; } .card { padding:12px; } .card::before { margin-bottom:8px; } .card p,.card li,.layer span,.spectrum-item span { font-size:11px; } .flow-item,.spectrum-item { min-height:108px; padding:12px; } .spectrum-item strong { margin-bottom:8px; font-size:18px; } .callout { margin-top:8px; padding:10px 13px; font-size:12px; } .callout small { margin-top:5px; font-size:11px; } .resource-link { margin-top:8px; } .welcome-slide h1 { font-size:clamp(40px,5.8vw,68px); margin-bottom:16px; } .welcome-slide .lede { font-size:20px; line-height:1.3; } .welcome-slide .title-mark { margin-top:20px; } .welcome-slide .welcome-meta { margin-top:16px; } .controls { bottom:12px; } }
+    @media (max-width: 520px) { .topbar { padding: 14px 18px; } .slide { min-height: 100dvh; height: 100dvh; max-height: none; padding: 72px 19px 94px; overflow-y: auto; } .card { padding: 16px; } .controls { right: 18px; bottom: 17px; } .lede { font-size: 16px; } .terminal { font-size: 11px; padding: 14px; } }
+    @media print { body { overflow:visible; background:white; } .deck { background:white; } .slide { display:flex !important; min-height:100vh; page-break-after:always; } .topbar,.controls,.progress,.overview { display:none !important; } }
+
+    /* Product Mindset presentation language */
+    :root { --ink:#003b5c; --navy:#003b5c; --blue:#0073a8; --cyan:#00a859; --teal:#00a859; --orange:#fdbb30; --paper:#f4f6f7; --white:#fff; --muted:#466476; --line:#d8e2e6; --display:"Segoe UI"; --body:"Segoe UI"; }
+    html, body { width:100%; height:100%; }
+    body { display:grid; place-items:center; overflow:hidden; background:#102c3d; }
+    .deck { width:min(1280px, calc(100vw)); height:min(720px, calc(100vh), calc((100vw) * .5625)); min-height:0; margin:0; overflow:hidden; background:var(--paper); box-shadow:0 24px 70px rgba(0,24,38,.28); }
+    .deck::before { position:absolute; inset:0; opacity:.18; background-image:linear-gradient(rgba(0,59,92,.04) 1px, transparent 1px),linear-gradient(90deg, rgba(0,59,92,.04) 1px, transparent 1px); background-size:32px 32px; }
+    .slides { min-height:0; height:100%; }
+    .slide, .slide.active, .slides:last-child { width:100%; min-height:0; height:100%; max-height:none; background:var(--paper); }
+    .slide.active, .slides:last-child { justify-content:flex-start; }
+    .slide { position:relative; justify-content:flex-start; }
+    .slide::after { display:none; }
+    .slide.active { animation:enter .38s ease both; }
+    .slide:nth-child(4n+2), .slide.accent-blue { --accent:var(--blue); }
+    .slide:nth-child(4n+3), .slide.accent-cyan { --accent:var(--teal); }
+    .slide:nth-child(4n+4), .slide.accent-teal { --accent:var(--teal); }
+    .slide:nth-child(4n+5), .slide.accent-orange { --accent:var(--orange); }
+    .slide.accent-blue { background:#e8f1f4; }
+    .slide.accent-cyan { background:#eaf6f1; }
+    .slide.accent-teal { background:#dff2ee; }
+    .slide.accent-orange { background:#fff5dc; }
+    .welcome-slide { background:#173a3d !important; color:#fff; }
+    .welcome-slide::after { display:none; }
+    .welcome-slide .logo-lockup img { filter:brightness(0) invert(1); }
+    .welcome-slide h1, .welcome-slide .lede, .welcome-slide .eyebrow { color:#fff; }
+    .welcome-slide .lede { color:#bce9da; }
+    .topbar { position:absolute; padding:18px clamp(42px,7vw,106px); color:var(--ink); }
+    .brand { color:var(--ink); }
+    .deck:has(.welcome-slide.active) .topbar { color:rgba(255,255,255,.78); }
+    .deck:has(.welcome-slide.active) .brand { color:#fff; }
+    .counter { color:inherit; }
+    h1, h2 { color:var(--ink); letter-spacing:-.02em; }
+    .welcome-slide h1 { font-size:clamp(48px,7vw,84px); }
+    .welcome-slide h1 { max-width:none; white-space:nowrap; }
+    h2 { font-size:clamp(20px,2vw,40px); }
+    h3 { color:var(--ink); }
+    .lede { color:#466476; }
+    .card, .flow-item, .spectrum-item, .layer { border-color:rgba(0,59,92,.12); border-radius:5px; background:rgba(255,255,255,.82); box-shadow:0 8px 18px rgba(0,24,38,.08); }
+    .card::before { border-radius:0; }
+    .callout { border-left-color:var(--accent); background:rgba(255,255,255,.72); color:var(--ink); }
+    .resource-link { color:var(--blue); }
+    .controls { position:absolute; right:0; bottom:0; left:0; z-index:6; display:grid; grid-template-columns:1fr auto; align-items:center; gap:12px; min-height:48px; padding:0 clamp(42px,7vw,106px); border-top:1px solid rgba(0,59,92,.08); background:#F0F5F7; }
+    .footer-title { overflow:hidden; color:var(--ink); font-size:12px; font-weight:800; letter-spacing:.08em; text-overflow:ellipsis; text-transform:uppercase; white-space:nowrap; }
+    .nav-actions { display:flex; align-items:center; gap:10px; }
+    .nav-counter { min-width:46px; color:var(--ink); font-size:13px; font-weight:900; text-align:center; font-variant-numeric:tabular-nums; }
+    .control, .overview-toggle { display:grid; place-items:center; width:32px; min-width:32px; height:32px; padding:0; border:1px solid #bfd0dd; border-radius:50%; background:rgba(255,255,255,.72); color:var(--ink); box-shadow:none; }
+    .overview-toggle { width:32px; min-width:32px; height:32px; margin-left:2px; }
+    .grid-icon { display:grid; width:14px; height:14px; grid-template-columns:repeat(2,1fr); gap:3px; }
+    .grid-icon i { border:1.5px solid currentColor; border-radius:1px; }
+    .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+    .control:hover, .control:focus-visible, .overview-toggle:hover, .overview-toggle:focus-visible { background:rgba(0,115,168,.1); color:var(--blue); outline:none; }
+    .deck:has(.welcome-slide.active) .footer-title, .deck:has(.welcome-slide.active) .control, .deck:has(.welcome-slide.active) .overview-toggle, .deck:has(.welcome-slide.active) .nav-counter { color:var(--ink); }
+    .progress { position:absolute; height:5px; background:rgba(0,59,92,.12); }
+    .progress span { background:linear-gradient(90deg,var(--blue),var(--teal),var(--orange)); }
+    .overview { position:absolute; padding:8% 7%; background:#003b5c; color:#f8fbf7; }
+    .overview h2 { color:#fff; }
+    .overview.open { display:flex; flex-direction:column; padding:clamp(28px,4vh,48px) clamp(36px,4vw,72px); overflow:hidden; animation:enter .25s ease both; }
+    .overview-head { flex:0 0 auto; width:min(1180px,100%); margin:0 auto 18px; }
+    .overview h2 { font-size:clamp(30px,3.5vw,52px); }
+    .overview-head .control { flex:0 0 auto; border-color:rgba(255,255,255,.35); background:rgba(255,255,255,.12); color:#fff; }
+    .overview-head .control:hover, .overview-head .control:focus-visible { background:rgba(255,255,255,.24); color:#fff; }
+    .thumbs { flex:1 1 auto; min-height:0; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; width:min(1280px,100%); margin:0 auto; align-items:start; }
+    .contents-column { display:flex; flex-direction:column; gap:8px; min-width:0; }
+    .contents-section { width:100%; min-height:58px; padding:12px 10px; border:0; border-bottom:2px solid var(--teal); border-radius:0; background:rgba(255,255,255,.08); color:#fff; text-align:left; display:flex; flex-direction:column; align-items:flex-start; justify-content:center; gap:4px; cursor:pointer; }
+    .contents-section:hover, .contents-section:focus-visible, .contents-section.current { background:rgba(255,255,255,.16); outline:none; }
+    .contents-section.current { border-bottom-color:var(--orange); }
+    .contents-section-label { font-size:13px; line-height:1.1; font-weight:800; }
+    .contents-section-meta { font-size:9px; line-height:1.1; letter-spacing:.1em; text-transform:uppercase; opacity:.62; }
+    .contents-tile { width:auto; min-height:72px; padding:14px; border:1px solid rgba(255,255,255,.18); border-left:4px solid var(--teal); border-radius:5px; background:linear-gradient(145deg,#0d5874,#084762); color:#fff; text-align:left; display:flex; flex-direction:column; align-items:flex-start; justify-content:space-between; gap:12px; box-shadow:0 8px 18px rgba(0,24,38,.12); cursor:pointer; transition:transform .2s,background .2s,border-color .2s,box-shadow .2s; }
+    .contents-column:nth-child(3n) .contents-tile { border-left-color:var(--orange); }
+    .contents-column:nth-child(4n + 1) .contents-tile { border-left-color:var(--blue); }
+    .contents-tile:hover, .contents-tile:focus-visible, .contents-tile.current { transform:translateY(-3px); background:#176783; border-color:rgba(255,255,255,.65); box-shadow:0 12px 24px rgba(0,24,38,.2); outline:none; }
+    .contents-title { font-size:15px; line-height:1.18; font-weight:700; }
+    .contents-meta { font-size:9px; line-height:1.1; letter-spacing:.1em; text-transform:uppercase; opacity:.62; }
+    .poster-slide { align-items:center; justify-content:center !important; padding:52px 80px 76px !important; }
+    .poster-slide .eyebrow { position:absolute; top:56px; left:clamp(24px,7vw,104px); z-index:1; }
+    .poster-slide img { display:block; width:100%; height:100%; max-width:1080px; object-fit:contain; }
+    .comparison-table-wrap { overflow-x:auto; margin-top:2px; border:1px solid rgba(0,59,92,.14); background:rgba(255,255,255,.78); }
+    .comparison-table { width:100%; border-collapse:collapse; color:var(--muted); font-size:12px; line-height:1.25; }
+    .comparison-table th, .comparison-table td { padding:7px 10px; border:1px solid rgba(0,59,92,.14); text-align:left; vertical-align:middle; }
+    .comparison-table th { color:var(--ink); background:rgba(0,115,168,.08); font-weight:900; }
+    .comparison-table th:first-child, .comparison-table td:first-child { width:15%; color:var(--ink); font-weight:700; }
+    @media (max-width:800px) { .comparison-table { min-width:680px; } }
+    .prompt-context-slide { justify-content:flex-start !important; padding:42px clamp(24px,7vw,104px) 56px !important; overflow:hidden !important; }
+    .prompt-context-slide h2 { margin-bottom:7px !important; font-size:clamp(20px,2vw,34px) !important; text-align:left; }
+    .prompt-context-slide > .subtitle { margin:0 0 9px; color:var(--ink); font-size:13px; line-height:1.2; text-align:left; }
+    .prompt-context-compare { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .prompt-context-column { overflow:hidden; border:1px solid rgba(0,59,92,.16); border-radius:8px; background:rgba(255,255,255,.75); }
+    .prompt-context-column > header { padding:8px; color:#fff; background:linear-gradient(110deg,#1545a5,#1957bd); font-size:17px; font-weight:900; text-align:center; text-transform:uppercase; }
+    .prompt-context-column.context-column > header { background:linear-gradient(110deg,#087552,#15966e); }
+    .prompt-context-intro { display:grid; grid-template-columns:48px 1fr; gap:10px; align-items:center; min-height:87px; padding:10px 14px; }
+    .prompt-context-intro .context-icon { color:var(--accent); font-size:38px; text-align:center; }
+    .prompt-context-intro strong { display:block; color:var(--accent); font-size:15px; }
+    .prompt-context-intro p { margin:4px 0 0; color:var(--ink); font-size:10px; line-height:1.25; }
+    .prompt-context-focus-title { display:flex; align-items:center; gap:8px; margin:0 14px 5px; color:var(--accent); font-size:11px; font-weight:900; text-transform:uppercase; }
+    .prompt-context-focus-title::before,.prompt-context-focus-title::after { flex:1; height:1px; background:currentColor; content:''; opacity:.3; }
+    .prompt-context-focus { display:grid; grid-template-columns:repeat(4,1fr); padding:0 8px; }
+    .prompt-context-focus article { min-height:105px; padding:8px 6px; text-align:center; }
+    .prompt-context-focus article + article { border-left:1px solid rgba(0,59,92,.12); }
+    .prompt-context-focus .context-icon { color:var(--accent); font-size:24px; }
+    .prompt-context-focus strong { display:block; margin-top:4px; color:var(--accent); font-size:11px; }
+    .prompt-context-focus span { display:block; margin-top:3px; color:var(--ink); font-size:9px; line-height:1.2; }
+    .prompt-context-info { display:grid; gap:7px; margin:0 10px 10px; }
+    .prompt-context-info > div { display:grid; grid-template-columns:32px 1fr; gap:8px; align-items:start; padding:8px 10px; border:1px solid color-mix(in srgb, var(--accent) 18%, white); border-radius:6px; background:color-mix(in srgb, var(--accent) 6%, white); }
+    .prompt-context-info .context-icon { color:var(--accent); font-size:23px; text-align:center; }
+    .prompt-context-info strong { display:block; color:var(--accent); font-size:11px; text-transform:uppercase; }
+    .prompt-context-info p { margin:3px 0 0; color:var(--ink); font-size:10px; line-height:1.25; }
+    .prompt-context-takeaway { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:8px; padding:10px 14px; border:1px solid rgba(0,59,92,.16); border-radius:8px; background:linear-gradient(90deg,rgba(19,89,181,.07),rgba(21,150,110,.08)); }
+    .prompt-context-takeaway > div { display:grid; grid-template-columns:35px 1fr; gap:8px; align-items:center; }
+    .prompt-context-takeaway > div + div { border-left:1px solid rgba(0,59,92,.14); padding-left:14px; }
+    .prompt-context-takeaway .context-icon { color:var(--accent); font-size:27px; text-align:center; }
+    .prompt-context-takeaway strong { display:block; color:var(--accent); font-size:12px; text-transform:uppercase; }
+    .prompt-context-takeaway span { display:block; margin-top:3px; color:var(--ink); font-size:10px; line-height:1.25; }
+    .prompt-context-slide > .resource-links { margin-top:5px; text-align:center; }
+    .prompt-context-slide > .resource-links .resource-link { margin-top:0; font-size:10px; }
+    @media (max-width:800px) { .prompt-context-slide { padding:26px 24px 180px !important; overflow-y:auto !important; } .prompt-context-compare,.prompt-context-takeaway { grid-template-columns:1fr; } .prompt-context-focus { grid-template-columns:1fr 1fr; } .prompt-context-focus article:nth-child(3) { border-left:0; border-top:1px solid rgba(0,59,92,.12); } .prompt-context-focus article:nth-child(4) { border-top:1px solid rgba(0,59,92,.12); } .prompt-context-takeaway > div + div { border-top:1px solid rgba(0,59,92,.14); border-left:0; padding:9px 0 0; } }
+    @media (max-width:1100px) and (min-width:801px) { .thumbs { grid-template-columns:repeat(2,minmax(0,1fr)); overflow:auto; } }
+    @media (max-width:800px) { .overview.open { padding:68px 18px 82px; overflow:auto; } .thumbs { flex:0 0 auto; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; } .contents-section { min-height:54px; padding:10px 9px; } .contents-section-label { font-size:12px; } .contents-tile { min-height:88px; padding:12px; gap:10px; } .contents-title { font-size:13px; } }
+    @media (min-width:801px) and (max-height:700px) { .slide, .slide.active, .slides:last-child { padding-bottom:76px; overflow:hidden; } }
+    @media (min-width:801px) and (min-height:701px) { .slide, .slide.active, .slides:last-child { justify-content:flex-start; padding:56px clamp(24px,7vw,104px) 76px; } h1 { font-size:68px; } h2 { font-size:48px; margin-bottom:12px; } .grid,.flow,.spectrum,.layers { gap:8px; margin-top:0; } .card { padding:12px; } .card::before { margin-bottom:8px; } .card p,.card li,.layer span,.spectrum-item span { font-size:11px; } .flow-item,.spectrum-item { min-height:108px; padding:12px; } .spectrum-item strong { margin-bottom:8px; font-size:18px; } .callout { margin-top:8px; padding:10px 13px; font-size:12px; } .callout small { margin-top:5px; font-size:11px; } .resource-link { margin-top:8px; } .context-slide h2 { font-size:42px; margin-bottom:8px; } .context-slide .lede { max-width:850px; font-size:15px; line-height:1.3; margin-bottom:10px; } .context-slide .layers { gap:5px; } .context-slide .layer { padding:9px 12px; } .context-slide .layer span { font-size:10px; line-height:1.25; } .context-slide .callout { margin-top:7px; padding:8px 12px; font-size:11px; } .context-slide .callout small { margin-top:3px; font-size:10px; } .context-slide .resource-link { margin-top:5px; } .welcome-slide h1 { font-size:68px; margin-bottom:16px; } .welcome-slide .title-mark { margin-top:20px; } .welcome-slide .welcome-meta { margin-top:16px; } }
+    @media (min-width:801px) { .context-slide { padding-top:42px !important; padding-bottom:76px !important; } .context-slide h2 { font-size:38px !important; margin-bottom:5px !important; } .context-slide .lede { max-width:900px; font-size:13px !important; line-height:1.2 !important; margin-bottom:7px !important; } .context-slide .layers { gap:3px !important; } .context-slide .layer { min-height:0; padding:6px 10px !important; } .context-slide .layer strong { font-size:11px; } .context-slide .layer span { font-size:9px !important; line-height:1.15 !important; } .context-slide .callout { margin-top:5px !important; padding:6px 10px !important; font-size:10px !important; } .context-slide .callout small { margin-top:2px !important; font-size:9px !important; line-height:1.15; } .context-slide .resource-link { margin-top:3px !important; font-size:11px; } }
+    @media (min-width:801px) { .context-reference-slide { padding-top:34px !important; padding-bottom:60px !important; } .context-reference-slide > p { margin-bottom:5px; font-size:12px; } .context-hero { gap:10px; } .context-definition { font-size:10px; } .context-goal { grid-template-columns:58px 1fr; gap:8px; padding:8px 10px; } .context-goal-icon { width:46px; height:46px; font-size:22px; } .context-goal strong { margin-bottom:2px; font-size:11px; } .context-goal span { font-size:9px; } .context-section-title { margin:15px 0 2px; font-size:11px; } .context-principle { min-height:78px; padding:6px 7px; } .context-principle .context-icon { width:30px; height:30px; margin-bottom:3px; font-size:15px; } .context-principle strong { margin-bottom:2px; font-size:10px; } .context-principle span { font-size:10px; } .context-bottom { gap:8px; } .context-workflow { padding:6px 7px; } .context-step { padding:0 5px; } .context-step .context-icon { width:28px; height:28px; margin-bottom:2px; font-size:14px; } .context-step strong { margin-bottom:2px; font-size:9px; } .context-step span { font-size:8px; } .context-tip { padding:7px 9px; } .context-tip strong { font-size:10px; } .context-tip span,.context-tip em { font-size:9px; } .context-reference-slide > .resource-links { margin-top:3px; } .context-concepts-slide,.context-architecture-slide,.context-types-slide { padding-top:32px !important; padding-bottom:60px !important; } .context-concepts-slide h2,.context-architecture-slide h2,.context-types-slide h2 { font-size:36px !important; margin-bottom:2px !important; } .context-concepts-slide > p,.context-architecture-slide > p,.context-types-slide > p { margin-bottom:5px; font-size:11px; } .context-concept-panel > header { padding:5px 9px; font-size:11px; } .context-concept-body { padding:4px 6px; } .context-principle-row { min-height:41px; padding:3px 2px; gap:5px; } .context-principle-row .context-icon { width:25px; height:25px; font-size:18px; } .context-principle-row strong { font-size:9px; } .context-principle-row span { font-size:8px; } .context-window { padding:5px; } .context-window-title { padding:5px; } .context-window-title strong { font-size:12px; } .context-window-title span { font-size:8px; } .context-window-item { min-height:27px; padding:3px 5px; } .context-window-item .context-icon { font-size:15px; } .context-window-item strong { font-size:8px; } .context-window-item span { font-size:7px; } .context-lifecycle { gap:2px; } .context-lifecycle-step { min-height:31px; padding:3px 5px; } .context-lifecycle-step .context-icon { font-size:15px; } .context-lifecycle-step strong { font-size:8px; } .context-lifecycle-step span { font-size:7px; } .context-concepts-footer { gap:7px; margin-top:5px; } .context-outcomes { padding:5px 7px; } .context-outcome { padding:0 5px; } .context-outcome .context-icon { margin-bottom:2px; font-size:16px; } .context-outcome strong { font-size:8px; } .context-outcome span { font-size:7px; } .context-concepts-takeaway { padding:7px 9px; } .context-concepts-takeaway strong { font-size:10px; } .context-concepts-takeaway span { font-size:8px; } .architecture-sources { gap:5px; padding:5px; } .architecture-label { font-size:10px; } .architecture-source { min-height:68px; padding:5px; } .architecture-source .context-icon { margin-bottom:2px; font-size:18px; } .architecture-source strong { font-size:8px; } .architecture-source span { margin-top:2px; font-size:7px; } .architecture-main { gap:7px; margin-top:5px; } .architecture-pipeline { padding:5px 8px; } .architecture-pipeline > h3 { margin-bottom:4px; font-size:10px; } .architecture-node { padding:5px 8px 5px 32px; } .architecture-node .context-icon { top:7px; left:8px; font-size:18px; } .architecture-node strong { font-size:9px; } .architecture-node span { margin-top:2px; font-size:7px; } .architecture-arrow { height:9px; font-size:13px; line-height:9px; } .architecture-window { margin:4px auto; padding:5px; } .architecture-window h3 { font-size:10px; } .architecture-window > p { margin:1px 0 3px; font-size:7px; } .architecture-payload { gap:2px; } .architecture-payload span { min-height:27px; padding:2px; font-size:7px; } .architecture-inference,.architecture-response { margin:4px auto 0; padding:5px 8px 5px 36px; } .architecture-inference .context-icon,.architecture-response .context-icon { margin-left:-27px; font-size:19px; } .architecture-inference strong,.architecture-response strong { font-size:9px; } .architecture-inference span,.architecture-response span { font-size:7px; } .architecture-rail { gap:5px; } .architecture-rail-panel { padding:5px 7px; } .architecture-rail-panel h3 { margin-bottom:3px; font-size:9px; } .architecture-rail-panel ul { gap:2px; } .architecture-rail-panel li { font-size:7px; } .architecture-takeaway { gap:6px; margin-top:5px; padding:5px 8px; } .architecture-takeaway .context-icon { font-size:21px; } .architecture-takeaway strong { font-size:9px; } .architecture-takeaway span { font-size:7px; } .context-types-grid { gap:7px; } .context-types-panel > header { padding:5px 9px; font-size:11px; } .context-type-row { grid-template-columns:25px 25px 1fr 108px; gap:5px; min-height:0; padding:4px 3px; } .context-type-number { width:22px; height:22px; font-size:11px; } .context-type-row .context-icon { font-size:17px; } .context-type-row strong { font-size:9px; } .context-type-row p,.context-type-row em { font-size:7px; } .context-type-example { padding:4px 5px; font-size:7px; } .context-layers { gap:2px; } .context-layer { grid-template-columns:22px 24px 1fr 110px; gap:4px; padding:4px 5px; } .context-layer-number { width:20px; height:20px; font-size:10px; } .context-layer .context-icon { font-size:16px; } .context-layer strong { font-size:8px; } .context-layer span,.context-layer-note { font-size:7px; } .context-layers-tip { margin-top:3px; padding:4px 5px; font-size:7px; } .context-types-footer { gap:7px; margin-top:5px; } .context-types-footer h3 { margin-bottom:3px; font-size:9px; } .context-types-takeaway { gap:6px; padding:5px 7px; } .context-types-takeaway .context-icon { font-size:20px; } .context-types-takeaway p { font-size:8px; } .context-refinement { gap:3px; } .context-refinement > div { padding:4px 5px; } .context-refinement strong { font-size:8px; } .context-refinement span { margin-top:2px; font-size:7px; } }
+    @media (max-width:800px) { body { display:block; overflow:auto; background:var(--paper); } .deck { width:100vw; height:100svh; box-shadow:none; } .slide, .slide.active, .slides:last-child { min-height:100svh; height:100%; padding:52px 24px 180px; overflow-y:auto; } .slide::-webkit-scrollbar { display:none; } .topbar { padding:18px 24px; } .controls { right:0; bottom:0; left:0; min-height:56px; padding:0 24px; } .welcome-slide h1 { font-size:min(58px, calc((100vw - 48px) / 12.5)); } }
+    .prompt-engineering-slide { justify-content:flex-start !important; padding-top:46px !important; padding-bottom:64px !important; }
+    .prompt-engineering-slide .prompt-definition { margin:4px 0 8px; padding:9px 12px; border:1px solid rgba(0,59,92,.14); border-left:4px solid var(--blue); border-radius:7px; background:rgba(255,255,255,.82); box-shadow:0 3px 10px rgba(0,59,92,.04); }
+    .prompt-engineering-slide .prompt-rules { margin-top:4px; border:1px solid rgba(0,59,92,.14); border-radius:7px; background:rgba(255,255,255,.66); box-shadow:0 3px 10px rgba(0,59,92,.04); overflow:hidden; }
+    .prompt-engineering-slide .prompt-rule { min-height:112px; padding:10px 9px 8px; }
+    .prompt-engineering-slide .prompt-process { margin-top:9px; border-radius:7px; background:rgba(255,255,255,.82); box-shadow:0 3px 10px rgba(0,59,92,.04); }
+    .prompt-engineering-slide .prompt-tip { margin-top:8px; padding:9px 12px; border:1px solid rgba(33,138,50,.2); border-left:4px solid #218a32; border-radius:7px; background:rgba(33,138,50,.07); }
+    .resource-links .resource-link, .resource-anchor .resource-link { display:inline-block; margin-top:0 !important; padding:6px 9px !important; border:1px solid rgba(19,89,181,.2) !important; border-radius:5px !important; background:rgba(255,255,255,.72) !important; color:var(--blue); font-size:12px !important; font-weight:600; line-height:1.2; }
+    .context-concepts-slide { padding:46px clamp(24px,5vw,72px) 64px !important; overflow-y:auto !important; }
+    .context-concepts-slide h2 { margin-bottom:2px !important; font-size:clamp(30px,3.2vw,42px) !important; }
+    .context-concepts-slide > p { margin-bottom:6px; font-size:12px; }
+    .context-concepts-grid { grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr); gap:8px; }
+    .context-concept-panel > header { padding:7px 10px; font-size:12px; letter-spacing:.02em; }
+    .context-concept-body { padding:5px 6px; }
+    .context-window { padding:5px; }
+    .context-window-title { padding:6px; }
+    .context-window-title strong { font-size:13px; }
+    .context-window-items { grid-template-columns:repeat(2,minmax(0,1fr)); gap:4px; margin-top:4px; }
+    .context-window-item { min-height:36px; padding:4px 5px; }
+    .context-window-item strong { font-size:9px; }
+    .context-window-item span { font-size:7px; }
+    .context-lifecycle { gap:4px; }
+    .context-lifecycle-step { min-height:44px; padding:4px 5px; }
+    .context-lifecycle-step strong { font-size:9px; }
+    .context-lifecycle-step span { font-size:7px; }
+    .context-concepts-footer { grid-template-columns:minmax(0,1.55fr) minmax(190px,1fr); gap:8px; margin-top:6px; }
+    .context-outcomes { padding:6px 7px; }
+    .context-outcome { padding:0 4px; }
+    .context-outcome .context-icon { font-size:17px; }
+    .context-outcome strong { font-size:8px; }
+    .context-outcome span { font-size:7px; }
+    .context-concepts-takeaway { padding:8px 10px; }
+    .context-concepts-takeaway strong { font-size:10px; }
+    .context-concepts-takeaway span { font-size:8px; }
+    .context-concepts-slide > .resource-anchor { position:static; display:flex; justify-content:center; flex-wrap:wrap; gap:6px; margin-top:8px !important; }
+    .context-concepts-slide > .resource-anchor .resource-link { font-size:10px !important; }
+    .prompt-patterns-slide > .resource-anchor { position:absolute; top:46px; right:clamp(24px,7vw,104px); display:flex; flex-wrap:wrap; justify-content:flex-end; gap:8px; margin:0 !important; }
+    .prompt-patterns-slide > .resource-anchor .resource-link { margin-top:0 !important; }
+    .context-reference-slide { justify-content:flex-start !important; padding:38px clamp(24px,5vw,72px) 58px !important; overflow:hidden !important; }
+    .context-reference-slide .context-hero { grid-template-columns:minmax(0,1fr) minmax(280px,320px); gap:28px; align-items:start; }
+    .context-reference-slide h2 { max-width:620px; margin-bottom:5px !important; font-size:clamp(38px,4.2vw,58px) !important; line-height:.9; }
+    .context-reference-slide .context-hero > div:first-child > p { margin-bottom:7px; }
+    .context-reference-slide .context-definition { max-width:650px; font-size:13px; line-height:1.35; }
+    .context-reference-slide .context-goal { min-height:112px; grid-template-columns:66px 1fr; gap:14px; padding:14px 16px; border:0; border-radius:12px; background:rgba(233,241,249,.72); box-shadow:none; }
+    .context-reference-slide .context-goal-icon { width:66px; height:66px; font-size:32px; }
+    .context-reference-slide .context-goal strong { margin-bottom:7px; font-size:15px; }
+    .context-reference-slide .context-goal span { font-size:12px; line-height:1.45; }
+    .context-reference-slide .context-section-title { margin:15px 0 6px 0; font-size:14px; font-weight:700; }
+    .context-reference-slide .context-principles { border:0; border-radius:0; background:transparent; box-shadow:none; }
+    .context-reference-slide .context-principle { min-height:126px; padding:10px 12px; }
+    .context-reference-slide .context-principle + .context-principle { border-left:1px solid rgba(0,59,92,.14); }
+    .context-reference-slide .context-principle .context-icon { width:60px; height:60px; margin-bottom:9px; font-size:27px; }
+    .context-reference-slide .context-principle strong { margin-bottom:7px; font-size:14px; }
+    .context-reference-slide .context-principle span { font-size:11px; line-height:1.35; }
+    .context-reference-slide .context-bottom { grid-template-columns:minmax(0,1.75fr) minmax(230px,.7fr); gap:16px; margin-top:12px; align-items:stretch; }
+    .context-reference-slide .context-workflow { min-height:190px; grid-template-columns:repeat(5,minmax(0,1fr)); gap:0; padding:16px 12px; border:1px solid rgba(0,59,92,.12); border-radius:12px; background:rgba(255,255,255,.7); box-shadow:none; }
+    .context-reference-slide .context-step { display:flex; flex-direction:column; align-items:center; justify-content:flex-start; padding:0 10px; }
+    .context-reference-slide .context-step + .context-step { border-left:0; }
+    .context-reference-slide .context-step .context-icon { width:58px; height:58px; margin-bottom:10px; font-size:27px; }
+    .context-reference-slide .context-step strong { margin-bottom:7px; font-size:13px; }
+    .context-reference-slide .context-step span { font-size:10px; line-height:1.35; }
+    .context-reference-slide .context-tip { min-height:190px; padding:18px 20px; border:0; border-radius:12px; background:rgba(233,241,249,.72); box-shadow:none; }
+    .context-reference-slide .context-tip strong { font-size:15px; }
+    .context-reference-slide .context-tip span { margin-top:8px; font-size:13px; line-height:1.45; }
+    .context-reference-slide .context-tip em { margin-top:18px; padding-top:16px; border-top:1px solid rgba(13,157,178,.25); font-size:14px; line-height:1.45; }
+    .context-reference-slide > .resource-links { position:static; justify-content:flex-end; gap:8px; margin-top:7px !important; }
+    .context-reference-slide > .resource-links .resource-link { font-size:10px !important; }
+    @media (max-width:800px) { .context-concepts-slide { padding:64px 24px 180px !important; } .context-concepts-grid,.context-concepts-footer { grid-template-columns:1fr; } .context-window-items { grid-template-columns:1fr; } .context-lifecycle { grid-template-columns:1fr; } .context-concepts-slide > .resource-anchor { position:static; justify-content:flex-start; } }
+    @media (max-width:800px) { .context-reference-slide { padding:64px 24px 180px !important; overflow-y:auto !important; } .context-reference-slide .context-hero,.context-reference-slide .context-bottom { grid-template-columns:1fr; gap:10px; } .context-reference-slide h2 { font-size:clamp(36px,11vw,52px) !important; } .context-reference-slide .context-goal { min-height:0; } .context-reference-slide .context-principles,.context-reference-slide .context-workflow { grid-template-columns:1fr 1fr; } .context-reference-slide .context-principle { min-height:0; padding:12px 8px; } .context-reference-slide .context-principle + .context-principle { border-left:0; } .context-reference-slide .context-principle:nth-child(even),.context-reference-slide .context-step:nth-child(even) { border-left:1px solid rgba(0,59,92,.14); } .context-reference-slide .context-principle:nth-child(n+3),.context-reference-slide .context-step:nth-child(n+3) { border-top:1px solid rgba(0,59,92,.14); } .context-reference-slide .context-workflow { min-height:0; } .context-reference-slide .context-tip { min-height:0; } .context-reference-slide > .resource-links { justify-content:flex-start; flex-wrap:wrap; } }
+    @media (min-width:801px) { .prompt-engineering-slide { padding-top:46px !important; padding-bottom:64px !important; } .prompt-engineering-slide h2 { font-size:clamp(24px,2.7vw,42px) !important; } .context-reference-slide { padding-top:46px !important; padding-bottom:64px !important; } .context-reference-slide h2 { font-size:clamp(24px,2.7vw,42px) !important; line-height:.95; } }
+    @media (min-width:801px) { .context-reference-slide { overflow-x:hidden !important; overflow-y:auto !important; } .context-reference-slide > .resource-links { position:absolute; top:18px; right:clamp(24px,5vw,72px); z-index:3; justify-content:flex-end; margin:0 !important; } }
+    @media (min-width:801px) { .context-reference-slide { overflow:hidden !important; padding-top:46px !important; padding-bottom:52px !important; } .context-reference-slide h2 { max-width:620px; margin-bottom:2px !important; font-size:clamp(32px,3.4vw,48px) !important; line-height:1 !important; } .context-reference-slide > p { margin:0 0 6px; font-size:15px; line-height:1.15; } .context-reference-slide .context-hero { grid-template-columns:minmax(0,1fr) 300px; gap:18px; align-items:center; } .context-reference-slide .context-definition { max-width:650px; font-size:11px; line-height:1.25; } .context-reference-slide .context-goal { min-height:82px; grid-template-columns:50px 1fr; gap:9px; padding:9px 11px; } .context-reference-slide .context-goal-icon { width:50px; height:50px; font-size:24px; } .context-reference-slide .context-goal strong { margin-bottom:3px; font-size:12px; } .context-reference-slide .context-goal span { font-size:10px; line-height:1.25; } .context-reference-slide .context-section-title { margin:15px 0 2px; font-size:11px; } .context-reference-slide .context-principle { min-height:76px; padding:6px 7px; } .context-reference-slide .context-principle .context-icon { width:34px; height:34px; margin-bottom:3px; font-size:16px; } .context-reference-slide .context-principle strong { margin-bottom:2px; font-size:11px; } .context-reference-slide .context-principle span { font-size:10px; line-height:1.2; } .context-reference-slide .context-bottom { gap:10px; margin-top:0; } .context-reference-slide .context-workflow { min-height:132px; padding:8px 7px; } .context-reference-slide .context-step { padding:0 6px; } .context-reference-slide .context-step .context-icon { width:38px; height:38px; margin-bottom:4px; font-size:18px; } .context-reference-slide .context-step strong { margin-bottom:2px; font-size:10px; } .context-reference-slide .context-step span { font-size:8px; line-height:1.2; } .context-reference-slide .context-tip { min-height:132px; padding:10px 12px; } .context-reference-slide .context-tip strong { font-size:12px; } .context-reference-slide .context-tip span { margin-top:4px; font-size:10px; line-height:1.25; } .context-reference-slide .context-tip em { margin-top:7px; padding-top:7px; font-size:11px; } }
+    @media (max-width:800px) { .prompt-engineering-slide { overflow-y:auto !important; } .prompt-engineering-slide .prompt-rules,.prompt-engineering-slide .prompt-process { grid-template-columns:1fr; } }
+    @media (min-width:801px) {
+      .context-reference-slide { padding:42px clamp(24px,7vw,104px) 56px !important; }
+      .context-reference-slide h2 { margin-bottom:7px !important; font-size:clamp(20px,2vw,34px) !important; line-height:1.02 !important; }
+      .context-reference-slide > p { margin-bottom:4px; color:var(--muted); font-size:13px; line-height:1.2; }
+      .context-reference-slide .context-hero { gap:14px; }
+      .context-reference-slide .context-goal,
+      .context-reference-slide .context-principles,
+      .context-reference-slide .context-workflow,
+      .context-reference-slide .context-tip { border-radius:6px; }
+      .context-reference-slide .context-goal { min-height:76px; padding:8px 10px; }
+      .context-reference-slide .context-principles { margin-top:4px; }
+      .context-reference-slide .context-bottom { margin-top:8px; }
+    }
+    .context-reference-slide .context-definition { margin:4px 0 8px; padding:8px 12px; border:1px solid rgba(0,59,92,.14); border-left:4px solid var(--blue); border-radius:7px; background:rgba(255,255,255,.82); box-shadow:0 3px 10px rgba(0,59,92,.04); color:var(--muted); font-size:12px; line-height:1.3; }
+    .context-reference-slide .context-definition strong { display:block; margin-bottom:2px; color:var(--blue); font-size:12px; text-transform:uppercase; }
+    @media (min-width:801px) {
+      .prompt-context-slide { padding-top:38px !important; padding-bottom:44px !important; }
+      .prompt-context-slide .prompt-context-intro { min-height:72px; padding:8px 12px; }
+      .prompt-context-slide .prompt-context-focus article { min-height:88px; padding:6px 5px; }
+      .prompt-context-slide .prompt-context-info { gap:5px; margin:0 8px 7px; }
+      .prompt-context-slide .prompt-context-info > div { padding:6px 8px; }
+      .prompt-context-slide .prompt-context-takeaway { margin-top:6px; padding:8px 10px; }
+    }
+    @media (min-width:801px) {
+      .context-concepts-slide { padding:42px clamp(24px,7vw,104px) 56px !important; overflow:hidden !important; }
+      .context-concepts-slide > .resource-links { position:absolute; top:18px; right:clamp(24px,5vw,72px); z-index:3; display:flex; justify-content:flex-end; flex-wrap:wrap; gap:8px; margin:0 !important; }
+      .context-concepts-slide > .resource-links .resource-link { margin-top:0 !important; }
+    }
+    @media print { body { background:white; } .deck { width:100%; height:auto; box-shadow:none; } }
+  </style>
+</head>
+<body>
+  <div class="deck">
+    <main class="slides">
+      <section class="slide active welcome-slide accent-blue" data-title="Welcome">
+        <div class="logo-lockup"><img src="assets/images/GitHub_Copilot_Logo.png" alt="GitHub Copilot"></div>
+        <div class="eyebrow">Module 03 / AI-Assisted Engineering</div>
+        <h1>AI-Assisted Engineering</h1>
+        <p class="lede">Move from typing code faster to thinking clearly with an AI collaborator.</p>
+        <div class="welcome-footer-meta">
+          <div class="title-mark"><span></span><span></span><span></span><span></span></div>
+          <div class="welcome-meta"><span>Intent</span><span>Context</span><span>Flow</span><span>Evidence</span></div>
+        </div>
+      </section>
+
+      <section class="slide poster-slide-message accent-cyan" data-title="Introduction">
+        <div class="eyebrow">01 / Introduction to AI-Assisted Development</div>
+        <h2>Code smarter. Build faster. Ship better.</h2>
+        <p>AI does not replace developers. It amplifies their work from idea to production by taking on repeatable tasks and surfacing useful insight.</p>
+        <div class="poster-pillars">
+          <article class="poster-pillar accent-orange"><span class="poster-pillar-icon" aria-hidden="true">↗</span><strong>Boost Productivity</strong><span>Automate repetitive tasks and write code faster.</span></article>
+          <article class="poster-pillar accent-blue"><span class="poster-pillar-icon" aria-hidden="true">✦</span><strong>AI-Powered Suggestions</strong><span>Get contextual code suggestions as you type.</span></article>
+          <article class="poster-pillar accent-teal"><span class="poster-pillar-icon" aria-hidden="true">✓</span><strong>Improve Quality</strong><span>Catch issues early with cleaner, more secure code.</span></article>
+          <article class="poster-pillar accent-cyan"><span class="poster-pillar-icon" aria-hidden="true">◎</span><strong>Focus on Impact</strong><span>Spend less time on boilerplate and more time building value.</span></article>
+        </div>
+        <div class="callout"><strong>Build Better. Ship Faster.</strong><small>AI-Assisted Development helps you code smarter, collaborate better, and deliver more - while you stay in control.</small></div>
+        <div class="resource-anchor"><a class="resource-link" href="AI-Assisted Engineering/resources/posters/ai-assisted-development-light-landscape.png" target="_blank">AI-Assisted Development ↗</a></div>
+      </section>
+
+      <section class="slide poster-slide-message accent-blue" data-title="Concepts">
+        <div class="eyebrow">02 / Concepts</div>
+        <h2>AI can assist across the full delivery lifecycle.</h2>
+        <div class="poster-pillars">
+          <article class="poster-pillar accent-cyan"><span class="poster-pillar-icon" aria-hidden="true">01</span><strong>Plan</strong><span>Brainstorm ideas, clarify requirements, research, and plan the project.</span></article>
+          <article class="poster-pillar accent-blue"><span class="poster-pillar-icon" aria-hidden="true">02</span><strong>Code</strong><span>Generate, complete, refactor, and explain code in the flow of work.</span></article>
+          <article class="poster-pillar accent-teal"><span class="poster-pillar-icon" aria-hidden="true">03</span><strong>Test and Review</strong><span>Create tests, detect bugs, scan for security, and check quality before release.</span></article>
+          <article class="poster-pillar accent-orange"><span class="poster-pillar-icon" aria-hidden="true">04</span><strong>Deploy and Operate</strong><span>Support CI/CD, infrastructure, monitoring, incident response, and tuning.</span></article>
+        </div>
+        <div class="callout"><strong>AI by your side. Developer at heart.</strong><small>You ask; AI suggests; you review, test, and integrate across every stage.</small></div>
+        <div class="resource-anchor"><a class="resource-link" href="AI-Assisted Engineering/resources/guides/ai-assisted-development-guide.html" target="_blank">AI-Assisted Development Guide ↗</a></div>
+      </section>
+
+      <section class="slide vibe-slide accent-orange" data-title="Vibe Coding">
+        <div class="eyebrow">03 / Vibe Coding</div>
+        <h2>Vibe Coding: Describe it. Build it. Ship it.</h2>
+        <p>You bring the idea and intent in plain language. AI handles much of the implementation work while you guide, review, and refine.</p>
+        <div class="vibe-benefits">
+          <article class="vibe-benefit accent-cyan"><span class="vibe-benefit-icon" aria-hidden="true">↯</span><strong>Move Faster</strong><span>Ship ideas in less time.</span></article>
+          <article class="vibe-benefit accent-blue"><span class="vibe-benefit-icon" aria-hidden="true">◎</span><strong>Stay in the Flow</strong><span>Focus on logic, not boilerplate.</span></article>
+          <article class="vibe-benefit accent-teal"><span class="vibe-benefit-icon" aria-hidden="true">✦</span><strong>AI as Your Copilot</strong><span>Get smarter suggestions and better code.</span></article>
+          <article class="vibe-benefit accent-orange"><span class="vibe-benefit-icon" aria-hidden="true">✓</span><strong>Built-in Quality</strong><span>Create cleaner code with fewer bugs.</span></article>
+        </div>
+        <div class="callout"><strong>Focus on ideas. Let AI handle the heavy lifting.</strong><small>Code with clarity, create with confidence, and deliver with impact.</small></div>
+        <div class="resource-anchor"><a class="resource-link" href="AI-Assisted Engineering/resources/posters/vibe-coding-light-landscape.png" target="_blank">Vibe Coding ↗</a><span aria-hidden="true">|</span><a class="resource-link" href="AI-Assisted Engineering/resources/guides/vibe-coding-guide.html" target="_blank">Vibe Coding Guide ↗</a></div>
+      </section>
+
+      <section class="slide comparison-slide accent-blue" data-title="AI-Assisted Development vs Vibe Coding">
+        <div class="eyebrow">04 / AI-Assisted Development vs Vibe Coding</div>
+        <h2>Different mindsets. Same goal: ship great products.</h2>
+        <p>Two powerful ways to build software. Choose the approach that fits the work, the risk, and the outcome you need.</p>
+        <div class="poster-comparison">
+          <article class="comparison-panel">
+            <header><h3>AI-Assisted Development</h3><p>Augmenting developers with AI across the SDLC</p></header>
+            <div class="comparison-panel-body">
+              <p>Developers stay in control while AI helps with ideas, code, tests, docs, and more at every step.</p>
+              <div class="comparison-section"><h4>How it works</h4><ul class="comparison-list"><li><strong>Plan</strong>Analyze requirements</li><li><strong>Code</strong>Suggest and refactor</li><li><strong>Test</strong>Find issues</li><li><strong>Deploy</strong>Automate releases</li><li><strong>Operate</strong>Learn and improve</li></ul></div>
+              <div class="comparison-section"><h4>Key strengths</h4><ul class="comparison-list"><li><strong>Productivity</strong>Automate tasks</li><li><strong>Quality</strong>Catch bugs early</li><li><strong>Knowledge</strong>Amplify learning</li><li><strong>Lower risk</strong>Review outcomes</li><li><strong>Impact</strong>Improve delivery</li></ul></div>
+              <div class="comparison-section"><h4>Best for</h4><ul class="comparison-list"><li><strong>Complex systems</strong>Large codebases</li><li><strong>Long-term products</strong>Scalable architecture</li><li><strong>Teams</strong>Governance and standards</li><li><strong>Reliability</strong>Observable software</li></ul></div>
+            </div>
+          </article>
+          <article class="comparison-panel vibe">
+            <header><h3>Vibe Coding</h3><p>Turning ideas into working software with natural language</p></header>
+            <div class="comparison-panel-body">
+              <p>You describe what you want in plain language and AI generates working code. Iterate quickly and experiment freely.</p>
+              <div class="comparison-section"><h4>How it works</h4><ul class="comparison-list"><li><strong>Describe</strong>Share the idea</li><li><strong>Generate</strong>Create code and assets</li><li><strong>Iterate</strong>Refine with feedback</li><li><strong>Test &amp; run</strong>Validate instantly</li><li><strong>Ship fast</strong>Share the result</li></ul></div>
+              <div class="comparison-section"><h4>Key strengths</h4><ul class="comparison-list"><li><strong>Speed</strong>Prototype quickly</li><li><strong>Accessible</strong>No boilerplate</li><li><strong>Creative flow</strong>Stay in the zone</li><li><strong>Experimentation</strong>Pivot freely</li><li><strong>Empowerment</strong>Build and innovate</li></ul></div>
+              <div class="comparison-section"><h4>Best for</h4><ul class="comparison-list"><li><strong>Prototyping</strong>Validate ideas</li><li><strong>Side projects</strong>Try experiments</li><li><strong>Solo builders</strong>Move independently</li><li><strong>Learning</strong>Understand by building</li><li><strong>Content and tools</strong>Scripts and automations</li></ul></div>
+            </div>
+          </article>
+        </div>
+        <div class="comparison-footer"><div><strong>Developer role</strong><span>AI is a co-pilot. Developers design, decide, and deliver.</span></div><div><strong>Mindset</strong><span>AI-Assisted = augment and elevate. Vibe Coding = express and accelerate.</span></div><div><strong>Goal</strong><span>Build software that solves real problems and creates value.</span></div></div>
+        <div class="resource-anchor"><a class="resource-link" href="AI-Assisted Engineering/resources/posters/ai-assisted-development-vs-vibe-coding-light-landscape.png" target="_blank">AI-Assisted Development vs Vibe Coding ↗</a></div>
+      </section>
+
+      <section class="slide coding-table-slide accent-orange" data-title="Vibe Coding vs AI-Assisted Development">
+        <div class="eyebrow">05 / Vibe Coding vs AI-Assisted Development Working Patterns</div>
+        <h2>Compare the working patterns.</h2>
+        <div class="approach-panels">
+          <article class="approach-panel">
+            <header><h3>Vibe Coding</h3><p>Broad prompts, rapid experimentation, and larger generated outputs.</p></header>
+            <div class="approach-body">
+              <div class="approach-row"><strong>Meaning + control</strong><div><h4>Start with the result</h4><p>AI generates much of the code from broad prompts. The user checks whether the app appears to work, then prompts again.</p></div></div>
+              <div class="approach-row"><strong>Human role</strong><div><h4>Steer the builder</h4><p>AI fills in technical details while the human guides it through goals, natural language, feedback, and corrections.</p></div></div>
+              <div class="approach-row"><strong>Prompt + plan</strong><div><h4>Explore conversationally</h4><p>Prompts are broad, and the plan forms during repeated prompting and feedback.</p></div></div>
+              <div class="approach-row"><strong>Review + output</strong><div><h4>Validate the visible behavior</h4><p>Less coding knowledge is needed; AI may generate large chunks such as full screens, features, or small apps.</p></div></div>
+            </div>
+          </article>
+          <article class="approach-panel ai">
+            <header><h3>AI-Assisted Development</h3><p>Focused tasks, developer control, and deeper technical review.</p></header>
+            <div class="approach-body">
+              <div class="approach-row"><strong>Meaning + control</strong><div><h4>Start with the code and requirements</h4><p>AI helps with specific coding tasks while the developer controls logic and checks that changes are correct and reliable.</p></div></div>
+              <div class="approach-row"><strong>Human role</strong><div><h4>Direct the helper</h4><p>AI drafts, explains, suggests, or speeds up selected work while the developer reviews output and makes major decisions.</p></div></div>
+              <div class="approach-row"><strong>Prompt + plan</strong><div><h4>Work from clear constraints</h4><p>Prompts are narrower, and the developer starts with requirements, constraints, and expected behavior.</p></div></div>
+              <div class="approach-row"><strong>Review + output</strong><div><h4>Check logic, tests, and fit</h4><p>Enough technical knowledge is needed to judge correctness, reliability, and security. AI produces smaller, reviewable tasks.</p></div></div>
+            </div>
+          </article>
+        </div>
+        <div class="coding-table-note"><div><strong>Choose Vibe Coding</strong><span>When speed, discovery, and a disposable prototype matter most.</span></div><div><strong>Choose AI-Assisted Development</strong><span>When correctness, maintainability, security, and review matter most.</span></div></div>
+      </section>
+
+      <section class="slide coding-table-slide accent-orange" data-title="Vibe Coding or AI-Assisted Development">
+        <div class="eyebrow">06 / When to Use Each Approach</div>
+        <h2>When to Use Each Approach</h2>
+        <div class="approach-panels">
+          <article class="approach-panel">
+            <header><h3>Vibe Coding</h3><p>Fast exploration, visible results, and disposable output.</p></header>
+            <div class="approach-body">
+              <div class="approach-row"><strong>Best fit</strong><div><h4>Fast prototypes</h4><p>Turn an idea into something visible quickly and test whether it is worth pursuing.</p></div></div>
+              <div class="approach-row"><strong>Discovery</strong><div><h4>Demos and proof of concept</h4><p>Explore a direction before investing in a full build or durable architecture.</p></div></div>
+              <div class="approach-row"><strong>Scope</strong><div><h4>Small internal tools</h4><p>Create simple helpers, pages, and automations with limited risk.</p></div></div>
+              <div class="approach-row"><strong>Learning</strong><div><h4>UI exploration and learning</h4><p>Try layouts and understand how pieces connect through rapid feedback.</p></div></div>
+            </div>
+          </article>
+          <article class="approach-panel ai">
+            <header><h3>AI-Assisted Development</h3><p>Focused tasks, developer control, and reviewable delivery.</p></header>
+            <div class="approach-body">
+              <div class="approach-row"><strong>Best fit</strong><div><h4>Production systems</h4><p>Keep logic, reliability, architecture, and operational behavior reviewable.</p></div></div>
+              <div class="approach-row"><strong>Change</strong><div><h4>Migration and refactoring</h4><p>Speed up structured changes across an existing codebase without losing control.</p></div></div>
+              <div class="approach-row"><strong>Assurance</strong><div><h4>Testing and code review</h4><p>Find edge cases, defects, and security issues earlier with focused assistance.</p></div></div>
+              <div class="approach-row"><strong>Risk</strong><div><h4>Sensitive data and critical workflows</h4><p>Maintain strong human oversight, traceability, and evidence for important decisions.</p></div></div>
+            </div>
+          </article>
+        </div>
+        <div class="coding-table-note"><div><strong>Choose Vibe Coding</strong><span>When speed, discovery, and a disposable prototype matter most.</span></div><div><strong>Choose AI-Assisted Development</strong><span>When correctness, maintainability, security, and review matter most.</span></div></div>
+      </section>
+
+      <section class="slide prompt-engineering-slide accent-cyan" data-title="Prompt Engineering">
+        <div class="eyebrow">07 / Prompt Engineering</div>
+        <h2>Prompt Engineering</h2>
+        <div class="prompt-definition"><strong>Definition</strong><span><b>Prompt Engineering</b> is the practice of designing, crafting, and optimizing text inputs (prompts) to effectively communicate with Large Language Models (LLMs) and get desired outputs. It is both an art and a science, combining creativity, experimentation, and systematic methodology to guide AI models toward producing accurate, relevant, and useful responses.</span></div>
+        <div class="prompt-rules" aria-label="The five golden rules of prompt engineering">
+          <article class="prompt-rule"><div class="rule-icon" aria-hidden="true">&bull;</div><h3>Be Clear</h3><p>Use simple, specific language.</p></article>
+          <article class="prompt-rule"><div class="rule-icon" aria-hidden="true">+</div><h3>Be Specific</h3><p>Add context, details, and constraints.</p></article>
+          <article class="prompt-rule"><div class="rule-icon" aria-hidden="true">=</div><h3>Be Structured</h3><p>Organize information for clarity.</p></article>
+          <article class="prompt-rule"><div class="rule-icon" aria-hidden="true">&#9873;</div><h3>Be Goal-Oriented</h3><p>Define the outcome you expect.</p></article>
+          <article class="prompt-rule"><div class="rule-icon" aria-hidden="true">&#8635;</div><h3>Iterate &amp; Refine</h3><p>Review, tweak, and improve.</p></article>
+        </div>
+        <div class="prompt-process">
+          <h3>The prompting process</h3>
+          <div class="prompt-step"><div class="step-icon" aria-hidden="true">1</div><strong>Define</strong><span>Define the task and objective.</span></div>
+          <div class="prompt-step"><div class="step-icon" aria-hidden="true">2</div><strong>Provide Context</strong><span>Share relevant information.</span></div>
+          <div class="prompt-step"><div class="step-icon" aria-hidden="true">3</div><strong>Specify Details</strong><span>Add requirements, constraints, and format.</span></div>
+          <div class="prompt-step"><div class="step-icon" aria-hidden="true">4</div><strong>Generate</strong><span>Let AI generate a response.</span></div>
+          <div class="prompt-step"><div class="step-icon" aria-hidden="true">5</div><strong>Refine</strong><span>Evaluate and refine for better results.</span></div>
+        </div>
+        <div class="prompt-tip"><strong>Pro tip</strong><span>Great prompts do not happen by accident. They are crafted, tested, and refined.</span></div>
+        <div class="resource-anchor"><a class="resource-link" href="AI-Assisted Engineering/resources/posters/prompt-engineering-light-landscape.png" target="_blank">Prompt Engineering ↗</a><span aria-hidden="true">|</span><a class="resource-link" href="AI-Assisted Engineering/resources/posters/prompt-core-components-light-landscape.png" target="_blank">Core Components of a Prompt ↗</a><span aria-hidden="true">|</span><a class="resource-link" href="InaNutshell/Prompt Engineering - In a Nutshell.html" target="_blank">Prompt Engineering - In a Nutshell ↗</a></div>
+      </section>
+
+      <section class="slide structured-prompt-slide accent-blue" data-title="Well-Structured Prompt">
+        <div class="eyebrow">08 / Well-Structured Prompt</div>
+        <h2>Well-structured prompts produce clearer, more relevant results.</h2>
+        <p>A well-structured prompt is like a well-organized document: it has clear sections, logical flow, and purposeful organization.</p>
+        <div class="structured-prompt-flow">
+          <article class="structured-prompt-card"><div class="structured-prompt-icon" aria-hidden="true">&bull;</div><h3>1. System Message</h3><div class="structured-prompt-rule"></div><p>Set the role, behavior, and overall guidelines for the AI.</p><div class="structured-prompt-example"><strong>Example</strong>&ldquo;You are a helpful assistant that provides accurate, concise, and reliable information.&rdquo;</div></article>
+          <article class="structured-prompt-card"><div class="structured-prompt-icon" aria-hidden="true">&bull;</div><h3>2. Task Instruction</h3><div class="structured-prompt-rule"></div><p>Clearly state what you want the model to do.</p><div class="structured-prompt-example"><strong>Example</strong>&ldquo;Summarize the key benefits of renewable energy in bullet points.&rdquo;</div></article>
+          <article class="structured-prompt-card"><div class="structured-prompt-icon" aria-hidden="true">&bull;</div><h3>3. Context / Input</h3><div class="structured-prompt-rule"></div><p>Provide the background information or input data the model needs.</p><div class="structured-prompt-example"><strong>Example</strong>&ldquo;Here is an article about renewable energy technologies: &lt;paste article or data&gt;&rdquo;</div></article>
+          <article class="structured-prompt-card"><div class="structured-prompt-icon" aria-hidden="true">&bull;</div><h3>4. Constraints</h3><div class="structured-prompt-rule"></div><p>Specify rules, limitations, assumptions, or boundaries to follow.</p><div class="structured-prompt-example"><strong>Example</strong>&ldquo;Keep it concise (max 150 words). Focus on factual information. Do not include opinions.&rdquo;</div></article>
+          <article class="structured-prompt-card"><div class="structured-prompt-icon" aria-hidden="true">&bull;</div><h3>5. Output Format</h3><div class="structured-prompt-rule"></div><p>Define the desired structure or format of the response.</p><div class="structured-prompt-example"><strong>Example</strong>&ldquo;Respond in markdown with a title and bullet points.&rdquo;</div></article>
+        </div>
+        <div class="structured-prompt-footer"><div><strong>Why it matters</strong><span>A well-structured prompt reduces ambiguity, improves accuracy, and helps AI generate better, more relevant results.</span></div><div><strong>Best practice</strong><span>Follow the structure, be specific, and provide enough information for the best outcome.</span></div><div class="closing">Better Prompts.<br>Better Results.</div></div>
+        <div class="resource-anchor"><a class="resource-link" href="AI-Assisted Engineering/resources/posters/well-structured-prompt-light-landscape.png" target="_blank">Well-Structured Prompt ↗</a></div>
+      </section>
+
+      <section class="slide prompt-techniques-slide accent-cyan" data-title="Prompting Techniques">
+        <div class="eyebrow">09 / Prompting Techniques</div>
+        <h2>Choose the right technique for the task.</h2>
+        <p>Experiment with different prompting techniques, combine what works, and refine your prompts for clearer, more useful results.</p>
+        <h3 class="technique-group-label basic-label">Basic techniques</h3>
+        <div class="techniques-basic">
+          <article class="technique-basic accent-blue"><div class="technique-number">1</div><h3>Zero-Shot<span>Direct instructions</span></h3><p>Give the model a task or question without examples.</p><div class="technique-use"><strong>Use when</strong>the task is straightforward and you want a quick answer.</div></article>
+          <article class="technique-basic accent-teal"><div class="technique-number">2</div><h3>Few-Shot<span>Learn from examples</span></h3><p>Provide a few examples to show the model what you want.</p><div class="technique-use"><strong>Use when</strong>you need higher accuracy or the task has specific patterns.</div></article>
+        </div>
+        <h3 class="technique-group-label advanced-label">Advanced techniques</h3>
+        <div class="techniques-advanced">
+          <article class="technique-advanced accent-blue"><h3>3. Chain-of-Thought<span>Step-by-step reasoning</span></h3><p>Ask the model to think through a problem before answering.</p><div class="technique-example"><strong>Example</strong>Solve the problem step by step.</div></article>
+          <article class="technique-advanced accent-cyan"><h3>4. Self-Consistency<span>Multiple reasoning paths</span></h3><p>Generate multiple paths and select the most consistent answer.</p><div class="technique-example"><strong>Example</strong>Try several approaches, then compare.</div></article>
+          <article class="technique-advanced accent-orange"><h3>5. Tree-of-Thoughts<span>Structured exploration</span></h3><p>Explore branches and evaluate different possibilities.</p><div class="technique-example"><strong>Example</strong>Consider pros and cons of each option.</div></article>
+          <article class="technique-advanced accent-teal"><h3>6. ReAct<span>Reasoning + acting</span></h3><p>Combine reasoning with actions using tools or an environment.</p><div class="technique-example"><strong>Example</strong>Search, reason about findings, and report.</div></article>
+          <article class="technique-advanced accent-blue"><h3>7. Prompt Chaining<span>Multi-step workflows</span></h3><p>Break a complex task into steps and chain prompts together.</p><div class="technique-example"><strong>Example</strong>Extract data, analyze it, then generate a report.</div></article>
+        </div>
+        <div class="resource-anchor"><a class="resource-link" href="AI-Assisted Engineering/resources/posters/prompting-techniques-light-landscape.png" target="_blank">Prompting Techniques ↗</a></div>
+      </section>
+
+      <section class="slide prompt-patterns-slide accent-blue" data-title="Prompting Patterns">
+        <div class="eyebrow">10 / Prompting Patterns</div>
+        <h2>Prompting Patterns</h2>
+        <p>Use the right pattern to get better results, faster.</p>
+        <div class="prompt-patterns">
+          <article class="prompt-pattern accent-blue"><header><h3>Instructional</h3><span>Direct commands</span></header><div class="prompt-pattern-body"><p>Use clear, direct instructions to get specific tasks done.</p><h4>Ideal for</h4><ul><li>Task automation</li><li>Data processing</li></ul><div class="prompt-pattern-example"><strong>Example prompt</strong>Extract all invoice numbers and amounts from the document and return in a table.</div></div></article>
+          <article class="prompt-pattern accent-teal"><header><h3>Conversational</h3><span>Interactive dialogue</span></header><div class="prompt-pattern-body"><p>Engage in natural dialogue to ask questions and get clarification.</p><h4>Ideal for</h4><ul><li>Chatbots</li><li>Q&amp;A systems</li></ul><div class="prompt-pattern-example"><strong>Example prompt</strong>I want to learn about cloud computing. Start with the basics and ask me questions to tailor your explanations.</div></div></article>
+          <article class="prompt-pattern accent-orange"><header><h3>Analytical</h3><span>Deep analysis</span></header><div class="prompt-pattern-body"><p>Use structured thinking to analyze, compare, and derive insights.</p><h4>Ideal for</h4><ul><li>Research</li><li>Decision support</li></ul><div class="prompt-pattern-example"><strong>Example prompt</strong>Analyze the pros and cons of adopting a microservices architecture for an enterprise application.</div></div></article>
+          <article class="prompt-pattern accent-cyan"><header><h3>Creative</h3><span>Generative tasks</span></header><div class="prompt-pattern-body"><p>Generate original ideas, content, or solutions with creativity.</p><h4>Ideal for</h4><ul><li>Content creation</li><li>Ideation</li></ul><div class="prompt-pattern-example"><strong>Example prompt</strong>Write a blog outline on the future of AI in healthcare with engaging headings and key points.</div></div></article>
+        </div>
+        <div class="resource-anchor"><a class="resource-link" href="AI-Assisted Engineering/resources/posters/prompting-patterns-light-landscape.png" target="_blank">Prompting Patterns ↗</a></div>
+      </section>
+
+      <section class="slide context-slide context-reference-slide accent-teal" data-title="Context Engineering">
+        <div class="eyebrow">11 / Context Engineering</div>
+        <h2>Context Engineering</h2>
+        <p>The Right Context. The Right Result.</p>
+        <div class="context-hero"><p class="context-definition"><strong>Definition</strong> Context Engineering is the practice of collecting, structuring, and delivering the right context to AI so it can reason better and deliver higher quality results.</p><div class="context-goal"><div class="context-goal-icon" aria-hidden="true">&#9678;</div><div><strong>Goal</strong><span>Provide AI with the context it needs to understand, reason, and deliver value.</span></div></div></div>
+        <h3 class="context-section-title">Core principles</h3>
+        <div class="context-principles">
+          <div class="context-principle accent-blue"><div class="context-icon" aria-hidden="true">&#9678;</div><strong>Relevance</strong><span>Include only what matters.</span></div>
+          <div class="context-principle accent-teal"><div class="context-icon" aria-hidden="true">&#9638;</div><strong>Structure</strong><span>Organize context for clarity and retrieval.</span></div>
+          <div class="context-principle" style="--accent:#6336c8"><div class="context-icon" aria-hidden="true">&#9711;</div><strong>Timeliness</strong><span>Use up-to-date and accurate information.</span></div>
+          <div class="context-principle accent-orange"><div class="context-icon" aria-hidden="true">&#10003;</div><strong>Trust</strong><span>Source from reliable and verified data.</span></div>
+          <div class="context-principle accent-cyan"><div class="context-icon" aria-hidden="true">&#9673;</div><strong>Completeness</strong><span>Provide enough context to avoid ambiguity.</span></div>
+        </div>
+        <h3 class="context-section-title">The context engineering workflow</h3>
+        <div class="context-bottom"><div class="context-workflow">
+          <div class="context-step accent-blue"><div class="context-icon" aria-hidden="true">&#9678;</div><strong>1. Identify</strong><span>Identify the goal and information needs.</span></div>
+          <div class="context-step accent-teal"><div class="context-icon" aria-hidden="true">&#9638;</div><strong>2. Gather</strong><span>Collect relevant data from trusted sources.</span></div>
+          <div class="context-step" style="--accent:#6336c8"><div class="context-icon" aria-hidden="true">&#9776;</div><strong>3. Structure</strong><span>Organize and format for easy understanding and retrieval.</span></div>
+          <div class="context-step accent-orange"><div class="context-icon" aria-hidden="true">&#10148;</div><strong>4. Deliver</strong><span>Pass the right context to AI at the right time.</span></div>
+          <div class="context-step accent-cyan"><div class="context-icon" aria-hidden="true">&#9650;</div><strong>5. Evaluate</strong><span>Review output and refine context continuously.</span></div>
+        </div><div class="context-tip"><strong>Pro tip</strong><span>Better context leads to better reasoning and better results.</span><em>Great context.<br>Smarter AI.<br>Stronger outcomes.</em></div></div>
+        <div class="resource-links resource-anchor"><a class="resource-link" href="AI-Assisted Engineering/resources/posters/context-engineering-light-landscape.png" target="_blank">Context Engineering ↗</a><a class="resource-link" href="InaNutshell/Context Engineering - In a Nutshell.html" target="_blank">Context Engineering - In a Nutshell ↗</a></div>
+      </section>
+
+      <section class="slide context-slide context-concepts-slide accent-blue" data-title="Context Engineering Concepts">
+        <div class="eyebrow">12 / Context Engineering Concepts</div>
+        <h2>Context Engineering</h2>
+        <p>Build the right context. Deliver the right answers.</p>
+        <div class="context-concepts-grid">
+          <article class="context-concept-panel"><header>1 &nbsp; The context window &mdash; mental model</header><div class="context-concept-body"><div class="context-window"><div class="context-window-title"><strong>Context Window</strong><span>(finite token budget)</span></div><div class="context-window-items">
+            <div class="context-window-item accent-blue"><div class="context-icon" aria-hidden="true">&#9776;</div><div><strong>System Instructions</strong><span>role &middot; rules &middot; format</span></div></div>
+            <div class="context-window-item accent-teal"><div class="context-icon" aria-hidden="true">&#9638;</div><div><strong>Memory</strong><span>short-term &middot; long-term &middot; episodic</span></div></div>
+            <div class="context-window-item accent-orange"><div class="context-icon" aria-hidden="true">&#8981;</div><div><strong>Retrieved Knowledge</strong><span>RAG &middot; documents &middot; facts</span></div></div>
+            <div class="context-window-item" style="--accent:#6336c8"><div class="context-icon" aria-hidden="true">&#8226;&#8226;&#8226;</div><div><strong>Conversation History</strong><span>turns &middot; summaries</span></div></div>
+            <div class="context-window-item" style="--accent:#df2165"><div class="context-icon" aria-hidden="true">&#9881;</div><div><strong>Tool Outputs</strong><span>API results &middot; code &middot; data</span></div></div>
+            <div class="context-window-item accent-cyan"><div class="context-icon" aria-hidden="true">&#9679;</div><div><strong>User Input</strong><span>current query &middot; task</span></div></div>
+          </div></div></div></article>
+          <article class="context-concept-panel"><header>2 &nbsp; Context engineering lifecycle</header><div class="context-concept-body"><div class="context-lifecycle">
+            <div class="context-lifecycle-step accent-blue"><div class="context-icon" aria-hidden="true">&#9679;</div><div><strong>User Request</strong><span>User asks a question or triggers a task.</span></div></div>
+            <div class="context-lifecycle-step accent-teal"><div class="context-icon" aria-hidden="true">&#10022;</div><div><strong>Context Assembly</strong><span>Gather signals and build initial context from memory, history, tools, and sources.</span></div></div>
+            <div class="context-lifecycle-step accent-orange"><div class="context-icon" aria-hidden="true">&#8981;</div><div><strong>Retrieval &amp; Augmentation</strong><span>Retrieve relevant knowledge and enrich context.</span></div></div>
+            <div class="context-lifecycle-step" style="--accent:#df2165"><div class="context-icon" aria-hidden="true">&#9986;</div><div><strong>Pruning &amp; Compression</strong><span>Remove noise, deduplicate, summarize, and fit within the token budget.</span></div></div>
+            <div class="context-lifecycle-step" style="--accent:#6336c8"><div class="context-icon" aria-hidden="true">&#9638;</div><div><strong>Context Window</strong><span>Assemble the final, optimized context within the token budget.</span></div></div>
+            <div class="context-lifecycle-step accent-teal"><div class="context-icon" aria-hidden="true">&#9670;</div><div><strong>LLM Inference</strong><span>Model processes the context and generates an answer or action.</span></div></div>
+            <div class="context-lifecycle-step accent-cyan"><div class="context-icon" aria-hidden="true">&#8226;&#8226;&#8226;</div><div><strong>Response</strong><span>Deliver response to the user or system.</span></div></div>
+            <div class="context-lifecycle-step" style="--accent:#df2165"><div class="context-icon" aria-hidden="true">&#9638;</div><div><strong>Memory Update</strong><span>Store insights and outcomes to improve future context.</span></div></div>
+          </div></div></article>
+        </div>
+        <div class="context-concepts-footer"><div class="context-outcomes">
+          <div class="context-outcome accent-blue"><div class="context-icon" aria-hidden="true">&#9678;</div><strong>Higher Accuracy</strong><span>Right information. Better answers.</span></div><div class="context-outcome accent-teal"><div class="context-icon" aria-hidden="true">&#9733;</div><strong>Lower Latency</strong><span>Smaller context means faster responses.</span></div><div class="context-outcome accent-orange"><div class="context-icon" aria-hidden="true">$</div><strong>Lower Cost</strong><span>Fewer tokens. Lower spend.</span></div><div class="context-outcome" style="--accent:#6336c8"><div class="context-icon" aria-hidden="true">&#10022;</div><strong>Greater Reliability</strong><span>Less noise. More signal.</span></div><div class="context-outcome accent-cyan"><div class="context-icon" aria-hidden="true">&#9618;</div><strong>Scalable Systems</strong><span>Works better as data, tools, and users grow.</span></div>
+        </div><div class="context-concepts-takeaway"><strong>Key Takeaway</strong><span>Context is the interface between your data and the model. Engineer it well, and everything gets better.</span></div></div>
+        <div class="resource-links resource-anchor"><a class="resource-link" href="AI-Assisted Engineering/resources/posters/context-engineering-core-principles-light-landscape.png" target="_blank">Context Engineering Concepts ↗</a><a class="resource-link" href="AI-Assisted Engineering/resources/posters/context-engineering-architecture-light-landscape.png" target="_blank">Context Engineering Architecture ↗</a><a class="resource-link" href="AI-Assisted Engineering/resources/posters/context-types-and-layers-light-landscape.png" target="_blank">Context Types &amp; Layers ↗</a></div>
+      </section>
+
+      <section class="slide token-budget-slide accent-blue" data-title="Context Window and Token Budgeting">
+        <div class="eyebrow">13 / Context Window and Token Budgeting</div>
+        <h2>Context Window &amp; Token Budgeting</h2>
+        <p>Make every token count. Better context. Better answers. Lower cost.</p>
+        <div class="token-budget-top"><article class="token-budget-panel"><header>The context window <span>(finite token budget)</span></header><div class="token-window-allocation">
+          <div class="token-window-total"><strong>Total context window</strong><span>Example: 128,000 tokens</span></div>
+          <div class="token-budget-card accent-blue"><div class="context-icon" aria-hidden="true">&#9776;</div><strong>System prompt</strong><span>Rules, persona, format, guardrails</span><em>~500-2,000</em></div>
+          <div class="token-budget-card accent-orange"><div class="context-icon" aria-hidden="true">&#9679;</div><strong>User context</strong><span>Profile, preferences, memory</span><em>~1,000-3,000</em></div>
+          <div class="token-budget-card accent-teal"><div class="context-icon" aria-hidden="true">&#8981;</div><strong>Retrieved docs</strong><span>Documents, facts, product data</span><em>~5,000-30,000</em></div>
+          <div class="token-budget-card token-budget-purple"><div class="context-icon" aria-hidden="true">&#9679;&#9679;&#9679;</div><strong>History</strong><span>Turns and summaries</span><em>~2,000-20,000</em></div>
+          <div class="token-budget-card accent-cyan"><div class="context-icon" aria-hidden="true">&#9881;</div><strong>Tool definitions</strong><span>Functions, APIs, tools</span><em>~500-5,000</em></div>
+          <div class="token-budget-card token-budget-pink"><div class="context-icon" aria-hidden="true">&#9638;</div><strong>Response budget</strong><span>Reserved for model output</span><em>~2,000-8,000</em></div>
+        </div></article><aside class="token-budget-panel token-budget-equation"><h3>Token budget equation</h3><div class="token-equation"><div>Total context window</div><b>&minus;</b><div>Reserved for response</div><b>=</b><div>Available for prompt</div></div><h3 class="token-example-heading">Example (128K window)</h3><div class="token-example">128,000 total &minus; 16,000 reserved = 112,000 available for prompt</div><div class="token-budget-takeaway token-budget-tip"><strong>Tip</strong><span>Always reserve enough tokens for a quality response. If you starve the model, the answer will be cut off.</span></div></aside></div>
+        <div class="token-budget-lower"><section class="token-budget-section"><h3>What counts as tokens?</h3><div class="token-types"><div class="token-type accent-blue"><strong>T</strong>Text<br>Words, characters</div><div class="token-type accent-teal"><strong>&lt;/&gt;</strong>Code<br>Source, JSON, YAML</div><div class="token-type accent-orange"><strong>{}</strong>Structured data<br>Tables, lists</div><div class="token-type token-budget-pink"><strong>&#9638;</strong>Images<br>Vision models</div><div class="token-type accent-cyan"><strong>&#9835;</strong>Audio<br>Speech models</div></div></section><section class="token-budget-section"><h3>Allocation strategies</h3><div class="token-strategy"><div class="accent-blue"><b>&#9678;</b><span><strong>Prioritize by impact</strong><br>Give more tokens to context that influences the answer.</span></div><div class="accent-teal"><b>&#8597;</b><span><strong>Dynamic allocation</strong><br>Adjust allocations by query type and conversation stage.</span></div><div class="accent-orange"><b>&#9986;</b><span><strong>Prune &amp; compress</strong><br>Remove, summarize, and compress low-value content.</span></div><div class="token-budget-purple"><b>&#9733;</b><span><strong>Reserve for completion</strong><br>Keep a healthy budget for the model to think and respond.</span></div></div></section><section class="token-budget-section"><h3>Best practices</h3><div class="token-practice"><div class="accent-teal"><b>&#10003;</b><span>Include only what is relevant to the current task.</span></div><div class="accent-teal"><b>&#10003;</b><span>Use summaries for long histories.</span></div><div class="accent-teal"><b>&#10003;</b><span>Chunk and retrieve the most relevant knowledge.</span></div><div class="accent-teal"><b>&#10003;</b><span>Remove redundancy and outdated information.</span></div><div class="accent-teal"><b>&#10003;</b><span>Monitor token usage, cost, and latency.</span></div><div class="accent-teal"><b>&#10003;</b><span>Continuously evaluate and refine your context strategy.</span></div></div></section></div>
+        <div class="token-budget-takeaway"><strong>Key takeaway</strong><span>The quality of AI responses depends on how well you manage your token budget. Right context, right size, right time.</span><div class="token-outcomes"><span class="accent-blue"><strong>Better</strong>accuracy</span><span class="accent-teal"><strong>Lower</strong>latency</span><span class="accent-orange"><strong>Lower</strong>cost</span><span class="token-budget-purple"><strong>More</strong>reliable</span></div></div>
+        <div class="resource-links resource-anchor"><a class="resource-link" href="AI-Assisted Engineering/resources/posters/context-window-and-token-budgeting-light-landscape.png" target="_blank">Context Window &amp; Token Budgeting ↗</a></div>
+      </section>
+
+      <section class="slide prompt-context-slide accent-blue" data-title="Prompt vs Context">
+        <div class="eyebrow">14 / Prompt Engineering vs Context Engineering</div>
+        <h2><span style="color:var(--blue)">Prompt Engineering</span> <span aria-hidden="true">vs</span> <span style="color:var(--teal)">Context Engineering</span></h2>
+        <p class="subtitle">Two complementary approaches. One smarter outcome.</p>
+        <div class="prompt-context-compare"><article class="prompt-context-column accent-blue"><header>Prompt Engineering</header><div class="prompt-context-intro"><div class="context-icon" aria-hidden="true">&#9881;</div><div><strong>Crafting the right input</strong><p>Focuses on writing clear, specific, and effective prompts to get the best responses from AI.</p></div></div><div class="prompt-context-focus-title">Key focus areas</div><div class="prompt-context-focus"><article class="accent-blue"><div class="context-icon" aria-hidden="true">&#9678;</div><strong>Clarity</strong><span>Be clear and specific</span></article><article class="accent-blue"><div class="context-icon" aria-hidden="true">&#9776;</div><strong>Structure</strong><span>Organize instructions and examples</span></article><article class="accent-blue"><div class="context-icon" aria-hidden="true">&#8801;</div><strong>Precision</strong><span>Tune wording and constraints</span></article><article class="accent-blue"><div class="context-icon" aria-hidden="true">&#9878;</div><strong>Iteration</strong><span>Refine prompts for better results</span></article></div><div class="prompt-context-info"><div class="accent-blue"><div class="context-icon" aria-hidden="true">&#9679;</div><div><strong>Best for</strong><p>Quick tasks, one-off questions, and scenarios where the input is self-contained.</p></div></div><div class="accent-blue"><div class="context-icon" aria-hidden="true">&#9776;</div><div><strong>Example use cases</strong><p>&bull; Summarize this article<br>&bull; Translate this paragraph<br>&bull; Generate ideas for a blog post</p></div></div></div></article><article class="prompt-context-column context-column accent-teal"><header>Context Engineering</header><div class="prompt-context-intro"><div class="context-icon" aria-hidden="true">&#9638;</div><div><strong>Designing the right environment</strong><p>Focuses on providing the right context, knowledge, tools, and guardrails for consistent, relevant AI outputs.</p></div></div><div class="prompt-context-focus-title">Key focus areas</div><div class="prompt-context-focus"><article class="accent-teal"><div class="context-icon" aria-hidden="true">&#9638;</div><strong>Relevant Data</strong><span>Provide accurate and up-to-date information</span></article><article class="accent-teal"><div class="context-icon" aria-hidden="true">&#9670;</div><strong>Integration</strong><span>Connect tools, APIs, and data sources</span></article><article class="accent-teal"><div class="context-icon" aria-hidden="true">&#10003;</div><strong>Guardrails</strong><span>Set rules, policies, and boundaries</span></article><article class="accent-teal"><div class="context-icon" aria-hidden="true">&#8635;</div><strong>Continuity</strong><span>Maintain memory and conversation flow</span></article></div><div class="prompt-context-info"><div class="accent-teal"><div class="context-icon" aria-hidden="true">&#9679;</div><div><strong>Best for</strong><p>Complex tasks, multi-turn conversations, and scenarios that require domain knowledge and consistency.</p></div></div><div class="accent-teal"><div class="context-icon" aria-hidden="true">&#9776;</div><div><strong>Example use cases</strong><p>&bull; Customer support with knowledge base<br>&bull; Research assistant with live data<br>&bull; Project copilot with tools and memory</p></div></div></div></article></div>
+        <div class="prompt-context-takeaway"><div class="accent-blue"><div class="context-icon" aria-hidden="true">&#128161;</div><div><strong>The takeaway</strong><span><b>Prompt Engineering</b> shapes the question.<br><b>Context Engineering</b> shapes the intelligence.</span></div></div><div class="accent-teal"><div class="context-icon" aria-hidden="true">&#9679;&#9679;&#9679;</div><div><strong>Use both. Get better results.</strong><span>Great AI outcomes come from strong prompts and smart context.</span></div></div></div>
+        <div class="resource-links resource-anchor"><a class="resource-link" href="AI-Assisted Engineering/resources/posters/prompt-engineering-vs-context-engineering-light-landscape.png" target="_blank">Prompt Engineering vs Context Engineering ↗</a></div>
+      </section>
+
+      <section class="slide accent-orange" data-title="Next steps">
+        <div class="eyebrow">15 / Next steps</div>
+        <h2>Start with one real workflow.</h2>
+        <p>Define its intent. Provide the right context. Use AI to explore or implement. Leave evidence another person can review.</p>
+        <div class="title-mark"><span></span><span></span><span></span><span></span></div>
+        <div class="date-line"><a class="next-link" href="github-copilot-spec-driven-development.html">Next: Spec-Driven Development (GitHub Speck Kit & Agent Squad) &rarr;</a></div>
+      </section>
+    </main>
+    <div class="controls"><span class="footer-title">AI-Assisted Engineering</span><div class="nav-actions"><button class="control" id="prev" type="button" aria-label="Previous slide" title="Previous slide">&larr;</button><span class="nav-counter" id="counter">01 / 16</span><button class="control" id="next" type="button" aria-label="Next slide" title="Next slide">&rarr;</button><button class="overview-toggle" id="overviewToggle" type="button" aria-expanded="false" aria-controls="overview" aria-label="Contents" title="Contents"><span class="grid-icon" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span class="sr-only">Contents</span></button></div></div>
+    <div class="progress" aria-hidden="true"><span id="progress"></span></div>
+    <aside class="overview" id="overview" aria-hidden="true" aria-labelledby="overview-title"><div class="overview-head"><h2 id="overview-title">Contents</h2><button class="control" id="closeOverview" type="button" aria-label="Close contents">&times;</button></div><div class="thumbs" id="thumbs"></div></aside>
+  </div>
+  <script>
+    const slides = [...document.querySelectorAll('.slide')];
+    const counter = document.querySelector('#counter');
+    const progress = document.querySelector('#progress');
+    const overview = document.querySelector('#overview');
+    const overviewToggle = document.querySelector('#overviewToggle');
+    const thumbs = document.querySelector('#thumbs');
+    const contentGroups = [
+      { label: 'AI-Assisted Development', overview: 'Welcome', details: ['Introduction', 'Concepts'] },
+      { label: 'Vibe Coding', overview: 'Vibe Coding', details: ['AI-Assisted Development vs Vibe Coding', 'Vibe Coding vs AI-Assisted Development', 'Vibe Coding or AI-Assisted Development'] },
+      { label: 'Prompt Engineering', overview: 'Prompt Engineering', details: ['Well-Structured Prompt', 'Prompting Techniques', 'Prompting Patterns'] },
+      { label: 'Context Engineering', overview: 'Context Engineering', details: ['Context Engineering Concepts', 'Context Window and Token Budgeting', 'Prompt vs Context'] },
+      { label: 'Next Steps', overview: 'Next steps', details: [] }
+    ];
+    const slideIndexByTitle = new Map(slides.map((slide, index) => [slide.dataset.title, index]));
+    let current = 0;
+    const contentButtons = [];
+
+    function show(index) {
+      current = Math.max(0, Math.min(index, slides.length - 1));
+      slides.forEach((slide, slideIndex) => slide.classList.toggle('active', slideIndex === current));
+      counter.textContent = `${String(current + 1).padStart(2, '0')} / ${String(slides.length).padStart(2, '0')}`;
+      progress.style.width = `${((current + 1) / slides.length) * 100}%`;
+      document.querySelector('#prev').disabled = current === 0;
+      document.querySelector('#next').disabled = current === slides.length - 1;
+      contentButtons.forEach(button => button.classList.toggle('current', Number(button.dataset.index) === current));
+    }
+
+    function setOverview(open) {
+      overview.classList.toggle('open', open);
+      overview.setAttribute('aria-hidden', String(!open));
+      overviewToggle.setAttribute('aria-expanded', String(open));
+    }
+
+    contentGroups.forEach(group => {
+      const column = document.createElement('div');
+      column.className = 'contents-column';
+      const section = document.createElement('button');
+      section.className = 'contents-section';
+      section.type = 'button';
+      section.dataset.index = slideIndexByTitle.get(group.overview);
+      section.innerHTML = `<span class="contents-section-label">${group.label}</span><span class="contents-section-meta">${group.details.length ? `${group.details.length} topics` : 'Overview'}</span>`;
+      section.addEventListener('click', () => { show(Number(section.dataset.index)); setOverview(false); });
+      column.appendChild(section);
+      contentButtons.push(section);
+      group.details.forEach(title => {
+        const tile = document.createElement('button');
+        tile.className = 'contents-tile';
+        tile.type = 'button';
+        tile.dataset.index = slideIndexByTitle.get(title);
+        tile.innerHTML = `<span class="contents-title">${title}</span><span class="contents-meta">${String(Number(tile.dataset.index) + 1).padStart(2, '0')} / ${String(slides.length).padStart(2, '0')}</span>`;
+        tile.addEventListener('click', () => { show(Number(tile.dataset.index)); setOverview(false); });
+        column.appendChild(tile);
+        contentButtons.push(tile);
+      });
+      thumbs.appendChild(column);
+    });
+
+    document.querySelector('#prev').addEventListener('click', () => show(current - 1));
+    document.querySelector('#next').addEventListener('click', () => show(current + 1));
+    overviewToggle.addEventListener('click', () => setOverview(!overview.classList.contains('open')));
+    document.querySelector('#closeOverview').addEventListener('click', () => setOverview(false));
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape') setOverview(false);
+      if (overview.classList.contains('open')) return;
+      if (['ArrowRight', 'PageDown', ' '].includes(event.key)) { event.preventDefault(); show(current + 1); }
+      if (['ArrowLeft', 'PageUp'].includes(event.key)) { event.preventDefault(); show(current - 1); }
+      if (event.key === 'Home') { event.preventDefault(); show(0); }
+      if (event.key === 'End') { event.preventDefault(); show(slides.length - 1); }
+    });
+    show(0);
+  </script>
+</body>
+</html>

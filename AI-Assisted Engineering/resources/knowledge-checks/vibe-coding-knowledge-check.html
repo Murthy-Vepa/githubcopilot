@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vibe Coding Knowledge Check</title>
+  <style>
+    :root { --navy:#102042; --blue:#1d4ed8; --cyan:#0ea5e9; --green:#15803d; --ink:#1e293b; --muted:#64748b; --paper:#f0f4f8; --white:#fff; --line:#dbe4ee; --soft:#eff6ff; --display:Georgia,'Times New Roman',serif; --body:'Segoe UI',system-ui,sans-serif; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--paper); color:var(--ink); font:16px/1.6 var(--body); }
+    .page { width:min(900px,calc(100% - 32px)); margin:0 auto; padding:38px 0 60px; }
+    .hero { padding:36px 34px; border:1px solid #c7d8ed; border-radius:16px; background:linear-gradient(135deg,#dbeafe,#e0f2fe 55%,#dcfce7); }
+    .eyebrow { color:var(--blue); font-size:11px; font-weight:800; letter-spacing:1.8px; text-transform:uppercase; }
+    h1 { margin:14px 0 10px; color:var(--navy); font:700 clamp(38px,6vw,64px)/.98 var(--display); }
+    .hero p { max-width:700px; margin:0; color:#475569; }
+    .meta { display:flex; flex-wrap:wrap; gap:8px; margin-top:20px; }
+    .tag { padding:4px 10px; border:1px solid rgba(15,23,42,.12); border-radius:6px; background:rgba(255,255,255,.7); color:#475569; font-size:12px; }
+    .instructions { margin:24px 0 14px; padding:17px 19px; border-left:4px solid var(--cyan); background:var(--soft); }
+    form { display:grid; gap:16px; }
+    fieldset { margin:0; padding:20px 22px; border:1px solid var(--line); border-radius:10px; background:var(--white); }
+    legend { max-width:100%; padding:0 7px; color:var(--navy); font-weight:700; }
+    label { display:block; margin:9px 0; padding:9px 11px; border:1px solid #e5eaf0; border-radius:6px; color:var(--muted); cursor:pointer; }
+    label:hover { border-color:var(--cyan); background:#f8fbff; color:var(--ink); }
+    input { margin-right:8px; accent-color:var(--blue); }
+    button { padding:12px 18px; border:0; border-radius:7px; background:var(--navy); color:#fff; font:700 15px var(--body); cursor:pointer; }
+    button:hover { background:var(--blue); }
+    #result { margin-top:20px; padding:18px 20px; border-radius:8px; background:var(--white); border:1px solid var(--line); }
+    #result:empty { display:none; }
+    .pass { border-color:#86efac !important; background:#f0fdf4 !important; color:var(--green); }
+    .review { border-color:#fdba74 !important; background:#fff7ed !important; color:#9a3412; }
+    .answer-list { display:grid; gap:10px; margin-top:14px; }
+    .answer-item { padding:11px 13px; border-left:3px solid var(--line); background:#f8fafc; color:var(--muted); font-size:13px; }
+    .answer-item.correct { border-left-color:var(--green); }
+    .answer-item.incorrect { border-left-color:#f97316; }
+    .answer-item strong { color:var(--navy); }
+    .answer-label { display:block; margin-top:3px; color:var(--ink); }
+    a { color:var(--blue); }
+    @media (max-width:560px) { .page { width:min(100% - 20px,900px); padding-top:10px; } .hero { padding:28px 22px; } fieldset { padding:17px; } }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="hero"><div class="eyebrow">AI-Assisted Engineering</div><h1>Vibe Coding knowledge check</h1><p>Test how well you can turn an idea into a useful prototype while keeping prompts clear, requirements visible, and human judgment in the loop.</p><div class="meta"><span class="tag">8 questions</span><span class="tag">Self-check</span><span class="tag">No score stored</span></div></header>
+    <div class="instructions"><strong>Keep the idea answerable:</strong> Vibe Coding creates momentum through natural language and iteration, but a working prototype still needs requirements, review, testing, and ownership.</div>
+    <form id="knowledge-check">
+      <fieldset><legend>1. What best describes Vibe Coding?</legend><label><input type="radio" name="q1" value="a"> Expressing product intent in natural language and using AI to help create and refine working software</label><label><input type="radio" name="q1" value="b"> Letting AI ship software without requirements or review</label><label><input type="radio" name="q1" value="c"> Writing every line manually before discussing the product idea</label></fieldset>
+      <fieldset><legend>2. What remains the developer's responsibility?</legend><label><input type="radio" name="q2" value="a"> Only selecting the model used to generate the code</label><label><input type="radio" name="q2" value="b"> Deciding what is correct, secure, accessible, maintainable, and worth keeping</label><label><input type="radio" name="q2" value="c"> Accepting all generated output to preserve the flow of the session</label></fieldset>
+      <fieldset><legend>3. Which sequence represents the core Vibe Coding process?</legend><label><input type="radio" name="q3" value="a"> Envision and plan, create an initial prototype, then iterate and reassess</label><label><input type="radio" name="q3" value="b"> Generate everything, deploy immediately, then define the user problem</label><label><input type="radio" name="q3" value="c"> Test only after the entire product has been completed</label></fieldset>
+      <fieldset><legend>4. What should an effective prompt include?</legend><label><input type="radio" name="q4" value="a"> A goal, relevant context, examples, constraints, and expected behavior</label><label><input type="radio" name="q4" value="b"> A broad request with no named files, users, or success conditions</label><label><input type="radio" name="q4" value="c"> Every possible feature, even when the first version does not need it</label></fieldset>
+      <fieldset><legend>5. Why should complex work be broken into smaller prompts?</legend><label><input type="radio" name="q5" value="a"> Smaller changes are easier to review, test, understand, and refine independently</label><label><input type="radio" name="q5" value="b"> Smaller prompts prevent AI from using any repository context</label><label><input type="radio" name="q5" value="c"> Breaking work down removes the need for a product plan</label></fieldset>
+      <fieldset><legend>6. How do a PRD and wireframe help an AI-assisted project?</legend><label><input type="radio" name="q6" value="a"> They make product intent, user flow, scope, and quality expectations visible</label><label><input type="radio" name="q6" value="b"> They guarantee that the generated implementation has no defects</label><label><input type="radio" name="q6" value="c"> They replace the need to test the prototype with realistic scenarios</label></fieldset>
+      <fieldset><legend>7. When should a Copilot suggestion be rejected?</legend><label><input type="radio" name="q7" value="a"> When it solves a different problem, adds security risk, or conflicts with project requirements</label><label><input type="radio" name="q7" value="b"> Whenever it changes more than one line of code</label><label><input type="radio" name="q7" value="c"> Never, because generated code is already reviewed by the model</label></fieldset>
+      <fieldset><legend>8. What is the right attitude toward a Vibe Coding prototype?</legend><label><input type="radio" name="q8" value="a"> Treat it as a learning artifact that needs review, testing, and a deliberate path before production</label><label><input type="radio" name="q8" value="b"> Treat a successful demo as proof that production concerns are solved</label><label><input type="radio" name="q8" value="c"> Treat rapid generation as more important than maintainability and security</label></fieldset>
+      <button type="submit">Check my answers</button>
+    </form>
+    <div id="result" role="status" aria-live="polite"></div>
+  </main>
+  <script>
+    const answers = { q1:'a', q2:'b', q3:'a', q4:'a', q5:'a', q6:'a', q7:'a', q8:'a' };
+    const correctAnswers = { q1:'Express product intent in natural language and use AI to help create and refine working software.', q2:'Decide what is correct, secure, accessible, maintainable, and worth keeping.', q3:'Envision and plan, create an initial prototype, then iterate and reassess.', q4:'Include a goal, relevant context, examples, constraints, and expected behavior.', q5:'Smaller changes are easier to review, test, understand, and refine independently.', q6:'Make product intent, user flow, scope, and quality expectations visible.', q7:'Reject it when it solves a different problem, adds security risk, or conflicts with project requirements.', q8:'Treat it as a learning artifact that needs review, testing, and a deliberate path before production.' };
+    const explanations = { q1:'Vibe Coding shifts effort toward expressing intent, inspecting output, and steering iterations.', q2:'AI can propose artifacts, but people remain accountable for product and engineering decisions.', q3:'The process uses planning and prototyping together, then learns through focused iteration.', q4:'Specific signals make the requested result observable and easier to evaluate.', q5:'Short feedback cycles help keep generated work understandable and correctable.', q6:'Shared product and quality direction gives both humans and AI a clearer target.', q7:'A suggestion is not automatically valuable; fit, safety, and requirements determine whether to accept it.', q8:'A prototype supports learning, but production requires evidence, ownership, and additional quality review.' };
+    document.getElementById('knowledge-check').addEventListener('submit', (event) => {
+      event.preventDefault(); let score = 0;
+      const review = Object.entries(answers).map(([question, answer], index) => { const selected = document.querySelector(`input[name="${question}"]:checked`)?.value; const isCorrect = selected === answer; if (isCorrect) score += 1; const selectedText = selected ? document.querySelector(`input[name="${question}"][value="${selected}"]`).parentElement.textContent.trim() : 'No answer selected.'; return `<div class="answer-item ${isCorrect ? 'correct' : 'incorrect'}"><strong>${index + 1}. ${isCorrect ? 'Correct' : 'Review'}</strong><span class="answer-label"><b>Your answer:</b> ${selectedText}</span>${isCorrect ? '' : `<span class="answer-label"><b>Correct answer:</b> ${correctAnswers[question]}</span>`}<span class="answer-label"><b>Why:</b> ${explanations[question]}</span></div>`; }).join('');
+      const result = document.getElementById('result'); const level = score >= 7 ? 'pass' : 'review'; result.className = level; result.innerHTML = `<strong>${score}/8 correct.</strong> ${score >= 7 ? 'You have a solid Vibe Coding baseline.' : 'Review the explanations and retry the questions you missed.'}<div class="answer-list">${review}</div>`;
+    });
+  </script>
+</body>
+</html>

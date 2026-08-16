@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Context Engineering Knowledge Check</title>
+  <style>
+    :root { --navy:#102042; --blue:#1d4ed8; --cyan:#0ea5e9; --green:#15803d; --ink:#1e293b; --muted:#64748b; --paper:#f0f4f8; --white:#fff; --line:#dbe4ee; --soft:#eff6ff; --display:Georgia,'Times New Roman',serif; --body:'Segoe UI',system-ui,sans-serif; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--paper); color:var(--ink); font:16px/1.6 var(--body); }
+    .page { width:min(900px,calc(100% - 32px)); margin:0 auto; padding:38px 0 60px; }
+    .hero { padding:36px 34px; border:1px solid #c7d8ed; border-radius:16px; background:linear-gradient(135deg,#dbeafe,#e0f2fe 55%,#dcfce7); }
+    .eyebrow { color:var(--blue); font-size:11px; font-weight:800; letter-spacing:1.8px; text-transform:uppercase; }
+    h1 { margin:14px 0 10px; color:var(--navy); font:700 clamp(38px,6vw,64px)/.98 var(--display); }
+    .hero p { max-width:700px; margin:0; color:#475569; }
+    .meta { display:flex; flex-wrap:wrap; gap:8px; margin-top:20px; }
+    .tag { padding:4px 10px; border:1px solid rgba(15,23,42,.12); border-radius:6px; background:rgba(255,255,255,.7); color:#475569; font-size:12px; }
+    .instructions { margin:24px 0 14px; padding:17px 19px; border-left:4px solid var(--cyan); background:var(--soft); }
+    form { display:grid; gap:16px; }
+    fieldset { margin:0; padding:20px 22px; border:1px solid var(--line); border-radius:10px; background:var(--white); }
+    legend { max-width:100%; padding:0 7px; color:var(--navy); font-weight:700; }
+    label { display:block; margin:9px 0; padding:9px 11px; border:1px solid #e5eaf0; border-radius:6px; color:var(--muted); cursor:pointer; }
+    label:hover { border-color:var(--cyan); background:#f8fbff; color:var(--ink); }
+    input { margin-right:8px; accent-color:var(--blue); }
+    button { padding:12px 18px; border:0; border-radius:7px; background:var(--navy); color:#fff; font:700 15px var(--body); cursor:pointer; }
+    button:hover { background:var(--blue); }
+    #result { margin-top:20px; padding:18px 20px; border-radius:8px; background:var(--white); border:1px solid var(--line); }
+    #result:empty { display:none; }
+    .pass { border-color:#86efac !important; background:#f0fdf4 !important; color:var(--green); }
+    .review { border-color:#fdba74 !important; background:#fff7ed !important; color:#9a3412; }
+    .answer-list { display:grid; gap:10px; margin-top:14px; }
+    .answer-item { padding:11px 13px; border-left:3px solid var(--line); background:#f8fafc; color:var(--muted); font-size:13px; }
+    .answer-item.correct { border-left-color:var(--green); }
+    .answer-item.incorrect { border-left-color:#f97316; }
+    .answer-item strong { color:var(--navy); }
+    .answer-label { display:block; margin-top:3px; color:var(--ink); }
+    @media (max-width:560px) { .page { width:min(100% - 20px,900px); padding-top:10px; } .hero { padding:28px 22px; } fieldset { padding:17px; } }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="hero"><div class="eyebrow">AI-Assisted Engineering</div><h1>Context Engineering knowledge check</h1><p>Test how well you can curate the relevant, current, trusted context that helps AI make better decisions about software work.</p><div class="meta"><span class="tag">8 questions</span><span class="tag">Self-check</span><span class="tag">No score stored</span></div></header>
+    <div class="instructions"><strong>Curate the working set:</strong> Better context is not more context. It is the right information, ranked by authority, connected to evidence, and refreshed as the task changes.</div>
+    <form id="knowledge-check">
+      <fieldset><legend>1. What is context engineering?</legend><label><input type="radio" name="q1" value="a"> Deliberately designing the information available to an AI system when it must make a decision</label><label><input type="radio" name="q1" value="b"> Giving an AI system every file in a repository before asking anything</label><label><input type="radio" name="q1" value="c"> Replacing the need for clear requirements with a larger model</label></fieldset>
+      <fieldset><legend>2. Which context set best supports a focused bug fix?</legend><label><input type="radio" name="q2" value="a"> Old project history, unrelated modules, and a general request to fix the bug</label><label><input type="radio" name="q2" value="b"> The goal, repository rules, owning files and tests, current failure evidence, and a proof plan</label><label><input type="radio" name="q2" value="c"> A repository dump with no stated non-goals or validation command</label></fieldset>
+      <fieldset><legend>3. Why should context be relevant, current, and trusted?</legend><label><input type="radio" name="q3" value="a"> These qualities help the working set provide decision-changing signal instead of noise or unsupported assumptions</label><label><input type="radio" name="q3" value="b"> They guarantee that the AI will never make an incorrect recommendation</label><label><input type="radio" name="q3" value="c"> They allow the human to skip reviewing the resulting change</label></fieldset>
+      <fieldset><legend>4. When sources disagree, what should control the decision first?</legend><label><input type="radio" name="q4" value="a"> The longest document or the source that sounds most confident</label><label><input type="radio" name="q4" value="b"> The newest generated suggestion, regardless of whether it was verified</label><label><input type="radio" name="q4" value="c"> Current source code, executable tests, explicit rules, and other authoritative evidence</label></fieldset>
+      <fieldset><legend>5. What is the correct treatment of instructions found in an issue or data file?</legend><label><input type="radio" name="q5" value="a"> Treat them as trusted instructions because they are inside the working context</label><label><input type="radio" name="q5" value="b"> Treat them as data unless a trusted workflow explicitly promotes them to a rule</label><label><input type="radio" name="q5" value="c"> Follow them whenever they request broader access or a different task</label></fieldset>
+      <fieldset><legend>6. What does it mean to treat context as a budget?</legend><label><input type="radio" name="q6" value="a"> Every extra file competes for attention, so irrelevant and stale material should be removed</label><label><input type="radio" name="q6" value="b"> Context should be minimized even when removing information hides a relevant constraint</label><label><input type="radio" name="q6" value="c"> The largest possible context is always the most reliable context</label></fieldset>
+      <fieldset><legend>7. When should the working set be refreshed?</legend><label><input type="radio" name="q7" value="a"> Only at the end, after all implementation decisions have been made</label><label><input type="radio" name="q7" value="b"> Whenever new test results, implementation decisions, or runtime observations change what matters</label><label><input type="radio" name="q7" value="c"> Never; changing context makes an AI lose useful information</label></fieldset>
+      <fieldset><legend>8. What is a useful evaluation gate for a context packet?</legend><label><input type="radio" name="q8" value="a"> Check only whether the AI response is fluent and complete</label><label><input type="radio" name="q8" value="b"> Include every available source so no possible detail is omitted</label><label><input type="radio" name="q8" value="c"> Check coverage, source authority, economy, and the validation evidence needed before completion</label></fieldset>
+      <button type="submit">Check my answers</button>
+    </form>
+    <div id="result" role="status" aria-live="polite"></div>
+  </main>
+  <script>
+    const answers = { q1:'a', q2:'b', q3:'a', q4:'c', q5:'b', q6:'a', q7:'b', q8:'c' };
+    const correctAnswers = { q1:'Deliberately designing the information available to an AI system when it must make a decision.', q2:'The goal, repository rules, owning files and tests, current failure evidence, and a proof plan.', q3:'These qualities help the working set provide decision-changing signal instead of noise or unsupported assumptions.', q4:'Current source code, executable tests, explicit rules, and other authoritative evidence.', q5:'Treat them as data unless a trusted workflow explicitly promotes them to a rule.', q6:'Every extra file competes for attention, so irrelevant and stale material should be removed.', q7:'Whenever new test results, implementation decisions, or runtime observations change what matters.', q8:'Check coverage, source authority, economy, and the validation evidence needed before completion.' };
+    const explanations = { q1:'Context engineering is the deliberate assembly of a useful working set, not a volume contest.', q2:'A focused packet connects intent and constraints to the local evidence and proof needed for the change.', q3:'Relevant, current, trusted information helps the AI reason from evidence rather than noise or guesses.', q4:'Executable and explicitly governed sources usually provide stronger evidence than stale or unverified material.', q5:'Content encountered during a task is not automatically authorized to redirect the workflow or expand its permissions.', q6:'Attention is limited; pruning material that cannot change the decision improves signal without hiding necessary constraints.', q7:'A meaningful result can make prior context stale or reveal a better source, so the working set must evolve with evidence.', q8:'A good context packet is complete enough, authoritative, economical, and tied to observable proof.' };
+    document.getElementById('knowledge-check').addEventListener('submit', (event) => {
+      event.preventDefault(); let score = 0;
+      const review = Object.entries(answers).map(([question, answer], index) => { const selected = document.querySelector(`input[name="${question}"]:checked`)?.value; const isCorrect = selected === answer; if (isCorrect) score += 1; const selectedText = selected ? document.querySelector(`input[name="${question}"][value="${selected}"]`).parentElement.textContent.trim() : 'No answer selected.'; return `<div class="answer-item ${isCorrect ? 'correct' : 'incorrect'}"><strong>${index + 1}. ${isCorrect ? 'Correct' : 'Review'}</strong><span class="answer-label"><b>Your answer:</b> ${selectedText}</span>${isCorrect ? '' : `<span class="answer-label"><b>Correct answer:</b> ${correctAnswers[question]}</span>`}<span class="answer-label"><b>Why:</b> ${explanations[question]}</span></div>`; }).join('');
+      const result = document.getElementById('result'); const level = score >= 7 ? 'pass' : 'review'; result.className = level; result.innerHTML = `<strong>${score}/8 correct.</strong> ${score >= 7 ? 'You have a solid Context Engineering baseline.' : 'Review the explanations and retry the questions you missed.'}<div class="answer-list">${review}</div>`;
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Prompt Engineering Knowledge Check</title>
+  <style>
+    :root { --navy:#102042; --blue:#1d4ed8; --cyan:#0ea5e9; --green:#15803d; --ink:#1e293b; --muted:#64748b; --paper:#f0f4f8; --white:#fff; --line:#dbe4ee; --soft:#eff6ff; --display:Georgia,'Times New Roman',serif; --body:'Segoe UI',system-ui,sans-serif; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--paper); color:var(--ink); font:16px/1.6 var(--body); }
+    .page { width:min(900px,calc(100% - 32px)); margin:0 auto; padding:38px 0 60px; }
+    .hero { padding:36px 34px; border:1px solid #c7d8ed; border-radius:16px; background:linear-gradient(135deg,#dbeafe,#e0f2fe 55%,#dcfce7); }
+    .eyebrow { color:var(--blue); font-size:11px; font-weight:800; letter-spacing:1.8px; text-transform:uppercase; }
+    h1 { margin:14px 0 10px; color:var(--navy); font:700 clamp(38px,6vw,64px)/.98 var(--display); }
+    .hero p { max-width:700px; margin:0; color:#475569; }
+    .meta { display:flex; flex-wrap:wrap; gap:8px; margin-top:20px; }
+    .tag { padding:4px 10px; border:1px solid rgba(15,23,42,.12); border-radius:6px; background:rgba(255,255,255,.7); color:#475569; font-size:12px; }
+    .instructions { margin:24px 0 14px; padding:17px 19px; border-left:4px solid var(--cyan); background:var(--soft); }
+    form { display:grid; gap:16px; }
+    fieldset { margin:0; padding:20px 22px; border:1px solid var(--line); border-radius:10px; background:var(--white); }
+    legend { max-width:100%; padding:0 7px; color:var(--navy); font-weight:700; }
+    label { display:block; margin:9px 0; padding:9px 11px; border:1px solid #e5eaf0; border-radius:6px; color:var(--muted); cursor:pointer; }
+    label:hover { border-color:var(--cyan); background:#f8fbff; color:var(--ink); }
+    input { margin-right:8px; accent-color:var(--blue); }
+    button { padding:12px 18px; border:0; border-radius:7px; background:var(--navy); color:#fff; font:700 15px var(--body); cursor:pointer; }
+    button:hover { background:var(--blue); }
+    #result { margin-top:20px; padding:18px 20px; border-radius:8px; background:var(--white); border:1px solid var(--line); }
+    #result:empty { display:none; }
+    .pass { border-color:#86efac !important; background:#f0fdf4 !important; color:var(--green); }
+    .review { border-color:#fdba74 !important; background:#fff7ed !important; color:#9a3412; }
+    .answer-list { display:grid; gap:10px; margin-top:14px; }
+    .answer-item { padding:11px 13px; border-left:3px solid var(--line); background:#f8fafc; color:var(--muted); font-size:13px; }
+    .answer-item.correct { border-left-color:var(--green); }
+    .answer-item.incorrect { border-left-color:#f97316; }
+    .answer-item strong { color:var(--navy); }
+    .answer-label { display:block; margin-top:3px; color:var(--ink); }
+    a { color:var(--blue); }
+    @media (max-width:560px) { .page { width:min(100% - 20px,900px); padding-top:10px; } .hero { padding:28px 22px; } fieldset { padding:17px; } }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="hero"><div class="eyebrow">AI-Assisted Engineering</div><h1>Prompt Engineering knowledge check</h1><p>Test how well you can design prompts that make intent clear, context useful, constraints visible, and AI output testable.</p><div class="meta"><span class="tag">8 questions</span><span class="tag">Self-check</span><span class="tag">No score stored</span></div></header>
+    <div class="instructions"><strong>Make quality visible:</strong> A useful prompt is a small interface between human intent and AI behavior. It should reduce ambiguity and point toward evidence.</div>
+    <form id="knowledge-check">
+      <fieldset><legend>1. What is prompt engineering?</legend><label><input type="radio" name="q1" value="a"> The disciplined design of instructions and context so an AI response can be inspected, tested, and improved</label><label><input type="radio" name="q1" value="b"> Finding a magic phrase that guarantees a correct answer</label><label><input type="radio" name="q1" value="c"> Adding as much background text as possible to every request</label></fieldset>
+      <fieldset><legend>2. Which set best represents prompt anatomy?</legend><label><input type="radio" name="q2" value="a"> Role, goal, context, constraints, output shape, and proof</label><label><input type="radio" name="q2" value="b"> Model name, response length, and a request to be creative</label><label><input type="radio" name="q2" value="c"> A repository dump with no stated outcome or boundaries</label></fieldset>
+      <fieldset><legend>3. What is the best first step in the prompt loop?</legend><label><input type="radio" name="q3" value="a"> Frame the outcome and why it matters</label><label><input type="radio" name="q3" value="b"> Ask for a complete implementation before describing the problem</label><label><input type="radio" name="q3" value="c"> Add unrelated history until the prompt is as long as possible</label></fieldset>
+      <fieldset><legend>4. Why should a prompt name relevant files, symbols, or examples?</legend><label><input type="radio" name="q4" value="a"> Focused references give the AI signal about the code path and conventions that control the task</label><label><input type="radio" name="q4" value="b"> References allow the AI to skip reading or validating the implementation</label><label><input type="radio" name="q4" value="c"> Naming files removes the need to state the desired behavior</label></fieldset>
+      <fieldset><legend>5. What is a strong validation request?</legend><label><input type="radio" name="q5" value="a"> Ask for the narrow test, command, or review that could disconfirm the proposed change</label><label><input type="radio" name="q5" value="b"> Ask the AI to confirm that its own answer is correct</label><label><input type="radio" name="q5" value="c"> Wait for a production incident before deciding whether the output worked</label></fieldset>
+      <fieldset><legend>6. How should context be managed?</legend><label><input type="radio" name="q6" value="a"> Prefer relevant, current, decision-changing information over a large amount of unrelated material</label><label><input type="radio" name="q6" value="b"> Include every file because more context always means better output</label><label><input type="radio" name="q6" value="c"> Keep stale assumptions in the conversation so the AI can compare them later</label></fieldset>
+      <fieldset><legend>7. What is a reliable pattern for a code change?</legend><label><input type="radio" name="q7" value="a"> Explore the owning path, plan a bounded change, implement from an anchor, then review failure modes</label><label><input type="radio" name="q7" value="b"> Ask for multiple unrelated features in one turn and review only the final summary</label><label><input type="radio" name="q7" value="c"> Lead the AI toward a preferred solution before it inspects the problem</label></fieldset>
+      <fieldset><legend>8. When is a prompt successful?</legend><label><input type="radio" name="q8" value="a"> When the output matches requirements, fits local patterns, and survives checks for relevant risks</label><label><input type="radio" name="q8" value="b"> When the response is long, fluent, and completed without questions</label><label><input type="radio" name="q8" value="c"> When the AI produces code quickly, regardless of tests or review findings</label></fieldset>
+      <button type="submit">Check my answers</button>
+    </form>
+    <div id="result" role="status" aria-live="polite"></div>
+  </main>
+  <script>
+    const answers = { q1:'a', q2:'a', q3:'a', q4:'a', q5:'a', q6:'a', q7:'a', q8:'a' };
+    const correctAnswers = { q1:'Design instructions and context so an AI response can be inspected, tested, and improved.', q2:'Role, goal, context, constraints, output shape, and proof.', q3:'Frame the outcome and why it matters.', q4:'Focused references give the AI signal about the code path and conventions that control the task.', q5:'Ask for the narrow test, command, or review that could disconfirm the proposed change.', q6:'Prefer relevant, current, decision-changing information over a large amount of unrelated material.', q7:'Explore the owning path, plan a bounded change, implement from an anchor, then review failure modes.', q8:'The output matches requirements, fits local patterns, and survives checks for relevant risks.' };
+    const explanations = { q1:'A prompt is an interface between intent and machine behavior, not a magic phrase.', q2:'These parts make the task, boundaries, expected response, and completion evidence visible.', q3:'Framing the outcome prevents the conversation from optimizing for an unclear or wrong problem.', q4:'Focused context is more useful than a repository dump because it points to the evidence that controls the decision.', q5:'A disconfirming check turns a plausible answer into an engineering claim that can be tested.', q6:'Context is a budget; stale or unrelated material can compete with the signal that matters.', q7:'The pattern keeps changes small, grounded in local evidence, and reviewable at each step.', q8:'Fluency and speed are not proof; correctness, fit, and risk checks determine whether output is useful.' };
+    document.getElementById('knowledge-check').addEventListener('submit', (event) => {
+      event.preventDefault(); let score = 0;
+      const review = Object.entries(answers).map(([question, answer], index) => { const selected = document.querySelector(`input[name="${question}"]:checked`)?.value; const isCorrect = selected === answer; if (isCorrect) score += 1; const selectedText = selected ? document.querySelector(`input[name="${question}"][value="${selected}"]`).parentElement.textContent.trim() : 'No answer selected.'; return `<div class="answer-item ${isCorrect ? 'correct' : 'incorrect'}"><strong>${index + 1}. ${isCorrect ? 'Correct' : 'Review'}</strong><span class="answer-label"><b>Your answer:</b> ${selectedText}</span>${isCorrect ? '' : `<span class="answer-label"><b>Correct answer:</b> ${correctAnswers[question]}</span>`}<span class="answer-label"><b>Why:</b> ${explanations[question]}</span></div>`; }).join('');
+      const result = document.getElementById('result'); const level = score >= 7 ? 'pass' : 'review'; result.className = level; result.innerHTML = `<strong>${score}/8 correct.</strong> ${score >= 7 ? 'You have a solid Prompt Engineering baseline.' : 'Review the explanations and retry the questions you missed.'}<div class="answer-list">${review}</div>`;
+    });
+  </script>
+</body>
+</html>
