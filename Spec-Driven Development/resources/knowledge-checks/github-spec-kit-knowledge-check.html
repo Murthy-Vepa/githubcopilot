@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GitHub Spec Kit Knowledge Check</title>
+  <style>
+    :root { --navy:#102042; --blue:#1d4ed8; --cyan:#0ea5e9; --green:#15803d; --ink:#1e293b; --muted:#64748b; --paper:#f0f4f8; --white:#fff; --line:#dbe4ee; --soft:#eff6ff; --display:Georgia,'Times New Roman',serif; --body:'Segoe UI',system-ui,sans-serif; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--paper); color:var(--ink); font:16px/1.6 var(--body); }
+    .page { width:min(900px,calc(100% - 32px)); margin:0 auto; padding:38px 0 60px; }
+    .hero { padding:36px 34px; border:1px solid #c7d8ed; border-radius:16px; background:linear-gradient(135deg,#dbeafe,#e0f2fe 55%,#dcfce7); }
+    .eyebrow { color:var(--blue); font-size:11px; font-weight:800; letter-spacing:1.8px; text-transform:uppercase; }
+    h1 { margin:14px 0 10px; color:var(--navy); font:700 clamp(38px,6vw,64px)/.98 var(--display); }
+    .hero p { max-width:700px; margin:0; color:#475569; }
+    .meta { display:flex; flex-wrap:wrap; gap:8px; margin-top:20px; }
+    .tag { padding:4px 10px; border:1px solid rgba(15,23,42,.12); border-radius:6px; background:rgba(255,255,255,.7); color:#475569; font-size:12px; }
+    .instructions { margin:24px 0 14px; padding:17px 19px; border-left:4px solid var(--cyan); background:var(--soft); }
+    form { display:grid; gap:16px; }
+    fieldset { margin:0; padding:20px 22px; border:1px solid var(--line); border-radius:10px; background:var(--white); }
+    legend { max-width:100%; padding:0 7px; color:var(--navy); font-weight:700; }
+    label { display:block; margin:9px 0; padding:9px 11px; border:1px solid #e5eaf0; border-radius:6px; color:var(--muted); cursor:pointer; }
+    label:hover { border-color:var(--cyan); background:#f8fbff; color:var(--ink); }
+    input { margin-right:8px; accent-color:var(--blue); }
+    button { padding:12px 18px; border:0; border-radius:7px; background:var(--navy); color:#fff; font:700 15px var(--body); cursor:pointer; }
+    button:hover { background:var(--blue); }
+    #result { margin-top:20px; padding:18px 20px; border-radius:8px; background:var(--white); border:1px solid var(--line); }
+    #result:empty { display:none; }
+    .pass { border-color:#86efac !important; background:#f0fdf4 !important; color:var(--green); }
+    .review { border-color:#fdba74 !important; background:#fff7ed !important; color:#9a3412; }
+    .answer-list { display:grid; gap:10px; margin-top:14px; }
+    .answer-item { padding:11px 13px; border-left:3px solid var(--line); background:#f8fafc; color:var(--muted); font-size:13px; }
+    .answer-item.correct { border-left-color:var(--green); }
+    .answer-item.incorrect { border-left-color:#f97316; }
+    .answer-item strong { color:var(--navy); }
+    .answer-label { display:block; margin-top:3px; color:var(--ink); }
+    @media (max-width:560px) { .page { width:min(100% - 20px,900px); padding-top:10px; } .hero { padding:28px 22px; } fieldset { padding:17px; } }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="hero"><div class="eyebrow">Spec-Driven Development</div><h1>GitHub Spec Kit knowledge check</h1><p>Test how well you can use structured specifications, plans, tasks, and quality gates to keep AI-assisted delivery aligned and reviewable.</p><div class="meta"><span class="tag">8 questions</span><span class="tag">Self-check</span><span class="tag">No score stored</span></div></header>
+    <div class="instructions"><strong>Make the work traceable:</strong> Spec Kit turns intent into a reviewable path from requirements to implementation, verification, and human approval.</div>
+    <form id="knowledge-check">
+      <fieldset><legend>1. What is GitHub Spec Kit?</legend><label><input type="radio" name="q1" value="a"> A lightweight, file-based specification framework between a user story and code</label><label><input type="radio" name="q1" value="b"> A replacement for source control and pull requests</label><label><input type="radio" name="q1" value="c"> A model that writes code without requirements or review</label></fieldset>
+      <fieldset><legend>2. What belongs in spec.md?</legend><label><input type="radio" name="q2" value="a"> Agent assignments, dependency IDs, and task statuses</label><label><input type="radio" name="q2" value="b"> Requirements with verifiable acceptance criteria, out-of-scope items, and open questions</label><label><input type="radio" name="q2" value="c"> Only a feature name and a broad statement that it should work</label></fieldset>
+      <fieldset><legend>3. What is the purpose of plan.md?</legend><label><input type="radio" name="q3" value="a"> Describe how to build the approved specification through phased, requirement-linked steps</label><label><input type="radio" name="q3" value="b"> Record only the final test results after coding is complete</label><label><input type="radio" name="q3" value="c"> Replace the requirements with implementation guesses</label></fieldset>
+      <fieldset><legend>4. What does tasks.json provide?</legend><label><input type="radio" name="q4" value="a"> A list of every file in the repository</label><label><input type="radio" name="q4" value="b"> A conversation transcript for preserving informal decisions</label><label><input type="radio" name="q4" value="c"> An executable task list with owners, requirement links, dependencies, and statuses</label></fieldset>
+      <fieldset><legend>5. Why is constitution.md important?</legend><label><input type="radio" name="q5" value="a"> It defines shared technology, structure, naming, forbidden patterns, and security rules for agents</label><label><input type="radio" name="q5" value="b"> It automatically approves every generated implementation</label><label><input type="radio" name="q5" value="c"> It stores only unresolved feature questions</label></fieldset>
+      <fieldset><legend>6. What does Gate 2 verify?</legend><label><input type="radio" name="q6" value="a"> That the repository has no untracked files</label><label><input type="radio" name="q6" value="b"> That every requirement is covered by plan steps and has corresponding test work</label><label><input type="radio" name="q6" value="c"> That every task has already been completed</label></fieldset>
+      <fieldset><legend>7. What is a key requirement for the Plan-to-Task gate?</legend><label><input type="radio" name="q7" value="a"> Tasks may be broad as long as the final PR is short</label><label><input type="radio" name="q7" value="b"> The dependency graph is acyclic, assignments fit the work, and tasks are small enough to execute</label><label><input type="radio" name="q7" value="c"> The planner can skip linking tasks to requirements</label></fieldset>
+      <fieldset><legend>8. Who retains approval responsibility at the critical gates?</legend><label><input type="radio" name="q8" value="a"> The orchestrator alone, because automation removes the need for judgment</label><label><input type="radio" name="q8" value="b"> The model provider, because it generated the implementation</label><label><input type="radio" name="q8" value="c"> Humans review the specification and final PR while automation supports coverage and execution checks</label></fieldset>
+      <button type="submit">Check my answers</button>
+    </form>
+    <div id="result" role="status" aria-live="polite"></div>
+  </main>
+  <script>
+    const answers = { q1:'a', q2:'b', q3:'a', q4:'c', q5:'a', q6:'b', q7:'b', q8:'c' };
+    const correctAnswers = { q1:'A lightweight, file-based specification framework between a user story and code.', q2:'Requirements with verifiable acceptance criteria, out-of-scope items, and open questions.', q3:'Describe how to build the approved specification through phased, requirement-linked steps.', q4:'An executable task list with owners, requirement links, dependencies, and statuses.', q5:'It defines shared technology, structure, naming, forbidden patterns, and security rules for agents.', q6:'That every requirement is covered by plan steps and has corresponding test work.', q7:'The dependency graph is acyclic, assignments fit the work, and tasks are small enough to execute.', q8:'Humans review the specification and final PR while automation supports coverage and execution checks.' };
+    const explanations = { q1:'Spec Kit structures the path from intent to code so agents can execute, humans can review, and QA can verify.', q2:'A strong spec makes requirements independently testable and prevents scope creep with explicit exclusions.', q3:'The plan separates design from implementation and connects each step to one or more requirements.', q4:'The orchestrator uses tasks.json to dispatch work, so each task needs enough metadata to execute safely.', q5:'A shared constitution keeps agents aligned with the repository instead of inventing incompatible conventions.', q6:'Gate 2 is the Spec-to-Plan coverage checkpoint; it catches requirements that would otherwise disappear before coding.', q7:'Small, acyclic, appropriately assigned tasks give the orchestrator an executable dependency graph.', q8:'Automation can validate and coordinate work, but humans approve the specification and final result.' };
+    document.getElementById('knowledge-check').addEventListener('submit', (event) => {
+      event.preventDefault(); let score = 0;
+      const review = Object.entries(answers).map(([question, answer], index) => { const selected = document.querySelector(`input[name="${question}"]:checked`)?.value; const isCorrect = selected === answer; if (isCorrect) score += 1; const selectedText = selected ? document.querySelector(`input[name="${question}"][value="${selected}"]`).parentElement.textContent.trim() : 'No answer selected.'; return `<div class="answer-item ${isCorrect ? 'correct' : 'incorrect'}"><strong>${index + 1}. ${isCorrect ? 'Correct' : 'Review'}</strong><span class="answer-label"><b>Your answer:</b> ${selectedText}</span>${isCorrect ? '' : `<span class="answer-label"><b>Correct answer:</b> ${correctAnswers[question]}</span>`}<span class="answer-label"><b>Why:</b> ${explanations[question]}</span></div>`; }).join('');
+      const result = document.getElementById('result'); const level = score >= 7 ? 'pass' : 'review'; result.className = level; result.innerHTML = `<strong>${score}/8 correct.</strong> ${score >= 7 ? 'You have a solid GitHub Spec Kit baseline.' : 'Review the explanations and retry the questions you missed.'}<div class="answer-list">${review}</div>`;
+    });
+  </script>
+</body>
+</html>

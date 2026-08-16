@@ -1,5 +1,5 @@
 # Episode 05 — Copilot CLI: AI in the Terminal
-## Copilot Fundamentals Podcast Series · GitHub Copilot Mastery · MetLife 2026
+## Copilot Fundamentals Podcast Series · GitHub Copilot Mastery
 
 **Format:** 2 hosts · conversational · ~3.5 minutes
 **Voices:** Jordan (male, US English) · Maya (female, US English)

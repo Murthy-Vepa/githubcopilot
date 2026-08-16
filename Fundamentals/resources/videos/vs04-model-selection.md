@@ -1,5 +1,5 @@
 # Video Script 04 — Model Selection
-## Fundamentals Video Series · GitHub Copilot Mastery · MetLife 2026
+## Fundamentals Video Series · GitHub Copilot Mastery
 
 **Format:** 2 co-hosts · VS Code screen share + browser · ~12 minutes
 **Hosts:** Jordan (male, US English) · Maya (female, US English)

@@ -1,5 +1,5 @@
 # SpecKit Guide — Spec-Driven Development
-## Complete Walkthrough for MetLife Teams
+## Complete Walkthrough
 
 ---
 

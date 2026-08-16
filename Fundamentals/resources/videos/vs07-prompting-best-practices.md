@@ -1,5 +1,5 @@
 # Video Script 07 — Prompting Best Practices
-## Fundamentals Video Series · GitHub Copilot Mastery · MetLife 2026
+## Fundamentals Video Series · GitHub Copilot Mastery
 
 **Format:** 2 co-hosts · VS Code screen share · ~15 minutes
 **Hosts:** Jordan (male, US English) · Maya (female, US English)
@@ -258,7 +258,7 @@
 
 **MAYA:** And this video: prompting as a skill. ATCV — Action, Target, Constraints, Verify. Use #file: and #selection. Iterate, don't restart. Save what works. Build team habits. Protect sensitive data.
 
-**JORDAN:** You now have the full foundation. The rest of the course — Prompt Engineering, AI-Assisted Development & Spec-Driven Development, AI Agents — builds on everything in these seven videos. Come back here if you need a refresher.
+**JORDAN:** You now have the full foundation. The rest of the course — Prompt Engineering, AI-Assisted Engineering & Spec-Driven Development, AI Agents — builds on everything in these seven videos. Come back here if you need a refresher.
 
 **MAYA:** Thank you for making it through the Fundamentals series. I'm Maya.
 

@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="icon" href="data:image/svg+xml,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22&gt;&lt;text y=%22.9em%22 font-size=%2290%22&gt;🤖&lt;/text&gt;&lt;/svg&gt;">
+<title>GitHub Copilot SDK Lab - .NET</title>
+<meta name="description" content="Build a .NET changelog generator with the GitHub Copilot SDK, streaming, custom tools, and multi-turn conversations." />
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+  :root{--bg:#fff;--fg:#0f172a;--muted:#64748b;--accent:#2563eb;--accent-light:#dbeafe;--border:#e2e8f0;--code-bg:#0f1c2e;--shadow-sm:0 1px 3px rgba(0,0,0,.08);--shadow-md:0 4px 12px rgba(15,23,42,.12)}
+  html{scroll-behavior:smooth} body{background:var(--bg);color:var(--fg)}
+  .navbar{background:#0f172a!important;box-shadow:var(--shadow-md)} .navbar-brand{color:#fff!important;font-weight:700}.navbar-brand small{display:block;color:#93c5fd;font-size:.65rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase}
+  nav.sidebar{background:linear-gradient(180deg,#f8fafc,#eef2f7);border-right:1px solid var(--border);height:calc(100vh - 56px);overflow-y:auto;position:sticky;top:56px;padding:0;max-width:280px}
+  .menu-header{padding:1rem 1.1rem .6rem;font-size:.72rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .toc{list-style:none;margin:0;padding:0 .6rem 1.5rem}.toc a{display:block;border-radius:6px;text-decoration:none}.toc>li>a{padding:.4rem .6rem;color:#1e293b;font-weight:700;font-size:.86rem}.toc>li>a:hover,.toc>li>a.active{background:var(--accent-light);color:#1d4ed8}.toc ul{list-style:none;margin:.15rem 0 .5rem;padding-left:.9rem;border-left:2px solid var(--border)}.toc ul a{padding:.28rem .5rem;color:#475569;font-size:.79rem}.toc ul a:hover,.toc ul a.active{background:#e0ecff;color:#1d4ed8}
+  main.content{padding:2.2rem clamp(1rem,3vw,3rem) 5rem;max-width:100%}.lead-banner{background:linear-gradient(135deg,#0f172a,#1e3a8a);color:#fff;border-radius:14px;padding:2.4rem 2.2rem;margin-bottom:2rem;box-shadow:var(--shadow-md)}.lead-banner h1{font-weight:800}.meta-pill{display:inline-flex;gap:.4rem;align-items:center;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:.3rem .85rem;font-size:.8rem;margin:.2rem .3rem .2rem 0}
+  section.article,section.subsection{scroll-margin-top:70px}section.article{padding-top:1.4rem;margin-bottom:1rem}section.article>h2{font-weight:800;border-bottom:3px solid var(--accent);padding-bottom:.5rem;margin-bottom:1rem}section.subsection{margin:1.6rem 0}section.subsection>h3{font-weight:750;color:#1e3a8a}h4{font-weight:700;color:#334155;margin-top:1.1rem}
+  .card-note,.card-tip,.card-important{border-left:5px solid var(--accent);background:#eff6ff;border-radius:10px;padding:1rem 1.2rem;margin:1rem 0}.card-tip{border-color:#10b981;background:#ecfdf5}.card-important{border-color:#f59e0b;background:#fffbeb}.card-note strong,.card-tip strong,.card-important strong{display:block;margin-bottom:.35rem;color:#0f172a}
+    pre{background:var(--code-bg);color:#dbeafe;border-radius:10px;padding:1rem 1.15rem;overflow-x:auto;font-size:.82rem;box-shadow:var(--shadow-sm)}code{font-family:"Cascadia Code",Consolas,monospace}pre code{background:transparent;color:inherit;padding:0;border-radius:0;font-size:inherit}:not(pre)>code{background:transparent;color:inherit;padding:0;border-radius:0;font-size:.9em}.table-wrap{overflow-x:auto;margin:1rem 0}.table{box-shadow:var(--shadow-sm);border-radius:8px;overflow:hidden}.table thead{background:#1e293b;color:#fff}.part-badge{display:inline-block;background:var(--accent);color:#fff;font-weight:800;font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;padding:.2rem .6rem;border-radius:6px;margin-bottom:.5rem}.btn-scroll-top{position:fixed;right:1rem;bottom:1rem;z-index:50;border-radius:50%;width:36px;height:36px;box-shadow:var(--shadow-md)}
+  @media(max-width:991.98px){nav.sidebar{display:none}}.checklist li{margin-bottom:.35rem}.small-muted{color:var(--muted);font-size:.9rem}
+</style>
+</head>
+<body id="top">
+<nav class="navbar navbar-expand-lg sticky-top" aria-label="Top bar"><div class="container-fluid px-3"><button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarOffcanvas" aria-controls="sidebarOffcanvas" aria-label="Toggle contents menu"><span class="navbar-toggler-icon"></span></button><a class="navbar-brand ms-2" href="#top"><small>Lab</small>GitHub Copilot SDK</a><span class="d-none d-md-inline text-light small">.NET &middot; Sessions &middot; Streaming &middot; Tools &middot; Agent Workflows</span></div></nav>
+<div class="offcanvas offcanvas-start" tabindex="-1" id="sidebarOffcanvas" aria-labelledby="offcanvasTitle"><div class="offcanvas-header"><h2 class="offcanvas-title h5" id="offcanvasTitle">Contents</h2><button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close contents menu"></button></div><div class="offcanvas-body"><ul class="toc" id="tocMobile"></ul></div></div>
+<div class="container-fluid"><div class="row">
+<nav class="col-lg-3 d-none d-lg-block sidebar" aria-label="Table of contents"><div class="menu-header">Contents</div><ul class="toc" id="toc">
+<li><a href="#objective">Objective</a></li><li><a href="#what-youll-build">What You'll Build</a></li><li><a href="#background">Background</a><ul><li><a href="#how-it-works">How It Works</a></li><li><a href="#key-concepts">Key Concepts</a></li><li><a href="#available-sdks">Available SDKs</a></li></ul></li><li><a href="#prerequisites">Prerequisites</a></li>
+<li><a href="#step1">Step 1: Scaffold</a></li><li><a href="#step2">Step 2: Hello SDK</a></li><li><a href="#step3">Step 3: Streaming</a></li><li><a href="#step4">Step 4: Custom Tools</a></li><li><a href="#step5">Step 5: Changelog Generator</a></li><li><a href="#step6">Step 6: Follow-Ups</a></li><li><a href="#step7">Step 7: Wrap-Up</a></li><li><a href="#bonus">Bonus: Export Markdown</a></li><li><a href="#resources">Related Resources</a></li></ul></nav>
+<main class="col-lg-9 content">
+<div class="lead-banner"><span class="part-badge">Lab</span><h1>GitHub Copilot SDK</h1><p class="mb-2">Build <strong>changelog-gen</strong>, a .NET command-line tool that uses Copilot's agent runtime to analyze Git history, call your code, stream results, and answer follow-up questions.</p><span class="meta-pill">~60 minutes</span><span class="meta-pill">Beginner to intermediate</span><span class="meta-pill">.NET 10</span><span class="meta-pill"><a class="text-white" href="https://github.com/github/copilot-sdk" target="_blank" rel="noopener">Official SDK repository ↗</a></span></div>
+<div class="card-note"><strong>API note</strong>This lab follows the current .NET SDK API: <code>GitHub.Copilot.SDK</code>, <code>GitHub.Copilot</code>, <code>StartAsync</code>, <code>CreateSessionAsync</code>, <code>SendAsync</code>, typed session events, and <code>CopilotTool.DefineTool</code>. SDK APIs can evolve; use the official README when your installed package differs.</div>
+
+<section class="article" id="objective"><h2>Objective</h2><p>The GitHub Copilot SDK exposes the agentic engine behind Copilot CLI as a library you can embed in an application. In this lab you will build a practical .NET CLI tool that combines sessions, streaming, custom tools, and multi-turn conversations.</p><p>By the end, you will understand:</p><ul class="checklist"><li>How the Copilot SDK relates to Copilot CLI and the wider Copilot platform</li><li>How to create and manage Copilot clients and sessions programmatically</li><li>How to stream assistant responses in real time</li><li>How to define type-safe C# tools that the agent can invoke</li><li>How to build a repeatable, multi-turn workflow around repository data</li></ul></section>
+
+<section class="article" id="what-youll-build"><h2>What You'll Build</h2><p>Release notes are useful, but turning a pile of commits into a clear, categorized changelog is tedious. The tool in this lab automates that job and provides a reusable pattern for any .NET application that needs an agentic workflow.</p><div class="table-wrap"><table class="table table-bordered table-striped"><thead><tr><th>Feature</th><th>What it does</th></tr></thead><tbody><tr><td><strong>Git history analysis</strong></td><td>Reads commits between tags, SHAs, branches, or relative refs</td></tr><tr><td><strong>Categorized output</strong></td><td>Produces Features, Bug Fixes, Breaking Changes, and Maintenance sections</td></tr><tr><td><strong>Real-time streaming</strong></td><td>Writes assistant response chunks as they arrive</td></tr><tr><td><strong>Custom tools</strong></td><td>Gives Copilot <code>get_git_log</code> and <code>read_file</code> capabilities</td></tr><tr><td><strong>Interactive follow-ups</strong></td><td>Continues the same conversation after the first changelog</td></tr></tbody></table></div><p>When finished, you will run:</p><pre><code>dotnet run -- HEAD~10 HEAD</code></pre><p>and receive a streamed changelog in your terminal.</p></section>
+
+<section class="article" id="background"><span class="part-badge">Concepts</span><h2>Background: What Is the Copilot SDK?</h2><p>The <a href="https://github.com/github/copilot-sdk" target="_blank" rel="noopener">GitHub Copilot SDK</a> is a multi-platform library for programmatic control of GitHub Copilot CLI. Rather than interacting through an editor or terminal, your application creates a client, opens a session, sends prompts, receives events, and supplies tools.</p>
+<section class="subsection" id="how-it-works"><h3>How It Works</h3><pre><code>Your .NET application
+        |
+        v
+GitHub.Copilot.SDK client  -- JSON-RPC -->  Copilot CLI agent runtime
+        ^                                      |
+        |                                      v
+        +----------- events and tool results - LLM, planning, execution</code></pre><p>By default, the .NET SDK manages the local Copilot runtime lifecycle for you. Your application owns the workflow and tool handlers; the runtime owns model routing, planning, and the agent loop.</p></section>
+<section class="subsection" id="key-concepts"><h3>Key Concepts</h3><div class="table-wrap"><table class="table table-bordered table-striped"><thead><tr><th>Concept</th><th>Description</th></tr></thead><tbody><tr><td><strong>Client</strong></td><td>The entry point that starts, monitors, and stops the Copilot runtime.</td></tr><tr><td><strong>Session</strong></td><td>A conversation context with prompts, events, tool calls, and history.</td></tr><tr><td><strong>Tools</strong></td><td>Type-safe C# functions that Copilot can invoke to gather data or perform work.</td></tr><tr><td><strong>Events</strong></td><td>Typed notifications such as <code>AssistantMessageDeltaEvent</code> and <code>SessionIdleEvent</code>.</td></tr><tr><td><strong>BYOK</strong></td><td>Bring Your Own Key: configure a supported provider instead of GitHub authentication.</td></tr></tbody></table></div></section>
+<section class="subsection" id="available-sdks"><h3>Available SDKs</h3><div class="table-wrap"><table class="table table-bordered table-striped"><thead><tr><th>Language</th><th>Install command</th></tr></thead><tbody><tr><td>TypeScript/Node.js</td><td><code>npm install @github/copilot-sdk</code></td></tr><tr><td>Python</td><td><code>pip install github-copilot-sdk</code></td></tr><tr><td>Go</td><td><code>go get github.com/github/copilot-sdk/go</code></td></tr><tr><td><strong>.NET</strong></td><td><code>dotnet add package GitHub.Copilot.SDK</code></td></tr><tr><td>Java</td><td>Maven or Gradle coordinates in the SDK repository</td></tr><tr><td>Rust</td><td><code>cargo add github-copilot-sdk</code></td></tr></tbody></table></div><p class="small-muted">This lab intentionally uses .NET. The concepts transfer across SDKs, but method names and event models are language-specific.</p></section></section>
+
+<section class="article" id="prerequisites"><h2>Prerequisites</h2><ul class="checklist"><li><strong>.NET SDK 10.0</strong>: verify with <code>dotnet --version</code>.</li><li><strong>Git</strong>: verify with <code>git --version</code>.</li><li><strong>GitHub Copilot access</strong>, or a supported BYOK provider.</li><li><strong>Copilot CLI authentication</strong> for standard GitHub usage. The .NET SDK bundles the runtime, but your account still needs to be authenticated.</li><li><strong>A Git repository with enough history</strong> to analyze. Any repository works.</li></ul><div class="card-important"><strong>Permissions matter</strong><code>PermissionHandler.ApproveAll</code> is convenient for a local learning lab when managed settings are disabled. In a production application, implement a narrower permission handler and review tool capabilities before approving requests.</div><p>Check the CLI independently when it is installed on your machine:</p><pre><code>copilot --version</code></pre><p>For a quick test repository:</p><pre><code>git clone https://github.com/actions/runner.git sample-repo
+Set-Location sample-repo</code></pre></section>
+
+<section class="article" id="step1"><span class="part-badge">Step 1</span><h2>Scaffold the Project</h2><p>Create a console project and add the official NuGet package:</p><pre><code>dotnet new console -n ChangelogGen
+Set-Location ChangelogGen
+dotnet add package GitHub.Copilot.SDK</code></pre><p>The project can remain a single-file console app for this lab:</p><pre><code>ChangelogGen/
+├── ChangelogGen.csproj
+├── Program.cs
+└── bin/ and obj/</code></pre><p>Use a modern target framework in <code>ChangelogGen.csproj</code> if your installed SDK creates an older one:</p><pre><code>&lt;PropertyGroup&gt;
+    &lt;OutputType&gt;Exe&lt;/OutputType&gt;
+    &lt;TargetFramework&gt;net10.0&lt;/TargetFramework&gt;
+  &lt;ImplicitUsings&gt;enable&lt;/ImplicitUsings&gt;
+  &lt;Nullable&gt;enable&lt;/Nullable&gt;
+&lt;/PropertyGroup&gt;</code></pre><div class="card-tip"><strong>Checkpoint</strong>Run <code>dotnet build</code>. The project should restore the package and compile before you add any SDK code.</div></section>
+
+<section class="article" id="step2"><span class="part-badge">Step 2</span><h2>Hello Copilot SDK</h2><p>Replace <code>Program.cs</code> with this minimal client and session:</p><pre><code>using GitHub.Copilot;
+
+await using var client = new CopilotClient();
+await client.StartAsync();
+
+await using var session = await client.CreateSessionAsync(new SessionConfig
+{
+    Model = "auto",
+    OnPermissionRequest = PermissionHandler.ApproveAll
+});
+
+var done = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+
+using var subscription = session.On&lt;SessionEvent&gt;(evt =&gt;
+{
+    switch (evt)
+    {
+        case AssistantMessageEvent message:
+            Console.WriteLine(message.Data.Content);
+            break;
+        case SessionIdleEvent:
+            done.TrySetResult();
+            break;
+        case SessionErrorEvent error:
+            done.TrySetException(new InvalidOperationException(error.Data.Message));
+            break;
+    }
+});
+
+await session.SendAsync(new MessageOptions
+{
+    Prompt = "In one sentence, what makes a good changelog?"
+});
+
+await done.Task;</code></pre><p>Run it:</p><pre><code>dotnet run</code></pre><p>You should see one concise answer. The client starts the local runtime, the session creates a conversation, <code>SendAsync</code> sends the prompt, and <code>SessionIdleEvent</code> gives the application a reliable completion signal.</p><div class="card-note"><strong>Why not call <code>SendAndWaitAsync</code>?</strong>The current .NET README documents <code>SendAsync</code> plus the session idle event as the stable completion pattern. This also prepares the app for streaming in the next step.</div></section>
+
+<section class="article" id="step3"><span class="part-badge">Step 3</span><h2>Add Real-Time Streaming</h2><p>Enable <code>Streaming = true</code> and handle typed delta events. Create <code>StreamExample.cs</code>, or replace <code>Program.cs</code> temporarily:</p><pre><code>using GitHub.Copilot;
+
+await using var client = new CopilotClient();
+await client.StartAsync();
+
+await using var session = await client.CreateSessionAsync(new SessionConfig
+{
+    Model = "auto",
+    Streaming = true,
+    OnPermissionRequest = PermissionHandler.ApproveAll
+});
+
+var done = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+
+using var subscription = session.On&lt;SessionEvent&gt;(evt =&gt;
+{
+    switch (evt)
+    {
+        case AssistantMessageDeltaEvent delta:
+            Console.Write(delta.Data.DeltaContent);
+            break;
+        case SessionIdleEvent:
+            Console.WriteLine("\n--- Done ---");
+            done.TrySetResult();
+            break;
+        case SessionErrorEvent error:
+            done.TrySetException(new InvalidOperationException(error.Data.Message));
+            break;
+    }
+});
+
+await session.SendAsync(new MessageOptions
+{
+    Prompt = "Write a short, professional changelog entry for a feature that adds dark mode support."
+});
+
+await done.Task;</code></pre><p>Run it with <code>dotnet run</code>. The response should appear incrementally rather than arriving as one large block.</p><div class="table-wrap"><table class="table table-bordered table-striped"><thead><tr><th>Event</th><th>When it fires</th><th>Typical use</th></tr></thead><tbody><tr><td><code>AssistantMessageDeltaEvent</code></td><td>For each response chunk</td><td>Write text to the terminal</td></tr><tr><td><code>AssistantMessageEvent</code></td><td>For the complete assistant message</td><td>Capture or inspect final content</td></tr><tr><td><code>SessionIdleEvent</code></td><td>When the agent has finished processing</td><td>Release a waiter or show a prompt</td></tr><tr><td><code>SessionErrorEvent</code></td><td>When the session reports an error</td><td>Fail clearly and clean up</td></tr></tbody></table></div></section>
+
+<section class="article" id="step4"><span class="part-badge">Step 4</span><h2>Define Custom Tools</h2><p>Custom tools let Copilot call code that belongs to your application. The current .NET SDK uses <code>CopilotTool.DefineTool</code>, Microsoft.Extensions.AI metadata, and a type-safe handler.</p><p>Try this focused example before building the full generator:</p><pre><code>using GitHub.Copilot;
+using Microsoft.Extensions.AI;
+using System.ComponentModel;
+
+var getWeather = CopilotTool.DefineTool(
+    ([Description("The city name")] string city) =&gt;
+    {
+        var conditions = new[] { "sunny", "cloudy", "rainy", "partly cloudy" };
+        var temperature = Random.Shared.Next(50, 80);
+        var condition = conditions[Random.Shared.Next(conditions.Length)];
+        return new { city, temperature = $"{temperature} F", condition };
+    },
+    factoryOptions: new AIFunctionFactoryOptions
+    {
+        Name = "get_weather",
+        Description = "Get the current weather for a city"
+    });
+
+await using var client = new CopilotClient();
+await client.StartAsync();
+await using var session = await client.CreateSessionAsync(new SessionConfig
+{
+    Model = "auto",
+    Streaming = true,
+    OnPermissionRequest = PermissionHandler.ApproveAll,
+    Tools = [getWeather]
+});
+
+using var subscription = session.On&lt;SessionEvent&gt;(evt =&gt;
+{
+    if (evt is AssistantMessageDeltaEvent delta)
+        Console.Write(delta.Data.DeltaContent);
+    else if (evt is SessionIdleEvent)
+        Console.WriteLine();
+});
+
+await session.SendAsync(new MessageOptions
+{
+    Prompt = "What's the weather like in Seattle and Tokyo? Use the weather tool."
+});</code></pre><p>Run it and watch for the agent to invoke <code>get_weather</code> before composing its answer.</p><div class="card-note"><strong>How tool calling works</strong><ol class="mb-0"><li>The tool name and description tell Copilot what capability exists.</li><li>The parameter annotation contributes a schema for the handler input.</li><li>Copilot decides when the tool is relevant.</li><li>The SDK invokes your handler and returns its JSON-serializable result to the runtime.</li><li>The model uses that result in the next response step.</li></ol></div></section>
+
+<section class="article" id="step5"><span class="part-badge">Step 5</span><h2>Build the Changelog Generator</h2><p>Now combine the client, streaming events, and two repository tools. This version uses <code>Process</code> instead of shell string interpolation, which avoids treating a ref or path as executable command text.</p><p>Replace <code>Program.cs</code> with the following complete implementation:</p><pre><code>using GitHub.Copilot;
+using Microsoft.Extensions.AI;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Text;
+
+var arguments = Environment.GetCommandLineArgs().Skip(1).ToArray();
+if (arguments.Length &lt; 2)
+{
+    Console.Error.WriteLine("Usage: dotnet run -- &lt;from-ref&gt; &lt;to-ref&gt; [repo-path]");
+    Console.Error.WriteLine("Example: dotnet run -- HEAD~10 HEAD");
+    return 1;
+}
+
+var fromRef = arguments[0];
+var toRef = arguments[1];
+var repoPath = Path.GetFullPath(arguments.ElementAtOrDefault(2) ?? ".");
+var refRange = $"{fromRef}..{toRef}";
+
+Console.WriteLine($"\nGenerating changelog for {refRange} in {repoPath}\n");
+
+var getGitLog = CopilotTool.DefineTool(
+    ([Description("A git ref range, such as v1.0.0..v2.0.0")] string? refRange,
+     [Description("Maximum number of commits to return")] int maxCount = 100) =&gt;
+    {
+        var result = RunGit(repoPath, "log", refRange, "--pretty=format:%h|%s|%an|%ad",
+            "--date=short", "-n", Math.Clamp(maxCount, 1, 500).ToString());
+        return result.ExitCode == 0
+            ? result.Output
+            : $"Git log failed: {result.Error}";
+    },
+    factoryOptions: new AIFunctionFactoryOptions
+    {
+        Name = "get_git_log",
+        Description = "Get commits from a repository, optionally filtered by a ref range."
+    });
+
+var readFile = CopilotTool.DefineTool(
+    ([Description("A path relative to the repository root")] string filePath) =&gt;
+    {
+        var fullPath = Path.GetFullPath(Path.Combine(repoPath, filePath));
+        if (!fullPath.StartsWith(repoPath, StringComparison.OrdinalIgnoreCase))
+            return "Rejected: the path must stay inside the repository.";
+        if (!File.Exists(fullPath))
+            return $"File not found: {filePath}";
+
+        var content = File.ReadAllText(fullPath);
+        return content.Length &gt; 10000
+            ? content[..10000] + "\n... [truncated]"
+            : content;
+    },
+    factoryOptions: new AIFunctionFactoryOptions
+    {
+        Name = "read_file",
+        Description = "Read a text file from the repository for additional change context."
+    });
+
+await using var client = new CopilotClient();
+await client.StartAsync();
+await using var session = await client.CreateSessionAsync(new SessionConfig
+{
+    Model = "auto",
+    Streaming = true,
+    OnPermissionRequest = PermissionHandler.ApproveAll,
+    Tools = [getGitLog, readFile]
+});
+
+var finalContent = new StringBuilder();
+var done = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+
+using var subscription = session.On&lt;SessionEvent&gt;(evt =&gt;
+{
+    switch (evt)
+    {
+        case AssistantMessageDeltaEvent delta:
+            Console.Write(delta.Data.DeltaContent);
+            finalContent.Append(delta.Data.DeltaContent);
+            break;
+        case SessionIdleEvent:
+            Console.WriteLine();
+            done.TrySetResult();
+            break;
+        case SessionErrorEvent error:
+            done.TrySetException(new InvalidOperationException(error.Data.Message));
+            break;
+    }
+});
+
+await session.SendAsync(new MessageOptions
+{
+    Prompt = $"""
+        You are a release-notes writer. Use get_git_log to retrieve commits in "{refRange}".
+        Then write Markdown with these sections when they have relevant commits:
+        - Summary: a 2-3 sentence overview.
+        - Features: new capabilities.
+        - Bug Fixes: issues resolved.
+        - Breaking Changes: anything requiring user action.
+        - Maintenance: refactoring, dependencies, CI, and documentation.
+
+        Group related commits. Write from the user's perspective. Include each commit hash.
+        Use read_file when a commit needs more context. Do not invent changes.
+        """
+});
+
+await done.Task;
+var content = finalContent.ToString();
+if (!content.Contains("Summary", StringComparison.OrdinalIgnoreCase) &&
+    !content.Contains("##", StringComparison.Ordinal))
+{
+    Console.Error.WriteLine("The response did not look like a changelog.");
+    return 1;
+}
+
+Console.WriteLine("\nChangelog generated.\n");
+return 0;
+
+static (int ExitCode, string Output, string Error) RunGit(string workingDirectory, params string[] arguments)
+{
+    var startInfo = new ProcessStartInfo("git")
+    {
+        WorkingDirectory = workingDirectory,
+        RedirectStandardOutput = true,
+        RedirectStandardError = true,
+        UseShellExecute = false,
+        CreateNoWindow = true
+    };
+    foreach (var argument in arguments)
+        startInfo.ArgumentList.Add(argument);
+
+    using var process = Process.Start(startInfo)!;
+    var output = process.StandardOutput.ReadToEnd();
+    var error = process.StandardError.ReadToEnd();
+    process.WaitForExit();
+    return (process.ExitCode, output, error);
+}</code></pre><p>Build and run against the current repository:</p><pre><code>dotnet build
+dotnet run -- HEAD~5 HEAD</code></pre><p>To analyze another repository, pass its path:</p><pre><code>dotnet run -- HEAD~10 HEAD ..\my-other-project</code></pre><div class="card-tip"><strong>Checkpoint</strong>The agent should call <code>get_git_log</code>, optionally call <code>read_file</code>, and stream a categorized Markdown changelog. If the tool is not called, make the prompt explicit about which tool contains the needed data.</div><h4>Try it with release tags</h4><pre><code>git tag --sort=-creatordate
+dotnet run -- v1.0.0 v2.0.0</code></pre><p>Relative refs such as <code>HEAD~5 HEAD</code> are usually the easiest first test because they work in any repository with enough commits.</p></section>
+
+<section class="article" id="step6"><span class="part-badge">Step 6</span><h2>Interactive Follow-Ups</h2><p>A session remains alive after the first answer. Add an input loop so users can ask questions about the same commits without reloading the repository context.</p><p>First add this helper near the other local variables:</p><pre><code>static async Task&lt;string?&gt; ReadLineAsync()
+{
+    return await Console.In.ReadLineAsync();
+}</code></pre><p>Then replace the final success message and <code>return 0;</code> with:</p><pre><code>Console.WriteLine("\nChangelog generated. Ask a follow-up, or type 'quit'.\n");
+while (true)
+{
+    Console.Write("Follow-up: ");
+    var input = await ReadLineAsync();
+    if (string.IsNullOrWhiteSpace(input) ||
+        input.Equals("quit", StringComparison.OrdinalIgnoreCase))
+        break;
+
+    finalContent.Clear();
+    done = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+    await session.SendAsync(new MessageOptions { Prompt = input });
+    await done.Task;
+    Console.WriteLine();
+}
+
+Console.WriteLine("Goodbye!");
+return 0;</code></pre><p>Run it again and try:</p><pre><code>dotnet run -- HEAD~10 HEAD
+
+Follow-up: Which commits affect the API?
+Follow-up: Rewrite the summary for a non-technical audience
+Follow-up: quit</code></pre><div class="card-note"><strong>Why this is useful</strong>The session retains the conversation and the model's prior tool results. Follow-up prompts can refer to “those commits” without asking your tools to repeat the entire first analysis.</div></section>
+
+<section class="article" id="step7"><span class="part-badge">Step 7</span><h2>Wrap-Up &amp; Next Steps</h2><p>You have built a functional .NET CLI application powered by the GitHub Copilot SDK. It creates a client and session, sends prompts, streams responses, exposes custom repository tools, and supports multi-turn conversation.</p><div class="table-wrap"><table class="table table-bordered table-striped"><thead><tr><th>Extension</th><th>Difficulty</th><th>What you'll practice</th></tr></thead><tbody><tr><td>Add a <code>get_diff</code> tool for commit patches</td><td>Easy</td><td>Deeper tool definitions and output limits</td></tr><tr><td>Run on a tag push in CI</td><td>Medium</td><td>Headless SDK usage and release automation</td></tr><tr><td>Support JSON or HTML output</td><td>Medium</td><td>Structured response prompting and validation</td></tr><tr><td>Add a <code>search_issues</code> tool</td><td>Advanced</td><td>Authenticated API integration</td></tr><tr><td>Connect to an MCP server</td><td>Advanced</td><td>External tools and service discovery</td></tr></tbody></table></div><div class="card-important"><strong>Production checklist</strong>Replace <code>ApproveAll</code> with a policy-aware handler, validate every path and process argument, cap tool output, handle cancellation and timeouts, avoid logging secrets, and pin or regularly review your SDK package version.</div></section>
+
+<section class="article" id="bonus"><span class="part-badge">Bonus</span><h2>Export to a Markdown File</h2><p>The complete response is already accumulated in <code>finalContent</code>. Save it after the success check and before the follow-up loop:</p><pre><code>var outputPath = Path.Combine(Directory.GetCurrentDirectory(), "CHANGELOG.md");
+await File.WriteAllTextAsync(outputPath, finalContent.ToString());
+Console.WriteLine($"Saved to {outputPath}");</code></pre><p>Now each successful run produces both terminal output and a <code>CHANGELOG.md</code> file that can be reviewed and committed.</p></section>
+
+<section class="article" id="resources"><h2>Related Resources</h2><h3>Official Documentation</h3><ul><li><a href="https://github.com/github/copilot-sdk" target="_blank" rel="noopener">GitHub Copilot SDK repository</a>: source, package links, and SDK overview</li><li><a href="https://github.com/github/copilot-sdk/blob/main/dotnet/README.md" target="_blank" rel="noopener">.NET SDK README</a>: current API reference and C# samples</li><li><a href="https://docs.github.com/en/copilot/how-tos/copilot-sdk/sdk-getting-started" target="_blank" rel="noopener">GitHub Docs: Build your first Copilot-powered app</a>: cross-language getting-started guide</li><li><a href="https://github.com/github/copilot-sdk/tree/main/docs/features" target="_blank" rel="noopener">SDK feature documentation</a>: sessions, tools, MCP, hooks, and advanced features</li><li><a href="https://github.com/github/copilot-sdk/blob/main/docs/auth/byok.md" target="_blank" rel="noopener">BYOK documentation</a>: connect supported external model providers</li></ul><h3>Further Exploration</h3><ul><li><a href="https://github.blog/news-insights/company-news/build-an-agent-into-any-app-with-the-github-copilot-sdk/" target="_blank" rel="noopener">GitHub Blog: Build an Agent into Any App</a></li><li><a href="https://github.com/github/awesome-copilot/tree/main/cookbook/copilot-sdk" target="_blank" rel="noopener">Copilot SDK cookbook</a>: practical recipes across languages</li><li><a href="https://opentelemetry.io/" target="_blank" rel="noopener">OpenTelemetry</a>: observability concepts for instrumented applications</li></ul><div class="card-tip"><strong>Takeaway</strong>The SDK is most useful when your application owns a clear workflow and gives Copilot narrowly defined, trustworthy capabilities. Start with one session and one tool, validate the behavior, then grow the workflow deliberately.</div></section>
+</main></div></div>
+<button class="btn btn-primary btn-scroll-top" id="scrollTop" type="button" aria-label="Scroll to top" hidden>&uarr;</button>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+(function(){
+  const toc=document.getElementById('toc'); const mobile=document.getElementById('tocMobile');
+  if(toc&&mobile) mobile.innerHTML=toc.innerHTML;
+  const links=[...document.querySelectorAll('.toc a')];
+  const sections=[...document.querySelectorAll('section[id]')];
+  const observer=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){links.forEach(link=>link.classList.toggle('active',link.getAttribute('href')==='#'+entry.target.id));}}),{rootMargin:'-80px 0px -65% 0px',threshold:0});
+  sections.forEach(section=>observer.observe(section));
+  document.querySelectorAll('#tocMobile a').forEach(link=>link.addEventListener('click',()=>{const canvas=document.getElementById('sidebarOffcanvas');bootstrap.Offcanvas.getInstance(canvas)?.hide();}));
+  const button=document.getElementById('scrollTop'); window.addEventListener('scroll',()=>button.hidden=window.scrollY<500); button.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+})();
+</script>
+</body>
+</html>
