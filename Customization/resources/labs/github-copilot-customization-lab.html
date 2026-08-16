@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Customization in 90 Minutes — Workshop</title>
+<link rel="icon" href="data:image/svg+xml,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22&gt;&lt;text y=%22.9em%22 font-size=%2290%22&gt;🤖&lt;/text&gt;&lt;/svg&gt;">
+<title>GitHub Copilot Customization — Workshop</title>
 <meta name="description" content="90-minute GitHub Copilot customization workshop: skills, custom agents, orchestration, token/model strategy, and plugin packaging." />
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <style>
@@ -16,7 +17,8 @@
   body{ background:var(--bg); color:var(--fg); }
   .navbar{ background:#0f172a !important; box-shadow:var(--shadow-md); }
   .navbar-brand{ color:#fff !important; font-weight:700; }
-  .navbar-brand small{ display:block; color:#93c5fd; font-size:.65rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; }
+  .navbar-brand small{ display:block; color:#93c5fd; font-size:.65rem; font-weight: 700; letter-spacing:.12em; text-transform:uppercase; }
+  .navbar-brand .small { font-size: x-small; font-family: "Segoe UI Semibold"; }
   nav.sidebar{
     background:linear-gradient(180deg,#f8fafc 0%,#eef2f7 100%);
     border-right:1px solid var(--border);
@@ -25,6 +27,7 @@
     position:sticky;
     top:56px;
     padding:0;
+    max-width:280px;
   }
   .menu-header{ padding:1rem 1.1rem .6rem; font-size:.72rem; font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:#64748b; }
   .toc{ list-style:none; margin:0; padding:0 .6rem 1.5rem; }
@@ -33,7 +36,7 @@
   .toc ul{ list-style:none; margin:.15rem 0 .5rem; padding-left:.9rem; border-left:2px solid var(--border); }
   .toc ul li a{ display:block; padding:.28rem .5rem; border-radius:5px; color:#475569; font-size:.79rem; text-decoration:none; }
   .toc ul li a:hover, .toc ul li a.active{ background:#e0ecff; color:#1d4ed8; }
-  main.content{ padding:2.2rem clamp(1rem,3vw,3rem) 5rem; max-width:1080px; }
+  main.content{ padding:2.2rem clamp(1rem,3vw,3rem) 5rem; max-width:100%; }
   .lead-banner{ background:linear-gradient(135deg,#0f172a 0%,#1e3a8a 100%); color:#fff; border-radius:14px; padding:2.4rem 2.2rem; margin-bottom:2rem; box-shadow:var(--shadow-md); }
   .lead-banner h1{ font-weight:800; }
   .lead-banner .meta-pill{ display:inline-flex; gap:.4rem; align-items:center; background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.25); border-radius:999px; padding:.3rem .85rem; font-size:.8rem; margin:.2rem .3rem .2rem 0; }
@@ -54,13 +57,18 @@
   .table-wrap{ overflow-x:auto; margin:1rem 0; }
   .diagram-card{ background:#f8fafc; border:1px solid var(--border); border-radius:12px; padding:1rem; margin:1.2rem 0; box-shadow:var(--shadow-sm); }
   .diagram-card .mermaid{ text-align:center; }
+  .context-cost-chart svg .bar-plot-0 rect:nth-child(1){ fill:#10b981 !important; stroke:#10b981 !important; }
+  .context-cost-chart svg .bar-plot-0 rect:nth-child(2){ fill:#14b8a6 !important; stroke:#14b8a6 !important; }
+  .context-cost-chart svg .bar-plot-0 rect:nth-child(3){ fill:#3b82f6 !important; stroke:#3b82f6 !important; }
+  .context-cost-chart svg .bar-plot-0 rect:nth-child(4){ fill:#f59e0b !important; stroke:#f59e0b !important; }
+  .context-cost-chart svg .bar-plot-0 rect:nth-child(5){ fill:#ef4444 !important; stroke:#ef4444 !important; }
   .diagram-caption{ text-align:center; font-size:.8rem; color:var(--muted); margin-top:.4rem; }
   .os-tabs .btn{ font-size:.78rem; }
   .os-pane{ display:none; }
   .os-pane.active{ display:block; }
   .part-badge{ display:inline-block; background:var(--accent); color:#fff; font-weight:800; font-size:.72rem; letter-spacing:.06em; text-transform:uppercase; padding:.2rem .6rem; border-radius:6px; margin-bottom:.5rem; }
   .build-list li{ margin-bottom:.3rem; }
-  .btn-scroll-top{ position:fixed; right:1.4rem; bottom:1.4rem; z-index:50; border-radius:50%; width:46px; height:46px; box-shadow:var(--shadow-md); }
+  .btn-scroll-top{ position:fixed; right:1rem; bottom:1rem; z-index:50; border-radius:50%; width: 36px; height:36px; box-shadow:var(--shadow-md); }
   @media (max-width:991.98px){
     nav.sidebar{ display:none; }
   }
@@ -73,8 +81,8 @@
     <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarOffcanvas" aria-controls="sidebarOffcanvas" aria-label="Toggle contents menu">
       <span class="navbar-toggler-icon"></span>
     </button>
-    <a class="navbar-brand ms-2" href="#top"><small>90-Minute Workshop</small>Customization in 90 Minutes</a>
-    <span class="d-none d-md-inline text-light small">GitHub Copilot &middot; Skills &middot; Agents &middot; Orchestration &middot; Plugins</span>
+    <a class="navbar-brand ms-2" href="#top"><small>Workshop</small>GitHub Copilot Customization</a>
+    <span class="d-none d-md-inline text-light small">GitHub Copilot &middot; Instructions &middot; Prompts &middot; Skills &middot; Agents &middot; Orchestration &middot; Hooks &middot; MCP Server &middot; Plugins</span>
   </div>
 </nav>
 
@@ -89,8 +97,9 @@
         <li><a href="#part1">Part 1 &middot; Why Customize?</a>
           <ul>
             <li><a href="#landscape">1.1 Customization Landscape</a></li>
-            <li><a href="#token-model">1.2 Token Optimization Model</a></li>
-            <li><a href="#choosing-model">1.3 Choosing the Right Model</a></li>
+            <li><a href="#customization-architecture">1.2 End-to-End Architecture</a></li>
+            <li><a href="#token-model">1.3 Token Optimization Model</a></li>
+            <li><a href="#choosing-model">1.4 Choosing the Right Model</a></li>
           </ul>
         </li>
         <li><a href="#part2">Part 2 &middot; Instructions</a>
@@ -105,7 +114,7 @@
             <li><a href="#test-prompt-file">3.2 Test the Prompt File</a></li>
           </ul>
         </li>
-        <li><a href="#part4">Part 4 &middot; Community Skills</a>
+        <li><a href="#part4">Part 4 &middot; Skills</a>
           <ul>
             <li><a href="#search-skills">4.1 Search</a></li>
             <li><a href="#preview-skills">4.2 Preview</a></li>
@@ -182,7 +191,7 @@
     <main class="col-lg-9 content">
       <div class="lead-banner">
         <span class="part-badge">Lab</span>
-        <h1>Customization in 90 Minutes</h1>
+        <h1>GitHub Copilot Customization</h1>
         <p class="mb-2">Build <strong>DevFlow</strong> — a multi-agent framework for the software development lifecycle — using skills, custom agents, orchestration, model optimization, and plugin packaging.</p>
         <span class="meta-pill">⏱ ~90 minutes</span>
         <span class="meta-pill">🎯 Intermediate</span>
@@ -216,16 +225,22 @@
         <p>In one terminal, build and run the backend:</p>
         <div class="os-tabs" data-group="backend">
           <div class="btn-group mb-2" role="group" aria-label="Choose your OS">
-            <button type="button" class="btn btn-outline-secondary btn-sm active" data-os="macos">macOS</button>
-            <button type="button" class="btn btn-outline-secondary btn-sm" data-os="windows">Windows (PowerShell)</button>
+            <button type="button" class="btn btn-outline-secondary btn-sm active" data-os="windows">Windows (PowerShell)</button>
+            <button type="button" class="btn btn-outline-secondary btn-sm" data-os="macos">macOS</button>
           </div>
-          <div class="os-pane active" data-os="macos">
+          <div class="os-pane active" data-os="windows">
+<pre><code>Set-Location backend
+dotnet restore
+dotnet build
+$env:ASPNETCORE_ENVIRONMENT = "Development"
+dotnet run --project src\Api --no-launch-profile --urls http://localhost:5001</code></pre>
+          </div>
+          <div class="os-pane" data-os="macos">
 <pre><code>cd backend
 dotnet restore
 dotnet build
 ASPNETCORE_ENVIRONMENT=Development dotnet run --project src/Api --no-launch-profile --urls http://localhost:5001</code></pre>
           </div>
-          
         </div>
         <p>In another terminal, run the frontend:</p>
 <pre><code>cd frontend
@@ -238,7 +253,7 @@ npm run dev</code></pre>
         <h2>What You'll Build</h2>
         <div class="diagram-card">
           <div class="mermaid">
-%%{init: {'theme': 'default', 'fontFamily': 'Segoe UI Semibold', 'fontSize': '18px', 'flowchart': {'curve': 'basis'}} }%%
+%%{init: {'theme': 'base', 'fontFamily': 'Segoe UI Semibold', 'fontSize': '18px', 'flowchart': {'curve': 'basis'}} }%%
 graph TD
   DF["@dev-flow<br/>Main Orchestrator<br/>(coordinates SDLC pipeline stages)"]
   DF --> PL["@planner Agent<br/>Skills: /task-breakdown"]
@@ -307,11 +322,131 @@ graph TD
           </div>
         </section>
 
-        <section class="subsection" id="token-model">
-          <h3>1.2 Token Optimization Mental Model</h3>
-          <p>Not everything should be a custom instruction. Understanding <em>where</em> tokens are consumed is the key to efficient customization:</p>
+        <section class="subsection" id="customization-architecture">
+          <h3>1.2 End-to-End Customization Architecture</h3>
+          <p>Every Copilot chat follows the same broad loop: the client gathers the request and available context, customization layers shape the instructions, the LLM reasons and chooses actions, tools and sub-agents execute work, and the results return to the conversation.</p>
           <div class="diagram-card">
             <div class="mermaid">
+%%{init: {'theme': 'base', 'fontFamily': 'Segoe UI Semibold', 'fontSize': '18px'}}%%
+architecture-beta
+  group client(cloud)[Copilot Client]
+  group context(server)[Context Assembly]
+  group customize(server)[Customization Layer]
+  group runtime(server)[Agent Runtime]
+  group external(cloud)[External Systems]
+
+  service chat(internet)[Chat or IDE] in client
+  service editor(server)[Editor repo selection] in context
+  service history(database)[Conversation history] in context
+  service base(server)[Base instructions and tool definitions] in customize
+  service project(disk)[Instructions and prompt files] in customize
+  service skills(disk)[Skills and custom agents] in customize
+  service package(disk)[Plugins and APM] in customize
+  service llm(cloud)[Selected LLM] in runtime
+  service orchestrator(server)[Orchestrator and handoffs] in runtime
+  service tools(server)[Built in tools and MCP tools] in runtime
+  service hooks(server)[Hooks and policy checks] in runtime
+  service repo(database)[Repository and files] in external
+  service mcp(cloud)[MCP APIs databases services] in external
+  service actions(cloud)[Agentic workflows] in external
+
+  chat:R --> L:editor
+  chat:R --> L:history
+  editor:R --> L:base
+  history:R --> L:base
+  base:R --> L:llm
+  project:R --> L:llm
+  skills:R --> L:llm
+  package:R --> L:llm
+  llm:B --> T:orchestrator
+  orchestrator:R --> L:tools
+  orchestrator:R --> L:hooks
+  tools:R --> L:repo
+  tools:R --> L:mcp
+  hooks:R --> L:actions
+  tools:L --> R:llm
+  hooks:L --> R:llm
+            </div>
+            <p class="diagram-caption">Architecture view: customization shapes the LLM session; runtime tools, hooks, MCP, and workflows connect the model to real work.</p>
+          </div>
+
+          <h4>Runtime Flow: From Chat to Response</h4>
+          <div class="diagram-card">
+            <div class="mermaid">
+%%{init: {'theme': 'base', 'fontFamily': 'Segoe UI Semibold', 'fontSize': '17px', 'flowchart': {'curve': 'basis'}} }%%
+flowchart TD
+  A["1. User sends a chat request<br/>IDE, CLI, or GitHub"] --> B["2. Copilot client identifies scope<br/>workspace, files, selection, history"]
+  B --> C["3. Load always-on context<br/>base prompt + repo/path instructions"]
+  C --> D{"4. Which customizations apply?"}
+  D -->|"Explicit command"| P["Prompt file<br/>reusable task template"]
+  D -->|"Relevant task"| S["Skill<br/>frontmatter then instructions"]
+  D -->|"Selected or inferred persona"| AG["Custom agent<br/>tools, model, instructions"]
+  D -->|"No extra layer"| E["5. Assemble effective prompt"]
+  P --> E
+  S --> E
+  AG --> E
+  E --> M["6. Select model<br/>agent model or Auto"]
+  M --> L["7. LLM reasons over context<br/>and proposes response or tool call"]
+  L --> Q{"8. Action required?"}
+  Q -->|"No"| R["9. Return response<br/>answer, code, or plan"]
+  Q -->|"Yes: built-in or MCP"| T["Execute tool<br/>read, search, edit, execute, web"]
+  Q -->|"Yes: specialist"| H["Handoff to named sub-agent<br/>isolated context window"]
+  T --> V["10. Tool result enters context"]
+  H --> W["Sub-agent summary returns<br/>to orchestrator"]
+  V --> L
+  W --> L
+  L -->|"Before lifecycle boundary"| K["Hooks run deterministic checks<br/>for example secrets scanning"]
+  K --> R
+  R --> Z["11. Conversation updated<br/>ready for the next turn"]
+            </div>
+            <p class="diagram-caption">Flowchart view: the LLM may iterate through tool calls and handoffs before producing the final response.</p>
+          </div>
+
+          <h4>Sequence: One Complete Chat Turn</h4>
+          <div class="diagram-card">
+            <div class="mermaid">
+%%{init: {'theme': 'forest', 'fontFamily': 'Segoe UI Semibold', 'fontSize': '16px', 'sequence': {'useMaxWidth': true}} }%%
+sequenceDiagram
+  actor User as Developer
+  participant Client as Copilot Client
+  participant Context as Context Builder
+  participant Custom as Customizations
+  participant Model as Selected LLM
+  participant Agent as Agent or Orchestrator
+  participant Tool as Built-in or MCP Tool
+  participant Hook as Hook
+  User->>Client: Send prompt and optional command
+  Client->>Context: Collect workspace, files, selection, and history
+  Context->>Custom: Load instructions and matching customization layers
+  Custom-->>Context: Effective prompt, agent rules, skills, and tools
+  Context->>Model: Submit assembled context
+  Model->>Model: Reason and choose response or action
+  alt Direct response
+    Model-->>Client: Answer, code, plan, or explanation
+  else Tool call
+    Model->>Tool: Invoke permitted tool with focused arguments
+    Tool-->>Model: Add result to context
+    Model->>Model: Re-evaluate with tool output
+  else Sub-agent handoff
+    Model->>Agent: Delegate bounded task
+    Agent->>Agent: Use isolated context and permitted tools
+    Agent-->>Model: Return concise summary and artifacts
+    Model->>Model: Continue orchestration with summary
+  end
+  Model->>Hook: Trigger lifecycle check when applicable
+  Hook-->>Client: Allow, warn, or block the lifecycle action
+  Client-->>User: Render final response and changes
+            </div>
+            <p class="diagram-caption">Sequence view: the model is the reasoning loop, while the client, context builder, customizations, tools, agents, and hooks surround it.</p>
+          </div>
+        </section>
+
+        <section class="subsection" id="token-model">
+          <h3>1.3 Token Optimization Mental Model</h3>
+          <p>Not everything should be a custom instruction. Understanding <em>where</em> tokens are consumed is the key to efficient customization:</p>
+          <div class="diagram-card">
+            <div class="mermaid context-cost-chart">
+%%{init: {'theme': 'base', 'fontFamily': 'Segoe UI Semibold', 'fontSize': '18px', 'flowchart': {'curve': 'basis'}} }%%
 xychart-beta
   title "Relative Context-Window Cost by Customization Type"
   x-axis ["Hooks", "Skills", "Custom Agents", "MCP Servers", "Instructions"]
@@ -325,14 +460,28 @@ xychart-beta
           <p>Every request to Copilot assembles a system prompt from layers. The base system prompt and tool definitions are fixed costs. Instructions, agent definitions, and skills are variable based on your customizations. Conversation history and editor context grow as you work:</p>
           <div class="diagram-card">
             <div class="mermaid">
-flowchart TD
-  A["1. Base system prompt <br/>[always] ~500 tokens"] --> B["2. Tool definitions <br/>[always] 10 tools ≈ 500–1,000 · 100+ tools ≈ 5,000–10,000+ ⚠️"]
-  B --> C["3. Instructions file <br/>[always] .github/copilot-instructions.md ~300–2,000 tokens"]
-  C --> D["4. Agent definition <br/>[if agent active] ~200–500 tokens"]
-  D --> E["5. Skill frontmatter (always) ~100/skill<br/>+ Skill body [only when triggered] ~400–600 tokens"]
-  E --> F["6. Conversation history <br/>[always] grows until /compact"]
-  F --> G["7. Editor context <br/>[always] ~200–2,000 tokens"]
-  G --> H["8. Your message <br/>[always] variable"]
+%%{init: {'theme': 'base', 'fontFamily': 'Segoe UI Semibold', 'fontSize': '18px', 'flowchart': {'curve': 'basis'}} }%%
+flowchart LR
+  subgraph always["Always loaded"]
+    direction TB
+    A["1. Base system prompt<br/>~500 tokens"]
+    B["2. Tool definitions<br/>10 tools ≈ 500–1,000<br/>100+ tools ≈ 5,000–10,000+ ⚠️"]
+    C["3. Instructions file<br/>.github/copilot-instructions.md<br/>~300–2,000 tokens"]
+  end
+  subgraph conditional["Customization-dependent"]
+    direction TB
+    D["4. Agent definition<br/>if agent active<br/>~200–500 tokens"]
+    E["5. Skill frontmatter<br/>~100/skill<br/>+ body when triggered<br/>~400–600 tokens"]
+  end
+  subgraph grows["Grows during the session"]
+    direction TB
+    F["6. Conversation history<br/>grows until /compact"]
+    G["7. Editor context<br/>~200–2,000 tokens"]
+    H["8. Your message<br/>variable"]
+  end
+  always --> assembled["Assembled Copilot request"]
+  conditional --> assembled
+  grows --> assembled
           </div>
           <p class="diagram-caption">Layers 1–3 are a fixed tax on every request. Layers 4–5 are opt-in. Layers 6–7 grow as you work and are the main source of bloat.</p>
         </div>
@@ -548,7 +697,8 @@ The output should be a structured table with: task title, component, T-shirt siz
         <section class="subsection" id="naming-checker">
           <h3>5.5 Create a Skill with Scripts: Naming Checker</h3>
           <p>Skills aren't just instructions. They can include <strong>executable scripts</strong> that Copilot runs as capabilities. This can give a level of determinism to your skills. Use <code>/create-skill</code> again:</p>
-<pre><code>Create a new skill called "naming-checker" that validates file and variable naming conventions against project standards. It should:
+<pre><code>Create a new skill called "naming-checker" that validates file and variable naming conventions against project standards.
+It should:
 
 - Include a bash script that scans for camelCase files that should be kebab-case (excluding .agent.md and .test. files)
 - Pre-approve the shell tool (use allowed-tools: shell in the frontmatter)
@@ -567,14 +717,14 @@ The output should be a structured table with: task title, component, T-shirt siz
           <p>After generation, examine what was created:</p>
           <div class="os-tabs" data-group="namingcheck">
             <div class="btn-group mb-2" role="group" aria-label="Choose your OS">
-              <button type="button" class="btn btn-outline-secondary btn-sm active" data-os="macos">macOS</button>
-              <button type="button" class="btn btn-outline-secondary btn-sm" data-os="windows">Windows (PowerShell)</button>
+              <button type="button" class="btn btn-outline-secondary btn-sm active" data-os="windows">Windows (PowerShell)</button>
+              <button type="button" class="btn btn-outline-secondary btn-sm" data-os="macos">macOS</button>
             </div>
-            <div class="os-pane active" data-os="macos">
-<pre><code>find .agents/skills/naming-checker -type f</code></pre>
-            </div>
-            <div class="os-pane" data-os="windows">
+            <div class="os-pane active" data-os="windows">
 <pre><code>Get-ChildItem -Recurse -File .agents\skills\naming-checker | Select-Object FullName</code></pre>
+            </div>
+            <div class="os-pane" data-os="macos">
+<pre><code>find .agents/skills/naming-checker -type f</code></pre>
             </div>
           </div>
           <p>You should see a structure like:</p>
@@ -613,14 +763,14 @@ The output should be a structured table with: task title, component, T-shirt siz
           <h3>6.1 Create the Agent</h3>
           <div class="os-tabs" data-group="agentdir">
             <div class="btn-group mb-2" role="group" aria-label="Choose your OS">
-              <button type="button" class="btn btn-outline-secondary btn-sm active" data-os="macos">macOS</button>
-              <button type="button" class="btn btn-outline-secondary btn-sm" data-os="windows">Windows (PowerShell)</button>
+              <button type="button" class="btn btn-outline-secondary btn-sm active" data-os="windows">Windows (PowerShell)</button>
+              <button type="button" class="btn btn-outline-secondary btn-sm" data-os="macos">macOS</button>
             </div>
-            <div class="os-pane active" data-os="macos">
-<pre><code>mkdir -p .github/agents</code></pre>
-            </div>
-            <div class="os-pane" data-os="windows">
+            <div class="os-pane active" data-os="windows">
 <pre><code>New-Item -ItemType Directory -Force -Path .github\agents | Out-Null</code></pre>
+            </div>
+            <div class="os-pane" data-os="macos">
+<pre><code>mkdir -p .github/agents</code></pre>
             </div>
           </div>
           <p>Create <code>.github/agents/reviewer.agent.md</code>:</p>
@@ -699,11 +849,12 @@ For each finding:
           <p>Why Sonnet for Code Review? This is <strong>model selection optimization</strong> in action. You set the <code>model</code> field per agent based on task complexity:</p>
           <div class="diagram-card">
             <div class="mermaid">
+%%{init: {'theme': 'base', 'fontFamily': 'Segoe UI', 'fontSize': '18px', 'flowchart': {'curve': 'basis'}} }%%
 flowchart LR
-  A["Simple tasks<br/>(scaffolding, tests)"] --> H["GPT-5.6 Luna / Claude Haiku 4.5<br/>Lightweight"]
-  B["Balanced tasks<br/>(review, refactoring)"] --> S["Sonnet 5 / GPT-5.6 Terra<br/>Medium ◄ YOU ARE HERE"]
-  C["Complex tasks<br/>(architecture, orchestration)"] --> O["Opus 5 / GPT-5.6 Sol<br/>Powerful"]
-  D["Unknown complexity"] --> AU["Auto<br/>Varies (10% discount)"]
+  A["Simple tasks<br/>(scaffolding, tests)"] --> H["GPT-5.6 Luna / Claude Haiku 4.5<br/><b>Lightweight</b>"]
+  B["Balanced tasks<br/>(review, refactoring)"] --> S["Sonnet 5 / GPT-5.6 Terra<br/><b>Medium</b>"]
+  C["Complex tasks<br/>(architecture, orchestration)"] --> O["Opus 5 / GPT-5.6 Sol<br/><b>Powerful</b>"]
+  D["Unknown complexity"] --> AU["Auto<br/><b>Varies (10% discount)</b>"]
           </div>
         </div>
           <p>Code review is a <strong>balanced task</strong>. It requires understanding code context and identifying patterns, but doesn't need the deep multi-step reasoning of architectural planning. Sonnet 5 or GPT-5.6 Terra provides high quality at lower cost than Opus 5 or GPT-5.6 Sol.</p>
@@ -718,6 +869,7 @@ flowchart LR
           <p>When you invoke this agent (or Copilot auto-selects it), it runs as a <strong>subagent</strong> with its own context window:</p>
           <div class="diagram-card">
             <div class="mermaid">
+%%{init: {'theme': 'base', 'fontFamily': 'Segoe UI Semibold', 'fontSize': '18px', 'flowchart': {'curve': 'basis'}} }%%
 flowchart TB
   subgraph Main["Your Main Session — Context: 60% full with conversation"]
     M["'I've been working on the auth module for the past 30 minutes...'"]
@@ -875,8 +1027,53 @@ sub-agents at each stage.
 3. **Delegate, don't do** — use sub-agents for specialized work
 4. **Summarize handoffs** — pass summaries between agents, not raw content
 5. **Fail fast** — if a stage fails, present options to the user</code></pre>
+          <h4>Agent Architecture and Handoffs</h4>
+          <p>DevFlow owns the workflow, while each sub-agent owns one specialized responsibility. The <code>agents:</code> array is the delegation boundary: DevFlow can hand work only to the named agents, and each handoff returns a focused summary for the next stage.</p>
           <div class="diagram-card">
             <div class="mermaid">
+%%{init: {'theme': 'base', 'fontFamily': 'Segoe UI Semibold', 'fontSize': '18px', 'flowchart': {'curve': 'basis'}} }%%
+flowchart TB
+  U["Developer<br/>feature request"] --> D["DevFlow Orchestrator<br/>model: auto"]
+  D -->|"delegate: plan"| P["Planner<br/>plan + risks + dependencies"]
+  D -->|"delegate: test"| T["Tester<br/>tests + verification report"]
+  D -->|"delegate: review"| R["Code Reviewer<br/>findings + recommended fixes"]
+  D -.->|"invoke when needed"| S["Skills<br/>task-breakdown<br/>naming-checker<br/>documentation-writer"]
+  P -->|"planning summary"| D
+  T -->|"test summary"| D
+  R -->|"review summary"| D
+  D -->|"checkpoint + next action"| U
+            </div>
+            <p class="diagram-caption">DevFlow coordinates the workflow; sub-agents execute bounded responsibilities and return summaries.</p>
+          </div>
+          <div class="diagram-card">
+            <div class="mermaid">
+%%{init: {'theme': 'base', 'fontFamily': 'Segoe UI Semibold', 'fontSize': '18px', 'sequence': {'useMaxWidth': true}} }%%
+sequenceDiagram
+  actor User as Developer
+  participant D as DevFlow
+  participant P as Planner
+  participant T as Tester
+  participant R as Code Reviewer
+  User->>D: Request a feature
+  D->>P: Delegate requirements, code context, and constraints
+  P-->>D: Return plan summary, risks, and dependencies
+  D-->>User: Present plan and wait for approval
+  User->>D: Approve implementation
+  D->>D: Implement tasks and run applicable skills
+  par Test handoff
+    D->>T: Delegate changed files and test goals
+    T-->>D: Return test results and coverage gaps
+  and Review handoff
+    D->>R: Delegate diff, requirements, and review criteria
+    R-->>D: Return prioritized findings
+  end
+  D-->>User: Summarize outcomes and request next action
+            </div>
+            <p class="diagram-caption">Handoffs pass task-specific context and summaries, while the developer remains the decision point between stages.</p>
+          </div>
+          <div class="diagram-card">
+            <div class="mermaid">
+%%{init: {'theme': 'base', 'fontFamily': 'Segoe UI Semibold', 'fontSize': '18px', 'flowchart': {'curve': 'basis'}} }%%
 flowchart LR
   P1["Stage 1<br/>Planning<br/>(Planner)"] --> G1{{"✋ Checkpoint"}}
   G1 --> P2["Stage 2<br/>Implementation"]
@@ -918,15 +1115,15 @@ flowchart LR
           <p>Once complete, you will need to restart the backend to load the updates:</p>
           <div class="os-tabs" data-group="restart">
             <div class="btn-group mb-2" role="group" aria-label="Choose your OS">
-              <button type="button" class="btn btn-outline-secondary btn-sm active" data-os="macos">macOS</button>
-              <button type="button" class="btn btn-outline-secondary btn-sm" data-os="windows">Windows (PowerShell)</button>
+              <button type="button" class="btn btn-outline-secondary btn-sm active" data-os="windows">Windows (PowerShell)</button>
+              <button type="button" class="btn btn-outline-secondary btn-sm" data-os="macos">macOS</button>
             </div>
-            <div class="os-pane active" data-os="macos">
-<pre><code>ASPNETCORE_ENVIRONMENT=Development dotnet run --project src/Api</code></pre>
-            </div>
-            <div class="os-pane" data-os="windows">
+            <div class="os-pane active" data-os="windows">
 <pre><code>$env:ASPNETCORE_ENVIRONMENT = "Development"
-dotnet run --project src/Api</code></pre>
+dotnet run --project src\Api</code></pre>
+            </div>
+            <div class="os-pane" data-os="macos">
+<pre><code>ASPNETCORE_ENVIRONMENT=Development dotnet run --project src/Api</code></pre>
             </div>
           </div>
           <p>You should now be able to migrate to preferences and update your theme and notification settings.</p>
@@ -1151,7 +1348,7 @@ Option D: MCP Server for external data
           <p>MCP (Model Context Protocol) servers bring external tools into Copilot — databases, APIs, issue trackers, monitoring systems. They're powerful but have a token footprint you should understand:</p>
           <div class="diagram-card">
             <div class="mermaid">
-%%{init: { 'fontFamily': 'Segoe UI Semibold', 'fontSize': 14 }}%%
+%%{init: {'theme': 'base', 'fontFamily': 'Segoe UI Semibold', 'fontSize': '18px', 'flowchart': {'curve': 'basis'}} }%%
 sequenceDiagram
   participant Ctx as Context Window
   participant Cop as Copilot
@@ -1228,20 +1425,20 @@ sequenceDiagram
           </ul>
           <div class="os-tabs" data-group="pluginstruct">
             <div class="btn-group mb-2" role="group" aria-label="Choose your OS">
-              <button type="button" class="btn btn-outline-secondary btn-sm active" data-os="macos">macOS</button>
-              <button type="button" class="btn btn-outline-secondary btn-sm" data-os="windows">Windows (PowerShell)</button>
+              <button type="button" class="btn btn-outline-secondary btn-sm active" data-os="windows">Windows (PowerShell)</button>
+              <button type="button" class="btn btn-outline-secondary btn-sm" data-os="macos">macOS</button>
             </div>
-            <div class="os-pane active" data-os="macos">
-<pre><code>mkdir -p .github/plugin
-mkdir -p plugins/dev-flow
-#mkdir agents
-#mkdir skills</code></pre>
-            </div>
-            <div class="os-pane" data-os="windows">
+            <div class="os-pane active" data-os="windows">
 <pre><code>New-Item -ItemType Directory -Force -Path .github\plugin | Out-Null
 New-Item -ItemType Directory -Force -Path plugins\dev-flow | Out-Null
 # New-Item -ItemType Directory -Force -Path plugins\dev-flow\agents | Out-Null
 # New-Item -ItemType Directory -Force -Path plugins\dev-flow\skills | Out-Null</code></pre>
+            </div>
+            <div class="os-pane" data-os="macos">
+<pre><code>mkdir -p .github/plugin
+mkdir -p plugins/dev-flow
+#mkdir agents
+#mkdir skills</code></pre>
             </div>
           </div>
           <div class="card-tip">
@@ -1360,16 +1557,16 @@ MIT</code></pre>
           <p>Finally create the plugin marketplace metadata file.</p>
           <div class="os-tabs" data-group="pluginmeta">
             <div class="btn-group mb-2" role="group" aria-label="Choose your OS">
-              <button type="button" class="btn btn-outline-secondary btn-sm active" data-os="macos">macOS</button>
-              <button type="button" class="btn btn-outline-secondary btn-sm" data-os="windows">Windows (PowerShell)</button>
+              <button type="button" class="btn btn-outline-secondary btn-sm active" data-os="windows">Windows (PowerShell)</button>
+              <button type="button" class="btn btn-outline-secondary btn-sm" data-os="macos">macOS</button>
             </div>
-            <div class="os-pane active" data-os="macos">
-<pre><code># Create this at the root of the repository
-mkdir -p .github/plugin</code></pre>
-            </div>
-            <div class="os-pane" data-os="windows">
+            <div class="os-pane active" data-os="windows">
 <pre><code># Create this at the root of the repository
 New-Item -ItemType Directory -Force -Path .github\plugin | Out-Null</code></pre>
+            </div>
+            <div class="os-pane" data-os="macos">
+<pre><code># Create this at the root of the repository
+mkdir -p .github/plugin</code></pre>
             </div>
           </div>
           <p>Create <code>.github/plugin/marketplace.json</code> with the following content:</p>
@@ -1432,6 +1629,7 @@ git push origin main</code></pre>
           <p>Customizations live at three levels:</p>
           <div class="diagram-card">
             <div class="mermaid">
+%%{init: {'theme': 'base', 'fontFamily': 'Segoe UI Semibold', 'fontSize': '18px', 'flowchart': {'curve': 'basis'}} }%%
 flowchart TD
   P["Personal<br/>~/.copilot/agents/, ~/.copilot/skills/<br/>Your customizations, your machine"]
   Pr["Project<br/>.github/agents/, .github/skills/<br/>Shared via git — everyone on the project gets these automatically"]
@@ -1484,21 +1682,10 @@ dependencies:
           <p>Now scaffold the <code>.apm/</code> source tree and copy the dev-flow content into it:</p>
           <div class="os-tabs" data-group="apmscaffold">
             <div class="btn-group mb-2" role="group" aria-label="Choose your OS">
-              <button type="button" class="btn btn-outline-secondary btn-sm active" data-os="macos">macOS</button>
-              <button type="button" class="btn btn-outline-secondary btn-sm" data-os="windows">Windows (PowerShell)</button>
+              <button type="button" class="btn btn-outline-secondary btn-sm active" data-os="windows">Windows (PowerShell)</button>
+              <button type="button" class="btn btn-outline-secondary btn-sm" data-os="macos">macOS</button>
             </div>
-            <div class="os-pane active" data-os="macos">
-<pre><code>mkdir -p .apm/agents .apm/skills
-
-# Copy agents
-cp plugins/dev-flow/agents/*.agent.md .apm/agents/
-
-# Copy skills (each with their full directory structure)
-cp -r plugins/dev-flow/skills/documentation-writer .apm/skills/
-cp -r plugins/dev-flow/skills/naming-checker .apm/skills/
-cp -r plugins/dev-flow/skills/task-breakdown .apm/skills/</code></pre>
-            </div>
-            <div class="os-pane" data-os="windows">
+            <div class="os-pane active" data-os="windows">
 <pre><code>New-Item -ItemType Directory -Force -Path .apm\agents, .apm\skills | Out-Null
 
 # Copy agents
@@ -1508,6 +1695,17 @@ Copy-Item plugins\dev-flow\agents\*.agent.md .apm\agents\
 Copy-Item -Recurse -Force plugins\dev-flow\skills\documentation-writer .apm\skills\
 Copy-Item -Recurse -Force plugins\dev-flow\skills\naming-checker      .apm\skills\
 Copy-Item -Recurse -Force plugins\dev-flow\skills\task-breakdown      .apm\skills\</code></pre>
+            </div>
+            <div class="os-pane" data-os="macos">
+<pre><code>mkdir -p .apm/agents .apm/skills
+
+# Copy agents
+cp plugins/dev-flow/agents/*.agent.md .apm/agents/
+
+# Copy skills (each with their full directory structure)
+cp -r plugins/dev-flow/skills/documentation-writer .apm/skills/
+cp -r plugins/dev-flow/skills/naming-checker .apm/skills/
+cp -r plugins/dev-flow/skills/task-breakdown .apm/skills/</code></pre>
             </div>
           </div>
           <div class="card-note">
@@ -1527,17 +1725,17 @@ scripts: {}</code></pre>
           <p>The <code>plugin-marketplace</code> repo is a <em>source and distribution</em> repo. You develop and maintain your agents and skills in <code>.apm/</code>, then commit both the source and the deployed content to the repo. This way, other teams can install from the APM manifest and also see the actual agent files in the repo for reference.</p>
           <div class="os-tabs" data-group="apmcommit">
             <div class="btn-group mb-2" role="group" aria-label="Choose your OS">
-              <button type="button" class="btn btn-outline-secondary btn-sm active" data-os="macos">macOS</button>
-              <button type="button" class="btn btn-outline-secondary btn-sm" data-os="windows">Windows (PowerShell)</button>
+              <button type="button" class="btn btn-outline-secondary btn-sm active" data-os="windows">Windows (PowerShell)</button>
+              <button type="button" class="btn btn-outline-secondary btn-sm" data-os="macos">macOS</button>
             </div>
-            <div class="os-pane active" data-os="macos">
-<pre><code>echo "apm_modules/" >> .gitignore    # like node_modules — never commit
+            <div class="os-pane active" data-os="windows">
+<pre><code>Add-Content -Path .gitignore -Value "apm_modules/"   # like node_modules — never commit
 git add .apm/ apm.yml .gitignore
 git commit -m "Add APM manifest and .apm source content"
 git push origin main</code></pre>
             </div>
-            <div class="os-pane" data-os="windows">
-<pre><code>Add-Content -Path .gitignore -Value "apm_modules/"   # like node_modules — never commit
+            <div class="os-pane" data-os="macos">
+<pre><code>echo "apm_modules/" >> .gitignore    # like node_modules — never commit
 git add .apm/ apm.yml .gitignore
 git commit -m "Add APM manifest and .apm source content"
 git push origin main</code></pre>
@@ -1695,7 +1893,7 @@ apm install   # re-deploys from the updated lockfile, then commit the changed .g
 <button class="btn btn-primary btn-scroll-top" id="scrollTop" aria-label="Scroll to top">↑</button>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
 <script>
   mermaid.initialize({ startOnLoad: true, theme: "neutral", securityLevel: "loose" });
 

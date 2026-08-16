@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GitHub Copilot Customization – Practice Exercises</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0a1628;--navy2:#102042;--navy3:#1e3a5f;
+  --sky:#0ea5e9;--sky-light:#e0f2fe;--sky-border:#bae6fd;
+  --paper:#f0f4f8;--card:#ffffff;--text:#1e293b;--muted:#64748b;--border:#e2e8f0;
+  --green:#059669;--green-light:#d1fae5;--green-border:#6ee7b7;
+  --amber:#d97706;--amber-light:#fffbeb;--amber-border:#fcd34d;
+  --red-light:#fff1f2;--red-border:#fecaca;
+  --shadow:0 4px 24px rgba(10,22,40,.10);--radius:12px;
+}
+html{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;scroll-behavior:smooth}
+body{background:var(--paper);color:var(--text);min-height:100vh}
+code{background:rgba(14,165,233,.1);color:#0369a1;border-radius:4px;padding:2px 6px;font-family:'Cascadia Code','Consolas',monospace;font-size:.88em}
+.page{max-width:1100px;margin:0 auto;padding:40px 32px 80px}
+
+.hero{padding:44px 48px 40px;background:linear-gradient(135deg,var(--navy2) 0%,var(--navy) 100%);border-radius:20px;margin-bottom:28px;color:#fff;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;width:420px;height:420px;border:1px solid rgba(14,165,233,.18);border-radius:50%;right:-80px;bottom:-210px;pointer-events:none}
+.hero-eye{font-size:11px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--sky);margin-bottom:10px}
+.hero h1{font-size:clamp(26px,3.8vw,40px);font-weight:900;letter-spacing:-1.5px;line-height:1.1;margin-bottom:10px}
+.hero-desc{font-size:15px;color:#94a3b8;line-height:1.6;max-width:640px;margin-bottom:18px}
+.hero-tags{display:flex;gap:8px;flex-wrap:wrap}
+.hero-tag{font-size:11px;font-weight:700;padding:5px 13px;border:1px solid rgba(255,255,255,.18);border-radius:100px;color:rgba(255,255,255,.8);background:rgba(255,255,255,.07)}
+.hero-tag.hl{background:rgba(14,165,233,.18);border-color:rgba(14,165,233,.5);color:#7dd3fc}
+
+.repo-card{background:linear-gradient(135deg,#0f2744 0%,#1a3a5c 100%);border:1px solid rgba(14,165,233,.25);border-radius:14px;padding:22px 28px;margin-bottom:22px;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:18px}
+.rc-label{font-size:10px;font-weight:800;letter-spacing:.9px;text-transform:uppercase;color:var(--sky);margin-bottom:5px}
+.rc-value{font-size:13px;color:#e2e8f0;line-height:1.6}
+.rc-value code{background:rgba(14,165,233,.15);color:#7dd3fc;font-size:11px}
+
+.howto{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px 24px;margin-bottom:28px;display:flex;gap:18px;flex-wrap:wrap}
+.howto-step{display:flex;align-items:flex-start;gap:10px;flex:1;min-width:160px}
+.hs-num{width:24px;height:24px;background:var(--navy);color:#fff;border-radius:50%;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.hs-text{font-size:12.5px;color:var(--text);line-height:1.5}
+.hs-text strong{color:var(--navy);display:block;margin-bottom:2px}
+
+.topic-nav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:40px}
+.t-pill{font-size:12px;font-weight:700;padding:8px 16px;border-radius:100px;border:2px solid var(--border);background:var(--card);color:var(--muted);cursor:pointer;transition:all .18s;white-space:nowrap}
+.t-pill:hover{border-color:var(--topic,var(--sky));color:var(--topic,var(--sky));background:var(--topic-bg,var(--sky-light))}
+
+.topic-section{margin-bottom:52px}
+.t-header{display:flex;align-items:flex-start;gap:14px;margin-bottom:18px;padding-bottom:18px;border-bottom:2px solid var(--border)}
+.t-icon{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;border:1px solid var(--topic-border,var(--border));background:var(--topic-bg,var(--paper));color:var(--topic,var(--sky))}
+.t-header-text h2{font-size:22px;font-weight:900;letter-spacing:-.4px;color:var(--navy);margin-bottom:3px}
+.t-header-text p{font-size:13px;color:var(--muted);line-height:1.5}
+.t-meta{margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0}
+.t-count{font-size:11px;font-weight:700;color:var(--muted)}
+.t-pick-btn{font-size:11px;font-weight:700;padding:6px 12px;border-radius:8px;border:1.5px solid var(--topic-border,var(--border));background:var(--topic-bg,var(--paper));color:var(--topic,var(--muted));cursor:pointer;transition:all .18s;white-space:nowrap}
+.t-pick-btn:hover{filter:brightness(.94)}
+.t-clear-btn{font-size:10px;color:var(--muted);background:none;border:none;cursor:pointer;text-decoration:underline;display:none}
+.t-clear-btn.vis{display:block}
+
+[data-topic="instructions"]{--topic:#3b82f6;--topic-bg:#eff6ff;--topic-border:#bfdbfe}
+[data-topic="prompts"]{--topic:#8b5cf6;--topic-bg:#f5f3ff;--topic-border:#ddd6fe}
+[data-topic="agents"]{--topic:#0ea5e9;--topic-bg:#f0f9ff;--topic-border:#bae6fd}
+[data-topic="skills"]{--topic:#10b981;--topic-bg:#f0fdf4;--topic-border:#bbf7d0}
+[data-topic="mcp"]{--topic:#f97316;--topic-bg:#fff7ed;--topic-border:#fed7aa}
+[data-topic="hooks"]{--topic:#ef4444;--topic-bg:#fff1f2;--topic-border:#fecaca}
+
+.ex-card{background:var(--card);border:1.5px solid var(--border);border-radius:14px;margin-bottom:12px;overflow:hidden;transition:opacity .25s,transform .2s}
+.ex-card.dimmed{opacity:.35;transform:scale(.99)}
+.ex-card.picked{border-color:var(--amber);box-shadow:0 0 0 3px rgba(217,119,6,.15)}
+.ex-header{display:flex;align-items:center;gap:12px;padding:16px 20px;cursor:pointer;user-select:none}
+.ex-header:hover{background:#fafafa}
+.ex-card.open .ex-header{border-bottom:1.5px solid var(--border)}
+.ex-num{font-size:11px;font-weight:800;padding:3px 10px;border-radius:6px;border:1px solid var(--topic-border,var(--border));background:var(--topic-bg,var(--paper));color:var(--topic,var(--muted));flex-shrink:0}
+.ex-title{font-size:14.5px;font-weight:700;flex:1;color:var(--navy)}
+.ex-dur{font-size:11px;color:var(--muted);flex-shrink:0}
+.chev{font-size:12px;color:var(--muted);transition:transform .2s;flex-shrink:0}
+.ex-card.open .chev{transform:rotate(180deg)}
+.ex-body{display:none;padding:22px}
+.ex-card.open .ex-body{display:block}
+
+.section-lbl{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.9px;color:var(--muted);margin-bottom:8px;display:block}
+.section-lbl.blue{color:#2563eb}
+.section-lbl.green{color:var(--green)}
+.goal-box{background:var(--sky-light);border:1px solid var(--sky-border);border-radius:10px;padding:12px 16px;margin-bottom:18px}
+.goal-text{font-size:14px;color:#0c4a6e;line-height:1.6;font-weight:500}
+.ctx-box{background:#f8fafc;border-left:3px solid var(--muted);padding:10px 14px;border-radius:0 8px 8px 0;margin-bottom:18px;font-size:12.5px;color:var(--muted);line-height:1.55}
+.steps{margin-bottom:18px}
+.step{display:flex;gap:12px;margin-bottom:10px}
+.step-n{width:22px;height:22px;border-radius:50%;background:var(--topic-bg,var(--paper));border:1.5px solid var(--topic-border,var(--border));color:var(--topic,var(--muted));font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.step-text{font-size:13.5px;color:var(--text);line-height:1.6}
+.tip{background:var(--amber-light);border-left:4px solid var(--amber);border-radius:0 8px 8px 0;padding:10px 14px;margin:10px 0}
+.tip-lbl{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--amber);margin-bottom:3px}
+.tip-text{font-size:12.5px;color:#78350f;line-height:1.5}
+.warn{background:var(--red-light);border-left:4px solid #ef4444;border-radius:0 8px 8px 0;padding:10px 14px;margin:10px 0}
+.warn-lbl{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:#ef4444;margin-bottom:3px}
+.warn-text{font-size:12.5px;color:#991b1b;line-height:1.5}
+.checklist{list-style:none;margin:0 0 16px}
+.checklist li{display:flex;align-items:flex-start;gap:10px;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px;color:var(--text);line-height:1.5}
+.checklist li:last-child{border:none}
+.checklist input[type=checkbox]{width:15px;height:15px;accent-color:var(--green);flex-shrink:0;margin-top:2px;cursor:pointer}
+.checklist label{cursor:pointer}
+.present-box{background:#f8fafc;border:1px solid var(--border);border-radius:10px;padding:14px 18px;margin-top:8px}
+.present-lbl{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.9px;color:var(--sky);margin-bottom:6px}
+.present-text{font-size:13px;color:var(--muted);line-height:1.55;font-style:italic}
+#scrollTopBtn{position:fixed;bottom:22px;right:22px;width:38px;height:38px;border-radius:50%;background:var(--navy);color:#fff;border:none;cursor:pointer;font-size:15px;box-shadow:0 4px 14px rgba(10,22,40,.25);opacity:0;visibility:hidden;transition:all .25s;z-index:99}
+#scrollTopBtn.vis{opacity:1;visibility:visible}
+#scrollTopBtn:hover{background:var(--sky);transform:translateY(-2px)}
+.page-footer{text-align:center;padding:36px 20px;border-top:1px solid var(--border);color:var(--muted);font-size:12px;margin-top:48px}
+.prog-bar{position:fixed;top:0;left:0;height:3px;background:var(--sky);width:0;z-index:1000;transition:width .1s}
+@media(max-width:600px){.page{padding:20px 14px 60px}.hero{padding:28px 22px}.repo-card{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="prog-bar" id="progBar"></div>
+<button id="scrollTopBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Back to top">&#8593;</button>
+<div class="page">
+
+<div class="hero">
+  <div class="hero-eye">Module 02 &middot; GitHub Copilot Customization &middot; Practice Lab</div>
+  <h1>Practice Exercises<br>Global Team Training</h1>
+  <p class="hero-desc">32 hands-on exercises for GitHub Copilot Customization &mdash; Instructions, Prompts, Agents, Skills, MCP Servers, and Hooks. All exercises use the MetLife Investments Management platform as context.</p>
+  <div class="hero-tags">
+    <span class="hero-tag hl">&#x1F9EA; Practice Lab</span>
+    <span class="hero-tag">&#x1F4C1; metlife-investments-platform</span>
+    <span class="hero-tag">32 Exercises</span>
+    <span class="hero-tag">6 Topics</span>
+  </div>
+</div>
+
+<div class="repo-card">
+  <div><div class="rc-label">Repository</div><div class="rc-value"><code>metlife-investments-platform</code></div></div>
+  <div><div class="rc-label">Stack</div><div class="rc-value">.NET 10 &middot; C# &middot; Blazor Server &middot; SQL Server</div></div>
+  <div><div class="rc-label">Azure / CI</div><div class="rc-value">App Services &middot; Functions &middot; Service Bus &middot; Azure DevOps</div></div>
+  <div><div class="rc-label">Tests</div><div class="rc-value">xUnit &middot; Moq &middot; FluentAssertions</div></div>
+  <div><div class="rc-label">Key Source Paths</div><div class="rc-value"><code>src/Investments.Services/</code> &middot; <code>src/Investments.Api/Controllers/</code> &middot; <code>src/Investments.Web/</code> &middot; <code>src/Investments.DataAccess/</code> &middot; <code>db/Migrations/</code></div></div>
+  <div><div class="rc-label">Domain</div><div class="rc-value">Investment Portfolio Mgmt &middot; Fund Performance &middot; Trade Processing</div></div>
+  <div><div class="rc-label">Compliance</div><div class="rc-value">PII / GDPR &middot; SOX &middot; FINRA &middot; OWASP Top 10</div></div>
+  <div><div class="rc-label">Special Projects</div><div class="rc-value">Azure Databricks (analytics) &middot; Java (legacy integration)</div></div>
+</div>
+
+<div class="howto">
+  <div class="howto-step"><div class="hs-num">1</div><div class="hs-text"><strong>Pick a topic</strong>Use the navigation pills to choose your exercise area.</div></div>
+  <div class="howto-step"><div class="hs-num">2</div><div class="hs-text"><strong>Open an exercise</strong>Click the card header to expand. Read Goal and Context first.</div></div>
+  <div class="howto-step"><div class="hs-num">3</div><div class="hs-text"><strong>Work the steps</strong>Implement in a real or practice copy of the investments repo.</div></div>
+  <div class="howto-step"><div class="hs-num">4</div><div class="hs-text"><strong>Check &amp; present</strong>Tick the validation checklist, then answer the discussion question.</div></div>
+</div>
+
+<div class="topic-nav">
+  <button class="t-pill" style="--topic:#3b82f6;--topic-bg:#eff6ff" onclick="scrollTo('topic-instructions')">&#x1F4CB; Instructions</button>
+  <button class="t-pill" style="--topic:#8b5cf6;--topic-bg:#f5f3ff" onclick="scrollTo('topic-prompts')">&#x1F4AC; Prompts</button>
+  <button class="t-pill" style="--topic:#0ea5e9;--topic-bg:#f0f9ff" onclick="scrollTo('topic-agents')">&#x1F916; Agents</button>
+  <button class="t-pill" style="--topic:#10b981;--topic-bg:#f0fdf4" onclick="scrollTo('topic-skills')">&#x1F9E9; Skills</button>
+  <button class="t-pill" style="--topic:#f97316;--topic-bg:#fff7ed" onclick="scrollTo('topic-mcp')">&#x1F50C; MCP Servers</button>
+  <button class="t-pill" style="--topic:#ef4444;--topic-bg:#fff1f2" onclick="scrollTo('topic-hooks')">&#x1FA9D; Hooks</button>
+</div>
+
+<!-- INSTRUCTIONS -->
+<div class="topic-section" id="topic-instructions" data-topic="instructions">
+  <div class="t-header">
+    <div class="t-icon">&#x1F4CB;</div>
+    <div class="t-header-text">
+      <h2>Instructions</h2>
+      <p>Author <code>.github/copilot-instructions.md</code> and scoped <code>*.instructions.md</code> files to shape Copilot's behavior across your .NET investment platform.</p>
+    </div>
+    <div class="t-meta">
+      <span class="t-count">5 exercises</span>
+      <button class="t-pick-btn" onclick="pick('instructions')">&#x1F3B2; Pick 2 for session</button>
+      <button class="t-clear-btn" id="clr-instructions" onclick="clearPick('instructions')">clear selection</button>
+    </div>
+  </div>
+
+  <div class="ex-card" id="ex-i01">
+    <div class="ex-header" onclick="tog(this)"><span class="ex-num">I-01</span><span class="ex-title">Bootstrap Repo-Wide Copilot Instructions</span><span class="ex-dur">20 min</span><span class="chev">&#9660;</span></div>
+    <div class="ex-body">
+      <div class="goal-box"><div class="goal-text">Create <code>.github/copilot-instructions.md</code> for <code>metlife-investments-platform</code> covering .NET 10 stack, architecture boundaries, C# naming conventions, verification commands, and non-negotiable financial security rules.</div></div>
+      <div class="ctx-box">Without it, Copilot generates generic C# that ignores the layered architecture, EF Core patterns, and financial compliance requirements. This is the single highest-impact customization file.</div>
+      <span class="section-lbl blue">Steps</span>
+      <div class="steps">
+        <div class="step"><div class="step-n">1</div><div class="step-text">Create <code>.github/copilot-instructions.md</code> at the repo root. Add <strong>Tech Stack</strong>: .NET 10, C# 13, ASP.NET Core Web API, Blazor Server, Entity Framework Core 9, SQL Server, xUnit + Moq + FluentAssertions, Azure DevOps CI.</div></div>
+        <div class="step"><div class="step-n">2</div><div class="step-text">Add <strong>Architecture Boundaries</strong>: business logic only in <code>src/Investments.Services/</code>; HTTP concerns only in <code>src/Investments.Api/Controllers/</code>; data access only via repository interfaces in <code>src/Investments.DataAccess/</code>; Blazor components in <code>src/Investments.Web/</code>.</div></div>
+        <div class="step"><div class="step-n">3</div><div class="step-text">Add <strong>Naming Conventions</strong>: PascalCase files and classes (<code>PortfolioService.cs</code>), interface prefix <code>I</code> (<code>IPortfolioService</code>), private fields <code>_camelCase</code>, async methods suffix <code>Async</code>, test classes suffix <code>Tests</code>.</div></div>
+        <div class="step"><div class="step-n">4</div><div class="step-text">Add <strong>Verification Steps</strong>: run <code>dotnet test</code>, <code>dotnet build -warnaserror</code> (zero warnings), <code>dotnet format --verify-no-changes</code>. Copilot must confirm these pass before declaring complete.</div></div>
+        <div class="step"><div class="step-n">5</div><div class="step-text">Add <strong>Security &mdash; Non-Negotiable</strong>: never log PII (account numbers, SSN, tax IDs, portfolio values tied to an individual); parameterized SQL/EF Core only &mdash; never string-concatenated queries; <code>[Authorize]</code> on protected controllers; validate inputs with FluentValidation.</div></div>
+        <div class="step"><div class="step-n">6</div><div class="step-text">Add <strong>Domain Context</strong>: MetLife Investments Management; domains include Portfolio, Fund, Trade, Asset, Holdings; financial calculations use <code>decimal</code> only &mdash; never <code>double</code> or <code>float</code>; soft-delete only on Portfolio and Trade records (<code>DeletedAt</code> column).</div></div>
+      </div>
+      <div class="tip"><div class="tip-lbl">Tip</div><div class="tip-text">Keep each section under 10 bullet points. Add the decimal rule prominently &mdash; floating-point financial bugs are the most common .NET gotcha in investment applications.</div></div>
+      <span class="section-lbl green">Validation Checklist</span>
+      <ul class="checklist">
+        <li><input type="checkbox" id="i01c1" onchange="chk(this)"><label for="i01c1">Tech stack section includes .NET 10, EF Core 9, and SQL Server</label></li>
+        <li><input type="checkbox" id="i01c2" onchange="chk(this)"><label for="i01c2">Architecture boundaries map to actual folder paths</label></li>
+        <li><input type="checkbox" id="i01c3" onchange="chk(this)"><label for="i01c3">Verification uses <code>dotnet test</code> &mdash; not npm test</label></li>
+        <li><input type="checkbox" id="i01c4" onchange="chk(this)"><label for="i01c4">PII rule lists financial fields (account numbers, tax IDs)</label></li>
+        <li><input type="checkbox" id="i01c5" onchange="chk(this)"><label for="i01c5">Decimal-only rule for financial calculations is present</label></li>
+        <li><input type="checkbox" id="i01c6" onchange="chk(this)"><label for="i01c6">Ask Copilot to add a service method &mdash; it follows naming and architecture rules without being prompted</label></li>
+      </ul>
+      <div class="present-box"><div class="present-lbl">Present This</div><div class="present-text">Show one Copilot suggestion without the instructions file, then repeat with the file. Did Copilot use <code>decimal</code> for financial values and inject the repository interface correctly?</div></div>
+    </div>
+  </div>
+
+  <div class="ex-card" id="ex-i02">
+    <div class="ex-header" onclick="tog(this)"><span class="ex-num">I-02</span><span class="ex-title">Scoped Instructions for Blazor Components</span><span class="ex-dur">20 min</span><span class="chev">&#9660;</span></div>
+    <div class="ex-body">
+      <div class="goal-box"><div class="goal-text">Create <code>.github/instructions/blazor.instructions.md</code> scoped to <code>src/Investments.Web/**/*.razor</code> covering Blazor lifecycle methods, DI patterns, state management, and API call conventions.</div></div>
+      <div class="ctx-box">Blazor components have unique patterns &mdash; <code>OnInitializedAsync</code>, <code>@inject</code> directives, cascading parameters &mdash; distinct from both React and traditional .NET. A scoped file prevents Copilot from mixing frontend frameworks.</div>
+      <span class="section-lbl blue">Steps</span>
+      <div class="steps">
+        <div class="step"><div class="step-n">1</div><div class="step-text">Create <code>.github/instructions/blazor.instructions.md</code> with frontmatter: <code>applyTo: "src/Investments.Web/**/*.razor"</code>.</div></div>
+        <div class="step"><div class="step-n">2</div><div class="step-text">Add component structure rules: use <code>@code { }</code> block; inject via <code>@inject IPortfolioService PortfolioService</code>; prefer <code>OnInitializedAsync</code> for async data loading; never call service methods in constructor.</div></div>
+        <div class="step"><div class="step-n">3</div><div class="step-text">Add state management rules: page-level state as component properties; shared state via scoped DI services in <code>src/Investments.Web/State/</code>.</div></div>
+        <div class="step"><div class="step-n">4</div><div class="step-text">Add API rules: all HTTP calls via typed <code>HttpClient</code> wrappers in <code>src/Investments.Web/Services/</code>; always handle loading, error, and empty states; wrap calls in try/catch.</div></div>
+        <div class="step"><div class="step-n">5</div><div class="step-text">Identify Blazor rules currently in the global file and move them to this scoped file. Remove duplicates from <code>copilot-instructions.md</code>.</div></div>
+      </div>
+      <div class="warn"><div class="warn-lbl">Watch out</div><div class="warn-text">The glob <code>src/Investments.Web/**/*.razor</code> matches only <code>.razor</code> files. If you have <code>.razor.cs</code> code-behind files, add a second entry: <code>src/Investments.Web/**/*.razor.cs</code>.</div></div>
+      <span class="section-lbl green">Validation Checklist</span>
+      <ul class="checklist">
+        <li><input type="checkbox" id="i02c1" onchange="chk(this)"><label for="i02c1"><code>applyTo</code> frontmatter scoped to <code>.razor</code> files</label></li>
+        <li><input type="checkbox" id="i02c2" onchange="chk(this)"><label for="i02c2">Instructions reference Blazor-specific patterns (<code>@inject</code>, <code>OnInitializedAsync</code>)</label></li>
+        <li><input type="checkbox" id="i02c3" onchange="chk(this)"><label for="i02c3">No duplication with global <code>copilot-instructions.md</code></label></li>
+        <li><input type="checkbox" id="i02c4" onchange="chk(this)"><label for="i02c4">Ask Copilot to add a loading spinner &mdash; it uses <code>OnInitializedAsync</code> and a bool <code>isLoading</code> property</label></li>
+      </ul>
+      <div class="present-box"><div class="present-lbl">Present This</div><div class="present-text">Ask Copilot to create a Blazor component loading portfolio data. How did the scoped file prevent constructor injection or static API call patterns?</div></div>
+    </div>
+  </div>
+
+  <div class="ex-card" id="ex-i03">
+    <div class="ex-header" onclick="tog(this)"><span class="ex-num">I-03</span><span class="ex-title">Encode API Security Guardrails for Controllers</span><span class="ex-dur">20 min</span><span class="chev">&#9660;</span></div>
+    <div class="ex-body">
+      <div class="goal-box"><div class="goal-text">Create <code>.github/instructions/api.instructions.md</code> scoped to <code>src/Investments.Api/**</code> encoding ASP.NET Core security rules: FluentValidation, <code>[Authorize]</code>, repository injection, ProblemDetails responses, and OWASP controls.</div></div>
+      <div class="ctx-box">Without explicit instructions, Copilot often omits <code>[Authorize]</code>, uses inline LINQ instead of repositories, or returns raw exception messages in error responses. Investment data APIs are high-value targets.</div>
+      <span class="section-lbl blue">Steps</span>
+      <div class="steps">
+        <div class="step"><div class="step-n">1</div><div class="step-text">Create <code>.github/instructions/api.instructions.md</code> with <code>applyTo: "src/Investments.Api/**"</code>.</div></div>
+        <div class="step"><div class="step-n">2</div><div class="step-text">Add input validation rule: inject and call a FluentValidation validator for every request DTO; reject with HTTP 400 (RFC 7807 <code>ProblemDetails</code>) if invalid &mdash; never process an unvalidated body.</div></div>
+        <div class="step"><div class="step-n">3</div><div class="step-text">Add auth rule: every controller touching investment or client data must have <code>[Authorize]</code>; use <code>[Authorize(Policy = "PortfolioManager")]</code> for write operations; return 401 for unauthenticated requests.</div></div>
+        <div class="step"><div class="step-n">4</div><div class="step-text">Add data access rule: inject repository interfaces from <code>src/Investments.DataAccess/</code> &mdash; never instantiate <code>DbContext</code> directly in a controller; no inline LINQ in action methods.</div></div>
+        <div class="step"><div class="step-n">5</div><div class="step-text">Add error handling rule: use global exception middleware; return <code>ProblemDetails</code> with a <code>correlationId</code> &mdash; never include stack traces or SQL messages in responses.</div></div>
+      </div>
+      <div class="tip"><div class="tip-lbl">Tip</div><div class="tip-text">Reference your actual policy names (<code>PortfolioManager</code>, <code>ReadOnly</code>, <code>TradeExecutor</code>). Copilot generates the correct attribute if policy names match what's registered in <code>Program.cs</code>.</div></div>
+      <span class="section-lbl green">Validation Checklist</span>
+      <ul class="checklist">
+        <li><input type="checkbox" id="i03c1" onchange="chk(this)"><label for="i03c1">FluentValidation called before any business logic in a new action</label></li>
+        <li><input type="checkbox" id="i03c2" onchange="chk(this)"><label for="i03c2"><code>[Authorize]</code> automatically added to new controllers</label></li>
+        <li><input type="checkbox" id="i03c3" onchange="chk(this)"><label for="i03c3">Error responses use <code>ProblemDetails</code> &mdash; no raw exception messages</label></li>
+        <li><input type="checkbox" id="i03c4" onchange="chk(this)"><label for="i03c4">No <code>DbContext</code> injected directly into a generated controller</label></li>
+        <li><input type="checkbox" id="i03c5" onchange="chk(this)"><label for="i03c5">Test: ask Copilot to add a "get fund by ID" endpoint &mdash; audit against all 4 rules</label></li>
+      </ul>
+      <div class="present-box"><div class="present-lbl">Present This</div><div class="present-text">Generate a "get fund by ID" action with and without the instructions file. How many security attributes were included automatically &mdash; and how many were missing without the file?</div></div>
+    </div>
+  </div>
+
+  <div class="ex-card" id="ex-i04">
+    <div class="ex-header" onclick="tog(this)"><span class="ex-num">I-04</span><span class="ex-title">Audit and Rationalize Conflicting Instructions</span><span class="ex-dur">15 min</span><span class="chev">&#9660;</span></div>
+    <div class="ex-body">
+      <div class="goal-box"><div class="goal-text">Given the three instruction files you just created, identify conflicts and overlaps, produce a conflict log, assign clear rule ownership, and eliminate redundancy.</div></div>
+      <div class="ctx-box">Rules that exist in both the global file and a scoped file create ambiguous output. A rule about error response shape in two files will cause Copilot to alternate between them.</div>
+      <span class="section-lbl blue">Steps</span>
+      <div class="steps">
+        <div class="step"><div class="step-n">1</div><div class="step-text">List all instruction files in <code>.github/</code>: global <code>copilot-instructions.md</code>, <code>blazor.instructions.md</code>, <code>api.instructions.md</code>. Create a conflict log.</div></div>
+        <div class="step"><div class="step-n">2</div><div class="step-text">Scan for contradictions: global says "return JSON with <code>message</code> field on errors" but <code>api.instructions.md</code> says "use <code>ProblemDetails</code>". Log each contradiction.</div></div>
+        <div class="step"><div class="step-n">3</div><div class="step-text">Scan for duplicates: identical or near-identical rules in multiple files. Decide which file owns each rule.</div></div>
+        <div class="step"><div class="step-n">4</div><div class="step-text">Apply the ownership decision: narrowest scope wins. Move the rule to the most specific file, delete from broader files.</div></div>
+        <div class="step"><div class="step-n">5</div><div class="step-text">Re-test: ask Copilot to generate a Blazor component and an API controller. Confirm consistent, non-contradictory output.</div></div>
+      </div>
+      <div class="warn"><div class="warn-lbl">Common trap</div><div class="warn-text">Keeping "important" rules in both files "just to be safe" creates ambiguity, not safety. Pick one owner per rule &mdash; the narrower the scope, the higher the priority.</div></div>
+      <span class="section-lbl green">Validation Checklist</span>
+      <ul class="checklist">
+        <li><input type="checkbox" id="i04c1" onchange="chk(this)"><label for="i04c1">Conflict log has at least 2 entries with resolution decisions</label></li>
+        <li><input type="checkbox" id="i04c2" onchange="chk(this)"><label for="i04c2">Each rule appears in exactly one file after cleanup</label></li>
+        <li><input type="checkbox" id="i04c3" onchange="chk(this)"><label for="i04c3">Blazor-specific rules are only in <code>blazor.instructions.md</code></label></li>
+        <li><input type="checkbox" id="i04c4" onchange="chk(this)"><label for="i04c4">API security rules are only in <code>api.instructions.md</code></label></li>
+      </ul>
+      <div class="present-box"><div class="present-lbl">Present This</div><div class="present-text">Walk through one contradiction you found and explain why you chose the narrower file as owner. How would leaving the conflict harm code generation quality?</div></div>
+    </div>
+  </div>
+
+  <div class="ex-card" id="ex-i05">
+    <div class="ex-header" onclick="tog(this)"><span class="ex-num">I-05</span><span class="ex-title">Bootstrap Instructions for the portfolio-analytics Service</span><span class="ex-dur">25 min</span><span class="chev">&#9660;</span></div>
+    <div class="ex-body">
+      <div class="goal-box"><div class="goal-text">Use <code>metlife-investments-platform</code>'s instructions as a template to bootstrap a separate <code>portfolio-analytics</code> repository (Azure Databricks / PySpark). Categorize each rule as Shared Platform, Domain-Specific, or Governance. Identify candidates for an org-level file.</div></div>
+      <div class="ctx-box">The analytics service uses Python/PySpark, not .NET. Rules about C# naming don't apply &mdash; but PII, SOX, and security rules do. This exercise teaches systematic re-use without copy-paste errors.</div>
+      <span class="section-lbl blue">Steps</span>
+      <div class="steps">
+        <div class="step"><div class="step-n">1</div><div class="step-text">Tag each rule in <code>copilot-instructions.md</code> as: <strong>Shared</strong> (any MetLife service), <strong>Domain</strong> (investments-platform only), or <strong>Governance</strong> (org-wide compliance).</div></div>
+        <div class="step"><div class="step-n">2</div><div class="step-text">For <code>portfolio-analytics</code>: create a new <code>copilot-instructions.md</code> with only Shared and Governance rules. Update paths and stack to Python/PySpark/Databricks.</div></div>
+        <div class="step"><div class="step-n">3</div><div class="step-text">Add analytics-specific rules: PySpark transformations must be idempotent; output datasets must include a <code>processing_timestamp</code> column; never hard-code storage account keys &mdash; use Azure Key Vault.</div></div>
+        <div class="step"><div class="step-n">4</div><div class="step-text">Identify 3&ndash;5 Governance rules for an org-level <code>.github</code> repo: PII prohibition, SOX change control, security contact reference.</div></div>
+        <div class="step"><div class="step-n">5</div><div class="step-text">Draft the org-level instructions file. Discuss: what is the review process for adding/changing an org-level rule?</div></div>
+      </div>
+      <div class="tip"><div class="tip-lbl">Tip</div><div class="tip-text">Governance rules should live in the org-level file and be referenced (not duplicated) by service-level files. A single source of truth means a compliance update propagates everywhere.</div></div>
+      <span class="section-lbl green">Validation Checklist</span>
+      <ul class="checklist">
+        <li><input type="checkbox" id="i05c1" onchange="chk(this)"><label for="i05c1">Every rule tagged Shared / Domain / Governance</label></li>
+        <li><input type="checkbox" id="i05c2" onchange="chk(this)"><label for="i05c2">Domain-specific rules (Blazor, EF Core) NOT copied to analytics</label></li>
+        <li><input type="checkbox" id="i05c3" onchange="chk(this)"><label for="i05c3">Analytics rules reference Databricks/PySpark correctly</label></li>
+        <li><input type="checkbox" id="i05c4" onchange="chk(this)"><label for="i05c4">At least 3 org-level candidate rules identified and justified</label></li>
+      </ul>
+      <div class="present-box"><div class="present-lbl">Present This</div><div class="present-text">Which rules were hardest to categorize? Describe one "domain-specific today but should be governance tomorrow" rule and what would need to happen to promote it.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- PROMPTS -->
+<div class="topic-section" id="topic-prompts" data-topic="prompts">
+  <div class="t-header">
+    <div class="t-icon">&#x1F4AC;</div>
+    <div class="t-header-text">
+      <h2>Prompts</h2>
+      <p>Build reusable <code>.prompt.md</code> files that encode domain knowledge and produce consistent, high-quality .NET output every time they're invoked.</p>
+    </div>
+    <div class="t-meta">
+      <span class="t-count">6 exercises</span>
+      <button class="t-pick-btn" onclick="pick('prompts')">&#x1F3B2; Pick 2 for session</button>
+      <button class="t-clear-btn" id="clr-prompts" onclick="clearPick('prompts')">clear selection</button>
+    </div>
+  </div>
+
+  <div class="ex-card" id="ex-p01">
+    <div class="ex-header" onclick="tog(this)"><span class="ex-num">P-01</span><span class="ex-title">Pull Request Review Prompt for .NET Code</span><span class="ex-dur">20 min</span><span class="chev">&#9660;</span></div>
+    <div class="ex-body">
+      <div class="goal-box"><div class="goal-text">Author <code>.github/prompts/pr-review.prompt.md</code> that reviews a C#/.NET PR diff against architecture, security, tests, EF Core performance, and domain invariants &mdash; emitting a structured verdict.</div></div>
+      <div class="ctx-box">Ad-hoc review prompts produce inconsistent results. A reusable prompt ensures every PR is reviewed against the same bar: architecture boundaries, FluentValidation, EF Core patterns, and <code>decimal</code>-only financial math.</div>
+      <span class="section-lbl blue">Steps</span>
+      <div class="steps">
+        <div class="step"><div class="step-n">1</div><div class="step-text">Create <code>.github/prompts/pr-review.prompt.md</code> with <code>mode: ask</code>. Write a role preamble: "You are a senior .NET engineer on the MetLife Investments platform team. Review the attached diff against <code>.github/copilot-instructions.md</code>."</div></div>
+        <div class="step"><div class="step-n">2</div><div class="step-text">Add <strong>Architecture</strong>: does business logic stay in <code>Investments.Services</code>? Are repositories injected (not <code>DbContext</code>)? No LINQ in controllers?</div></div>
+        <div class="step"><div class="step-n">3</div><div class="step-text">Add <strong>Security</strong>: <code>[Authorize]</code> on protected actions? FluentValidation before processing? No PII in logs? No raw SQL string concatenation?</div></div>
+        <div class="step"><div class="step-n">4</div><div class="step-text">Add <strong>Tests</strong>: new/changed behaviour covered? Error paths tested? Mock setup uses <code>Moq</code> correctly?</div></div>
+        <div class="step"><div class="step-n">5</div><div class="step-text">Add <strong>Domain Rules</strong>: <code>decimal</code> for all financial values? Soft-delete used for Portfolio/Trade records? Trade status changes emit an audit event?</div></div>
+        <div class="step"><div class="step-n">6</div><div class="step-text">Define output format: Summary, Findings table (# | Area | Severity | File:Line | Finding | Fix), Verdict: APPROVED / NEEDS CHANGES / BLOCKED.</div></div>
+      </div>
+      <span class="section-lbl green">Validation Checklist</span>
+      <ul class="checklist">
+        <li><input type="checkbox" id="p01c1" onchange="chk(this)"><label for="p01c1">Prompt includes 4+ distinct review areas</label></li>
+        <li><input type="checkbox" id="p01c2" onchange="chk(this)"><label for="p01c2">Domain rules reference <code>decimal</code> type and soft-delete</label></li>
+        <li><input type="checkbox" id="p01c3" onchange="chk(this)"><label for="p01c3">Output has a structured table and clear verdict</label></li>
+        <li><input type="checkbox" id="p01c4" onchange="chk(this)"><label for="p01c4">Run on a real diff &mdash; findings are specific (file:line), not vague</label></li>
+      </ul>
+      <div class="present-box"><div class="present-lbl">Present This</div><div class="present-text">Run the prompt on a diff that omits <code>[Authorize]</code> and uses <code>double</code> for a monetary value. Did the prompt catch both with specific file references?</div></div>
+    </div>
+  </div>
+
+  <div class="ex-card" id="ex-p02">
+    <div class="ex-header" onclick="tog(this)"><span class="ex-num">P-02</span><span class="ex-title">xUnit + Moq Test Generation Prompt</span><span class="ex-dur">20 min</span><span class="chev">&#9660;</span></div>
+    <div class="ex-body">
+      <div class="goal-box"><div class="goal-text">Author <code>.github/prompts/generate-tests.prompt.md</code> that generates comprehensive xUnit tests for a C# service class using Moq for mocks, FluentAssertions for assertions, and AAA structure with happy, boundary, and error paths.</div></div>
+      <div class="ctx-box">Without explicit C# test conventions, Copilot mixes MSTest, NUnit, and xUnit APIs, forgets to reset mocks between tests, or misses async/await patterns on <code>Task</code>-returning methods.</div>
+      <span class="section-lbl blue">Steps</span>
+      <div class="steps">
+        <div class="step"><div class="step-n">1</div><div class="step-text">Create <code>.github/prompts/generate-tests.prompt.md</code> with <code>mode: agent</code>. Specify: xUnit, Moq, FluentAssertions &mdash; no MSTest, no NUnit.</div></div>
+        <div class="step"><div class="step-n">2</div><div class="step-text">Define setup conventions: constructor injection for the SUT; <code>Mock&lt;IDependency&gt;</code> as private fields; no sharing mock state between tests.</div></div>
+        <div class="step"><div class="step-n">3</div><div class="step-text">Specify AAA with comment labels: <code>// Arrange</code> / <code>// Act</code> / <code>// Assert</code>. Test names: <code>MethodName_Condition_ExpectedOutcome</code>.</div></div>
+        <div class="step"><div class="step-n">4</div><div class="step-text">Define coverage: per public method &mdash; &ge;1 happy path, &ge;1 error path (<code>_mock.Setup(...).ThrowsAsync(new ...)</code>), &ge;1 boundary test for nullable params.</div></div>
+        <div class="step"><div class="step-n">5</div><div class="step-text">Add post-generation step: run <code>dotnet test --filter FullyQualifiedName~[ClassName]Tests</code> and include results; flag methods that are hard to test.</div></div>
+      </div>
+      <div class="tip"><div class="tip-lbl">Tip</div><div class="tip-text">Add: "For async methods, use <code>await Assert.ThrowsAsync&lt;T&gt;()</code> &mdash; never <code>.Result</code> or <code>.Wait()</code>." This prevents the most common xUnit deadlock in .NET test code.</div></div>
+      <span class="section-lbl green">Validation Checklist</span>
+      <ul class="checklist">
+        <li><input type="checkbox" id="p02c1" onchange="chk(this)"><label for="p02c1">Generated tests use xUnit <code>[Fact]</code>/<code>[Theory]</code> &mdash; no MSTest attributes</label></li>
+        <li><input type="checkbox" id="p02c2" onchange="chk(this)"><label for="p02c2">Mocks declared as <code>Mock&lt;T&gt;</code> fields, not local variables</label></li>
+        <li><input type="checkbox" id="p02c3" onchange="chk(this)"><label for="p02c3">Async methods use <code>await Assert.ThrowsAsync&lt;T&gt;</code></label></li>
+        <li><input type="checkbox" id="p02c4" onchange="chk(this)"><label for="p02c4"><code>dotnet test</code> passes on generated tests (&ge;70% first-run pass rate)</label></li>
+      </ul>
+      <div class="present-box"><div class="present-lbl">Present This</div><div class="present-text">Show the generated tests for a service that throws a domain exception. Did the prompt produce the correct <code>await Assert.ThrowsAsync&lt;T&gt;</code> pattern with the right test name?</div></div>
+    </div>
+  </div>
+
+  <div class="ex-card" id="ex-p03">
+    <div class="ex-header" onclick="tog(this)"><span class="ex-num">P-03</span><span class="ex-title">OpenAPI XML Documentation Prompt for ASP.NET Core</span><span class="ex-dur">20 min</span><span class="chev">&#9660;</span></div>
+    <div class="ex-body">
+      <div class="goal-box"><div class="goal-text">Author <code>.github/prompts/document-api-action.prompt.md</code> that adds complete XML documentation and Swashbuckle attributes to an ASP.NET Core controller action &mdash; covering all response codes, bearer auth, and DTO types.</div></div>
+      <div class="ctx-box">The investments API is consumed by internal systems and external fund managers. Missing Swagger docs cause integration delays. This prompt standardises the documentation bar across 40+ controller actions.</div>
+      <span class="section-lbl blue">Steps</span>
+      <div class="steps">
+        <div class="step"><div class="step-n">1</div><div class="step-text">Create <code>.github/prompts/document-api-action.prompt.md</code> with <code>mode: ask</code>. Define required XML doc elements: <code>&lt;summary&gt;</code> (1-line), <code>&lt;param&gt;</code> for each param, <code>&lt;returns&gt;</code> describing success response.</div></div>
+        <div class="step"><div class="step-n">2</div><div class="step-text">Add required Swashbuckle attributes: <code>[ProducesResponseType&lt;TModel&gt;(StatusCodes.Status200OK)]</code>, <code>[ProducesResponseType(StatusCodes.Status400BadRequest)]</code>, <code>[ProducesResponseType(StatusCodes.Status401Unauthorized)]</code>, <code>[ProducesResponseType(StatusCodes.Status500InternalServerError)]</code>.</div></div>
+        <div class="step"><div class="step-n">3</div><div class="step-text">Add security requirement attribute for authorized controllers. Instruct to reference DTOs from <code>src/Investments.Api/Dtos/</code> &mdash; not anonymous types.</div></div>
+        <div class="step"><div class="step-n">4</div><div class="step-text">Add verification: run <code>dotnet build</code> and confirm Swagger UI renders the new endpoint correctly.</div></div>
+      </div>
+      <span class="section-lbl green">Validation Checklist</span>
+      <ul class="checklist">
+        <li><input type="checkbox" id="p03c1" onchange="chk(this)"><label for="p03c1">All 4 response codes (200, 400, 401, 500) present as attributes</label></li>
+        <li><input type="checkbox" id="p03c2" onchange="chk(this)"><label for="p03c2">XML <code>&lt;summary&gt;</code> present and describes the action</label></li>
+        <li><input type="checkbox" id="p03c3" onchange="chk(this)"><label for="p03c3">Response types reference DTOs, not anonymous types</label></li>
+        <li><input type="checkbox" id="p03c4" onchange="chk(this)"><label for="p03c4"><code>dotnet build</code> succeeds &mdash; no unresolved type references</label></li>
+      </ul>
+      <div class="present-box"><div class="present-lbl">Present This</div><div class="present-text">Run the prompt on an undocumented controller action. Show the before/after in Swagger UI. How many attributes were generated automatically?</div></div>
+    </div>
+  </div>
+
+  <div class="ex-card" id="ex-p04">
+    <div class="ex-header" onclick="tog(this)"><span class="ex-num">P-04</span><span class="ex-title">Architecture Decision Record (ADR) Prompt</span><span class="ex-dur">15 min</span><span class="chev">&#9660;</span></div>
+    <div class="ex-body">
+      <div class="goal-box"><div class="goal-text">Author <code>.github/prompts/write-adr.prompt.md</code> that generates a complete ADR with Context, Decision, Alternatives, Consequences, Status, and required follow-up actions with owners.</div></div>
+      <div class="ctx-box">The investments team makes multiple significant technical decisions per quarter (EF Core migrations strategy, switching from SSIS to Databricks, adding Service Bus topics). Consistent ADRs create a searchable decision history for engineers and auditors.</div>
+      <span class="section-lbl blue">Steps</span>
+      <div class="steps">
+        <div class="step"><div class="step-n">1</div><div class="step-text">Create the prompt with <code>mode: ask</code>. Include ADR sections: Title, Status, Date, Context, Decision, Alternatives (minimum 2 including "do nothing"), Consequences (positive/negative/risks), Follow-up Actions with owner and due date.</div></div>
+        <div class="step"><div class="step-n">2</div><div class="step-text">Instruct to save to <code>docs/architecture/decisions/ADR-[NNN]-[kebab-title].md</code>.</div></div>
+        <div class="step"><div class="step-n">3</div><div class="step-text">Test with: "Replace SSIS packages for fund data ingestion with Azure Databricks PySpark jobs."</div></div>
+        <div class="step"><div class="step-n">4</div><div class="step-text">Review: does Alternatives include "keep SSIS"? Are trade-offs honest (not just positive)?</div></div>
+      </div>
+      <div class="tip"><div class="tip-lbl">Tip</div><div class="tip-text">Add "Decision must be a present-tense active sentence." "We use Azure Databricks for fund data ingestion" is a decision. "We will migrate" is a future intent. Auditors value the distinction.</div></div>
+      <span class="section-lbl green">Validation Checklist</span>
+      <ul class="checklist">
+        <li><input type="checkbox" id="p04c1" onchange="chk(this)"><label for="p04c1">ADR has all sections including Alternatives and Follow-up Actions</label></li>
+        <li><input type="checkbox" id="p04c2" onchange="chk(this)"><label for="p04c2">Alternatives include "do nothing" option</label></li>
+        <li><input type="checkbox" id="p04c3" onchange="chk(this)"><label for="p04c3">Consequences lists at least one negative or risk</label></li>
+        <li><input type="checkbox" id="p04c4" onchange="chk(this)"><label for="p04c4">Output file follows <code>ADR-NNN-kebab-title.md</code> naming</label></li>
+      </ul>
+      <div class="present-box"><div class="present-lbl">Present This</div><div class="present-text">Show the SSIS &rarr; Databricks ADR. Did the prompt include "keep SSIS" as an alternative with honest trade-offs? Which follow-up action had the most debate?</div></div>
+    </div>
+  </div>
+
+  <div class="ex-card" id="ex-p05">
+    <div class="ex-header" onclick="tog(this)"><span class="ex-num">P-05</span><span class="ex-title">EF Core Query Performance Review Prompt</span><span class="ex-dur">20 min</span><span class="chev">&#9660;</span></div>
+    <div class="ex-body">
+      <div class="goal-box"><div class="goal-text">Author <code>.github/prompts/ef-performance-review.prompt.md</code> that reviews repository/service code for EF Core anti-patterns: N+1 queries, missing <code>AsNoTracking()</code>, unbounded result sets, and sync-over-async.</div></div>
+      <div class="ctx-box">The investments platform queries large datasets &mdash; portfolios with hundreds of holdings, funds with multi-year histories. EF Core anti-patterns at this scale degrade P95 latency from 50ms to 8 seconds.</div>
+      <span class="section-lbl blue">Steps</span>
+      <div class="steps">
+        <div class="step"><div class="step-n">1</div><div class="step-text">Create the prompt with <code>mode: ask</code>. Define anti-patterns: <strong>N+1</strong> (navigation property access in a loop without <code>Include()</code>), <strong>tracking overhead</strong> (missing <code>AsNoTracking()</code> on read-only queries), <strong>unbounded results</strong> (no <code>.Take(n)</code>), <strong>sync-over-async</strong> (<code>.Result</code> or <code>.Wait()</code>).</div></div>
+        <div class="step"><div class="step-n">2</div><div class="step-text">Add missing index signals: WHERE clauses on columns without <code>HasIndex()</code> in EF model config. Include a recommendation to add a migration for the missing index.</div></div>
+        <div class="step"><div class="step-n">3</div><div class="step-text">Define output format: findings table with File:Line, Anti-Pattern, Estimated Impact, and a corrected code snippet per finding.</div></div>
+        <div class="step"><div class="step-n">4</div><div class="step-text">Test on a real repository class or a sample with at least one deliberate N+1 issue.</div></div>
+      </div>
+      <div class="warn"><div class="warn-lbl">Watch out</div><div class="warn-text"><code>AsNoTracking()</code> is a performance win for read-only queries, but avoid it when you intend to update the entity &mdash; EF Core won't track changes and <code>SaveChanges()</code> will do nothing.</div></div>
+      <span class="section-lbl green">Validation Checklist</span>
+      <ul class="checklist">
+        <li><input type="checkbox" id="p05c1" onchange="chk(this)"><label for="p05c1">Prompt detects N+1 (navigation property in loop)</label></li>
+        <li><input type="checkbox" id="p05c2" onchange="chk(this)"><label for="p05c2">Prompt detects missing <code>AsNoTracking()</code> on read-only queries</label></li>
+        <li><input type="checkbox" id="p05c3" onchange="chk(this)"><label for="p05c3">Output includes corrected code snippet per finding</label></li>
+        <li><input type="checkbox" id="p05c4" onchange="chk(this)"><label for="p05c4">Tested on real/sample code &mdash; findings are accurate</label></li>
+      </ul>
+      <div class="present-box"><div class="present-lbl">Present This</div><div class="present-text">Show the N+1 detection in action. What was the "before" code and the suggested <code>Include()</code> fix? How many SQL queries does this reduce?</div></div>
+    </div>
+  </div>
+
+  <div class="ex-card" id="ex-p06">
+    <div class="ex-header" onclick="tog(this)"><span class="ex-num">P-06</span><span class="ex-title">Financial Services Security Checklist Prompt</span><span class="ex-dur">20 min</span><span class="chev">&#9660;</span></div>
+    <div class="ex-body">
+      <div class="goal-box"><div class="goal-text">Author <code>.github/prompts/security-checklist.prompt.md</code> that runs a PASS/FAIL self-review against 9 OWASP-aligned controls plus MetLife Investments-specific financial compliance rules before a PR is marked ready.</div></div>
+      <div class="ctx-box">FINRA and SOX audits require evidence of pre-release security reviews. A reusable checklist prompt creates consistent, auditable review artifacts for every significant change.</div>
+      <span class="section-lbl blue">Steps</span>
+      <div class="steps">
+        <div class="step"><div class="step-n">1</div><div class="step-text">Create the prompt with <code>mode: ask</code>. Checklist table columns: # | Control | Status | Evidence/Notes. Status values: &check; PASS &middot; &cross; FAIL &middot; &#9888; PARTIAL &middot; N/A.</div></div>
+        <div class="step"><div class="step-n">2</div><div class="step-text">Add 9 controls: (1) FluentValidation before processing, (2) <code>[Authorize]</code> applied, (3) policy/role checked for resource, (4) parameterized queries only, (5) explicit model binding, (6) safe error response, (7) PII excluded from logs, (8) rate limiting on public endpoints, (9) financial changes emit audit event.</div></div>
+        <div class="step"><div class="step-n">3</div><div class="step-text">Add MetLife Investments domain rules: fund NAV or trade execution &mdash; control #9 MANDATORY; endpoint returning portfolio holdings of identified investors &mdash; control #7 MANDATORY; FINRA-regulated trade records &mdash; 7-year retention reference must be present.</div></div>
+        <div class="step"><div class="step-n">4</div><div class="step-text">Define scoring: 9/9 PASS &rarr; READY TO REVIEW; any FAIL &rarr; NEEDS FIXES with required remediation listed.</div></div>
+      </div>
+      <span class="section-lbl green">Validation Checklist</span>
+      <ul class="checklist">
+        <li><input type="checkbox" id="p06c1" onchange="chk(this)"><label for="p06c1">9 controls present with correct status values</label></li>
+        <li><input type="checkbox" id="p06c2" onchange="chk(this)"><label for="p06c2">Domain mandatory controls include fund NAV and trade audit rules</label></li>
+        <li><input type="checkbox" id="p06c3" onchange="chk(this)"><label for="p06c3">FINRA retention reference in the domain section</label></li>
+        <li><input type="checkbox" id="p06c4" onchange="chk(this)"><label for="p06c4">Verdict is READY TO REVIEW or NEEDS FIXES &mdash; not just a table</label></li>
+      </ul>
+      <div class="present-box"><div class="present-lbl">Present This</div><div class="present-text">Run the checklist on a trade execution action method. Were controls #7 and #9 automatically marked MANDATORY? How would this artifact help in a FINRA audit?</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- AGENTS -->
+<div class="topic-section" id="topic-agents" data-topic="agents">
+  <div class="t-header">
+    <div class="t-icon">&#x1F916;</div>
+    <div class="t-header-text">
+      <h2>Agents</h2>
+      <p>Design focused <code>.agent.md</code> files that delegate multi-step tasks to Copilot while enforcing hard tool boundaries and producing structured output.</p>
+    </div>
+    <div class="t-meta">
+      <span class="t-count">6 exercises</span>
+      <button class="t-pick-btn" onclick="pick('agents')">&#x1F3B2; Pick 2 for session</button>
+      <button class="t-clear-btn" id="clr-agents" onclick="clearPick('agents')">clear selection</button>
+    </div>
+  </div>
+
+  <div class="ex-card" id="ex-a01">
+    <div class="ex-header" onclick="tog(this)"><span class="ex-num">A-01</span><span class="ex-title">Read-Only Security Reviewer Agent</span><span class="ex-dur">20 min</span><span class="chev">&#9660;</span></div>
+    <div class="ex-body">
+      <div class="goal-box"><div class="goal-text">Author <code>.github/agents/security-reviewer.agent.md</code> &mdash; a read-only agent that reviews C# code for OWASP violations, PII exposure, and investments-domain security rules, producing a signed severity-rated report.</div></div>
+      <div class="ctx-box">Investment data is a high-value target. A dedicated agent that cannot modify files forces the human reviewer to make all remediation decisions. The agent's role is to surface findings, not to fix-and-continue.</div>
+      <span class="section-lbl blue">Steps</span>
+      <div class="steps">
+        <div class="step"><div class="step-n">1</div><div class="step-text">Create the agent file. Set tools to <code>[read_file, list_directory, search_workspace]</code> &mdash; explicitly no write tools.</div></div>
+        <div class="step"><div class="step-n">2</div><div class="step-text">Define the role: "Senior application security engineer &mdash; OWASP Top 10, ASP.NET Core security, financial services compliance (SOX, FINRA, GDPR)."</div></div>
+        <div class="step"><div class="step-n">3</div><div class="step-text">Define method: (1) read instruction files first; (2) list changed files; (3) check each file for OWASP, PII in logs, parameterized queries, <code>[Authorize]</code>, FluentValidation; (4) produce report.</div></div>
+        <div class="step"><div class="step-n">4</div><div class="step-text">Add hard boundary: for CRITICAL findings (hardcoded connection string, missing auth on financial endpoint) &mdash; pause and ask for confirmation before continuing.</div></div>
+        <div class="step"><div class="step-n">5</div><div class="step-text">Define report format: Scope, Date, files reviewed, findings table (# | Severity | Category | File:Line | Finding | Remediation), Overall Risk, Required fixes before merge.</div></div>
+      </div>
+      <div class="warn"><div class="warn-lbl">Critical design rule</div><div class="warn-text">Tool list must not include <code>create_file</code> or <code>edit_file</code>. If the agent can modify code, it becomes a "fix-and-ship" agent that bypasses human review. Read-only + report is the correct model.</div></div>
+      <span class="section-lbl green">Validation Checklist</span>
+      <ul class="checklist">
+        <li><input type="checkbox" id="a01c1" onchange="chk(this)"><label for="a01c1">Tool list contains only read tools</label></li>
+        <li><input type="checkbox" id="a01c2" onchange="chk(this)"><label for="a01c2">Agent reads instruction files before reviewing code</label></li>
+        <li><input type="checkbox" id="a01c3" onchange="chk(this)"><label for="a01c3">CRITICAL finding triggers pause for human confirmation</label></li>
+        <li><input type="checkbox" id="a01c4" onchange="chk(this)"><label for="a01c4">Report has Verdict and Required Fixes section</label></li>
+      </ul>
+      <div class="present-box"><div class="present-lbl">Present This</div><div class="present-text">Run the agent on a C# controller missing <code>[Authorize]</code> with a log statement including an account number. Did it find both? Did it attempt to fix the code?</div></div>
+    </div>
+  </div>
+
+  <div class="ex-card" id="ex-a02">
+    <div class="ex-header" onclick="tog(this)"><span class="ex-num">A-02</span><span class="ex-title">Test Coverage Gap Finder Agent</span><span class="ex-dur">20 min</span><span class="chev">&#9660;</span></div>
+    <div class="ex-body">
+      <div class="goal-box"><div class="goal-text">Author <code>.github/agents/test-coverage.agent.md</code> that reads a C# service class and its test file, produces a prioritized gap matrix, and generates xUnit test code for the top 3 uncovered branches.</div></div>
+      <div class="ctx-box">Financial services code requires high test coverage &mdash; especially error paths and domain exception scenarios. Manual coverage analysis is slow; this agent accelerates it to minutes.</div>
+      <span class="section-lbl blue">Steps</span>
+      <div class="steps">
+        <div class="step"><div class="step-n">1</div><div class="step-text">Create the agent with tools <code>[read_file, list_directory]</code>. Role: "QA engineer expert in xUnit, Moq, and financial services C# behavioral test design."</div></div>
+        <div class="step"><div class="step-n">2</div><div class="step-text">Method: (1) read source &mdash; list all public methods and branches; (2) read test file &mdash; map which branches have tests; (3) build gap matrix: Method &times; Branch &times; Covered.</div></div>
+        <div class="step"><div class="step-n">3</div><div class="step-text">Risk classification: Critical = exception handling, domain invariant violations; High = null/empty boundary, async failure; Normal = alternate happy paths. Select top 3 by risk.</div></div>
+        <div class="step"><div class="step-n">4</div><div class="step-text">Generate xUnit test code for top 3 gaps using AAA pattern and <code>Mock&lt;T&gt;</code>. Run <code>dotnet test --filter</code> to verify.</div></div>
+        <div class="step"><div class="step-n">5</div><div class="step-text">Output: gap matrix table + generated tests + estimated coverage before/after.</div></div>
+      </div>
+      <span class="section-lbl green">Validation Checklist</span>
+      <ul class="checklist">
+        <li><input type="checkbox" id="a02c1" onchange="chk(this)"><label for="a02c1">Agent produces a gap matrix (method &times; branch &times; covered)</label></li>
+        <li><input type="checkbox" id="a02c2" onchange="chk(this)"><label for="a02c2">Top 3 gaps prioritized by risk (Critical first)</label></li>
+        <li><input type="checkbox" id="a02c3" onchange="chk(this)"><label for="a02c3">Generated tests use xUnit + Moq patterns matching team conventions</label></li>
+        <li><input type="checkbox" id="a02c4" onchange="chk(this)"><label for="a02c4">Generated tests pass with <code>dotnet test</code></label></li>
+      </ul>
+      <div class="present-box"><div class="present-lbl">Present This</div><div class="present-text">Show the gap matrix for a real service class. What was the highest-priority uncovered branch? Was it a financial calculation edge case or an error path?</div></div>
+    </div>
+  </div>
+
+  <div class="ex-card" id="ex-a03">
+    <div class="ex-header" onclick="tog(this)"><span class="ex-num">A-03</span><span class="ex-title">Pull Request Description Writer Agent</span><span class="ex-dur">15 min</span><span class="chev">&#9660;</span></div>
+    <div class="ex-body">
+      <div class="goal-box"><div class="goal-text">Author <code>.github/agents/pr-writer.agent.md</code> that reads the current git diff and PR template, then produces a complete, structured PR description matched to the team's template.</div></div>
+      <div class="ctx-box">Incomplete PR descriptions are a top cause of delayed reviews. An agent that generates descriptions from the actual diff eliminates the "needs more context" return cycle.</div>
+      <span class="section-lbl blue">Steps</span>
+      <div class="steps">
+        <div class="step"><div class="step-n">1</div><div class="step-text">Create the agent with tools <code>[read_file, run_terminal_command]</code>. Method: (1) run <code>git diff --stat origin/main...HEAD</code>, (2) run <code>git diff origin/main...HEAD</code>, (3) read <code>.github/pull_request_template.md</code>.</div></div>
+        <div class="step"><div class="step-n">2</div><div class="step-text">Classification logic: detect Feature / Bug Fix / Refactor / Security / Breaking Change. Extract ADO work item from branch name (<code>AB#NNNN</code> or <code>feature/AB-1234-description</code>).</div></div>
+        <div class="step"><div class="step-n">3</div><div class="step-text">Required output sections: Summary, Work Item (AB# link), Type of Change, What was tested, Reviewer Focus, Deployment Notes (EF Core migrations, new config keys, Service Bus topics).</div></div>
+        <div class="step"><div class="step-n">4</div><div class="step-text">Add rule: if the diff includes changes to <code>db/Migrations/</code>, Deployment Notes must list each migration file name and describe the schema change.</div></div>
+      </div>
+      <div class="tip"><div class="tip-lbl">Tip</div><div class="tip-text">Add: "If no ADO work item is found in branch name or commits, ask the developer for it &mdash; do not omit it." SOX change control requires every production change to reference a work item.</div></div>
+      <span class="section-lbl green">Validation Checklist</span>
+      <ul class="checklist">
+        <li><input type="checkbox" id="a03c1" onchange="chk(this)"><label for="a03c1">Agent runs git commands before drafting description</label></li>
+        <li><input type="checkbox" id="a03c2" onchange="chk(this)"><label for="a03c2">ADO work item extracted from branch name or requested</label></li>
+        <li><input type="checkbox" id="a03c3" onchange="chk(this)"><label for="a03c3">Migration files listed in Deployment Notes when <code>db/Migrations/</code> changes</label></li>
+        <li><input type="checkbox" id="a03c4" onchange="chk(this)"><label for="a03c4">Output matches team PR template structure section-for-section</label></li>
+      </ul>
+      <div class="present-box"><div class="present-lbl">Present This</div><div class="present-text">Run the agent on a branch with a migration. Show the Deployment Notes section &mdash; did it correctly list the migration name and describe the schema change?</div></div>
+    </div>
+  </div>
+
+  <div class="ex-card" id="ex-a04">
+    <div class="ex-header" onclick="tog(this)"><span class="ex-num">A-04</span><span class="ex-title">NuGet Package Audit Agent</span><span class="ex-dur">20 min</span><span class="chev">&#9660;</span></div>
+    <div class="ex-body">
+      <div class="goal-box"><div class="goal-text">Author <code>.github/agents/nuget-audit.agent.md</code> that analyzes <code>*.csproj</code> changes, classifies semver bump risk, runs <code>dotnet list package --vulnerable</code>, and produces a risk table before a dependency PR is merged.</div></div>
+      <div class="ctx-box">NuGet packages in financial applications can introduce breaking API changes or CVEs affecting trade processing correctness. A pre-merge audit agent catches these before they reach the main branch.</div>
+      <span class="section-lbl blue">Steps</span>
+      <div class="steps">
+        <div class="step"><div class="step-n">1</div><div class="step-text">Create the agent with tools <code>[read_file, run_terminal_command]</code>. Step 1: run <code>git diff origin/main -- "*.csproj"</code> to identify package changes.</div></div>
+        <div class="step"><div class="step-n">2</div><div class="step-text">Classify: Major bump = BREAKING RISK (always flag, check release notes); Minor bump = SAFE (backward compat); Patch bump = SAFE (bug/security fix).</div></div>
+        <div class="step"><div class="step-n">3</div><div class="step-text">Run: <code>dotnet list package --vulnerable --include-transitive</code>. Flag CVEs with CVSS &ge; 7.0. Escalate at CVSS &ge; 9.0.</div></div>
+        <div class="step"><div class="step-n">4</div><div class="step-text">Hard boundary: "Report only &mdash; do NOT modify any <code>.csproj</code> or run <code>dotnet restore</code>." Output table: Package | From | To | Bump | CVE? | Risk | Recommendation.</div></div>
+      </div>
+      <span class="section-lbl green">Validation Checklist</span>
+      <ul class="checklist">
+        <li><input type="checkbox" id="a04c1" onchange="chk(this)"><label for="a04c1">Agent reads <code>.csproj</code> changes, not just lock files</label></li>
+        <li><input type="checkbox" id="a04c2" onchange="chk(this)"><label for="a04c2">Major version bumps always flagged as BREAKING RISK</label></li>
+        <li><input type="checkbox" id="a04c3" onchange="chk(this)"><label for="a04c3">CVE check uses <code>dotnet list package --vulnerable</code></label></li>
+        <li><input type="checkbox" id="a04c4" onchange="chk(this)"><label for="a04c4">Agent does not modify any project file</label></li>
+      </ul>
+      <div class="present-box"><div class="present-lbl">Present This</div><div class="present-text">Run the agent on a branch that bumps a major version of EF Core. Did it detect the breaking risk and summarize API changes in the risk column?</div></div>
+    </div>
+  </div>
+
+  <div class="ex-card" id="ex-a05">
+    <div class="ex-header" onclick="tog(this)"><span class="ex-num">A-05</span><span class="ex-title">Codebase Onboarding Agent</span><span class="ex-dur">20 min</span><span class="chev">&#9660;</span></div>
+    <div class="ex-body">
+      <div class="goal-box"><div class="goal-text">Author <code>.github/agents/onboarding.agent.md</code> that answers new contributor questions about the investments platform architecture, conventions, and workflows &mdash; always citing specific files and admitting uncertainty honestly.</div></div>
+      <div class="ctx-box">The platform has multiple services (.NET API, Blazor UI, Azure Functions, the Databricks analytics project, and a Java legacy integration). A well-designed onboarding agent reduces time-to-first-commit from days to hours.</div>
+      <span class="section-lbl blue">Steps</span>
+      <div class="steps">
+        <div class="step"><div class="step-n">1</div><div class="step-text">Create with tools <code>[read_file, list_directory, search_workspace]</code>. Role: "Experienced MetLife Investments platform engineer. Helpful, precise, and honest about uncertainty."</div></div>
+        <div class="step"><div class="step-n">2</div><div class="step-text">Guidelines: always cite the specific file supporting your answer; read <code>.github/copilot-instructions.md</code> and <code>README.md</code> first; use <code>search_workspace</code> to find examples before describing a pattern.</div></div>
+        <div class="step"><div class="step-n">3</div><div class="step-text">Honesty rule: if a convention is undocumented, say "I don't see this documented &mdash; here's what existing code suggests, but confirm with the team." Never fabricate conventions.</div></div>
+        <div class="step"><div class="step-n">4</div><div class="step-text">Pre-answer common questions: how to add an API endpoint; how to add a Blazor page; how to run tests; how to create an EF Core migration; how the Service Bus integration works.</div></div>
+        <div class="step"><div class="step-n">5</div><div class="step-text">Add special project context: "Databricks project uses PySpark &mdash; Python questions go to the <code>portfolio-analytics</code> repo. Java legacy service is read-only &mdash; no new features are added there."</div></div>
+      </div>
+      <span class="section-lbl green">Validation Checklist</span>
+      <ul class="checklist">
+        <li><input type="checkbox" id="a05c1" onchange="chk(this)"><label for="a05c1">Agent reads instructions and README before answering</label></li>
+        <li><input type="checkbox" id="a05c2" onchange="chk(this)"><label for="a05c2">Answers cite specific files/paths</label></li>
+        <li><input type="checkbox" id="a05c3" onchange="chk(this)"><label for="a05c3">Special projects (Databricks, Java) addressed in scope boundaries</label></li>
+        <li><input type="checkbox" id="a05c4" onchange="chk(this)"><label for="a05c4">Test: ask about an undocumented convention &mdash; agent admits uncertainty instead of guessing</label></li>
+      </ul>
+      <div class="present-box"><div class="present-lbl">Present This</div><div class="present-text">Ask: "How do I add a new Azure Function trigger for a Service Bus message?" Show that it cites the correct project path and function trigger pattern rather than inventing a convention.</div></div>
+    </div>
+  </div>
+
+  <div class="ex-card" id="ex-a06">
+    <div class="ex-header" onclick="tog(this)"><span class="ex-num">A-06</span><span class="ex-title">Release Notes Generator Agent</span><span class="ex-dur">15 min</span><span class="chev">&#9660;</span></div>
+    <div class="ex-body">
+      <div class="goal-box"><div class="goal-text">Author <code>.github/agents/release-notes.agent.md</code> that reads the git log since the last tag, classifies changes, and produces stakeholder-readable release notes &mdash; pausing for human confirmation on breaking changes.</div></div>
+      <div class="ctx-box">Release notes for an investments platform must distinguish user-visible features from internal refactoring. Fund managers care about new portfolio views, not <code>AsNoTracking()</code> optimizations. The agent translates developer language to business language.</div>
+      <span class="section-lbl blue">Steps</span>
+      <div class="steps">
+        <div class="step"><div class="step-n">1</div><div class="step-text">Create with tools <code>[run_terminal_command, read_file]</code>. Run <code>git log --oneline --merges origin/main..HEAD</code>.</div></div>
+        <div class="step"><div class="step-n">2</div><div class="step-text">Categories: &#x1F680; Feature, &#x1F41B; Bug Fix, &#x1F512; Security, &#x26A1; Performance, &#x1F4A5; Breaking Change, &#x1F527; Maintenance. One stakeholder-readable sentence per PR.</div></div>
+        <div class="step"><div class="step-n">3</div><div class="step-text">Add Deployment Notes: list any EF Core migration files, new appsettings keys, new Service Bus topics, Azure Function config changes.</div></div>
+        <div class="step"><div class="step-n">4</div><div class="step-text">Approval gate: list Breaking Changes, then ask "I found N Breaking Changes. Please review and confirm before I finalize." Wait for explicit confirmation.</div></div>
+      </div>
+      <div class="tip"><div class="tip-lbl">Stakeholder language test</div><div class="tip-text">Before: "Added EF Core query projection to PortfolioRepository." After: "Portfolio list page now loads 60% faster." If you can't translate a code change to a user benefit, classify it as Maintenance.</div></div>
+      <span class="section-lbl green">Validation Checklist</span>
+      <ul class="checklist">
+        <li><input type="checkbox" id="a06c1" onchange="chk(this)"><label for="a06c1">Release notes grouped by change category</label></li>
+        <li><input type="checkbox" id="a06c2" onchange="chk(this)"><label for="a06c2">Breaking Changes trigger a pause for confirmation</label></li>
+        <li><input type="checkbox" id="a06c3" onchange="chk(this)"><label for="a06c3">Deployment Notes lists migration files and config changes</label></li>
+        <li><input type="checkbox" id="a06c4" onchange="chk(this)"><label for="a06c4">Descriptions are in stakeholder language &mdash; no internal class/method names</label></li>
+      </ul>
+      <div class="present-box"><div class="present-lbl">Present This</div><div class="present-text">Show a side-by-side of a raw git commit message and the agent's stakeholder translation. How does the agent decide Feature vs. Maintenance?</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- SKILLS -->
+<div class="topic-section" id="topic-skills" data-topic="skills">
+  <div class="t-header">
+    <div class="t-icon">&#x1F9E9;</div>
+    <div class="t-header-text">
+      <h2>Skills</h2>
+      <p>Package domain expertise into <code>SKILL.md</code> files with trigger phrases, step-by-step procedures, and quality bars that agents invoke consistently.</p>
+    </div>
+    <div class="t-meta">
+      <span class="t-count">5 exercises</span>
+      <button class="t-pick-btn" onclick="pick('skills')">&#x1F3B2; Pick 2 for session</button>
+      <button class="t-clear-btn" id="clr-skills" onclick="clearPick('skills')">clear selection</button>
+    </div>
+  </div>
+
+  <div class="ex-card" id="ex-s01">
+    <div class="ex-header" onclick="tog(this)"><span class="ex-num">S-01</span><span class="ex-title">Write C# Service Tests Skill</span><span class="ex-dur">20 min</span><span class="chev">&#9660;</span></div>
+    <div class="ex-body">
+      <div class="goal-box"><div class="goal-text">Author <code>.github/skills/write-service-test/SKILL.md</code> with trigger phrases, a step-by-step procedure for generating xUnit tests for a C# service class, a quality bar, and coverage summary output.</div></div>
+      <div class="ctx-box">Skills are invoked by agents via trigger phrases. A well-structured skill ensures consistent test generation across the investments platform &mdash; including financial accuracy edge cases.</div>
+      <span class="section-lbl blue">Steps</span>
+      <div class="steps">
+        <div class="step"><div class="step-n">1</div><div class="step-text">Create <code>.github/skills/write-service-test/SKILL.md</code>. Add frontmatter: <code>name</code>, <code>description</code>, <code>trigger</code> phrases ("write unit test", "generate test", "add test coverage").</div></div>
+        <div class="step"><div class="step-n">2</div><div class="step-text">Procedure: (1) read source, (2) list public methods and branches, (3) check if test file exists (add to it if so), (4) generate tests using xUnit + Moq + AAA, (5) run <code>dotnet test --filter ClassName</code>.</div></div>
+        <div class="step"><div class="step-n">3</div><div class="step-text">Conventions: constructor injection for SUT; <code>Mock&lt;T&gt;</code> fields; no sharing mock state; async tests return <code>async Task</code>; test name format: <code>MethodName_Condition_ExpectedOutcome</code>.</div></div>
+        <div class="step"><div class="step-n">4</div><div class="step-text">Quality bar: every public method &ge;1 happy path, &ge;1 error path, &ge;1 boundary test for nullable params. Flag methods that are hard to test.</div></div>
+        <div class="step"><div class="step-n">5</div><div class="step-text">Output: (1) test file content, (2) coverage summary table: Method | Scenarios | Estimated Coverage, (3) hard-to-test flags.</div></div>
+      </div>
+      <span class="section-lbl green">Validation Checklist</span>
+      <ul class="checklist">
+        <li><input type="checkbox" id="s01c1" onchange="chk(this)"><label for="s01c1">Trigger phrases specific enough to not accidentally activate on unrelated requests</label></li>
+        <li><input type="checkbox" id="s01c2" onchange="chk(this)"><label for="s01c2">Quality bar requires error path tests for every public method</label></li>
+        <li><input type="checkbox" id="s01c3" onchange="chk(this)"><label for="s01c3">Procedure includes running <code>dotnet test</code> to verify</label></li>
+        <li><input type="checkbox" id="s01c4" onchange="chk(this)"><label for="s01c4">Output includes a coverage summary table</label></li>
+      </ul>
+      <div class="present-box"><div class="present-lbl">Present This</div><div class="present-text">Show the skill being invoked by the test-coverage agent (A-02). How does the skill's trigger phrase connect to the agent's invocation?</div></div>
+    </div>
+  </div>
+
+  <div class="ex-card" id="ex-s02">
+    <div class="ex-header" onclick="tog(this)"><span class="ex-num">S-02</span><span class="ex-title">EF Core Migration Safety Review Skill</span><span class="ex-dur">20 min</span><span class="chev">&#9660;</span></div>
+    <div class="ex-body">
+      <div class="goal-box"><div class="goal-text">Author <code>.github/skills/review-db-migration/SKILL.md</code> that checks EF Core migration files for 6 safety properties: reversibility, non-destructiveness, FK index coverage, NOT NULL safety, transaction wrapping, and large-table awareness.</div></div>
+      <div class="ctx-box">A bad migration on the investments platform can lock the Portfolios or Trades table during market hours. A skill codifying the migration checklist catches dangerous patterns before the deploy pipeline.</div>
+      <span class="section-lbl blue">Steps</span>
+      <div class="steps">
+        <div class="step"><div class="step-n">1</div><div class="step-text">Create the skill. Trigger phrases: "review migration", "check migration", "migration safe", "db migration".</div></div>
+        <div class="step"><div class="step-n">2</div><div class="step-text">Check 1 &mdash; <strong>Reversible</strong>: both <code>Up()</code> and <code>Down()</code> methods with symmetric operations. FAIL if <code>Down()</code> is empty or throws <code>NotImplementedException</code>.</div></div>
+        <div class="step"><div class="step-n">3</div><div class="step-text">Check 2 &mdash; <strong>Non-Destructive</strong>: no <code>DropTable</code>, no <code>DropColumn</code> on a queried column, no <code>Truncate</code> in <code>Up()</code>.</div></div>
+        <div class="step"><div class="step-n">4</div><div class="step-text">Check 3 &mdash; <strong>FK Index</strong>: every <code>AddForeignKey()</code> paired with a <code>CreateIndex()</code> on the FK column. SQL Server does NOT auto-create FK indexes.</div></div>
+        <div class="step"><div class="step-n">5</div><div class="step-text">Checks 4&ndash;6: (4) NOT NULL Safety &mdash; new NOT NULL columns need <code>defaultValue:</code> or two-step migration; (5) Transaction wrapping; (6) Large Table &mdash; Trades/AuditLog require <code>ONLINE = ON</code> in raw SQL.</div></div>
+      </div>
+      <div class="warn"><div class="warn-lbl">SQL Server vs PostgreSQL</div><div class="warn-text">SQL Server does NOT automatically create indexes for foreign keys (unlike PostgreSQL). Every FK without an explicit index causes table scans on joins. This check is more critical on SQL Server.</div></div>
+      <span class="section-lbl green">Validation Checklist</span>
+      <ul class="checklist">
+        <li><input type="checkbox" id="s02c1" onchange="chk(this)"><label for="s02c1">All 6 checks defined with PASS/FAIL/WARN criteria</label></li>
+        <li><input type="checkbox" id="s02c2" onchange="chk(this)"><label for="s02c2">FK index check specifically mentions SQL Server's behavior</label></li>
+        <li><input type="checkbox" id="s02c3" onchange="chk(this)"><label for="s02c3">Large-table check references the actual large tables (Trades, AuditLog)</label></li>
+        <li><input type="checkbox" id="s02c4" onchange="chk(this)"><label for="s02c4">Skill tested on a real migration &mdash; findings are accurate</label></li>
+      </ul>
+      <div class="present-box"><div class="present-lbl">Present This</div><div class="present-text">Run on a migration that adds a FK without an index. Show the FAIL result and the corrected <code>CreateIndex()</code> call the skill recommends.</div></div>
+    </div>
+  </div>
+
+  <div class="ex-card" id="ex-s03">
+    <div class="ex-header" onclick="tog(this)"><span class="ex-num">S-03</span><span class="ex-title">Financial Services Compliance Check Skill</span><span class="ex-dur">25 min</span><span class="chev">&#9660;</span></div>
+    <div class="ex-body">
+      <div class="goal-box"><div class="goal-text">Author <code>.github/skills/compliance-check/SKILL.md</code> that checks C# code for PII in log statements, missing audit events on financial writes, hard-delete on regulated records, and SOX change control evidence.</div></div>
+      <div class="ctx-box">FINRA and SOX audits require evidence that code changes followed documented procedures. Automating this check into a skill means every agent session has compliance review built in.</div>
+      <span class="section-lbl blue">Steps</span>
+      <div class="steps">
+        <div class="step"><div class="step-n">1</div><div class="step-text">Create the skill. Triggers: "compliance check", "privacy review", "audit this", "pii check", "finra check".</div></div>
+        <div class="step"><div class="step-n">2</div><div class="step-text">Rule 1 &mdash; <strong>PII in Logs</strong>: scan <code>_logger.*</code> calls for PII field names (AccountNumber, TaxId, SSN, DateOfBirth, PortfolioHolderName). FAIL if within 3 lines of a log call.</div></div>
+        <div class="step"><div class="step-n">3</div><div class="step-text">Rule 2 &mdash; <strong>Audit Events</strong>: service methods writing to Portfolios, Trades, FundNav, or PolicyHoldings must call <code>_auditService.RecordAsync(entity, entityId, action, actorId)</code>. FAIL if write method lacks audit call.</div></div>
+        <div class="step"><div class="step-n">4</div><div class="step-text">Rule 3 &mdash; <strong>Soft Delete</strong>: FAIL if <code>dbContext.Remove()</code> targets Portfolios, Trades, or PolicyHoldings. PASS if <code>entity.DeletedAt = DateTime.UtcNow</code> pattern is used.</div></div>
+        <div class="step"><div class="step-n">5</div><div class="step-text">Rule 4 &mdash; <strong>SOX Change Control</strong>: WARN if a financial calculation change (NAV, fee, trade settlement) does not reference an ADO work item (AB#) in a commit message or method comment.</div></div>
+      </div>
+      <span class="section-lbl green">Validation Checklist</span>
+      <ul class="checklist">
+        <li><input type="checkbox" id="s03c1" onchange="chk(this)"><label for="s03c1">Rule 1 checks <code>_logger.*</code> calls specifically</label></li>
+        <li><input type="checkbox" id="s03c2" onchange="chk(this)"><label for="s03c2">Rule 2 references actual audit service method signature</label></li>
+        <li><input type="checkbox" id="s03c3" onchange="chk(this)"><label for="s03c3">Rule 3 identifies EF Core's <code>dbContext.Remove()</code> pattern</label></li>
+        <li><input type="checkbox" id="s03c4" onchange="chk(this)"><label for="s03c4">Rule 4 references FINRA/SOX explicitly in verdict rationale</label></li>
+      </ul>
+      <div class="present-box"><div class="present-lbl">Present This</div><div class="present-text">Run on a trade service that logs <code>trade.AccountNumber</code>. Did Rule 1 fire? How does the skill explain the regulatory reason?</div></div>
+    </div>
+  </div>
+
+  <div class="ex-card" id="ex-s04">
+    <div class="ex-header" onclick="tog(this)"><span class="ex-num">S-04</span><span class="ex-title">Document ASP.NET Core API Action Skill</span><span class="ex-dur">15 min</span><span class="chev">&#9660;</span></div>
+    <div class="ex-body">
+      <div class="goal-box"><div class="goal-text">Author <code>.github/skills/document-api-action/SKILL.md</code> that adds XML documentation comments and Swashbuckle <code>[ProducesResponseType]</code> attributes to an ASP.NET Core controller action when triggered.</div></div>
+      <div class="ctx-box">The investments API has 40+ controller actions. Many lack Swagger documentation, causing downstream consumers to rely on tribal knowledge. A skill that documents any action in seconds eliminates this debt.</div>
+      <span class="section-lbl blue">Steps</span>
+      <div class="steps">
+        <div class="step"><div class="step-n">1</div><div class="step-text">Create the skill. Triggers: "document this route", "document this endpoint", "add xml docs", "document the api", "add swagger docs".</div></div>
+        <div class="step"><div class="step-n">2</div><div class="step-text">Procedure: (1) read action method, (2) read request/response DTOs from <code>src/Investments.Api/Dtos/</code>, (3) generate XML <code>&lt;summary&gt;</code> and <code>&lt;param&gt;</code> comments, (4) add <code>[ProducesResponseType]</code> attributes.</div></div>
+        <div class="step"><div class="step-n">3</div><div class="step-text">Required attribute set: 200/201 success, 400 validation, 401 auth, 404 if action can return not-found, 500 server error. Add <code>[SwaggerOperation(Summary="...", OperationId="...")]</code>.</div></div>
+        <div class="step"><div class="step-n">4</div><div class="step-text">Add a before/after example in SKILL.md showing a raw action and the documented version.</div></div>
+        <div class="step"><div class="step-n">5</div><div class="step-text">Verification: run <code>dotnet build</code> &mdash; confirm no <code>CS1591</code> XML doc warnings for the changed file.</div></div>
+      </div>
+      <span class="section-lbl green">Validation Checklist</span>
+      <ul class="checklist">
+        <li><input type="checkbox" id="s04c1" onchange="chk(this)"><label for="s04c1">Skill generates both XML comments AND <code>[ProducesResponseType]</code> attributes</label></li>
+        <li><input type="checkbox" id="s04c2" onchange="chk(this)"><label for="s04c2">Before/after example present in SKILL.md</label></li>
+        <li><input type="checkbox" id="s04c3" onchange="chk(this)"><label for="s04c3"><code>dotnet build</code> passes with no <code>CS1591</code> warnings</label></li>
+        <li><input type="checkbox" id="s04c4" onchange="chk(this)"><label for="s04c4">Swagger UI renders the endpoint with all response codes</label></li>
+      </ul>
+      <div class="present-box"><div class="present-lbl">Present This</div><div class="present-text">Show before (no attributes) and after (all attributes + XML doc). How many lines did the skill generate vs what a developer would manually write?</div></div>
+    </div>
+  </div>
+
+  <div class="ex-card" id="ex-s05">
+    <div class="ex-header" onclick="tog(this)"><span class="ex-num">S-05</span><span class="ex-title">Pre-Deployment Readiness Checklist Skill</span><span class="ex-dur">20 min</span><span class="chev">&#9660;</span></div>
+    <div class="ex-body">
+      <div class="goal-box"><div class="goal-text">Author <code>.github/skills/deployment-readiness/SKILL.md</code> that runs 7 checks before a release branch deploys to production: tests, build, pending migrations, app config keys, rollback plan, ADO release ticket, and Azure health check.</div></div>
+      <div class="ctx-box">Production deployments during market hours carry elevated risk for an investments platform. A deployment readiness skill creates a consistent, auditable gate that catches common failures before they cause incidents.</div>
+      <span class="section-lbl blue">Steps</span>
+      <div class="steps">
+        <div class="step"><div class="step-n">1</div><div class="step-text">Create the skill. Triggers: "deployment ready", "ready to deploy", "pre-deployment check", "release check", "ship check".</div></div>
+        <div class="step"><div class="step-n">2</div><div class="step-text">Check 1 &mdash; Tests: <code>dotnet test --no-build</code>. READY: exit code 0. NOT READY: list failing tests.</div></div>
+        <div class="step"><div class="step-n">3</div><div class="step-text">Check 2 &mdash; Build: <code>dotnet build -warnaserror</code>. READY: zero warnings.</div></div>
+        <div class="step"><div class="step-n">4</div><div class="step-text">Check 3 &mdash; Pending Migrations: check <code>db/Migrations/</code> for files not in <code>__EFMigrationsHistory</code> for the target environment.</div></div>
+        <div class="step"><div class="step-n">5</div><div class="step-text">Checks 4&ndash;7: (4) App Config keys present; (5) Rollback plan updated within 30 days; (6) ADO Release ticket status "Ready for Deploy"; (7) Azure App Service health check passes.</div></div>
+      </div>
+      <div class="tip"><div class="tip-lbl">Market hours gate</div><div class="tip-text">Add: if current time is 09:00&ndash;16:00 ET on a weekday, emit WARNING: "Deploying during market hours &mdash; confirm with team lead before proceeding."</div></div>
+      <span class="section-lbl green">Validation Checklist</span>
+      <ul class="checklist">
+        <li><input type="checkbox" id="s05c1" onchange="chk(this)"><label for="s05c1">All 7 checks defined with READY / NOT READY / WARN outcomes</label></li>
+        <li><input type="checkbox" id="s05c2" onchange="chk(this)"><label for="s05c2">Migration check references EF Core's <code>__EFMigrationsHistory</code></label></li>
+        <li><input type="checkbox" id="s05c3" onchange="chk(this)"><label for="s05c3">Market hours warning present</label></li>
+        <li><input type="checkbox" id="s05c4" onchange="chk(this)"><label for="s05c4">Overall verdict: READY / PROCEED WITH CAUTION / NOT READY</label></li>
+      </ul>
+      <div class="present-box"><div class="present-lbl">Present This</div><div class="present-text">Run on a branch with a pending migration. Did it catch the pending migration as NOT READY? Which of the 7 checks is your team most likely to fail on the first real run?</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- MCP -->
+<div class="topic-section" id="topic-mcp" data-topic="mcp">
+  <div class="t-header">
+    <div class="t-icon">&#x1F50C;</div>
+    <div class="t-header-text">
+      <h2>MCP Servers</h2>
+      <p>Design governance-first MCP server configurations that give Copilot safe, scoped access to MetLife Investments internal systems.</p>
+    </div>
+    <div class="t-meta">
+      <span class="t-count">5 exercises</span>
+      <button class="t-pick-btn" onclick="pick('mcp')">&#x1F3B2; Pick 2 for session</button>
+      <button class="t-clear-btn" id="clr-mcp" onclick="clearPick('mcp')">clear selection</button>
+    </div>
+  </div>
+
+  <div class="ex-card" id="ex-m01">
+    <div class="ex-header" onclick="tog(this)"><span class="ex-num">M-01</span><span class="ex-title">Internal API Catalog MCP Server</span><span class="ex-dur">20 min</span><span class="chev">&#9660;</span></div>
+    <div class="ex-body">
+      <div class="goal-box"><div class="goal-text">Design an MCP server giving Copilot read-only access to the MetLife Investments internal API catalog &mdash; enabling discovery of APIs for portfolio data, fund performance, and trade settlement without hardcoding endpoints.</div></div>
+      <div class="ctx-box">The platform integrates with 15+ internal services. Without an API catalog MCP, developers copy-paste endpoint URLs from Confluence, introducing stale references. An MCP that queries the live catalog ensures always-current integration code.</div>
+      <span class="section-lbl blue">Steps</span>
+      <div class="steps">
+        <div class="step"><div class="step-n">1</div><div class="step-text">Design tools: <code>search_internal_apis(query: string, domain?: string)</code> returns matching APIs; <code>get_api_schema(apiName: string)</code> returns OpenAPI schema. Domain enum: <code>portfolio|fund|trade|settlement|compliance|auth</code>. <code>maxResults: 10</code>.</div></div>
+        <div class="step"><div class="step-n">2</div><div class="step-text">Authentication: Azure Managed Identity &mdash; no stored credentials. Server's managed identity needs Reader role on the API catalog service.</div></div>
+        <div class="step"><div class="step-n">3</div><div class="step-text">Add explicit <code>cannot</code> statements: "Returns no credentials, API keys, or secrets. Never calls the APIs &mdash; returns schema only."</div></div>
+        <div class="step"><div class="step-n">4</div><div class="step-text">Add governance: named owner (team/email), change control (PR + 2 approvals), rate limiting (30 req/min).</div></div>
+      </div>
+      <div class="tip"><div class="tip-lbl">Managed Identity over PATs</div><div class="tip-text">For Azure-hosted MCP servers, prefer Managed Identity. No credentials to rotate, expire, or accidentally commit. Azure App Service and Azure Functions attach the identity automatically.</div></div>
+      <span class="section-lbl green">Validation Checklist</span>
+      <ul class="checklist">
+        <li><input type="checkbox" id="m01c1" onchange="chk(this)"><label for="m01c1">Both tools have explicit <code>cannot</code> statements</label></li>
+        <li><input type="checkbox" id="m01c2" onchange="chk(this)"><label for="m01c2">Authentication uses Managed Identity &mdash; no stored credentials</label></li>
+        <li><input type="checkbox" id="m01c3" onchange="chk(this)"><label for="m01c3">Rate limiting and owner are defined</label></li>
+        <li><input type="checkbox" id="m01c4" onchange="chk(this)"><label for="m01c4">Domain enum includes investments-specific domains (fund, trade, settlement)</label></li>
+      </ul>
+      <div class="present-box"><div class="present-lbl">Present This</div><div class="present-text">How would the API catalog MCP help a developer integrate with the trade settlement service? Walk through <code>search_internal_apis("trade settlement")</code>.</div></div>
+    </div>
+  </div>
+
+  <div class="ex-card" id="ex-m02">
+    <div class="ex-header" onclick="tog(this)"><span class="ex-num">M-02</span><span class="ex-title">SQL Server Schema Read-Only MCP Server</span><span class="ex-dur">20 min</span><span class="chev">&#9660;</span></div>
+    <div class="ex-body">
+      <div class="goal-box"><div class="goal-text">Design an MCP server providing read-only access to the investments SQL Server schema &mdash; allowing Copilot to generate accurate EF Core entity configurations, migrations, and LINQ queries without guessing column names or data types.</div></div>
+      <div class="ctx-box">The investments database has 80+ tables with financial data types and computed columns. Copilot generates EF Core models with wrong types (<code>double</code> instead of <code>decimal(18,4)</code>) without schema access.</div>
+      <span class="section-lbl blue">Steps</span>
+      <div class="steps">
+        <div class="step"><div class="step-n">1</div><div class="step-text">Design tools: <code>get_table_schema(tableName: string)</code> returns columns, data types, nullability, defaults, PK, FKs; <code>list_tables()</code> returns table names with row count estimates.</div></div>
+        <div class="step"><div class="step-n">2</div><div class="step-text">DB user: create SQL Server login <code>copilot_schema_reader</code> with SELECT only on <code>INFORMATION_SCHEMA.COLUMNS</code>, <code>INFORMATION_SCHEMA.TABLE_CONSTRAINTS</code>, and <code>sys.indexes</code>. No access to data tables.</div></div>
+        <div class="step"><div class="step-n">3</div><div class="step-text">Connection string in Azure Key Vault: <code>"connectionStringRef": "keyvault://metlife-investments-kv/sql-schema-reader-conn"</code>.</div></div>
+        <div class="step"><div class="step-n">4</div><div class="step-text">Define failure modes: TABLE_NOT_FOUND, DB_UNAVAILABLE (5-second timeout), QUERY_TIMEOUT. Never return raw SQL Server error messages. Verify: <code>SELECT TOP 1 * FROM Portfolios</code> returns permission denied as <code>copilot_schema_reader</code>.</div></div>
+      </div>
+      <span class="section-lbl green">Validation Checklist</span>
+      <ul class="checklist">
+        <li><input type="checkbox" id="m02c1" onchange="chk(this)"><label for="m02c1">DB user has SELECT only on schema views &mdash; not on data tables</label></li>
+        <li><input type="checkbox" id="m02c2" onchange="chk(this)"><label for="m02c2">Connection string in Key Vault &mdash; not in config file</label></li>
+        <li><input type="checkbox" id="m02c3" onchange="chk(this)"><label for="m02c3">Failure modes return safe messages &mdash; no raw SQL errors</label></li>
+        <li><input type="checkbox" id="m02c4" onchange="chk(this)"><label for="m02c4">Least-privilege test passes: data SELECT is denied</label></li>
+      </ul>
+      <div class="present-box"><div class="present-lbl">Present This</div><div class="present-text">Show how the schema MCP helps Copilot generate an EF Core entity for the Trades table, specifically ensuring <code>decimal(18,4)</code> for monetary columns instead of <code>double</code>.</div></div>
+    </div>
+  </div>
+
+  <div class="ex-card" id="ex-m03">
+    <div class="ex-header" onclick="tog(this)"><span class="ex-num">M-03</span><span class="ex-title">Azure DevOps Work Item MCP Server</span><span class="ex-dur">15 min</span><span class="chev">&#9660;</span></div>
+    <div class="ex-body">
+      <div class="goal-box"><div class="goal-text">Design an MCP server giving Copilot read-only access to the MetLife Investments Azure DevOps project &mdash; enabling agents to fetch acceptance criteria, look up story context, and link generated code to work items.</div></div>
+      <div class="ctx-box">SOX requires every production change to reference a work item. An ADO MCP allows Copilot agents to automatically extract acceptance criteria from the linked story, eliminating manual copy-paste of requirements.</div>
+      <span class="section-lbl blue">Steps</span>
+      <div class="steps">
+        <div class="step"><div class="step-n">1</div><div class="step-text">Tools: <code>get_work_item(id: number)</code> &mdash; title, description, acceptance criteria, state, tags; <code>search_work_items(query: string, type?: string)</code> &mdash; current sprint matches.</div></div>
+        <div class="step"><div class="step-n">2</div><div class="step-text">Auth: ADO service account PAT with scope <code>vso.work_read</code> only. Key Vault storage. 90-day rotation reminder.</div></div>
+        <div class="step"><div class="step-n">3</div><div class="step-text">Scope to <code>MetLife-Investments</code> ADO project only. <code>cannot</code> statement: "Cannot create, update, or delete work items. Cannot access other ADO projects."</div></div>
+        <div class="step"><div class="step-n">4</div><div class="step-text">Caching: <code>get_work_item</code> caches 5 minutes; <code>search_work_items</code> caches 60 seconds. Document intended consumers: PR writer agent (A-03), deployment readiness skill (S-05).</div></div>
+      </div>
+      <span class="section-lbl green">Validation Checklist</span>
+      <ul class="checklist">
+        <li><input type="checkbox" id="m03c1" onchange="chk(this)"><label for="m03c1">PAT scope is <code>vso.work_read</code> &mdash; no write scopes</label></li>
+        <li><input type="checkbox" id="m03c2" onchange="chk(this)"><label for="m03c2">Search scoped to <code>MetLife-Investments</code> project only</label></li>
+        <li><input type="checkbox" id="m03c3" onchange="chk(this)"><label for="m03c3">Caching configured for both tools</label></li>
+        <li><input type="checkbox" id="m03c4" onchange="chk(this)"><label for="m03c4">Use cases linked to specific agents/skills that consume the MCP</label></li>
+      </ul>
+      <div class="present-box"><div class="present-lbl">Present This</div><div class="present-text">How does the ADO MCP improve the PR writer agent's output? Show how acceptance criteria from the work item surfaces in the "What was tested" section of a generated PR description.</div></div>
+    </div>
+  </div>
+
+  <div class="ex-card" id="ex-m04">
+    <div class="ex-header" onclick="tog(this)"><span class="ex-num">M-04</span><span class="ex-title">Internal Engineering Documentation MCP Server</span><span class="ex-dur">15 min</span><span class="chev">&#9660;</span></div>
+    <div class="ex-body">
+      <div class="goal-box"><div class="goal-text">Design an MCP server for Confluence-hosted MetLife Investments engineering docs &mdash; with an allowlist of approved spaces, summary-only output, and PII detection on returned results.</div></div>
+      <div class="ctx-box">The Confluence instance contains architecture decisions, runbooks, and compliance guidelines &mdash; but also HR, legal, and executive content. An allowlist ensures Copilot accesses only engineering-relevant spaces.</div>
+      <span class="section-lbl blue">Steps</span>
+      <div class="steps">
+        <div class="step"><div class="step-n">1</div><div class="step-text">Tool: <code>search_internal_docs(query: string, space: "ARCH"|"ENG"|"INVEST"|"SEC"|"ONBOARD")</code>. Returns: title, URL, first 300 chars, last-modified. <code>maxResults: 5</code>.</div></div>
+        <div class="step"><div class="step-n">2</div><div class="step-text">Space allowlist: adding a new space requires space owner + CISO team approval. Document this in the config.</div></div>
+        <div class="step"><div class="step-n">3</div><div class="step-text">PII detection on output: if a returned summary contains SSN, account number, or tax ID patterns &mdash; suppress the result and log an alert. Never return detected PII to Copilot context.</div></div>
+        <div class="step"><div class="step-n">4</div><div class="step-text">Content freshness warning: if <code>lastModified</code> &gt; 180 days ago, append: "&#9888; This document may be outdated &mdash; verify with the team." Return summaries only &mdash; not full page body.</div></div>
+      </div>
+      <div class="warn"><div class="warn-lbl">Full content risk</div><div class="warn-text">Full page body could inject sensitive data deep in a long document that Copilot processes without the developer seeing. Summaries + link is safer: the developer reads the source doc themselves.</div></div>
+      <span class="section-lbl green">Validation Checklist</span>
+      <ul class="checklist">
+        <li><input type="checkbox" id="m04c1" onchange="chk(this)"><label for="m04c1">Space allowlist is explicit &mdash; no wildcard or "all spaces"</label></li>
+        <li><input type="checkbox" id="m04c2" onchange="chk(this)"><label for="m04c2">PII detection on output defined</label></li>
+        <li><input type="checkbox" id="m04c3" onchange="chk(this)"><label for="m04c3">Content freshness warning present</label></li>
+        <li><input type="checkbox" id="m04c4" onchange="chk(this)"><label for="m04c4">Returns summaries only &mdash; not full page body</label></li>
+      </ul>
+      <div class="present-box"><div class="present-lbl">Present This</div><div class="present-text">Which spaces did your team include in the allowlist? Were any borderline (between engineering and restricted)?</div></div>
+    </div>
+  </div>
+
+  <div class="ex-card" id="ex-m05">
+    <div class="ex-header" onclick="tog(this)"><span class="ex-num">M-05</span><span class="ex-title">Audit an Over-Privileged MCP Configuration</span><span class="ex-dur">20 min</span><span class="chev">&#9660;</span></div>
+    <div class="ex-body">
+      <div class="goal-box"><div class="goal-text">Given a deliberately insecure MCP server configuration, identify at least 5 security and governance violations, explain the risk for each, and produce a fully remediated configuration.</div></div>
+      <div class="ctx-box">Learning to spot bad MCP configs is as important as writing good ones. This exercise trains the team to recognise the most common mistakes before they appear in production.</div>
+      <span class="section-lbl blue">Steps</span>
+      <div class="steps">
+        <div class="step"><div class="step-n">1</div><div class="step-text">Review this insecure configuration: <code>{ "auth": { "connectionString": "Server=prod-sql;Database=Investments;User Id=sa;Password=Admin123!" }, "tools": [{ "name": "run_sql_query", "description": "Run any SQL", "inputSchema": { "query": "string" } }, { "name": "update_portfolio_value", "description": "Update a portfolio" }] }</code></div></div>
+        <div class="step"><div class="step-n">2</div><div class="step-text">Identify issues: hardcoded SA credentials, generic SQL executor (injection risk), write tool (data modification without human approval), no rate limiting, no owner, no <code>cannot</code> boundaries, SA account has all privileges.</div></div>
+        <div class="step"><div class="step-n">3</div><div class="step-text">Assign severity: Critical / High / Medium. Justify with investment data or regulatory compliance impact.</div></div>
+        <div class="step"><div class="step-n">4</div><div class="step-text">Write a fully remediated version: Managed Identity auth, specific read-only schema tools, remove write tools, add rate limiting, owner, and <code>cannot</code> statements.</div></div>
+      </div>
+      <div class="warn"><div class="warn-lbl">SA account risk</div><div class="warn-text">The SA account has unrestricted SQL Server access including DROP TABLE and CREATE LOGIN. An AI model with SA access could accidentally &mdash; or through prompt injection &mdash; wipe the investments database.</div></div>
+      <span class="section-lbl green">Validation Checklist</span>
+      <ul class="checklist">
+        <li><input type="checkbox" id="m05c1" onchange="chk(this)"><label for="m05c1">At least 5 issues identified with severity ratings</label></li>
+        <li><input type="checkbox" id="m05c2" onchange="chk(this)"><label for="m05c2">SA credential risk rated Critical with impact statement</label></li>
+        <li><input type="checkbox" id="m05c3" onchange="chk(this)"><label for="m05c3">Remediated config uses Managed Identity and read-only tools</label></li>
+        <li><input type="checkbox" id="m05c4" onchange="chk(this)"><label for="m05c4">All write tools removed from remediated config</label></li>
+      </ul>
+      <div class="present-box"><div class="present-lbl">Present This</div><div class="present-text">Which issue had the highest regulatory impact &mdash; SA credentials or the write tool? Explain the worst-case scenario for each to a non-technical stakeholder.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- HOOKS -->
+<div class="topic-section" id="topic-hooks" data-topic="hooks">
+  <div class="t-header">
+    <div class="t-icon">&#x1FA9D;</div>
+    <div class="t-header-text">
+      <h2>Hooks</h2>
+      <p>Design event-driven hooks that automatically enforce security, compliance, and quality gates at key moments in the Copilot agent workflow.</p>
+    </div>
+    <div class="t-meta">
+      <span class="t-count">5 exercises</span>
+      <button class="t-pick-btn" onclick="pick('hooks')">&#x1F3B2; Pick 2 for session</button>
+      <button class="t-clear-btn" id="clr-hooks" onclick="clearPick('hooks')">clear selection</button>
+    </div>
+  </div>
+
+  <div class="ex-card" id="ex-h01">
+    <div class="ex-header" onclick="tog(this)"><span class="ex-num">H-01</span><span class="ex-title">Pre-Change Secret Detection Hook</span><span class="ex-dur">20 min</span><span class="chev">&#9660;</span></div>
+    <div class="ex-body">
+      <div class="goal-box"><div class="goal-text">Author <code>.github/hooks/detect-secrets.hook.md</code> that runs before any file write, detects hardcoded credentials (SQL Server connection strings, Azure storage keys, API keys, private key headers), and blocks the write with a specific remediation message.</div></div>
+      <div class="ctx-box">Investments platform connection strings contain SQL Server credentials and Azure storage keys for fund data. A pre-write hook is the last line of defence before credentials reach source control.</div>
+      <span class="section-lbl blue">Steps</span>
+      <div class="steps">
+        <div class="step"><div class="step-n">1</div><div class="step-text">Create the hook. Set <code>event: pre_file_write</code>, <code>priority: 1</code> (runs first).</div></div>
+        <div class="step"><div class="step-n">2</div><div class="step-text">BLOCK patterns: SQL Server connection strings with passwords (<code>Password=\S{4,}</code>), Azure Storage account keys (88-char base64), Azure SAS tokens (<code>sv=\d{4}-\d{2}-\d{2}&amp;</code>), private key headers (<code>-----BEGIN .{0,20}PRIVATE KEY-----</code>), generic secrets (password/apikey/secret/connectionstring + = + high-entropy string).</div></div>
+        <div class="step"><div class="step-n">3</div><div class="step-text">WARN patterns: placeholder strings (<code>YOUR_KEY_HERE</code>, <code>TODO: add key</code>). False positive exclusions: test files with fake values, <code>appsettings.Development.json</code> with localhost references.</div></div>
+        <div class="step"><div class="step-n">4</div><div class="step-text">BLOCK message: direct developers to (1) use Azure Key Vault references in appsettings: <code>@Microsoft.KeyVault(VaultName=metlife-investments-kv;SecretName=sql-connection-string)</code>, (2) environment variables for local dev, (3) Azure App Configuration for shared non-secret config.</div></div>
+      </div>
+      <div class="tip"><div class="tip-lbl">Key Vault reference format</div><div class="tip-text">Include the correct appsettings.json pattern in the BLOCK message: <code>"ConnectionStrings": { "InvestmentsDb": "@Microsoft.KeyVault(VaultName=metlife-investments-kv;SecretName=sql-connection-string)" }</code> &mdash; so developers have the fix immediately.</div></div>
+      <span class="section-lbl green">Validation Checklist</span>
+      <ul class="checklist">
+        <li><input type="checkbox" id="h01c1" onchange="chk(this)"><label for="h01c1">BLOCK patterns include SQL Server connection strings and Azure storage keys</label></li>
+        <li><input type="checkbox" id="h01c2" onchange="chk(this)"><label for="h01c2">False positive exclusions prevent test file noise</label></li>
+        <li><input type="checkbox" id="h01c3" onchange="chk(this)"><label for="h01c3">BLOCK message includes Key Vault reference syntax as the replacement</label></li>
+        <li><input type="checkbox" id="h01c4" onchange="chk(this)"><label for="h01c4">Hook tested against a sample file with a fake connection string &mdash; correct BLOCK emitted</label></li>
+      </ul>
+      <div class="present-box"><div class="present-lbl">Present This</div><div class="present-text">Show the hook triggering on a fake SQL Server connection string in appsettings.json. Does the BLOCK message give the developer enough information to fix it without googling?</div></div>
+    </div>
+  </div>
+
+  <div class="ex-card" id="ex-h02">
+    <div class="ex-header" onclick="tog(this)"><span class="ex-num">H-02</span><span class="ex-title">Post-Change Build and Test Verification Hook</span><span class="ex-dur">20 min</span><span class="chev">&#9660;</span></div>
+    <div class="ex-body">
+      <div class="goal-box"><div class="goal-text">Author <code>.github/hooks/build-and-test.hook.md</code> that runs after any write to <code>src/**/*.cs</code>, executes <code>dotnet build</code> and the corresponding test class, and feeds failures back into the agent session before it declares completion.</div></div>
+      <div class="ctx-box">Without this hook, an agent can deliver syntactically valid C# that doesn't compile or breaks existing tests. The hook creates a mandatory self-verification loop before the agent is done.</div>
+      <span class="section-lbl blue">Steps</span>
+      <div class="steps">
+        <div class="step"><div class="step-n">1</div><div class="step-text">Create the hook. Set <code>event: post_file_write</code>, <code>scope: "src/**/*.cs"</code>. Does NOT trigger on <code>db/Migrations/</code>, <code>docs/</code>, or <code>*.json</code>.</div></div>
+        <div class="step"><div class="step-n">2</div><div class="step-text">Action sequence: (1) find changed file's <code>*.csproj</code>, (2) run <code>dotnet build [project] --no-restore</code> &mdash; if compilation fails, return errors to agent and stop, (3) find <code>[ClassName]Tests.cs</code>, (4) run <code>dotnet test --filter FullyQualifiedName~[ClassName]Tests --no-build</code>.</div></div>
+        <div class="step"><div class="step-n">3</div><div class="step-text">On compilation failure: return full compiler output with "Fix these compilation errors before declaring this task complete."</div></div>
+        <div class="step"><div class="step-n">4</div><div class="step-text">On test failure: return failing test names and errors with "Fix the failing tests or explain why this breakage is acceptable." 90-second test timeout emits WARN but does not block.</div></div>
+      </div>
+      <div class="tip"><div class="tip-lbl">Compile first, then test</div><div class="tip-text">Always run <code>dotnet build</code> before <code>dotnet test</code>. If build fails, test output is meaningless and confusing. Sequencing avoids the agent chasing test failures that are actually compilation errors.</div></div>
+      <span class="section-lbl green">Validation Checklist</span>
+      <ul class="checklist">
+        <li><input type="checkbox" id="h02c1" onchange="chk(this)"><label for="h02c1">Scope excludes migration files and docs</label></li>
+        <li><input type="checkbox" id="h02c2" onchange="chk(this)"><label for="h02c2">Build runs before tests &mdash; not simultaneously</label></li>
+        <li><input type="checkbox" id="h02c3" onchange="chk(this)"><label for="h02c3">Failures returned to agent with actionable message (not just error code)</label></li>
+        <li><input type="checkbox" id="h02c4" onchange="chk(this)"><label for="h02c4">90-second timeout WARNs but does not block</label></li>
+      </ul>
+      <div class="present-box"><div class="present-lbl">Present This</div><div class="present-text">Demonstrate the feedback loop: agent writes C# with a missing <code>using</code> statement, hook returns the compiler error, agent corrects it, hook confirms success. How many iterations?</div></div>
+    </div>
+  </div>
+
+  <div class="ex-card" id="ex-h03">
+    <div class="ex-header" onclick="tog(this)"><span class="ex-num">H-03</span><span class="ex-title">PII Data Exposure Detection Hook</span><span class="ex-dur">20 min</span><span class="chev">&#9660;</span></div>
+    <div class="ex-body">
+      <div class="goal-box"><div class="goal-text">Author <code>.github/hooks/detect-pii-in-logs.hook.md</code> that scans proposed C# file writes for PII field names near <code>_logger.*</code> calls and blocks/warns based on tier &mdash; with a false positive suppression annotation.</div></div>
+      <div class="ctx-box">GDPR and FINRA prohibit logging personal financial data. A pre-write hook catching PII exposure before the file is saved prevents compliance violations from ever reaching the codebase &mdash; let alone production log sinks.</div>
+      <span class="section-lbl blue">Steps</span>
+      <div class="steps">
+        <div class="step"><div class="step-n">1</div><div class="step-text">Create the hook. <code>event: pre_file_write</code>, <code>scope: "src/**"</code>, <code>priority: 2</code>.</div></div>
+        <div class="step"><div class="step-n">2</div><div class="step-text">Tier 1 BLOCK (regulatory identifiers): <code>AccountNumber, TaxId, SSN, NationalInsuranceNumber, PassportNumber</code> within 3 lines of <code>_logger.Log*</code>. Detect C# property access: <code>entity.AccountNumber</code> and string interpolation: <code>$"... {entity.AccountNumber} ..."</code>.</div></div>
+        <div class="step"><div class="step-n">3</div><div class="step-text">Tier 2 WARN: <code>DateOfBirth, EmailAddress, PhoneNumber, FullName, PortfolioHolderName, ClientName, IBAN</code>.</div></div>
+        <div class="step"><div class="step-n">4</div><div class="step-text">BLOCK message: explain the regulatory reason. Show correct pattern: <code>_logger.LogInformation("Account accessed {AccountId}", account.Id)</code> &mdash; use IDs, not values.</div></div>
+        <div class="step"><div class="step-n">5</div><div class="step-text">False positive suppression: <code>// pii-review-ok: [reason]</code> annotation suppresses warning for that line and logs the annotation to a compliance audit file.</div></div>
+      </div>
+      <span class="section-lbl green">Validation Checklist</span>
+      <ul class="checklist">
+        <li><input type="checkbox" id="h03c1" onchange="chk(this)"><label for="h03c1">Tier 1 includes financial-specific fields (AccountNumber, TaxId, IBAN)</label></li>
+        <li><input type="checkbox" id="h03c2" onchange="chk(this)"><label for="h03c2">Pattern detects C# string interpolation (<code>$"... {entity.TaxId}"</code>)</label></li>
+        <li><input type="checkbox" id="h03c3" onchange="chk(this)"><label for="h03c3">BLOCK message shows the correct ID-only logging pattern</label></li>
+        <li><input type="checkbox" id="h03c4" onchange="chk(this)"><label for="h03c4">Suppression annotation defined and logged for compliance audit</label></li>
+      </ul>
+      <div class="present-box"><div class="present-lbl">Present This</div><div class="present-text">Show the hook on a log call including <code>trade.AccountNumber</code>. Does the message reference GDPR or FINRA? Does it show the correct replacement pattern?</div></div>
+    </div>
+  </div>
+
+  <div class="ex-card" id="ex-h04">
+    <div class="ex-header" onclick="tog(this)"><span class="ex-num">H-04</span><span class="ex-title">Protected Files Boundary Hook</span><span class="ex-dur">15 min</span><span class="chev">&#9660;</span></div>
+    <div class="ex-body">
+      <div class="goal-box"><div class="goal-text">Author <code>.github/hooks/protected-files.hook.md</code> defining a two-tier system: BLOCK paths the agent can never write (migrations, CI pipelines, Terraform), and CONFIRM paths requiring explicit human approval.</div></div>
+      <div class="ctx-box">EF Core migrations, Azure DevOps pipelines, and Terraform infrastructure files have production impact that is difficult to reverse. This hook prevents agents from making silent changes to these critical artifacts.</div>
+      <span class="section-lbl blue">Steps</span>
+      <div class="steps">
+        <div class="step"><div class="step-n">1</div><div class="step-text">Create the hook. <code>event: pre_file_write</code>, <code>priority: 0</code> (highest &mdash; runs before all others).</div></div>
+        <div class="step"><div class="step-n">2</div><div class="step-text">BLOCK paths (no agent writes, ever): <code>db/Migrations/**</code> (deployed migrations are immutable), <code>.github/workflows/**</code> (CI changes require team PR), <code>infrastructure/**</code> (Terraform affects Azure resources), <code>.github/CODEOWNERS</code>.</div></div>
+        <div class="step"><div class="step-n">3</div><div class="step-text">CONFIRM paths (pause &mdash; wait for explicit YES): <code>*.csproj</code>, <code>appsettings.Production.json</code>, <code>.github/copilot-instructions.md</code>, <code>.github/hooks/**</code>.</div></div>
+        <div class="step"><div class="step-n">4</div><div class="step-text">BLOCK message: explain why protected and give the correct manual process (e.g., "Create a new EF Core migration with <code>dotnet ef migrations add [Name]</code>"). CONFIRM prompt: describe change (1 sentence), protection reason, ask "Type YES to allow or NO to cancel." Log the decision.</div></div>
+      </div>
+      <div class="warn"><div class="warn-lbl">Migrations are append-only</div><div class="warn-text">Once an EF Core migration file is deployed to any environment, it must never be modified. EF Core computes migration history from file checksums. The BLOCK message must explain this clearly.</div></div>
+      <span class="section-lbl green">Validation Checklist</span>
+      <ul class="checklist">
+        <li><input type="checkbox" id="h04c1" onchange="chk(this)"><label for="h04c1">BLOCK paths include migrations, CI workflows, and Terraform</label></li>
+        <li><input type="checkbox" id="h04c2" onchange="chk(this)"><label for="h04c2">CONFIRM paths include production appsettings and <code>.csproj</code> files</label></li>
+        <li><input type="checkbox" id="h04c3" onchange="chk(this)"><label for="h04c3">BLOCK message for migrations explains "create new migration" alternative</label></li>
+        <li><input type="checkbox" id="h04c4" onchange="chk(this)"><label for="h04c4">CONFIRM decisions logged (who approved and when)</label></li>
+      </ul>
+      <div class="present-box"><div class="present-lbl">Present This</div><div class="present-text">Ask the agent to "fix a typo in a deployed EF Core migration." Show the BLOCK response. How does the message explain the correct alternative without leaving the developer stuck?</div></div>
+    </div>
+  </div>
+
+  <div class="ex-card" id="ex-h05">
+    <div class="ex-header" onclick="tog(this)"><span class="ex-num">H-05</span><span class="ex-title">AI Change Audit Trail Hook</span><span class="ex-dur">20 min</span><span class="chev">&#9660;</span></div>
+    <div class="ex-body">
+      <div class="goal-box"><div class="goal-text">Author <code>.github/hooks/audit-trail.hook.md</code> that creates an append-only structured JSON log of every file change made by an AI agent &mdash; capturing session ID, developer UPN, work item reference, files changed, and hooks triggered, without logging file contents.</div></div>
+      <div class="ctx-box">SOX and FINRA require audit trails for changes to financial systems. An AI-specific audit log provides evidence that changes were human-authorized, associated with a work item, and reviewed by the correct hooks.</div>
+      <span class="section-lbl blue">Steps</span>
+      <div class="steps">
+        <div class="step"><div class="step-n">1</div><div class="step-text">Create the hook. <code>event: post_file_write</code>, <code>priority: 100</code> (runs last &mdash; after all other hooks complete).</div></div>
+        <div class="step"><div class="step-n">2</div><div class="step-text">Log entry schema: <code>{ timestamp, sessionId, developer (UPN), workItem (AB# or null), agentMode, instructionFilesActive: [], change: { file, changeType, linesAdded, linesRemoved, changeSummary }, hooksTriggered: [], reviewRequired: bool }</code>.</div></div>
+        <div class="step"><div class="step-n">3</div><div class="step-text">NEVER LOG: file contents or code snippets, PII fields from source code, authentication tokens, financial data values.</div></div>
+        <div class="step"><div class="step-n">4</div><div class="step-text">Log destinations: primary = append to <code>.github/logs/ai-audit.jsonl</code> (local); secondary = Azure Monitor Log Analytics via <code>AUDIT_WEBHOOK_URL</code> (tamper-evident, authoritative for compliance). 90-day minimum retention; 7 years for FINRA-regulated changes.</div></div>
+      </div>
+      <div class="tip"><div class="tip-lbl">FINRA 7-year retention</div><div class="tip-text">FINRA Rule 17a-4 requires broker-dealer records to be retained 7 years. If the platform touches trade execution data, the 90-day default is insufficient. Flag trade sessions: <code>"regulatoryRetention": "7years"</code>.</div></div>
+      <span class="section-lbl green">Validation Checklist</span>
+      <ul class="checklist">
+        <li><input type="checkbox" id="h05c1" onchange="chk(this)"><label for="h05c1">Log schema includes developer UPN and work item reference</label></li>
+        <li><input type="checkbox" id="h05c2" onchange="chk(this)"><label for="h05c2">NEVER LOG section explicitly excludes file contents and financial values</label></li>
+        <li><input type="checkbox" id="h05c3" onchange="chk(this)"><label for="h05c3">Secondary destination is Azure Monitor or equivalent tamper-evident store</label></li>
+        <li><input type="checkbox" id="h05c4" onchange="chk(this)"><label for="h05c4">FINRA 7-year retention mentioned for trade-related changes</label></li>
+      </ul>
+      <div class="present-box"><div class="present-lbl">Present This</div><div class="present-text">Show a sample audit log entry from a session that changed a trade service file. How would this entry be used in a FINRA audit to prove human authorization?</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="page-footer">
+  MetLife Investments Management &middot; GitHub Copilot Customization &middot; Module 02 &middot; Practice Exercises<br>
+  .NET 10 &middot; C# &middot; Blazor &middot; SQL Server &middot; Azure DevOps &middot; xUnit &middot; EF Core
+</div>
+</div>
+
+<script>
+function tog(header){
+  var card=header.closest('.ex-card');
+  card.classList.toggle('open',!card.classList.contains('open'));
+}
+function chk(cb){
+  var li=cb.closest('li');
+  if(li)li.style.opacity=cb.checked?'.5':'1';
+}
+function scrollTo(id){
+  var el=document.getElementById(id);
+  if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function pick(topic){
+  var section=document.getElementById('topic-'+topic);
+  var cards=Array.from(section.querySelectorAll('.ex-card'));
+  var n=Math.min(2,cards.length);
+  cards.forEach(function(c){c.classList.remove('picked','dimmed');});
+  var chosen=[];
+  while(chosen.length<n){var idx=Math.floor(Math.random()*cards.length);if(!chosen.includes(idx))chosen.push(idx);}
+  cards.forEach(function(c,i){
+    if(chosen.includes(i)){c.classList.add('picked');c.classList.add('open');}
+    else c.classList.add('dimmed');
+  });
+  var clrBtn=document.getElementById('clr-'+topic);
+  if(clrBtn)clrBtn.classList.add('vis');
+}
+function clearPick(topic){
+  var section=document.getElementById('topic-'+topic);
+  section.querySelectorAll('.ex-card').forEach(function(c){c.classList.remove('picked','dimmed');});
+  var clrBtn=document.getElementById('clr-'+topic);
+  if(clrBtn)clrBtn.classList.remove('vis');
+}
+var progBar=document.getElementById('progBar');
+var scrollBtn=document.getElementById('scrollTopBtn');
+window.addEventListener('scroll',function(){
+  var total=document.documentElement.scrollHeight-window.innerHeight;
+  progBar.style.width=(total?(window.scrollY/total)*100:0)+'%';
+  scrollBtn.classList.toggle('vis',window.scrollY>400);
+},{passive:true});
+</script>
+</body>
+</html>

@@ -1,5 +1,5 @@
 # Episode 01 — Introduction to Prompt Engineering
-## Prompt Engineering Podcast Series · GitHub Copilot Mastery · MetLife 2026
+## Prompt Engineering Podcast Series · GitHub Copilot Mastery
 
 **Format:** 2 hosts · conversational · ~4 minutes
 **Voices:** Jordan (male, US English) · Maya (female, US English)

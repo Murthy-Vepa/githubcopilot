@@ -1,5 +1,5 @@
 # Video Script 01 — Introduction to Prompt Engineering
-## Prompt Engineering Video Series · GitHub Copilot Mastery · MetLife 2026
+## Prompt Engineering Video Series · GitHub Copilot Mastery
 
 **Format:** 2 co-hosts · VS Code screen share · ~10 minutes
 **Hosts:** Jordan (male, US English) · Maya (female, US English)

@@ -1,5 +1,5 @@
 # Video Script 01 — What Are Copilot Agents?
-## Agents Video Series · GitHub Copilot Mastery · MetLife 2026
+## Agents Video Series · GitHub Copilot Mastery
 
 **Format:** 2 co-hosts · VS Code screen share · ~12 minutes
 **Hosts:** Jordan (male, US English) · Maya (female, US English)

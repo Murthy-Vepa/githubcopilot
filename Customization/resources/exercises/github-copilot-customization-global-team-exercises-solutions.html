@@ -1,0 +1,1640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GitHub Copilot Customization – Solutions Reference</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0a1628;--navy2:#102042;--navy3:#1e3a5f;
+  --sky:#0ea5e9;--sky-light:#e0f2fe;--sky-border:#bae6fd;
+  --paper:#f0f4f8;--card:#ffffff;--text:#1e293b;--muted:#64748b;--border:#e2e8f0;
+  --green:#059669;--green-light:#d1fae5;--green-border:#6ee7b7;
+  --amber:#d97706;--amber-light:#fffbeb;--amber-border:#fcd34d;
+  --code-bg:#0d1117;--code-text:#c9d1d9;
+  --shadow:0 4px 24px rgba(10,22,40,.10);--radius:12px;
+}
+html{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;scroll-behavior:smooth}
+body{background:var(--paper);color:var(--text);min-height:100vh}
+.page{max-width:1100px;margin:0 auto;padding:40px 32px 80px}
+
+.hero{padding:44px 48px 40px;background:linear-gradient(135deg,var(--navy2) 0%,var(--navy) 100%);border-radius:20px;margin-bottom:28px;color:#fff;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;width:420px;height:420px;border:1px solid rgba(14,165,233,.18);border-radius:50%;right:-80px;bottom:-210px;pointer-events:none}
+.hero-eye{font-size:11px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--sky);margin-bottom:10px}
+.hero h1{font-size:clamp(26px,3.8vw,40px);font-weight:900;letter-spacing:-1.5px;line-height:1.1;margin-bottom:10px}
+.hero-desc{font-size:15px;color:#94a3b8;line-height:1.6;max-width:640px;margin-bottom:18px}
+.hero-tags{display:flex;gap:8px;flex-wrap:wrap}
+.hero-tag{font-size:11px;font-weight:700;padding:5px 13px;border:1px solid rgba(255,255,255,.18);border-radius:100px;color:rgba(255,255,255,.8);background:rgba(255,255,255,.07)}
+.hero-tag.hl{background:rgba(16,185,129,.2);border-color:rgba(16,185,129,.5);color:#6ee7b7}
+
+.notice{background:var(--amber-light);border:1px solid var(--amber-border);border-left:4px solid var(--amber);border-radius:10px;padding:14px 18px;margin-bottom:24px}
+.notice-lbl{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--amber);margin-bottom:4px}
+.notice-text{font-size:13px;color:#78350f;line-height:1.6}
+
+.topic-nav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:40px}
+.t-pill{font-size:12px;font-weight:700;padding:8px 16px;border-radius:100px;border:2px solid var(--border);background:var(--card);color:var(--muted);cursor:pointer;transition:all .18s;white-space:nowrap}
+.t-pill:hover{border-color:var(--topic,var(--sky));color:var(--topic,var(--sky));background:var(--topic-bg,var(--sky-light))}
+
+.topic-section{margin-bottom:52px}
+.t-header{display:flex;align-items:flex-start;gap:14px;margin-bottom:18px;padding-bottom:18px;border-bottom:2px solid var(--border)}
+.t-icon{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;border:1px solid var(--topic-border,var(--border));background:var(--topic-bg,var(--paper));color:var(--topic,var(--sky))}
+.t-header-text h2{font-size:22px;font-weight:900;letter-spacing:-.4px;color:var(--navy);margin-bottom:3px}
+.t-header-text p{font-size:13px;color:var(--muted);line-height:1.5}
+
+[data-topic="instructions"]{--topic:#3b82f6;--topic-bg:#eff6ff;--topic-border:#bfdbfe}
+[data-topic="prompts"]{--topic:#8b5cf6;--topic-bg:#f5f3ff;--topic-border:#ddd6fe}
+[data-topic="agents"]{--topic:#0ea5e9;--topic-bg:#f0f9ff;--topic-border:#bae6fd}
+[data-topic="skills"]{--topic:#10b981;--topic-bg:#f0fdf4;--topic-border:#bbf7d0}
+[data-topic="mcp"]{--topic:#f97316;--topic-bg:#fff7ed;--topic-border:#fed7aa}
+[data-topic="hooks"]{--topic:#ef4444;--topic-bg:#fff1f2;--topic-border:#fecaca}
+
+.sol-card{background:var(--card);border:1.5px solid var(--border);border-radius:14px;margin-bottom:12px;overflow:hidden}
+.sol-header{display:flex;align-items:center;gap:12px;padding:16px 20px;cursor:pointer;user-select:none}
+.sol-header:hover{background:#fafafa}
+.sol-card.open .sol-header{border-bottom:1.5px solid var(--border)}
+.sol-num{font-size:11px;font-weight:800;padding:3px 10px;border-radius:6px;border:1px solid var(--topic-border,var(--border));background:var(--topic-bg,var(--paper));color:var(--topic,var(--muted));flex-shrink:0}
+.sol-title{font-size:14.5px;font-weight:700;flex:1;color:var(--navy)}
+.sol-badge{font-size:10px;font-weight:700;padding:3px 10px;border-radius:100px;border:1px solid var(--green-border);background:var(--green-light);color:var(--green);flex-shrink:0}
+.chev{font-size:12px;color:var(--muted);transition:transform .2s;flex-shrink:0}
+.sol-card.open .chev{transform:rotate(180deg)}
+.sol-body{display:none;padding:22px}
+.sol-card.open .sol-body{display:block}
+
+.section-lbl{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.9px;color:var(--muted);margin-bottom:8px;display:block}
+.section-lbl.blue{color:#2563eb}
+.section-lbl.green{color:var(--green)}
+.section-lbl.orange{color:var(--amber)}
+.sol-summary{background:var(--green-light);border:1px solid var(--green-border);border-radius:10px;padding:12px 16px;margin-bottom:18px}
+.sol-summary-text{font-size:13.5px;color:#065f46;line-height:1.6;font-weight:500}
+.key-decisions{margin-bottom:18px;background:#f8fafc;border:1px solid var(--border);border-radius:10px;padding:14px 18px}
+.key-decision{font-size:13px;color:var(--text);line-height:1.55;margin-bottom:8px;padding-left:18px;position:relative}
+.key-decision::before{content:"→";position:absolute;left:0;color:var(--sky);font-weight:700}
+.key-decision:last-child{margin-bottom:0}
+pre{background:var(--code-bg);border-radius:10px;padding:18px 20px;overflow-x:auto;margin:10px 0 18px;border:1px solid rgba(255,255,255,.08)}
+pre code{background:none;color:var(--code-text);font-size:12px;padding:0;font-family:'Cascadia Code','Consolas',monospace;line-height:1.6}
+.file-label{font-size:10px;font-weight:800;letter-spacing:.8px;color:var(--muted);margin-bottom:4px;margin-top:14px;display:block}
+.pitfall{background:#fff1f2;border-left:4px solid #ef4444;border-radius:0 8px 8px 0;padding:10px 14px;margin:10px 0}
+.pitfall-lbl{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:#ef4444;margin-bottom:3px}
+.pitfall-text{font-size:12.5px;color:#991b1b;line-height:1.5}
+.tip{background:var(--amber-light);border-left:4px solid var(--amber);border-radius:0 8px 8px 0;padding:10px 14px;margin:10px 0}
+.tip-lbl{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--amber);margin-bottom:3px}
+.tip-text{font-size:12.5px;color:#78350f;line-height:1.5}
+
+#scrollTopBtn{position:fixed;bottom:22px;right:22px;width:38px;height:38px;border-radius:50%;background:var(--navy);color:#fff;border:none;cursor:pointer;font-size:15px;box-shadow:0 4px 14px rgba(10,22,40,.25);opacity:0;visibility:hidden;transition:all .25s;z-index:99}
+#scrollTopBtn.vis{opacity:1;visibility:visible}
+#scrollTopBtn:hover{background:var(--sky);transform:translateY(-2px)}
+.prog-bar{position:fixed;top:0;left:0;height:3px;background:var(--green);width:0;z-index:1000;transition:width .1s}
+.page-footer{text-align:center;padding:36px 20px;border-top:1px solid var(--border);color:var(--muted);font-size:12px;margin-top:48px}
+@media(max-width:600px){.page{padding:20px 14px 60px}.hero{padding:28px 22px}}
+</style>
+</head>
+<body>
+<div class="prog-bar" id="progBar"></div>
+<button id="scrollTopBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Back to top">&#8593;</button>
+<div class="page">
+
+<div class="hero">
+  <div class="hero-eye">Module 02 &middot; GitHub Copilot Customization &middot; Solutions Reference</div>
+  <h1>Exercise Solutions<br>Answer Key</h1>
+  <p class="hero-desc">Reference implementations for all 32 exercises using MetLife Investments Management's .NET 10 / C# / Blazor / SQL Server platform. Each solution includes key decisions and common pitfalls.</p>
+  <div class="hero-tags">
+    <span class="hero-tag hl">&#x1F4D6; Solutions Reference</span>
+    <span class="hero-tag">&#x1F4C1; metlife-investments-platform</span>
+    <span class="hero-tag">32 Solutions</span>
+    <span class="hero-tag">6 Topics</span>
+  </div>
+</div>
+
+<div class="notice">
+  <div class="notice-lbl">Instructor Note</div>
+  <div class="notice-text">These are reference implementations &mdash; the exercises encourage some design variation. Accept any solution that satisfies the validation checklist. The pitfall sections highlight what to watch for in real team code reviews.</div>
+</div>
+
+<div class="topic-nav">
+  <button class="t-pill" style="--topic:#3b82f6;--topic-bg:#eff6ff" onclick="jumpTo('topic-instructions')">&#x1F4CB; Instructions</button>
+  <button class="t-pill" style="--topic:#8b5cf6;--topic-bg:#f5f3ff" onclick="jumpTo('topic-prompts')">&#x1F4AC; Prompts</button>
+  <button class="t-pill" style="--topic:#0ea5e9;--topic-bg:#f0f9ff" onclick="jumpTo('topic-agents')">&#x1F916; Agents</button>
+  <button class="t-pill" style="--topic:#10b981;--topic-bg:#f0fdf4" onclick="jumpTo('topic-skills')">&#x1F9E9; Skills</button>
+  <button class="t-pill" style="--topic:#f97316;--topic-bg:#fff7ed" onclick="jumpTo('topic-mcp')">&#x1F50C; MCP Servers</button>
+  <button class="t-pill" style="--topic:#ef4444;--topic-bg:#fff1f2" onclick="jumpTo('topic-hooks')">&#x1FA9D; Hooks</button>
+</div>
+
+<!-- INSTRUCTIONS SOLUTIONS -->
+<div class="topic-section" id="topic-instructions" data-topic="instructions">
+  <div class="t-header">
+    <div class="t-icon">&#x1F4CB;</div>
+    <div class="t-header-text"><h2>Instructions &mdash; Solutions</h2><p>Reference <code>.github/copilot-instructions.md</code> and scoped instruction files for the MetLife Investments .NET platform.</p></div>
+  </div>
+
+  <div class="sol-card" id="sol-i01">
+    <div class="sol-header" onclick="tog(this)"><span class="sol-num">I-01</span><span class="sol-title">Bootstrap Repo-Wide Copilot Instructions</span><span class="sol-badge">&#x2714; Solution</span><span class="chev">&#9660;</span></div>
+    <div class="sol-body">
+      <div class="sol-summary"><div class="sol-summary-text">Complete <code>.github/copilot-instructions.md</code> covering .NET 10 stack, architecture boundaries, C# naming conventions, verification commands, domain rules, and financial security.</div></div>
+      <span class="file-label">FILE: .github/copilot-instructions.md</span>
+<pre><code>---
+applyTo: "**"
+---
+
+# MetLife Investments Management – Copilot Instructions
+
+## Tech Stack
+- .NET 10, C# 13 (nullable reference types, primary constructors)
+- ASP.NET Core Web API (src/Investments.Api)
+- Blazor Server (src/Investments.Web)
+- Entity Framework Core 9 + SQL Server 2022 (src/Investments.DataAccess)
+- xUnit + Moq + FluentAssertions (tests)
+- Azure DevOps CI/CD; Azure App Services, Functions, Service Bus
+
+## Architecture Boundaries
+- Business logic ONLY in src/Investments.Services/
+- HTTP concerns ONLY in src/Investments.Api/Controllers/
+- Data access ONLY via repository interfaces in src/Investments.DataAccess/
+  — never inject DbContext directly into a controller or service
+- Blazor UI ONLY in src/Investments.Web/
+- EF Core migrations in db/Migrations/ — never edit deployed migrations
+
+## C# Naming Conventions
+- PascalCase for files, classes, methods, properties (PortfolioService.cs)
+- Interface prefix I (IPortfolioService, ITradeRepository)
+- Private fields _camelCase (_portfolioRepository, _logger)
+- Async methods suffix Async (GetPortfolioAsync, ExecuteTradeAsync)
+- Test class suffix Tests; test name MethodName_Condition_ExpectedOutcome
+
+## Verification — Run Before Declaring Complete
+1. dotnet test                          # all tests pass
+2. dotnet build -warnaserror            # zero warnings
+3. dotnet format --verify-no-changes    # code style clean
+
+## Domain Context
+- MetLife Investments Management — Portfolio, Fund, Trade, Asset, Holdings
+- financial calculations: decimal ONLY — NEVER double or float
+- soft-delete only for Portfolio and Trade records (set DeletedAt, never dbContext.Remove())
+- all financial writes call _auditService.RecordAsync(entity, entityId, action, actorId)
+
+## Security — Non-Negotiable
+- NEVER log PII: account numbers, SSN, tax IDs, portfolio values tied to an individual
+- parameterized SQL / EF Core ONLY — never string-concatenated queries
+- [Authorize] on all controllers touching investment or client data
+- validate all request DTOs with FluentValidation before processing
+- secrets in Azure Key Vault — never in appsettings.json or source code
+
+## Special Projects
+- portfolio-analytics: Azure Databricks / Python / PySpark — Python rules apply, not C# rules
+- Legacy Java integration service: read-only — no new features added there
+</code></pre>
+      <div class="key-decisions">
+        <div class="key-decision">The <code>decimal</code> rule appears in Domain Context where engineers associate it with financial domain — not in a generic "coding standards" section they might skim.</div>
+        <div class="key-decision">Verification lists exact commands. Copilot can quote-run them; generic "run tests" does not tell an agent which runner to use.</div>
+        <div class="key-decision">Special Projects section prevents Copilot from applying C# conventions to the Databricks PySpark codebase.</div>
+      </div>
+      <div class="pitfall"><div class="pitfall-lbl">Common pitfall</div><div class="pitfall-text">Adding the <code>decimal</code> rule in a comment block that Copilot ignores vs. putting it in a dedicated bullet. Test by asking Copilot to add a NAV calculation &mdash; if it uses <code>double</code>, the rule isn't prominent enough.</div></div>
+    </div>
+  </div>
+
+  <div class="sol-card" id="sol-i02">
+    <div class="sol-header" onclick="tog(this)"><span class="sol-num">I-02</span><span class="sol-title">Scoped Instructions for Blazor Components</span><span class="sol-badge">&#x2714; Solution</span><span class="chev">&#9660;</span></div>
+    <div class="sol-body">
+      <div class="sol-summary"><div class="sol-summary-text">Scoped instruction file for <code>src/Investments.Web/**/*.razor</code> covering Blazor lifecycle, DI injection patterns, state management, and API call conventions.</div></div>
+      <span class="file-label">FILE: .github/instructions/blazor.instructions.md</span>
+<pre><code>---
+applyTo: "src/Investments.Web/**/*.razor"
+---
+
+# Blazor Component Conventions – MetLife Investments
+
+## Component Structure
+- Use @code { } block for component logic
+- Inject services: @inject IPortfolioService PortfolioService
+- Load async data in OnInitializedAsync — never in constructor
+- Handle three states: loading (bool isLoading), error (string? errorMessage), data
+
+## State Management
+- Page-level state: component properties in @code block
+- Shared cross-component state: scoped DI services in src/Investments.Web/State/
+- Never use static fields or singletons for UI state
+
+## API Calls
+- All HTTP calls via typed HttpClient wrappers in src/Investments.Web/Services/
+- Always wrap in try/catch; set errorMessage on exception
+- Use CancellationToken from component lifecycle where possible
+
+## Typical Pattern
+```razor
+@inject IPortfolioService PortfolioService
+
+@if (isLoading) { &lt;p&gt;Loading...&lt;/p&gt; }
+else if (errorMessage is not null) { &lt;p class="error"&gt;@errorMessage&lt;/p&gt; }
+else { &lt;!-- render data --&gt; }
+
+@code {
+    private bool isLoading = true;
+    private string? errorMessage;
+    private Portfolio? portfolio;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try { portfolio = await PortfolioService.GetAsync(Id); }
+        catch (Exception ex) { errorMessage = ex.Message; }
+        finally { isLoading = false; }
+    }
+}
+```
+</code></pre>
+      <div class="key-decisions">
+        <div class="key-decision">The example pattern is the most important element. Copilot generates conformant code when it has a concrete before/after template in the instruction file.</div>
+        <div class="key-decision"><code>applyTo</code> scoped to <code>.razor</code> only means these conventions don't leak into API or service classes. Narrowest scope wins.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sol-card" id="sol-i03">
+    <div class="sol-header" onclick="tog(this)"><span class="sol-num">I-03</span><span class="sol-title">Encode API Security Guardrails for Controllers</span><span class="sol-badge">&#x2714; Solution</span><span class="chev">&#9660;</span></div>
+    <div class="sol-body">
+      <div class="sol-summary"><div class="sol-summary-text">Scoped instruction file for <code>src/Investments.Api/**</code> encoding ASP.NET Core security rules. With this file active, Copilot generates controllers that include <code>[Authorize]</code>, FluentValidation, and <code>ProblemDetails</code> error responses automatically.</div></div>
+      <span class="file-label">FILE: .github/instructions/api.instructions.md</span>
+<pre><code>---
+applyTo: "src/Investments.Api/**"
+---
+
+# ASP.NET Core API Security Conventions – MetLife Investments
+
+## Input Validation (MANDATORY)
+- Inject IValidator&lt;TRequest&gt; for every action with a request body
+- Call await validator.ValidateAndThrowAsync(request) before any business logic
+- Invalid requests: HTTP 400 with RFC 7807 ProblemDetails — never continue processing
+
+## Authentication &amp; Authorization (MANDATORY)
+- [Authorize] on every controller accessing investment or client data
+- Write operations: [Authorize(Policy = "PortfolioManager")] or [Authorize(Policy = "TradeExecutor")]
+- Fund admin: [Authorize(Policy = "FundAdministrator")]
+- Never rely on caller assumptions — always verify
+
+## Data Access
+- Inject IPortfolioRepository, ITradeRepository, IFundRepository (interfaces from src/Investments.DataAccess)
+- NEVER inject DbContext directly into a controller
+- NEVER write inline LINQ in action methods — call repository methods
+
+## Error Responses
+- Use global exception middleware (Investments.Api/Middleware/ExceptionMiddleware.cs)
+- Return ProblemDetails with correlationId property
+- NEVER include stack traces, SQL messages, or exception details in responses
+
+## Example Controller Pattern
+```csharp
+[ApiController]
+[Route("api/[controller]")]
+[Authorize]
+public class PortfoliosController : ControllerBase
+{
+    private readonly IPortfolioRepository _repository;
+    private readonly IValidator&lt;CreatePortfolioRequest&gt; _validator;
+
+    public PortfoliosController(
+        IPortfolioRepository repository,
+        IValidator&lt;CreatePortfolioRequest&gt; validator) 
+        =&gt; (_repository, _validator) = (repository, validator);
+
+    [HttpPost]
+    [Authorize(Policy = "PortfolioManager")]
+    [ProducesResponseType&lt;PortfolioDto&gt;(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task&lt;IActionResult&gt; CreateAsync(CreatePortfolioRequest request)
+    {
+        await _validator.ValidateAndThrowAsync(request);
+        var portfolio = await _repository.CreateAsync(request);
+        return CreatedAtAction(nameof(GetAsync), new { id = portfolio.Id }, portfolio);
+    }
+}
+```
+</code></pre>
+    </div>
+  </div>
+
+  <div class="sol-card" id="sol-i04">
+    <div class="sol-header" onclick="tog(this)"><span class="sol-num">I-04</span><span class="sol-title">Audit and Rationalize Conflicting Instructions</span><span class="sol-badge">&#x2714; Solution</span><span class="chev">&#9660;</span></div>
+    <div class="sol-body">
+      <div class="sol-summary"><div class="sol-summary-text">Sample conflict log and resolution decisions demonstrating the narrowest-scope-wins principle.</div></div>
+      <span class="file-label">SAMPLE CONFLICT LOG</span>
+<pre><code># Instructions Conflict Log
+
+| # | Rule | In Global | In Scoped | Resolution |
+|---|------|-----------|-----------|------------|
+| 1 | Error response format (ProblemDetails) | "return JSON with message field" | "use RFC 7807 ProblemDetails with correlationId" | → OWNED BY api.instructions.md. Removed from global. |
+| 2 | Async data loading | "avoid blocking calls" | "use OnInitializedAsync for all async loads" | → OWNED BY blazor.instructions.md. Global retains generic async rule. |
+| 3 | [Authorize] requirement | "secure your endpoints" | "[Authorize] on every controller touching investment data" | → OWNED BY api.instructions.md. Global security section simplified. |
+| 4 | Decimal for money | Present in global | Not in scoped files | → OWNED BY global (applies to all layers). No change needed. |
+
+## Rule: Narrowest scope wins. One owner per rule.
+</code></pre>
+      <div class="key-decisions">
+        <div class="key-decision">Keeping the <code>decimal</code> rule in the global file is correct &mdash; it applies to services, repositories, and Blazor components, not just API controllers.</div>
+        <div class="key-decision">The conflict between "return JSON with message field" and "use ProblemDetails" was the most impactful to resolve. A controller generated while both files were active alternated formats.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sol-card" id="sol-i05">
+    <div class="sol-header" onclick="tog(this)"><span class="sol-num">I-05</span><span class="sol-title">Bootstrap Instructions for the portfolio-analytics Service</span><span class="sol-badge">&#x2714; Solution</span><span class="chev">&#9660;</span></div>
+    <div class="sol-body">
+      <div class="sol-summary"><div class="sol-summary-text">Tagging rubric and resulting analytics-service instructions showing which rules transfer and which do not.</div></div>
+      <span class="file-label">TAGGING RUBRIC</span>
+<pre><code>## Rule Tagging
+
+Shared (any MetLife service):
+  - [S] No PII in logs
+  - [S] Secrets in Key Vault
+  - [S] OWASP input validation
+  - [S] 7-year FINRA retention for trade-related data
+  - [S] Parameterized queries (or equivalent parameterized PySpark filters)
+
+Domain-Specific (investments-platform .NET only):
+  - [D] decimal for financial calculations
+  - [D] EF Core repository pattern
+  - [D] [Authorize] + FluentValidation
+  - [D] Blazor OnInitializedAsync pattern
+  - [D] dotnet test verification
+
+Governance (org-wide):
+  - [G] No credentials in source control
+  - [G] SOX change control — every change references ADO work item
+  - [G] Security contact: security-team@metlife.com
+  - [G] GDPR data minimization — collect only necessary personal data
+</code></pre>
+      <span class="file-label">FILE: portfolio-analytics/.github/copilot-instructions.md (extract)</span>
+<pre><code>---
+applyTo: "**"
+---
+
+# MetLife portfolio-analytics Service – Copilot Instructions
+
+## Tech Stack
+- Python 3.11+, PySpark 3.x, Azure Databricks Runtime 14+
+- pytest for testing
+
+## Governance Rules (inherited from org-level)
+- NEVER log PII (account numbers, fund holder names, tax IDs)
+- Secrets in Azure Key Vault — never hardcoded
+- FINRA 7-year retention for job outputs that include trade-level data
+- SOX: every change must reference an ADO work item (AB#) in commit
+
+## Analytics-Specific Rules
+- PySpark transformations must be idempotent — safe to re-run
+- Output datasets must include a processing_timestamp column
+- Never hard-code storage account names or SAS tokens — use Key Vault
+- Test: pytest with at least one test per transformation function
+</code></pre>
+    </div>
+  </div>
+</div>
+
+<!-- PROMPTS SOLUTIONS -->
+<div class="topic-section" id="topic-prompts" data-topic="prompts">
+  <div class="t-header">
+    <div class="t-icon">&#x1F4AC;</div>
+    <div class="t-header-text"><h2>Prompts &mdash; Solutions</h2><p>Reference <code>.prompt.md</code> files for the MetLife Investments .NET platform.</p></div>
+  </div>
+
+  <div class="sol-card" id="sol-p01">
+    <div class="sol-header" onclick="tog(this)"><span class="sol-num">P-01</span><span class="sol-title">Pull Request Review Prompt for .NET Code</span><span class="sol-badge">&#x2714; Solution</span><span class="chev">&#9660;</span></div>
+    <div class="sol-body">
+      <div class="sol-summary"><div class="sol-summary-text">Reusable PR review prompt emitting a structured findings table and APPROVED / NEEDS CHANGES / BLOCKED verdict.</div></div>
+      <span class="file-label">FILE: .github/prompts/pr-review.prompt.md</span>
+<pre><code>---
+mode: ask
+---
+
+You are a senior .NET engineer on the MetLife Investments Management platform team.
+Review the PR diff attached to this conversation against the rules in .github/copilot-instructions.md.
+
+## Review Areas
+
+### 1. Architecture
+- Business logic confined to src/Investments.Services/?
+- Repositories injected (not DbContext) in controllers?
+- No inline LINQ in controller action methods?
+
+### 2. Security
+- [Authorize] on every controller touching investment/client data?
+- FluentValidation called before any business logic?
+- No PII (account numbers, tax IDs, SSN) in _logger.* calls?
+- No raw SQL string concatenation?
+
+### 3. Tests
+- New/changed behaviour covered by xUnit tests?
+- Error paths (exception handling) tested?
+- Mock setup uses Moq correctly (Mock&lt;T&gt; fields, not local vars)?
+
+### 4. EF Core &amp; Domain Rules
+- decimal used for ALL financial values (not double or float)?
+- Portfolio/Trade deletions use soft-delete (DeletedAt = DateTime.UtcNow)?
+- Financial writes call _auditService.RecordAsync(entity, entityId, action, actorId)?
+- No N+1 queries (navigation properties in loops without Include())?
+
+## Output Format
+
+**Summary:** [1–2 sentence overview]
+
+| # | Area | Severity | File:Line | Finding | Fix |
+|---|------|----------|-----------|---------|-----|
+| 1 | ... | CRITICAL/HIGH/MEDIUM/LOW | file.cs:42 | ... | ... |
+
+**Verdict:** APPROVED | NEEDS CHANGES | BLOCKED
+
+BLOCKED = any CRITICAL finding (missing auth on financial endpoint, hardcoded credentials, PII in logs).
+</code></pre>
+      <div class="pitfall"><div class="pitfall-lbl">Common pitfall</div><div class="pitfall-text">Vague findings like "security issue found" don't help. The prompt must demand File:Line references. Test: run on a diff &mdash; if findings lack file/line, add "each finding MUST include the specific file and line number" to the prompt.</div></div>
+    </div>
+  </div>
+
+  <div class="sol-card" id="sol-p02">
+    <div class="sol-header" onclick="tog(this)"><span class="sol-num">P-02</span><span class="sol-title">xUnit + Moq Test Generation Prompt</span><span class="sol-badge">&#x2714; Solution</span><span class="chev">&#9660;</span></div>
+    <div class="sol-body">
+      <div class="sol-summary"><div class="sol-summary-text">Test generation prompt and sample output for a <code>PortfolioService.GetPortfolioAsync</code> method.</div></div>
+      <span class="file-label">FILE: .github/prompts/generate-tests.prompt.md</span>
+<pre><code>---
+mode: agent
+---
+
+Generate comprehensive xUnit unit tests for the C# class provided.
+
+## Framework Requirements
+- xUnit ONLY — no MSTest, no NUnit
+- Moq for all mocks (Mock&lt;T&gt; as private readonly fields)
+- FluentAssertions for assertions (.Should().Be(), .Should().ThrowAsync&lt;T&gt;())
+
+## Setup Conventions
+- Constructor injection for System Under Test (SUT)
+- Mock&lt;T&gt; fields declared as: private readonly Mock&lt;IFoo&gt; _fooMock = new();
+- Create SUT in constructor: _sut = new ServiceClass(_fooMock.Object);
+- Do NOT share mock state between tests (no [TestInitialize])
+
+## AAA Structure
+// Arrange  — setup inputs and mock returns
+// Act      — single call to the method under test
+// Assert   — verify result and mock interactions
+
+## Test Name Format: MethodName_Condition_ExpectedOutcome
+Example: GetPortfolioAsync_PortfolioNotFound_ThrowsPortfolioNotFoundException
+
+## Coverage Per Public Method
+- At least 1 happy path (expected success)
+- At least 1 error path: _mock.Setup(...).ThrowsAsync(new SomeException())
+- At least 1 boundary test: null/empty parameters
+
+## Async Rules
+- Test methods return async Task
+- Use await Assert.ThrowsAsync&lt;T&gt;(() =&gt; _sut.MethodAsync())
+- NEVER use .Result or .Wait()
+
+## Post-Generation
+Run: dotnet test --filter "FullyQualifiedName~[ClassName]Tests" --no-build
+Report any compile errors or test failures.
+</code></pre>
+      <span class="file-label">SAMPLE OUTPUT: PortfolioServiceTests.cs (extract)</span>
+<pre><code>public class PortfolioServiceTests
+{
+    private readonly Mock&lt;IPortfolioRepository&gt; _repoMock = new();
+    private readonly Mock&lt;IAuditService&gt; _auditMock = new();
+    private readonly PortfolioService _sut;
+
+    public PortfolioServiceTests()
+        =&gt; _sut = new PortfolioService(_repoMock.Object, _auditMock.Object);
+
+    [Fact]
+    public async Task GetPortfolioAsync_ValidId_ReturnsPortfolio()
+    {
+        // Arrange
+        var expected = new Portfolio { Id = 1, Name = "Growth Fund" };
+        _repoMock.Setup(r =&gt; r.GetByIdAsync(1)).ReturnsAsync(expected);
+
+        // Act
+        var result = await _sut.GetPortfolioAsync(1);
+
+        // Assert
+        result.Should().BeEquivalentTo(expected);
+    }
+
+    [Fact]
+    public async Task GetPortfolioAsync_PortfolioNotFound_ThrowsNotFoundException()
+    {
+        // Arrange
+        _repoMock.Setup(r =&gt; r.GetByIdAsync(99)).ReturnsAsync((Portfolio?)null);
+
+        // Act &amp; Assert
+        await Assert.ThrowsAsync&lt;PortfolioNotFoundException&gt;(
+            () =&gt; _sut.GetPortfolioAsync(99));
+    }
+}
+</code></pre>
+    </div>
+  </div>
+
+  <div class="sol-card" id="sol-p03">
+    <div class="sol-header" onclick="tog(this)"><span class="sol-num">P-03</span><span class="sol-title">OpenAPI XML Documentation Prompt</span><span class="sol-badge">&#x2714; Solution</span><span class="chev">&#9660;</span></div>
+    <div class="sol-body">
+      <div class="sol-summary"><div class="sol-summary-text">Prompt that adds complete XML documentation and Swashbuckle attributes to an ASP.NET Core action. Sample output shows the before/after transformation.</div></div>
+      <span class="file-label">FILE: .github/prompts/document-api-action.prompt.md</span>
+<pre><code>---
+mode: ask
+---
+
+Add complete XML documentation comments and Swashbuckle response attributes
+to the ASP.NET Core controller action provided.
+
+## Required XML Comments
+- &lt;summary&gt; — one clear sentence describing what the action does
+- &lt;param name="..."&gt; for EVERY parameter
+- &lt;returns&gt; describing the success response
+
+## Required Attributes (apply to the action method)
+- [ProducesResponseType&lt;TDto&gt;(StatusCodes.Status200OK)]       or 201Created
+- [ProducesResponseType(StatusCodes.Status400BadRequest)]
+- [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+- [ProducesResponseType(StatusCodes.Status404NotFound)]        if applicable
+- [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+
+Response TDto must reference a class in src/Investments.Api/Dtos/ — not anonymous types.
+
+## Verification
+Run: dotnet build
+Confirm no CS1591 XML documentation warnings for the changed file.
+</code></pre>
+      <span class="file-label">BEFORE / AFTER EXAMPLE</span>
+<pre><code>// BEFORE
+[HttpGet("{id}")]
+public async Task&lt;IActionResult&gt; GetFundAsync(int id)
+    =&gt; Ok(await _repository.GetFundAsync(id));
+
+// AFTER
+/// &lt;summary&gt;
+/// Returns the fund with the specified identifier.
+/// &lt;/summary&gt;
+/// &lt;param name="id"&gt;The unique fund identifier.&lt;/param&gt;
+/// &lt;returns&gt;The FundDto for the requested fund.&lt;/returns&gt;
+[HttpGet("{id}")]
+[ProducesResponseType&lt;FundDto&gt;(StatusCodes.Status200OK)]
+[ProducesResponseType(StatusCodes.Status400BadRequest)]
+[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+[ProducesResponseType(StatusCodes.Status404NotFound)]
+[ProducesResponseType(StatusCodes.Status500InternalServerError)]
+public async Task&lt;IActionResult&gt; GetFundAsync(int id)
+    =&gt; Ok(await _repository.GetFundAsync(id));
+</code></pre>
+    </div>
+  </div>
+
+  <div class="sol-card" id="sol-p04">
+    <div class="sol-header" onclick="tog(this)"><span class="sol-num">P-04</span><span class="sol-title">Architecture Decision Record Prompt</span><span class="sol-badge">&#x2714; Solution</span><span class="chev">&#9660;</span></div>
+    <div class="sol-body">
+      <div class="sol-summary"><div class="sol-summary-text">ADR prompt producing a complete SSIS → Databricks decision record with honest alternatives and follow-up owners.</div></div>
+      <span class="file-label">FILE: .github/prompts/write-adr.prompt.md</span>
+<pre><code>---
+mode: ask
+---
+
+Generate a complete Architecture Decision Record for the topic provided.
+
+Save to: docs/architecture/decisions/ADR-[NNN]-[kebab-title].md
+
+## Sections Required
+1. **Title** — ADR-NNN: Present-tense title
+2. **Status** — Proposed | Accepted | Deprecated | Superseded
+3. **Date** — ISO 8601 (2025-07-01)
+4. **Context** — What problem or situation requires a decision?
+5. **Decision** — Present-tense active sentence. ("We use Azure Databricks...")
+6. **Alternatives Considered** — minimum 2, including "Do nothing / keep current"
+   - For each: name, summary, pros, cons
+7. **Consequences** — positive outcomes, negative trade-offs, risks, open questions
+8. **Follow-up Actions** — table: Action | Owner | Due Date
+</code></pre>
+      <span class="file-label">SAMPLE OUTPUT: ADR-007-databricks-for-fund-ingestion.md (extract)</span>
+<pre><code># ADR-007: Replace SSIS Packages with Azure Databricks for Fund Data Ingestion
+
+**Status:** Accepted  
+**Date:** 2025-07-01
+
+## Context
+SSIS packages handling daily fund NAV ingestion require SQL Server Agent jobs,
+are not version-controlled in git, and have no unit-testable transformation logic.
+Scale requirements for the portfolio-analytics service exceed what SSIS can process
+within the 4-hour overnight window.
+
+## Decision
+We use Azure Databricks PySpark jobs for all fund data ingestion pipelines,
+replacing the existing SSIS packages in phases.
+
+## Alternatives Considered
+1. **Keep SSIS** — No migration cost, but scaling blocked; untestable; SQL Agent dependency.
+2. **Azure Data Factory** — Managed, but limited transformation expressiveness vs PySpark.
+3. **Azure Databricks (chosen)** — Scalable, git-versioned, pytest-testable; requires PySpark skill uplift.
+
+## Consequences
++ Jobs are git-versioned and unit-testable
++ Scales to handle 10x current fund universe
+− Team PySpark skill ramp-up (estimated 6 weeks)
+− SSIS operational knowledge partially lost
+
+## Follow-up Actions
+| Action | Owner | Due |
+|--------|-------|-----|
+| Train 3 engineers on PySpark | L. Chen | 2025-08-15 |
+| Migrate NAV ingestion job | S. Patel | 2025-09-01 |
+</code></pre>
+    </div>
+  </div>
+
+  <div class="sol-card" id="sol-p05">
+    <div class="sol-header" onclick="tog(this)"><span class="sol-num">P-05</span><span class="sol-title">EF Core Query Performance Review Prompt</span><span class="sol-badge">&#x2714; Solution</span><span class="chev">&#9660;</span></div>
+    <div class="sol-body">
+      <div class="sol-summary"><div class="sol-summary-text">Performance review prompt detecting N+1, missing <code>AsNoTracking()</code>, unbounded results, and sync-over-async &mdash; with corrected code snippets per finding.</div></div>
+      <span class="file-label">FILE: .github/prompts/ef-performance-review.prompt.md</span>
+<pre><code>---
+mode: ask
+---
+
+Review the attached EF Core repository/service code for performance anti-patterns.
+
+## Anti-Patterns to Detect
+
+### N+1 Queries
+Navigation property accessed in a loop without .Include() on the original query.
+Fix: add .Include(p => p.Holdings) to the LINQ query.
+
+### Missing AsNoTracking()
+Read-only queries (no SaveChanges after) missing .AsNoTracking().
+Fix: add .AsNoTracking() to all read-only queries.
+WARN: Do NOT add AsNoTracking() if the entity will be updated via SaveChanges.
+
+### Unbounded Result Sets
+.ToListAsync() / .ToArrayAsync() without .Take(n).
+Fix: add .Take(maxResults) and add pagination parameters.
+
+### Sync-over-Async
+.Result or .Wait() on a Task. Causes deadlock risk in ASP.NET Core.
+Fix: use await consistently throughout the call chain.
+
+### Missing FK Indexes
+WHERE clause on a column without HasIndex() in model config.
+Fix: add migration with CreateIndex() on the FK column.
+
+## Output Format
+| # | File:Line | Anti-Pattern | Estimated Impact | Fix |
+|---|-----------|-------------|-----------------|-----|
+
+For each finding, include a corrected code snippet.
+</code></pre>
+    </div>
+  </div>
+
+  <div class="sol-card" id="sol-p06">
+    <div class="sol-header" onclick="tog(this)"><span class="sol-num">P-06</span><span class="sol-title">Financial Services Security Checklist Prompt</span><span class="sol-badge">&#x2714; Solution</span><span class="chev">&#9660;</span></div>
+    <div class="sol-body">
+      <div class="sol-summary"><div class="sol-summary-text">9-point security checklist prompt with MetLife Investments domain rules and FINRA mandatory controls. Produces auditable evidence artifacts.</div></div>
+      <span class="file-label">FILE: .github/prompts/security-checklist.prompt.md</span>
+<pre><code>---
+mode: ask
+---
+
+Run a PASS/FAIL security self-review of the code provided.
+
+## Checklist Table
+Columns: # | Control | Status | Evidence/Notes
+Status values: ✓ PASS | ✗ FAIL | ⚠ PARTIAL | N/A
+
+1. FluentValidation called before any business logic
+2. [Authorize] attribute applied to controller/action
+3. Policy/role checked for sensitive resource (PortfolioManager / TradeExecutor)
+4. Parameterized queries only (EF Core / no string-concat SQL)
+5. Explicit model binding (no [FromBody] catching unexpected fields)
+6. Safe error response (ProblemDetails — no stack trace, no SQL errors)
+7. PII excluded from all _logger.* calls (account#, TaxId, SSN, portfolio value)
+8. Rate limiting applied to public-facing endpoints
+9. Financial writes emit _auditService.RecordAsync(...)
+
+## MetLife Investments Domain Rules (MANDATORY for applicable code)
+- Control #9 MANDATORY if: method modifies NAV, fund price, or executes a trade
+- Control #7 MANDATORY if: method returns portfolio holdings of identified investors
+- FINRA Rule 17a-4: if method creates or modifies trade records, note 7-year retention requirement
+
+## Scoring
+- 9/9 → READY TO REVIEW
+- Any FAIL → NEEDS FIXES: list required remediations before PR is ready
+</code></pre>
+    </div>
+  </div>
+</div>
+
+<!-- AGENTS SOLUTIONS -->
+<div class="topic-section" id="topic-agents" data-topic="agents">
+  <div class="t-header">
+    <div class="t-icon">&#x1F916;</div>
+    <div class="t-header-text"><h2>Agents &mdash; Solutions</h2><p>Reference <code>.agent.md</code> files for the MetLife Investments .NET platform.</p></div>
+  </div>
+
+  <div class="sol-card" id="sol-a01">
+    <div class="sol-header" onclick="tog(this)"><span class="sol-num">A-01</span><span class="sol-title">Read-Only Security Reviewer Agent</span><span class="sol-badge">&#x2714; Solution</span><span class="chev">&#9660;</span></div>
+    <div class="sol-body">
+      <div class="sol-summary"><div class="sol-summary-text">Read-only security review agent that pauses on CRITICAL findings and produces a severity-rated report. Tool list is strictly read operations.</div></div>
+      <span class="file-label">FILE: .github/agents/security-reviewer.agent.md</span>
+<pre><code>---
+tools: [read_file, list_directory, search_workspace]
+---
+
+# Security Reviewer Agent — MetLife Investments
+
+## Role
+Senior application security engineer. OWASP Top 10, ASP.NET Core security,
+financial services compliance (SOX, FINRA, GDPR). Read-only — you never modify code.
+
+## Method
+1. Read .github/copilot-instructions.md and .github/instructions/api.instructions.md
+2. Run list_directory on src/ to identify changed files
+3. For each changed C# file, check:
+   - [Authorize] on controllers with financial data
+   - FluentValidation before business logic
+   - No PII in _logger.* calls (AccountNumber, TaxId, SSN, DOB)
+   - No raw SQL string concatenation
+   - ProblemDetails for all error responses
+   - Soft-delete pattern (no dbContext.Remove() on Portfolio/Trade)
+4. For CRITICAL findings: stop and say
+   "CRITICAL FINDING in [file]: [description]. Please review before I continue."
+   Wait for explicit confirmation.
+5. Generate report
+
+## Report Format
+**Security Review Report**
+Date: [date] | Scope: [files reviewed]
+
+| # | Severity | Category | File:Line | Finding | Remediation |
+|---|----------|----------|-----------|---------|-------------|
+
+**Overall Risk:** LOW / MEDIUM / HIGH / CRITICAL
+**Required Before Merge:** [list or "None"]
+</code></pre>
+      <div class="pitfall"><div class="pitfall-lbl">Common pitfall</div><div class="pitfall-text">Adding <code>create_file</code> or <code>edit_file</code> "to help the developer fix issues" undermines the agent's value. A fix-and-ship agent removes the human review step. Read-only + structured report is the correct model for regulated financial code.</div></div>
+    </div>
+  </div>
+
+  <div class="sol-card" id="sol-a02">
+    <div class="sol-header" onclick="tog(this)"><span class="sol-num">A-02</span><span class="sol-title">Test Coverage Gap Finder Agent</span><span class="sol-badge">&#x2714; Solution</span><span class="chev">&#9660;</span></div>
+    <div class="sol-body">
+      <div class="sol-summary"><div class="sol-summary-text">Test gap agent producing a method-by-branch gap matrix with risk classification and xUnit code for top-3 gaps.</div></div>
+      <span class="file-label">FILE: .github/agents/test-coverage.agent.md</span>
+<pre><code>---
+tools: [read_file, list_directory, create_file, edit_file, run_terminal_command]
+---
+
+# Test Coverage Gap Finder — MetLife Investments
+
+## Role
+QA engineer expert in xUnit, Moq, FluentAssertions, and financial C# behavioral testing.
+
+## Method
+1. Read the source file: list all public methods and identify branches
+   (if/else, try/catch, null checks, enum switches)
+2. Read the test file (if exists): identify which branches have tests
+3. Build gap matrix: Method | Branch | Covered (Yes/No)
+4. Classify gaps:
+   - Critical: exception handling, domain invariant violations (decimal check, soft-delete)
+   - High: null/empty boundary, async failure paths
+   - Normal: alternate happy paths
+5. Select top 3 gaps by risk
+6. Generate xUnit tests for top 3 using:
+   - Mock&lt;T&gt; fields, constructor injection
+   - AAA pattern (// Arrange // Act // Assert)
+   - MethodName_Condition_ExpectedOutcome naming
+7. Run: dotnet test --filter "FullyQualifiedName~[ClassName]Tests" --no-build
+8. Report gap matrix + generated tests + estimated coverage before/after
+</code></pre>
+    </div>
+  </div>
+
+  <div class="sol-card" id="sol-a03">
+    <div class="sol-header" onclick="tog(this)"><span class="sol-num">A-03</span><span class="sol-title">Pull Request Description Writer Agent</span><span class="sol-badge">&#x2714; Solution</span><span class="chev">&#9660;</span></div>
+    <div class="sol-body">
+      <div class="sol-summary"><div class="sol-summary-text">PR writer agent that reads git diff, extracts the ADO work item, and produces a complete description matching the team's PR template &mdash; with migration files called out in Deployment Notes.</div></div>
+      <span class="file-label">FILE: .github/agents/pr-writer.agent.md</span>
+<pre><code>---
+tools: [read_file, run_terminal_command]
+---
+
+# PR Description Writer — MetLife Investments
+
+## Method
+1. git diff --stat origin/main...HEAD    # identify changed files
+2. git diff origin/main...HEAD          # read full diff
+3. read .github/pull_request_template.md
+4. Extract ADO work item from branch name (AB#NNNN or feature/AB-1234-...)
+   If not found: ask developer for work item before continuing (SOX requirement)
+
+## Classification
+Detect: Feature | Bug Fix | Refactor | Security | Breaking Change | Maintenance
+
+## Output Sections (match PR template exactly)
+- **Summary:** 2–3 sentences, business impact first
+- **Work Item:** AB#[NNN] — linked to ADO
+- **Type of Change:** [checkbox from template]
+- **What was tested:** unit tests + integration test descriptions
+- **Reviewer Focus:** call out the most complex or risky changes
+- **Deployment Notes:**
+  - List each file in db/Migrations/ that changed (name + schema change description)
+  - New appsettings keys required
+  - New Service Bus topics or Azure Function config
+
+If no ADO work item found: "⚠ Work item not found. Please provide AB# before submitting."
+</code></pre>
+    </div>
+  </div>
+
+  <div class="sol-card" id="sol-a04">
+    <div class="sol-header" onclick="tog(this)"><span class="sol-num">A-04</span><span class="sol-title">NuGet Package Audit Agent</span><span class="sol-badge">&#x2714; Solution</span><span class="chev">&#9660;</span></div>
+    <div class="sol-body">
+      <div class="sol-summary"><div class="sol-summary-text">Read-only NuGet audit agent that classifies semver risk and runs the built-in vulnerability scanner.</div></div>
+      <span class="file-label">FILE: .github/agents/nuget-audit.agent.md</span>
+<pre><code>---
+tools: [read_file, run_terminal_command]
+---
+
+# NuGet Package Audit Agent — MetLife Investments
+
+## Role
+Dependency security reviewer. Report only — do NOT modify any .csproj file.
+
+## Method
+1. git diff origin/main -- "*.csproj"    # find package changes
+2. For each changed package, classify:
+   - Major version bump (x.0.0 → y.0.0): BREAKING RISK — always flag, check release notes
+   - Minor bump (x.y.0 → x.z.0): SAFE (backward compatible)
+   - Patch bump (x.y.z → x.y.w): SAFE (bug/security fix)
+3. dotnet list package --vulnerable --include-transitive
+   - CVSS ≥ 7.0: FLAG
+   - CVSS ≥ 9.0: ESCALATE (do not merge until resolved)
+4. Output risk table
+
+## Output Format
+| Package | From | To | Bump | CVE? | CVSS | Risk | Recommendation |
+
+Do NOT run dotnet restore or modify any project file.
+</code></pre>
+    </div>
+  </div>
+
+  <div class="sol-card" id="sol-a05">
+    <div class="sol-header" onclick="tog(this)"><span class="sol-num">A-05</span><span class="sol-title">Codebase Onboarding Agent</span><span class="sol-badge">&#x2714; Solution</span><span class="chev">&#9660;</span></div>
+    <div class="sol-body">
+      <div class="sol-summary"><div class="sol-summary-text">Onboarding agent that reads instructions and README before answering, cites specific files, and honestly flags undocumented conventions.</div></div>
+      <span class="file-label">FILE: .github/agents/onboarding.agent.md</span>
+<pre><code>---
+tools: [read_file, list_directory, search_workspace]
+---
+
+# Codebase Onboarding Agent — MetLife Investments
+
+## Role
+Experienced MetLife Investments platform engineer. Helpful, precise, and honest.
+
+## Rules
+1. ALWAYS read .github/copilot-instructions.md and README.md before answering
+2. ALWAYS cite the specific file that supports your answer
+3. Use search_workspace to find examples before describing a pattern
+4. If a convention is undocumented, say:
+   "I don't see this documented — here's what existing code suggests,
+    but please confirm with the team."
+5. NEVER fabricate conventions or file paths
+
+## Scope Boundaries
+- C# / .NET questions: this repo (src/)
+- Databricks / PySpark questions: portfolio-analytics repo (different codebase)
+- Java questions: legacy-integration service — read-only, no new features
+
+## Common Answers (pre-load for faster response)
+- Add API endpoint: add controller in src/Investments.Api/Controllers/, 
+  register in Program.cs, follow api.instructions.md
+- Add Blazor page: add .razor file in src/Investments.Web/Pages/,
+  follow blazor.instructions.md
+- Run tests: dotnet test from repo root
+- Create EF Core migration: dotnet ef migrations add [Name] --project src/Investments.DataAccess
+- Service Bus: see src/Investments.Functions/ for trigger examples
+</code></pre>
+    </div>
+  </div>
+
+  <div class="sol-card" id="sol-a06">
+    <div class="sol-header" onclick="tog(this)"><span class="sol-num">A-06</span><span class="sol-title">Release Notes Generator Agent</span><span class="sol-badge">&#x2714; Solution</span><span class="chev">&#9660;</span></div>
+    <div class="sol-body">
+      <div class="sol-summary"><div class="sol-summary-text">Release notes agent that translates git log to stakeholder language with a breaking-change approval gate.</div></div>
+      <span class="file-label">FILE: .github/agents/release-notes.agent.md</span>
+<pre><code>---
+tools: [run_terminal_command, read_file]
+---
+
+# Release Notes Generator — MetLife Investments
+
+## Method
+1. git log --oneline --merges origin/main..HEAD
+2. Categorize each merged PR:
+   🚀 Feature | 🐛 Bug Fix | 🔒 Security | ⚡ Performance | 💥 Breaking Change | 🔧 Maintenance
+3. Write one stakeholder-readable sentence per PR:
+   - Translate: "Added EF Core AsNoTracking" → "Portfolio list page loads 60% faster"
+   - If no user benefit: classify as 🔧 Maintenance
+4. List deployment notes: EF Core migrations, new appsettings keys, Service Bus topics
+5. APPROVAL GATE: list all 💥 Breaking Changes, then say:
+   "I found [N] Breaking Changes: [list]. Please confirm (YES/NO) before I finalize."
+   Wait for explicit YES.
+
+## Output Format
+## Release [version] — [date]
+
+### 🚀 Features
+- [description] (AB#NNN)
+
+### 🐛 Bug Fixes
+...
+
+### 🔧 Deployment Notes
+- Migration: [filename] — [schema change]
+- New config key: [key] (required)
+</code></pre>
+    </div>
+  </div>
+</div>
+
+<!-- SKILLS SOLUTIONS -->
+<div class="topic-section" id="topic-skills" data-topic="skills">
+  <div class="t-header">
+    <div class="t-icon">&#x1F9E9;</div>
+    <div class="t-header-text"><h2>Skills &mdash; Solutions</h2><p>Reference <code>SKILL.md</code> files for the MetLife Investments .NET platform.</p></div>
+  </div>
+
+  <div class="sol-card" id="sol-s01">
+    <div class="sol-header" onclick="tog(this)"><span class="sol-num">S-01</span><span class="sol-title">Write C# Service Tests Skill</span><span class="sol-badge">&#x2714; Solution</span><span class="chev">&#9660;</span></div>
+    <div class="sol-body">
+      <span class="file-label">FILE: .github/skills/write-service-test/SKILL.md</span>
+<pre><code>---
+name: write-service-test
+description: Generate xUnit unit tests for a C# service class using Moq and FluentAssertions
+trigger: ["write unit test", "generate test", "add test coverage", "create tests for"]
+---
+
+# Write C# Service Tests
+
+## When to Use
+Triggered by: "write unit test", "generate test", "add test coverage", "create tests for [ClassName]"
+
+## Procedure
+1. read_file the source class — list all public methods and identify branches
+2. Check if [ClassName]Tests.cs exists — if yes, append; if no, create
+3. Generate tests:
+   - Framework: xUnit [Fact] / [Theory]
+   - Mocks: Mock&lt;T&gt; as private readonly fields
+   - SUT created in constructor
+   - AAA pattern with // Arrange // Act // Assert
+   - Test name: MethodName_Condition_ExpectedOutcome
+4. Run: dotnet test --filter "FullyQualifiedName~[ClassName]Tests" --no-build
+5. Output coverage summary table
+
+## Quality Bar (per public method)
+- ≥ 1 happy path
+- ≥ 1 error path (_mock.Setup(...).ThrowsAsync(new Exception()))
+- ≥ 1 boundary test (null/empty parameters)
+- Async methods: await Assert.ThrowsAsync&lt;T&gt; — NEVER .Result or .Wait()
+
+## Output
+1. Test file content (or additions)
+2. Coverage summary:
+   | Method | Scenarios | Est. Coverage |
+3. Hard-to-test methods flagged with explanation
+</code></pre>
+    </div>
+  </div>
+
+  <div class="sol-card" id="sol-s02">
+    <div class="sol-header" onclick="tog(this)"><span class="sol-num">S-02</span><span class="sol-title">EF Core Migration Safety Review Skill</span><span class="sol-badge">&#x2714; Solution</span><span class="chev">&#9660;</span></div>
+    <div class="sol-body">
+      <span class="file-label">FILE: .github/skills/review-db-migration/SKILL.md</span>
+<pre><code>---
+name: review-db-migration
+description: Check EF Core migration files for 6 safety properties before deployment
+trigger: ["review migration", "check migration", "migration safe", "db migration"]
+---
+
+# EF Core Migration Safety Review
+
+## 6 Safety Checks
+
+### Check 1 — Reversible
+PASS: Down() method present with symmetric reversal
+FAIL: Down() empty, throws NotImplementedException, or missing
+
+### Check 2 — Non-Destructive
+PASS: No DropTable, no DropColumn, no Truncate in Up()
+FAIL: Any of the above detected — flag immediately
+
+### Check 3 — FK Index Coverage ⚠ SQL Server specific
+PASS: Every AddForeignKey() paired with CreateIndex() on the FK column
+FAIL: FK without index — SQL Server does NOT auto-create FK indexes (unlike PostgreSQL)
+FIX: Add CreateIndex in same migration
+
+### Check 4 — NOT NULL Safety
+PASS: New NOT NULL columns have defaultValue: or use 2-step migration
+FAIL: NOT NULL without default on populated table
+
+### Check 5 — Transaction Wrapping
+PASS: Migration runs inside EF Core's implicit transaction
+WARN: Raw SQL (migrationBuilder.Sql()) should be idempotent
+
+### Check 6 — Large Table Awareness
+WARN if modifying Trades, AuditLog, or PortfolioHistory:
+  Recommend ONLINE = ON in raw SQL for index operations
+  Recommend off-market-hours deployment window
+
+## Output
+| Check | Status | File:Line | Finding | Fix |
+
+Overall: SAFE TO DEPLOY / REVIEW REQUIRED / DO NOT DEPLOY
+</code></pre>
+    </div>
+  </div>
+
+  <div class="sol-card" id="sol-s03">
+    <div class="sol-header" onclick="tog(this)"><span class="sol-num">S-03</span><span class="sol-title">Financial Services Compliance Check Skill</span><span class="sol-badge">&#x2714; Solution</span><span class="chev">&#9660;</span></div>
+    <div class="sol-body">
+      <span class="file-label">FILE: .github/skills/compliance-check/SKILL.md</span>
+<pre><code>---
+name: compliance-check
+description: Check C# code for PII in logs, missing audit events, hard-delete violations, and SOX change control evidence
+trigger: ["compliance check", "privacy review", "audit this", "pii check", "finra check"]
+---
+
+# Financial Services Compliance Check — MetLife Investments
+
+## Rule 1 — PII in Logs (GDPR / FINRA)
+Scan all _logger.* calls for PII field names within 3 lines:
+  BLOCK: AccountNumber, TaxId, SSN, NationalInsuranceNumber, PassportNumber
+  WARN:  DateOfBirth, EmailAddress, PhoneNumber, FullName, ClientName, IBAN
+Detect: entity.AccountNumber property access AND $"... {entity.TaxId} ..." interpolation
+Correct pattern: _logger.LogInformation("Account accessed {AccountId}", account.Id)
+
+## Rule 2 — Audit Events (SOX)
+Methods writing to: Portfolio, Trade, FundNav, PolicyHoldings MUST call:
+  _auditService.RecordAsync(entity, entityId, action, actorId)
+FAIL: write method that creates/updates financial records without this call
+
+## Rule 3 — Soft Delete (FINRA record retention)
+FAIL: dbContext.Remove() targeting Portfolio, Trade, or PolicyHoldings
+PASS: entity.DeletedAt = DateTime.UtcNow; await dbContext.SaveChangesAsync()
+
+## Rule 4 — SOX Change Control
+WARN: financial calculation change (NAV, fee, trade settlement) without AB# work item
+  in commit message or // AB#NNN comment in changed method
+
+## Output
+| Rule | Status | File:Line | Finding | Regulation | Fix |
+
+Verdict: COMPLIANT | NEEDS REVIEW | NON-COMPLIANT
+</code></pre>
+    </div>
+  </div>
+
+  <div class="sol-card" id="sol-s04">
+    <div class="sol-header" onclick="tog(this)"><span class="sol-num">S-04</span><span class="sol-title">Document ASP.NET Core API Action Skill</span><span class="sol-badge">&#x2714; Solution</span><span class="chev">&#9660;</span></div>
+    <div class="sol-body">
+      <span class="file-label">FILE: .github/skills/document-api-action/SKILL.md</span>
+<pre><code>---
+name: document-api-action
+description: Add XML documentation and ProducesResponseType attributes to an ASP.NET Core controller action
+trigger: ["document this route", "document this endpoint", "add xml docs", "document the api", "add swagger docs"]
+---
+
+# Document API Action — MetLife Investments
+
+## Procedure
+1. read_file the controller action
+2. read_file the request/response DTOs from src/Investments.Api/Dtos/
+3. Generate XML comments:
+   - &lt;summary&gt; — one clear sentence
+   - &lt;param name="..."&gt; for each parameter
+   - &lt;returns&gt; describing success response
+4. Add attributes:
+   - [ProducesResponseType&lt;TDto&gt;(StatusCodes.Status200OK)] (or 201)
+   - [ProducesResponseType(StatusCodes.Status400BadRequest)]
+   - [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+   - [ProducesResponseType(StatusCodes.Status404NotFound)] if applicable
+   - [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+   TDto must be from src/Investments.Api/Dtos/ — never an anonymous type
+5. Verify: dotnet build — no CS1591 warnings
+
+## Quality Bar
+- XML &lt;summary&gt; present and specific (not "Gets the resource")
+- All response codes that the action can return are documented
+- build passes with no doc warnings
+</code></pre>
+    </div>
+  </div>
+
+  <div class="sol-card" id="sol-s05">
+    <div class="sol-header" onclick="tog(this)"><span class="sol-num">S-05</span><span class="sol-title">Pre-Deployment Readiness Checklist Skill</span><span class="sol-badge">&#x2714; Solution</span><span class="chev">&#9660;</span></div>
+    <div class="sol-body">
+      <span class="file-label">FILE: .github/skills/deployment-readiness/SKILL.md</span>
+<pre><code>---
+name: deployment-readiness
+description: Run 7-point pre-deployment checklist before a release branch ships to production
+trigger: ["deployment ready", "ready to deploy", "pre-deployment check", "release check", "ship check"]
+---
+
+# Pre-Deployment Readiness Checklist — MetLife Investments
+
+## Checks
+
+### 1 — Tests
+dotnet test --no-build
+READY: exit 0 | NOT READY: list failing tests
+
+### 2 — Build (zero warnings)
+dotnet build -warnaserror
+READY: exit 0 | NOT READY: list warnings
+
+### 3 — Pending Migrations
+Compare db/Migrations/ files vs __EFMigrationsHistory for target environment
+NOT READY if unapplied migrations exist
+
+### 4 — App Config Keys
+All new appsettings keys defined in appsettings.Production.json or Key Vault
+NOT READY if new keys have no value/reference
+
+### 5 — Rollback Plan
+Confirm rollback runbook in docs/ updated within 30 days
+WARN if older than 30 days
+
+### 6 — ADO Release Ticket
+Work item status = "Ready for Deploy" or "Approved for Production"
+NOT READY if status is still In Progress
+
+### 7 — Azure Health Check
+GET /health endpoint returns 200 on staging environment
+NOT READY if health check fails
+
+## Market Hours Gate
+If current time is 09:00–16:00 ET on a weekday:
+  ⚠ WARNING: "Deploying during market hours — confirm with team lead before proceeding."
+
+## Verdict
+READY / PROCEED WITH CAUTION / NOT READY
+</code></pre>
+    </div>
+  </div>
+</div>
+
+<!-- MCP SOLUTIONS -->
+<div class="topic-section" id="topic-mcp" data-topic="mcp">
+  <div class="t-header">
+    <div class="t-icon">&#x1F50C;</div>
+    <div class="t-header-text"><h2>MCP Servers &mdash; Solutions</h2><p>Reference MCP server configurations for the MetLife Investments platform.</p></div>
+  </div>
+
+  <div class="sol-card" id="sol-m01">
+    <div class="sol-header" onclick="tog(this)"><span class="sol-num">M-01</span><span class="sol-title">Internal API Catalog MCP Server</span><span class="sol-badge">&#x2714; Solution</span><span class="chev">&#9660;</span></div>
+    <div class="sol-body">
+      <span class="file-label">FILE: .github/mcp/investments-api-catalog.mcp.json</span>
+<pre><code>{
+  "name": "investments-api-catalog",
+  "description": "Read-only access to the MetLife Investments internal API catalog",
+  "owner": "platform-team@metlife.com",
+  "auth": {
+    "type": "managed-identity",
+    "resourceId": "api://metlife-investments-catalog"
+  },
+  "tools": [
+    {
+      "name": "search_internal_apis",
+      "description": "Search the internal API catalog by keyword and optional domain",
+      "cannot": "Does not call the APIs — returns discovery metadata only. No credentials returned.",
+      "inputSchema": {
+        "query": { "type": "string", "description": "Search keyword" },
+        "domain": { "type": "string", "enum": ["portfolio","fund","trade","settlement","compliance","auth"] }
+      },
+      "maxResults": 10
+    },
+    {
+      "name": "get_api_schema",
+      "description": "Returns the OpenAPI schema for a named internal API",
+      "cannot": "Returns schema only — does not invoke the API.",
+      "inputSchema": {
+        "apiName": { "type": "string" }
+      }
+    }
+  ],
+  "governance": {
+    "changeControl": "PR with 2 approvals from platform-team",
+    "rateLimit": "30 requests/minute",
+    "addingTools": "New tools require platform-team approval + security review"
+  }
+}
+</code></pre>
+    </div>
+  </div>
+
+  <div class="sol-card" id="sol-m02">
+    <div class="sol-header" onclick="tog(this)"><span class="sol-num">M-02</span><span class="sol-title">SQL Server Schema Read-Only MCP Server</span><span class="sol-badge">&#x2714; Solution</span><span class="chev">&#9660;</span></div>
+    <div class="sol-body">
+      <span class="file-label">FILE: .github/mcp/investments-schema.mcp.json</span>
+<pre><code>{
+  "name": "investments-schema",
+  "description": "Read-only access to SQL Server schema metadata for EF Core code generation",
+  "owner": "data-platform@metlife.com",
+  "auth": {
+    "type": "sql-login",
+    "loginName": "copilot_schema_reader",
+    "connectionStringRef": "keyvault://metlife-investments-kv/sql-schema-reader-conn",
+    "permissions": "SELECT on INFORMATION_SCHEMA.COLUMNS, INFORMATION_SCHEMA.TABLE_CONSTRAINTS, sys.indexes ONLY"
+  },
+  "tools": [
+    {
+      "name": "get_table_schema",
+      "description": "Returns columns, data types, nullability, PKs, and FKs for a table",
+      "cannot": "Cannot read table data. Returns schema metadata only.",
+      "inputSchema": {
+        "tableName": { "type": "string" }
+      },
+      "timeout": 5
+    },
+    {
+      "name": "list_tables",
+      "description": "Returns all table names with estimated row counts",
+      "cannot": "Cannot query table contents.",
+      "inputSchema": {}
+    }
+  ],
+  "failureModes": {
+    "TABLE_NOT_FOUND": "Table does not exist in schema",
+    "DB_UNAVAILABLE": "Schema database unreachable (5s timeout)",
+    "QUERY_TIMEOUT": "Schema query timed out — retry"
+  },
+  "leastPrivilegeVerification": "SELECT TOP 1 * FROM Portfolios as copilot_schema_reader returns permission denied"
+}
+</code></pre>
+    </div>
+  </div>
+
+  <div class="sol-card" id="sol-m03">
+    <div class="sol-header" onclick="tog(this)"><span class="sol-num">M-03</span><span class="sol-title">Azure DevOps Work Item MCP Server</span><span class="sol-badge">&#x2714; Solution</span><span class="chev">&#9660;</span></div>
+    <div class="sol-body">
+      <span class="file-label">FILE: .github/mcp/investments-ado.mcp.json</span>
+<pre><code>{
+  "name": "investments-ado",
+  "description": "Read-only ADO work item access for MetLife Investments project",
+  "owner": "platform-team@metlife.com",
+  "auth": {
+    "type": "pat",
+    "scope": "vso.work_read",
+    "secretRef": "keyvault://metlife-investments-kv/ado-copilot-pat",
+    "rotationReminder": "90 days"
+  },
+  "projectScope": "MetLife-Investments",
+  "tools": [
+    {
+      "name": "get_work_item",
+      "description": "Fetch title, description, acceptance criteria, state, tags for a work item",
+      "cannot": "Cannot create, update, or delete work items. MetLife-Investments project only.",
+      "cache": "5 minutes",
+      "inputSchema": { "id": { "type": "number" } }
+    },
+    {
+      "name": "search_work_items",
+      "description": "Search work items in current sprint by keyword and optional type",
+      "cannot": "Cannot modify work items. MetLife-Investments project only.",
+      "cache": "60 seconds",
+      "inputSchema": {
+        "query": { "type": "string" },
+        "type": { "type": "string", "enum": ["Story","Bug","Task","Epic"] }
+      }
+    }
+  ],
+  "consumers": ["pr-writer.agent.md (A-03)", "deployment-readiness SKILL.md (S-05)"]
+}
+</code></pre>
+    </div>
+  </div>
+
+  <div class="sol-card" id="sol-m04">
+    <div class="sol-header" onclick="tog(this)"><span class="sol-num">M-04</span><span class="sol-title">Internal Engineering Documentation MCP Server</span><span class="sol-badge">&#x2714; Solution</span><span class="chev">&#9660;</span></div>
+    <div class="sol-body">
+      <span class="file-label">FILE: .github/mcp/investments-docs.mcp.json</span>
+<pre><code>{
+  "name": "investments-docs",
+  "description": "Summary-only access to approved Confluence spaces for MetLife Investments engineering",
+  "owner": "platform-team@metlife.com",
+  "auth": { "type": "managed-identity" },
+  "tools": [
+    {
+      "name": "search_internal_docs",
+      "description": "Search engineering documentation in approved Confluence spaces",
+      "cannot": "Returns summaries only (first 300 chars + URL) — not full page body. Approved spaces only.",
+      "inputSchema": {
+        "query": { "type": "string" },
+        "space": { "type": "string", "enum": ["ARCH","ENG","INVEST","SEC","ONBOARD"] }
+      },
+      "maxResults": 5,
+      "outputFormat": "{ title, url, summary (300 chars), lastModified }",
+      "freshnessWarning": "Append '⚠ May be outdated' if lastModified > 180 days",
+      "piiDetection": "Suppress result and log alert if output contains SSN, AccountNumber, or TaxId pattern"
+    }
+  ],
+  "governance": {
+    "addingSpaces": "Requires space owner + CISO team approval",
+    "rationale": "Allowlist prevents access to HR, Legal, and Executive Confluence spaces"
+  }
+}
+</code></pre>
+    </div>
+  </div>
+
+  <div class="sol-card" id="sol-m05">
+    <div class="sol-header" onclick="tog(this)"><span class="sol-num">M-05</span><span class="sol-title">Audit an Over-Privileged MCP Configuration</span><span class="sol-badge">&#x2714; Solution</span><span class="chev">&#9660;</span></div>
+    <div class="sol-body">
+      <div class="sol-summary"><div class="sol-summary-text">Findings table for the insecure config and a fully remediated replacement.</div></div>
+      <span class="file-label">FINDINGS TABLE</span>
+<pre><code>| # | Issue | Severity | Impact |
+|---|-------|----------|--------|
+| 1 | SA credentials hardcoded in config JSON | CRITICAL | Full SQL Server access including DROP/CREATE; committed to git = breach |
+| 2 | run_sql_query accepts any SQL string | CRITICAL | SQL injection + accidental/malicious data destruction |
+| 3 | update_portfolio_value write tool | HIGH | AI can modify financial data without human approval |
+| 4 | No rate limiting | HIGH | DoS or cost amplification via rapid queries |
+| 5 | No owner defined | MEDIUM | No accountability; changes can be made silently |
+| 6 | No cannot boundaries | MEDIUM | Copilot has no explicit guardrails; may use tools beyond intent |
+</code></pre>
+      <span class="file-label">REMEDIATED: .github/mcp/investments-schema-safe.mcp.json</span>
+<pre><code>{
+  "name": "investments-schema-safe",
+  "owner": "data-platform@metlife.com",
+  "auth": {
+    "type": "managed-identity",
+    "permissions": "SELECT on INFORMATION_SCHEMA views only"
+  },
+  "tools": [
+    {
+      "name": "get_table_schema",
+      "description": "Returns column metadata for a named table",
+      "cannot": "Cannot read table data. Cannot write, update, or delete anything.",
+      "inputSchema": { "tableName": { "type": "string" } }
+    },
+    {
+      "name": "list_tables",
+      "description": "Returns table names in the investments database",
+      "cannot": "Cannot query data contents.",
+      "inputSchema": {}
+    }
+  ],
+  "governance": {
+    "rateLimit": "20 requests/minute",
+    "changeControl": "PR with data-platform-team approval"
+  }
+}
+</code></pre>
+    </div>
+  </div>
+</div>
+
+<!-- HOOKS SOLUTIONS -->
+<div class="topic-section" id="topic-hooks" data-topic="hooks">
+  <div class="t-header">
+    <div class="t-icon">&#x1FA9D;</div>
+    <div class="t-header-text"><h2>Hooks &mdash; Solutions</h2><p>Reference hook definitions for the MetLife Investments .NET platform.</p></div>
+  </div>
+
+  <div class="sol-card" id="sol-h01">
+    <div class="sol-header" onclick="tog(this)"><span class="sol-num">H-01</span><span class="sol-title">Pre-Change Secret Detection Hook</span><span class="sol-badge">&#x2714; Solution</span><span class="chev">&#9660;</span></div>
+    <div class="sol-body">
+      <span class="file-label">FILE: .github/hooks/detect-secrets.hook.md</span>
+<pre><code>---
+event: pre_file_write
+priority: 1
+---
+
+# Secret Detection Hook — MetLife Investments
+
+## BLOCK Patterns
+- SQL Server connection string with password: /Password=\S{4,}/i
+- Azure Storage account key: /[A-Za-z0-9+\/]{88}==/
+- Azure SAS token: /sv=\d{4}-\d{2}-\d{2}&amp;/
+- Private key header: /-----BEGIN .{0,20}PRIVATE KEY-----/
+- Generic credential pattern: /(password|apikey|secret|connectionstring)\s*=\s*["'][^"']{6,}/i
+
+## WARN Patterns (likely placeholder — flag but do not block)
+- YOUR_KEY_HERE, TODO: add key, REPLACE_ME, &lt;your-api-key&gt;
+
+## False Positive Exclusions
+- File path matches: tests/**  test/**  *.Tests.csproj
+- Value matches: localhost, 127.0.0.1, Server=(localdb)
+
+## BLOCK Message
+"🚫 Potential secret detected in [filename].
+
+Use Azure Key Vault references in appsettings.json instead:
+{
+  \"ConnectionStrings\": {
+    \"InvestmentsDb\": \"@Microsoft.KeyVault(VaultName=metlife-investments-kv;SecretName=sql-connection-string)\"
+  }
+}
+
+For local development: use environment variables or dotnet user-secrets.
+For shared non-secret config: use Azure App Configuration."
+</code></pre>
+    </div>
+  </div>
+
+  <div class="sol-card" id="sol-h02">
+    <div class="sol-header" onclick="tog(this)"><span class="sol-num">H-02</span><span class="sol-title">Post-Change Build and Test Verification Hook</span><span class="sol-badge">&#x2714; Solution</span><span class="chev">&#9660;</span></div>
+    <div class="sol-body">
+      <span class="file-label">FILE: .github/hooks/build-and-test.hook.md</span>
+<pre><code>---
+event: post_file_write
+scope: "src/**/*.cs"
+excludeScope: ["db/Migrations/**", "docs/**", "**/*.json"]
+---
+
+# Build and Test Verification Hook — MetLife Investments
+
+## Action Sequence
+1. Find the .csproj for the changed file:
+   search_workspace for "*.csproj" in parent directories of changed file
+2. Run: dotnet build [project.csproj] --no-restore
+   - FAIL: return compiler output + "Fix these compilation errors before declaring complete."
+   - STOP — do not run tests if build fails
+3. Find [ClassName]Tests.cs using search_workspace
+   If not found: WARN "No test file found for [ClassName]" and skip test run
+4. Run: dotnet test --filter "FullyQualifiedName~[ClassName]Tests" --no-build
+   - FAIL: return failing test names + "Fix the failing tests or explain why this breakage is acceptable."
+   - TIMEOUT (>90s): WARN "Test run exceeded 90 seconds — run manually to confirm"
+
+## Success Message
+"✓ Build: passed | Tests: [N passed, 0 failed]"
+</code></pre>
+    </div>
+  </div>
+
+  <div class="sol-card" id="sol-h03">
+    <div class="sol-header" onclick="tog(this)"><span class="sol-num">H-03</span><span class="sol-title">PII Data Exposure Detection Hook</span><span class="sol-badge">&#x2714; Solution</span><span class="chev">&#9660;</span></div>
+    <div class="sol-body">
+      <span class="file-label">FILE: .github/hooks/detect-pii-in-logs.hook.md</span>
+<pre><code>---
+event: pre_file_write
+scope: "src/**"
+priority: 2
+---
+
+# PII in Logs Detection Hook — MetLife Investments
+
+## Tier 1 — BLOCK (regulatory identifiers)
+Field names: AccountNumber, TaxId, SSN, NationalInsuranceNumber, PassportNumber, IBAN
+Detect within 3 lines of any _logger.Log* call:
+  - Property access: entity.AccountNumber
+  - String interpolation: $"... {entity.AccountNumber} ..."
+  - String concat: "Account: " + account.TaxId
+
+## Tier 2 — WARN
+Field names: DateOfBirth, EmailAddress, PhoneNumber, FullName, PortfolioHolderName, ClientName
+
+## BLOCK Message
+"🚫 PII field '[fieldName]' detected near a log statement in [filename]:[line].
+
+GDPR Article 32 and FINRA Rule 17a-4 prohibit logging personal financial identifiers.
+
+Correct pattern — log IDs not values:
+  _logger.LogInformation(\"Account accessed {AccountId}\", account.Id);
+  // Do NOT log: account.AccountNumber, account.TaxId
+
+To suppress this warning for a reviewed exception, add on the line above:
+  // pii-review-ok: [reason e.g. 'masked value for debugging, not a real account number']"
+
+## False Positive Suppression
+Line with // pii-review-ok: annotation: suppress warning, append annotation to compliance audit log at .github/logs/pii-review.log
+</code></pre>
+    </div>
+  </div>
+
+  <div class="sol-card" id="sol-h04">
+    <div class="sol-header" onclick="tog(this)"><span class="sol-num">H-04</span><span class="sol-title">Protected Files Boundary Hook</span><span class="sol-badge">&#x2714; Solution</span><span class="chev">&#9660;</span></div>
+    <div class="sol-body">
+      <span class="file-label">FILE: .github/hooks/protected-files.hook.md</span>
+<pre><code>---
+event: pre_file_write
+priority: 0
+---
+
+# Protected Files Boundary Hook — MetLife Investments
+
+## BLOCK (no agent writes, ever)
+- db/Migrations/**
+  Reason: Deployed EF Core migrations are immutable. EF checksums migration files.
+  Message: "Create a new migration: dotnet ef migrations add [Name] --project src/Investments.DataAccess"
+- .github/workflows/**
+  Reason: CI/CD changes require PR review by the platform team.
+  Message: "Open a PR — CI changes require platform-team review."
+- infrastructure/**
+  Reason: Terraform affects Azure production resources.
+  Message: "Infrastructure changes require a separate plan review with the cloud team."
+- .github/CODEOWNERS
+  Reason: Changes to code ownership require team lead approval.
+
+## CONFIRM (pause for explicit YES/NO)
+- *.csproj (NuGet changes affect build and security surface)
+- appsettings.Production.json (production config — may break live environment)
+- .github/copilot-instructions.md (instruction changes affect all future Copilot sessions)
+- .github/hooks/** (hook changes could remove safety gates)
+
+## CONFIRM Prompt Format
+"⚠ [filename] is a protected file.
+Change proposed: [1-sentence description]
+Reason for protection: [protection reason]
+Type YES to allow or NO to cancel.
+This decision will be logged."
+
+## Decision Logging
+Append to .github/logs/protected-file-changes.log:
+{ timestamp, file, developer, decision, reason }
+</code></pre>
+    </div>
+  </div>
+
+  <div class="sol-card" id="sol-h05">
+    <div class="sol-header" onclick="tog(this)"><span class="sol-num">H-05</span><span class="sol-title">AI Change Audit Trail Hook</span><span class="sol-badge">&#x2714; Solution</span><span class="chev">&#9660;</span></div>
+    <div class="sol-body">
+      <span class="file-label">FILE: .github/hooks/audit-trail.hook.md</span>
+<pre><code>---
+event: post_file_write
+priority: 100
+---
+
+# AI Change Audit Trail Hook — MetLife Investments
+
+## Runs last (priority 100) — after all other hooks complete
+
+## Log Entry Schema (JSON)
+{
+  "timestamp": "ISO-8601",
+  "sessionId": "copilot-session-uuid",
+  "developer": "firstname.lastname@metlife.com",
+  "workItem": "AB#1234 | null",
+  "agentMode": "agent | ask | edit",
+  "instructionFilesActive": ["copilot-instructions.md", "api.instructions.md"],
+  "change": {
+    "file": "src/Investments.Services/TradeService.cs",
+    "changeType": "modify | create | delete",
+    "linesAdded": 42,
+    "linesRemoved": 8,
+    "changeSummary": "Added ExecuteTradeAsync method with audit event"
+  },
+  "hooksTriggered": ["detect-secrets (PASS)", "build-and-test (PASS)", "compliance-check (PASS)"],
+  "reviewRequired": false,
+  "regulatoryRetention": "standard-90d | finra-7years"
+}
+
+## NEVER LOG
+- File contents or code snippets
+- PII fields from source code (account numbers, tax IDs, SSN)
+- Authentication tokens or secrets
+- Portfolio values or financial data values
+
+## Log Destinations
+Primary: append to .github/logs/ai-audit.jsonl (local git-tracked)
+Secondary: POST to $AUDIT_WEBHOOK_URL (Azure Monitor Log Analytics — authoritative)
+
+## Retention
+Standard: 90 days minimum
+If change.file matches src/Investments.Services/Trade* or *Trade*:
+  regulatoryRetention = "finra-7years"
+  Tag the secondary log entry accordingly (FINRA Rule 17a-4)
+</code></pre>
+      <div class="tip"><div class="tip-lbl">FINRA audit readiness</div><div class="tip-text">The <code>reviewRequired</code> field signals whether a human reviewed the AI change before merge. Combined with the ADO work item reference, this provides the "human authorization" evidence auditors require for changes to trade execution code.</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="page-footer">
+  MetLife Investments Management &middot; GitHub Copilot Customization &middot; Module 02 &middot; Solutions Reference<br>
+  .NET 10 &middot; C# &middot; Blazor &middot; SQL Server &middot; Azure DevOps &middot; xUnit &middot; EF Core
+</div>
+</div>
+
+<script>
+function tog(header){
+  var card=header.closest('.sol-card');
+  card.classList.toggle('open',!card.classList.contains('open'));
+}
+function jumpTo(id){
+  var el=document.getElementById(id);
+  if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
+}
+var progBar=document.getElementById('progBar');
+var scrollBtn=document.getElementById('scrollTopBtn');
+window.addEventListener('scroll',function(){
+  var total=document.documentElement.scrollHeight-window.innerHeight;
+  progBar.style.width=(total?(window.scrollY/total)*100:0)+'%';
+  scrollBtn.classList.toggle('vis',window.scrollY>400);
+},{passive:true});
+</script>
+</body>
+</html>
